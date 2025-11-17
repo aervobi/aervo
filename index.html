@@ -36,16 +36,19 @@
     }
 
     .menu-toggle {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;   /* 👈 add this */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  gap: 3px;                 /* 👈 add this for spacing */
+}
     }
 
     .menu-toggle span {
@@ -56,8 +59,7 @@
       border-radius: 999px;
     }
 
-    .menu-toggle span + span {
-      margin-top: 3px;
+   
     }
 
     .menu {
