@@ -21,6 +21,76 @@
       justify-content: center;
       padding: 32px;
     }
+
+    /* NAV / HAMBURGER */
+    .nav {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .menu-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .menu-toggle span + span {
+      margin-top: 3px;
+    }
+    .menu-toggle.open span:nth-child(1) {
+      transform: translateY(5px) rotate(45deg);
+    }
+    .menu-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-toggle.open span:nth-child(3) {
+      transform: translateY(-5px) rotate(-45deg);
+    }
+    .menu {
+      display: none;
+      flex-direction: column;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 10px 12px;
+      min-width: 160px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    }
+    .menu.open {
+      display: flex;
+    }
+    .menu a {
+      color: #e5e7eb;
+      text-decoration: none;
+      padding: 6px 4px;
+      border-radius: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .menu a:hover {
+      background: rgba(56, 189, 248, 0.14);
+      color: #f9fafb;
+    }
+
     .card {
       max-width: 720px;
       width: 100%;
@@ -29,6 +99,7 @@
       padding: 32px 28px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(148, 163, 184, 0.35);
+      scroll-margin-top: 96px;
     }
     .logo-wrap {
       display: flex;
@@ -72,6 +143,7 @@
       border-radius: 16px;
       background: rgba(15, 118, 110, 0.18);
       border: 1px solid rgba(45, 212, 191, 0.5);
+      scroll-margin-top: 96px;
     }
     .footer {
       margin-top: 18px;
@@ -79,12 +151,38 @@
       color: #9ca3af;
       text-align: right;
     }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+      .card {
+        padding: 24px 20px;
+      }
+      .logo-text {
+        font-size: 26px;
+        letter-spacing: 0.22em;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
+  <!-- NAV / HAMBURGER -->
+  <nav class="nav">
+    <button class="menu-toggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="menu" id="menu">
+      <a href="#top">Home</a>
+      <a href="#about">About AERVO</a>
+      <a href="#promise">Promise</a>
+    </div>
+  </nav>
+
+  <main class="card" id="top">
     <div class="logo-wrap">
-      <!-- When you upload your logo, make sure the file is named logo.png -->
       <img src="logo.png" alt="AERVO logo" class="logo-img" />
       <div class="logo-text"><span>AE</span>RVO</div>
     </div>
@@ -108,7 +206,31 @@
       here’s what to do.”
     </p>
 
-    <div class="promise">
+    <!-- ABOUT AERVO SECTION -->
+    <section id="about">
+      <h2>About AERVO</h2>
+      <p>
+        AERVO is built on a simple idea: small business owners deserve clarity.
+        Running a business means juggling sales, inventory, trends, customers,
+        and daily challenges. Most people don’t have time to dig through
+        spreadsheets or dashboards to understand what’s actually happening
+        day to day.
+      </p>
+
+      <p>
+        AERVO is designed to give a calm, high-level view of everything that
+        matters. It takes real business data and turns it into clear answers,
+        simple summaries, and meaningful insights. The goal isn’t to overwhelm
+        people — the goal is to give them confidence and control.
+      </p>
+
+      <p>
+        AERVO helps business owners see the big picture so they can make
+        decisions with clarity instead of stress.
+      </p>
+    </section>
+
+    <div class="promise" id="promise">
       <h2>Promise to myself</h2>
       <p>
         This page is my reminder: I am capable of learning, building, and
@@ -122,5 +244,23 @@
       AERVO – built with patience, curiosity, and courage.
     </div>
   </main>
+
+  <script>
+    const toggle = document.querySelector(".menu-toggle");
+    const menu = document.getElementById("menu");
+
+    toggle.addEventListener("click", () => {
+      toggle.classList.toggle("open");
+      menu.classList.toggle("open");
+    });
+
+    // Close menu when a link is clicked
+    document.querySelectorAll(".menu a").forEach((link) => {
+      link.addEventListener("click", () => {
+        toggle.classList.remove("open");
+        menu.classList.remove("open");
+      });
+    });
+  </script>
 </body>
 </html>
