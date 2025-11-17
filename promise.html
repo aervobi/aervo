@@ -22,6 +22,7 @@
       padding: 32px;
     }
 
+        /* NAV / HAMBURGER */
     .nav {
       position: fixed;
       top: 18px;
@@ -33,6 +34,7 @@
       gap: 8px;
       font-size: 14px;
     }
+
     .menu-toggle {
       width: 32px;
       height: 32px;
@@ -45,26 +47,19 @@
       cursor: pointer;
       padding: 0;
     }
+
     .menu-toggle span {
       display: block;
-      width: 16px;
+      width: 14px;
       height: 2px;
       background: #e5e7eb;
       border-radius: 999px;
-      transition: transform 0.2s ease, opacity 0.2s ease;
     }
+
     .menu-toggle span + span {
       margin-top: 3px;
     }
-    .menu-toggle.open span:nth-child(1) {
-      transform: translateY(5px) rotate(45deg);
-    }
-    .menu-toggle.open span:nth-child(2) {
-      opacity: 0;
-    }
-    .menu-toggle.open span:nth-child(3) {
-      transform: translateY(-5px) rotate(-45deg);
-    }
+
     .menu {
       display: none;
       flex-direction: column;
@@ -75,9 +70,11 @@
       min-width: 180px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     }
+
     .menu.open {
       display: flex;
     }
+
     .menu a {
       color: #e5e7eb;
       text-decoration: none;
@@ -85,67 +82,11 @@
       border-radius: 8px;
       transition: background 0.15s ease, color 0.15s ease;
     }
+
     .menu a:hover {
       background: rgba(56, 189, 248, 0.14);
       color: #f9fafb;
     }
-
-    .card {
-      max-width: 720px;
-      width: 100%;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      padding: 32px 28px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-    }
-    .logo-mini {
-      font-size: 14px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: #9ca3af;
-      margin-bottom: 8px;
-    }
-    h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
-      color: #e5e7eb;
-    }
-    p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #cbd5f5;
-      margin-bottom: 10px;
-    }
-    .footer {
-      margin-top: 18px;
-      font-size: 13px;
-      color: #9ca3af;
-      text-align: right;
-    }
-    @media (max-width: 640px) {
-      body {
-        padding: 16px;
-      }
-      .card {
-        padding: 24px 20px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <nav class="nav">
-    <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <div class="menu" id="menu">
-      <a href="index.html">Home</a>
-      <a href="about.html">About AERVO</a>
-      <a href="promise.html">Promise to myself</a>
-    </div>
-  </nav>
 
   <main class="card">
     <div class="logo-mini">AERVO</div>
@@ -167,12 +108,11 @@
     </div>
   </main>
 
-  <script>
+    <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
 
     toggle.addEventListener("click", () => {
-      toggle.classList.toggle("open");
       menu.classList.toggle("open");
     });
   </script>
