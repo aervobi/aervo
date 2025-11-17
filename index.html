@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Segoe UI", sans-serif;
@@ -22,7 +23,7 @@
       padding: 32px;
     }
 
-       /* NAV / HAMBURGER */
+    /* NAV / HAMBURGER */
     .nav {
       position: fixed;
       top: 18px;
@@ -36,19 +37,18 @@
     }
 
     .menu-toggle {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.7);
-  background: rgba(15, 23, 42, 0.9);
-  display: flex;
-  flex-direction: column;   /* 👈 add this */
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  gap: 3px;                 /* 👈 add this for spacing */
-}
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      gap: 3px;
     }
 
     .menu-toggle span {
@@ -57,9 +57,6 @@
       height: 2px;
       background: #e5e7eb;
       border-radius: 999px;
-    }
-
-   
     }
 
     .menu {
@@ -189,6 +186,7 @@
       <div class="tagline">A higher view of your business.</div>
     </div>
   </main>
+
   <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
@@ -197,6 +195,5 @@
       menu.classList.toggle("open");
     });
   </script>
-  
 </body>
 </html>
