@@ -96,35 +96,36 @@
       width: 100%;
       background: rgba(15, 23, 42, 0.9);
       border-radius: 24px;
-      padding: 32px 28px;
+      padding: 40px 32px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(148, 163, 184, 0.35);
       text-align: center;
     }
-    .logo-wrap {
+
+    .logo-block {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 16px;
-      margin-bottom: 10px;
     }
 
-    /* Animated logo */
+    /* Big animated logo */
     .logo-img {
-      width: 56px;
-      height: 56px;
+      width: 140px;
+      height: 140px;
       object-fit: contain;
       display: block;
       animation: logoFloat 3s ease-in-out infinite;
     }
+
     @keyframes logoFloat {
       0% {
         transform: translateY(0) scale(1);
         filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0));
       }
       50% {
-        transform: translateY(-4px) scale(1.04);
-        filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+        transform: translateY(-6px) scale(1.03);
+        filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.45));
       }
       100% {
         transform: translateY(0) scale(1);
@@ -132,35 +133,37 @@
       }
     }
 
-    .logo-text {
+    .brand-name {
       font-size: 32px;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.35em;
       text-transform: uppercase;
       color: #f9fafb;
     }
-    .logo-text span {
+
+    .brand-name span {
       color: #22d3ee;
     }
+
     .tagline {
       font-size: 16px;
       color: #9ca3af;
-      margin-top: 8px;
+      margin-top: 4px;
     }
-    .footer {
-      margin-top: 22px;
-      font-size: 12px;
-      color: #9ca3af;
-    }
+
     @media (max-width: 640px) {
       body {
         padding: 16px;
       }
       .card {
-        padding: 26px 20px;
+        padding: 32px 22px;
       }
-      .logo-text {
+      .brand-name {
         font-size: 26px;
-        letter-spacing: 0.22em;
+        letter-spacing: 0.25em;
+      }
+      .logo-img {
+        width: 120px;
+        height: 120px;
       }
     }
   </style>
@@ -181,15 +184,10 @@
   </nav>
 
   <main class="card">
-    <div class="logo-wrap">
+    <div class="logo-block">
       <img src="logo.png" alt="AERVO logo" class="logo-img" />
-      <div class="logo-text"><span>AE</span>RVO</div>
-    </div>
-    <div class="tagline">
-      A birds-eye view of your business, powered by AI.
-    </div>
-    <div class="footer">
-      Tap the menu to explore AERVO.
+      <div class="brand-name"><span>AE</span>RVO</div>
+      <div class="tagline">A higher view of your business.</div>
     </div>
   </main>
 
