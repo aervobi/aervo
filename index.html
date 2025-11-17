@@ -129,15 +129,39 @@
       }
     }
 
+    /* Animated gradient brand text */
     .brand-name {
       font-size: 32px;
       letter-spacing: 0.35em;
       text-transform: uppercase;
-      color: #f9fafb;
+      background: linear-gradient(
+        120deg,
+        #22d3ee,
+        #38bdf8,
+        #a5f3fc,
+        #f9fafb
+      );
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: titleGradient 7s ease-in-out infinite alternate;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
     }
 
-    .brand-name span {
-      color: #22d3ee;
+    @keyframes titleGradient {
+      0% {
+        background-position: 0% 50%;
+        text-shadow: 0 0 6px rgba(56, 189, 248, 0.25);
+      }
+      50% {
+        background-position: 50% 50%;
+        text-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+      }
+      100% {
+        background-position: 100% 50%;
+        text-shadow: 0 0 6px rgba(56, 189, 248, 0.25);
+      }
     }
 
     .tagline {
@@ -182,7 +206,7 @@
   <main class="card">
     <div class="logo-block">
       <img src="logo.png" alt="AERVO logo" class="logo-img" />
-      <div class="brand-name"><span>AE</span>RVO</div>
+      <div class="brand-name">AERVO</div>
       <div class="tagline">A higher view of your business.</div>
     </div>
   </main>
