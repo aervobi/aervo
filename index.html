@@ -18,9 +18,11 @@
       color: #e5e7eb;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 32px;
+      text-align: center;
     }
 
     /* NAV / HAMBURGER */
@@ -33,7 +35,6 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 8px;
-      font-size: 14px;
     }
 
     .menu-toggle {
@@ -87,31 +88,14 @@
       color: #f9fafb;
     }
 
-    .card {
-      max-width: 520px;
-      width: 100%;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      padding: 40px 32px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      text-align: center;
-    }
-
-    .logo-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    /* Big animated logo */
+    /* LOGO */
     .logo-img {
-      width: 140px;
-      height: 140px;
+      width: 180px;
+      height: 180px;
       object-fit: contain;
       display: block;
       animation: logoFloat 3s ease-in-out infinite;
+      margin-bottom: 24px;
     }
 
     @keyframes logoFloat {
@@ -120,8 +104,8 @@
         filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0));
       }
       50% {
-        transform: translateY(-6px) scale(1.03);
-        filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.45));
+        transform: translateY(-8px) scale(1.03);
+        filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.5));
       }
       100% {
         transform: translateY(0) scale(1);
@@ -129,10 +113,10 @@
       }
     }
 
-    /* Animated gradient brand text */
+    /* ANIMATED TITLE */
     .brand-name {
-      font-size: 32px;
-      letter-spacing: 0.35em;
+      font-size: 40px;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
       background: linear-gradient(
         120deg,
@@ -141,61 +125,54 @@
         #a5f3fc,
         #f9fafb
       );
-      background-size: 220% 100%;
+      background-size: 250% 100%;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      animation: titleGradient 1.2s ease-in-out infinite alternate;
+      animation: titleGradient 1.8s ease-in-out infinite alternate;
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+      margin-bottom: 12px;
     }
 
     @keyframes titleGradient {
       0% {
         background-position: 0% 50%;
-        text-shadow: 0 0 6px rgba(56, 189, 248, 0.25);
-      }
-      50% {
-        background-position: 50% 50%;
-        text-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
       }
       100% {
         background-position: 100% 50%;
-        text-shadow: 0 0 6px rgba(56, 189, 248, 0.25);
       }
     }
 
     .tagline {
-      font-size: 16px;
-      color: #9ca3af;
+      font-size: 18px;
+      color: #94a3b8;
       margin-top: 4px;
     }
 
     @media (max-width: 640px) {
-      body {
-        padding: 16px;
-      }
-      .card {
-        padding: 32px 22px;
+      .logo-img {
+        width: 140px;
+        height: 140px;
       }
       .brand-name {
-        font-size: 26px;
+        font-size: 32px;
         letter-spacing: 0.25em;
       }
-      .logo-img {
-        width: 120px;
-        height: 120px;
+      .tagline {
+        font-size: 16px;
       }
     }
   </style>
 </head>
+
 <body>
-  <!-- NAV / HAMBURGER -->
+
+  <!-- NAV -->
   <nav class="nav">
     <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
+
     <div class="menu" id="menu">
       <a href="index.html">Home</a>
       <a href="about.html">About AERVO</a>
@@ -203,13 +180,12 @@
     </div>
   </nav>
 
-  <main class="card">
-    <div class="logo-block">
-      <img src="logo.png" alt="AERVO logo" class="logo-img" />
-      <div class="brand-name">AERVO</div>
-      <div class="tagline">A higher view of your business.</div>
-    </div>
-  </main>
+  <!-- MAIN LOGO + TITLE -->
+  <img src="logo.png" class="logo-img">
+
+  <div class="brand-name">AERVO</div>
+
+  <div class="tagline">A higher view of your business.</div>
 
   <script>
     const toggle = document.querySelector(".menu-toggle");
@@ -219,5 +195,6 @@
       menu.classList.toggle("open");
     });
   </script>
+
 </body>
 </html>
