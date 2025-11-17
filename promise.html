@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Segoe UI", sans-serif;
@@ -22,7 +23,7 @@
       padding: 32px;
     }
 
-        /* NAV / HAMBURGER */
+    /* NAV / HAMBURGER (same as other pages) */
     .nav {
       position: fixed;
       top: 18px;
@@ -42,10 +43,12 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       padding: 0;
+      gap: 3px;
     }
 
     .menu-toggle span {
@@ -54,10 +57,6 @@
       height: 2px;
       background: #e5e7eb;
       border-radius: 999px;
-    }
-
-    .menu-toggle span + span {
-      margin-top: 3px;
     }
 
     .menu {
@@ -88,19 +87,85 @@
       color: #f9fafb;
     }
 
+    .card {
+      max-width: 720px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .logo-mini {
+      font-size: 14px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #e5e7eb;
+    }
+
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #cbd5f5;
+      margin-bottom: 12px;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+      .card {
+        padding: 24px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <button class="menu-toggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="menu" id="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About AERVO</a>
+      <a href="promise.html">Promise to myself</a>
+    </div>
+  </nav>
+
   <main class="card">
     <div class="logo-mini">AERVO</div>
     <h1>Promise to myself</h1>
     <p>
       This page is my reminder: I am capable of learning, building, and
-      figuring things out one step at a time. AERVO doesn't need to be
-      perfect today. I just need to keep moving, keep experimenting, and
-      not give up on the version of me who believed this could work.
+      figuring things out one step at a time. AERVO doesn't need to be perfect
+      today. I just need to keep moving, keep experimenting, and not give up
+      on the version of me who believed this could work.
     </p>
     <p>
       When things feel heavy, I will remember why I started: to create
       something that gives small business owners clarity, confidence, and
-      a calmer way to run their business.
+      a calmer way to understand their numbers.
+    </p>
+    <p>
+      I will be patient with myself, stay curious, and have the courage to
+      keep going, even when the path feels unclear.
     </p>
 
     <div class="footer">
@@ -108,7 +173,7 @@
     </div>
   </main>
 
-    <script>
+  <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
 
