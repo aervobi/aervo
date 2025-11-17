@@ -18,9 +18,10 @@
       color: #e5e7eb;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 32px;
+      padding: 32px 20px;
     }
 
     /* NAV / HAMBURGER (same as home) */
@@ -33,7 +34,6 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 8px;
-      font-size: 14px;
     }
 
     .menu-toggle {
@@ -87,33 +87,29 @@
       color: #f9fafb;
     }
 
-    .card {
+    .content {
       max-width: 720px;
       width: 100%;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      padding: 32px 28px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      text-align: left;
     }
 
-    .logo-mini {
-      font-size: 14px;
+    .kicker {
+      font-size: 13px;
       letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: #9ca3af;
+      color: #94a3b8;
       margin-bottom: 10px;
     }
 
     h1 {
-      font-size: 22px;
-      margin-bottom: 12px;
+      font-size: 26px;
+      margin-bottom: 14px;
       color: #e5e7eb;
     }
 
     p {
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #cbd5f5;
       margin-bottom: 12px;
     }
@@ -127,10 +123,10 @@
 
     @media (max-width: 640px) {
       body {
-        padding: 16px;
+        padding: 24px 16px;
       }
-      .card {
-        padding: 24px 20px;
+      h1 {
+        font-size: 22px;
       }
     }
   </style>
@@ -138,9 +134,7 @@
 <body>
   <nav class="nav">
     <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
     <div class="menu" id="menu">
       <a href="index.html">Home</a>
@@ -149,36 +143,34 @@
     </div>
   </nav>
 
-  <main class="card">
-    <div class="logo-mini">AERVO</div>
+  <main class="content">
+    <div class="kicker">AERVO</div>
     <h1>About AERVO</h1>
+
     <p>
-      AERVO is built on a simple idea: small business owners deserve clarity.
-      Running a business means juggling sales, inventory, trends, customers,
-      and daily challenges. Most people don’t have time to dig through
-      dashboards or spreadsheets to understand what’s actually happening.
+      AERVO was created for small business owners who don’t have time to become
+      data experts. Most tools flood people with charts and dashboards, then
+      leave them to figure out what it all means.
     </p>
     <p>
-      AERVO is designed to give a calm, high-level view of everything that
-      matters. It takes real business data and turns it into clear answers,
-      simple summaries, and meaningful insights. The goal isn’t to overwhelm
-      people, the goal is to give them confidence and control.
+      AERVO’s vision is simple: turn real business activity into calm, clear
+      answers. Instead of guessing how things are going, owners should be able
+      to ask, “How did I do today?” and get a straight, human answer.
     </p>
     <p>
-      Over time, AERVO will feel less like a tool and more like a quiet
-      partner that keeps an eye on the numbers, surfaces what matters, and
-      helps business owners make decisions with peace instead of stress.
+      Over time, AERVO is meant to feel less like software and more like a
+      quiet partner that watches the numbers, spots patterns, and highlights
+      what matters—so decisions feel lighter, not heavier.
     </p>
 
     <div class="footer">
-      AERVO — a higher view of your business.
+      A higher view of your business.
     </div>
   </main>
 
   <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
-
     toggle.addEventListener("click", () => {
       menu.classList.toggle("open");
     });
