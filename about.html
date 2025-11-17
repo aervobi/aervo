@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
         "Segoe UI", sans-serif;
@@ -22,7 +23,7 @@
       padding: 32px;
     }
 
-        /* NAV / HAMBURGER */
+    /* NAV / HAMBURGER (same as home) */
     .nav {
       position: fixed;
       top: 18px;
@@ -42,10 +43,12 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       padding: 0;
+      gap: 3px;
     }
 
     .menu-toggle span {
@@ -54,10 +57,6 @@
       height: 2px;
       background: #e5e7eb;
       border-radius: 999px;
-    }
-
-    .menu-toggle span + span {
-      margin-top: 3px;
     }
 
     .menu {
@@ -87,6 +86,7 @@
       background: rgba(56, 189, 248, 0.14);
       color: #f9fafb;
     }
+
     .card {
       max-width: 720px;
       width: 100%;
@@ -96,30 +96,35 @@
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(148, 163, 184, 0.35);
     }
+
     .logo-mini {
       font-size: 14px;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: #9ca3af;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
+
     h1 {
       font-size: 22px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       color: #e5e7eb;
     }
+
     p {
       font-size: 15px;
       line-height: 1.6;
       color: #cbd5f5;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
+
     .footer {
       margin-top: 18px;
       font-size: 13px;
       color: #9ca3af;
       text-align: right;
     }
+
     @media (max-width: 640px) {
       body {
         padding: 16px;
@@ -151,25 +156,26 @@
       AERVO is built on a simple idea: small business owners deserve clarity.
       Running a business means juggling sales, inventory, trends, customers,
       and daily challenges. Most people don’t have time to dig through
-      spreadsheets or dashboards to understand what’s actually happening day to day.
+      dashboards or spreadsheets to understand what’s actually happening.
     </p>
     <p>
       AERVO is designed to give a calm, high-level view of everything that
       matters. It takes real business data and turns it into clear answers,
       simple summaries, and meaningful insights. The goal isn’t to overwhelm
-      people — the goal is to give them confidence and control.
+      people, the goal is to give them confidence and control.
     </p>
     <p>
-      AERVO helps business owners see the big picture so they can make
-      decisions with clarity instead of stress.
+      Over time, AERVO will feel less like a tool and more like a quiet
+      partner that keeps an eye on the numbers, surfaces what matters, and
+      helps business owners make decisions with peace instead of stress.
     </p>
 
     <div class="footer">
-      AERVO – a birds-eye view of your business.
+      AERVO — a higher view of your business.
     </div>
   </main>
 
-      <script>
+  <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
 
