@@ -18,12 +18,13 @@
       color: #e5e7eb;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 32px;
+      padding: 32px 20px;
     }
 
-    /* NAV / HAMBURGER (same as other pages) */
+    /* NAV / HAMBURGER */
     .nav {
       position: fixed;
       top: 18px;
@@ -33,7 +34,6 @@
       flex-direction: column;
       align-items: flex-end;
       gap: 8px;
-      font-size: 14px;
     }
 
     .menu-toggle {
@@ -87,33 +87,29 @@
       color: #f9fafb;
     }
 
-    .card {
+    .content {
       max-width: 720px;
       width: 100%;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      padding: 32px 28px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      text-align: left;
     }
 
-    .logo-mini {
-      font-size: 14px;
+    .kicker {
+      font-size: 13px;
       letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: #9ca3af;
+      color: #94a3b8;
       margin-bottom: 10px;
     }
 
     h1 {
-      font-size: 22px;
-      margin-bottom: 12px;
+      font-size: 26px;
+      margin-bottom: 14px;
       color: #e5e7eb;
     }
 
     p {
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #cbd5f5;
       margin-bottom: 12px;
     }
@@ -127,10 +123,10 @@
 
     @media (max-width: 640px) {
       body {
-        padding: 16px;
+        padding: 24px 16px;
       }
-      .card {
-        padding: 24px 20px;
+      h1 {
+        font-size: 22px;
       }
     }
   </style>
@@ -138,9 +134,7 @@
 <body>
   <nav class="nav">
     <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </button>
     <div class="menu" id="menu">
       <a href="index.html">Home</a>
@@ -149,23 +143,24 @@
     </div>
   </nav>
 
-  <main class="card">
-    <div class="logo-mini">AERVO</div>
+  <main class="content">
+    <div class="kicker">AERVO</div>
     <h1>Promise to myself</h1>
+
     <p>
-      This page is my reminder: I am capable of learning, building, and
-      figuring things out one step at a time. AERVO doesn't need to be perfect
-      today. I just need to keep moving, keep experimenting, and not give up
-      on the version of me who believed this could work.
+      This page is my reminder that I am capable of learning, building, and
+      figuring things out one step at a time. AERVO does not have to be perfect
+      today. What matters is that I keep moving, keep experimenting, and don’t
+      walk away from the version of me who believed this could work.
     </p>
     <p>
-      When things feel heavy, I will remember why I started: to create
-      something that gives small business owners clarity, confidence, and
-      a calmer way to understand their numbers.
+      When things feel heavy, I’ll remember why I started: to create something
+      that gives small business owners clarity, confidence, and a calmer way to
+      understand their numbers.
     </p>
     <p>
-      I will be patient with myself, stay curious, and have the courage to
-      keep going, even when the path feels unclear.
+      I will be patient with myself, stay curious, and have the courage to keep
+      going even when the path feels unclear. Every small step counts.
     </p>
 
     <div class="footer">
@@ -176,7 +171,6 @@
   <script>
     const toggle = document.querySelector(".menu-toggle");
     const menu = document.getElementById("menu");
-
     toggle.addEventListener("click", () => {
       menu.classList.toggle("open");
     });
