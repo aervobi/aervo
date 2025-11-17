@@ -73,7 +73,7 @@
       border-radius: 16px;
       border: 1px solid rgba(148, 163, 184, 0.6);
       padding: 10px 12px;
-      min-width: 160px;
+      min-width: 180px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
     }
     .menu.open {
@@ -92,24 +92,25 @@
     }
 
     .card {
-      max-width: 720px;
+      max-width: 520px;
       width: 100%;
       background: rgba(15, 23, 42, 0.9);
       border-radius: 24px;
       padding: 32px 28px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(148, 163, 184, 0.35);
-      scroll-margin-top: 96px;
+      text-align: center;
     }
     .logo-wrap {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 16px;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
     }
     .logo-img {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       object-fit: contain;
     }
     .logo-text {
@@ -124,40 +125,19 @@
     .tagline {
       font-size: 16px;
       color: #9ca3af;
-      margin-bottom: 24px;
-    }
-    h2 {
-      font-size: 20px;
-      margin: 18px 0 8px;
-      color: #e5e7eb;
-    }
-    p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #cbd5f5;
-      margin-bottom: 8px;
-    }
-    .promise {
-      margin-top: 20px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(15, 118, 110, 0.18);
-      border: 1px solid rgba(45, 212, 191, 0.5);
-      scroll-margin-top: 96px;
+      margin-top: 8px;
     }
     .footer {
-      margin-top: 18px;
-      font-size: 13px;
+      margin-top: 22px;
+      font-size: 12px;
       color: #9ca3af;
-      text-align: right;
     }
-
     @media (max-width: 640px) {
       body {
         padding: 16px;
       }
       .card {
-        padding: 24px 20px;
+        padding: 26px 20px;
       }
       .logo-text {
         font-size: 26px;
@@ -175,73 +155,22 @@
       <span></span>
     </button>
     <div class="menu" id="menu">
-      <a href="#top">Home</a>
-      <a href="#about">About AERVO</a>
-      <a href="#promise">Promise</a>
+      <a href="index.html">Home</a>
+      <a href="about.html">About AERVO</a>
+      <a href="promise.html">Promise to myself</a>
     </div>
   </nav>
 
-  <main class="card" id="top">
+  <main class="card">
     <div class="logo-wrap">
       <img src="logo.png" alt="AERVO logo" class="logo-img" />
       <div class="logo-text"><span>AE</span>RVO</div>
     </div>
-
-    <div class="tagline">Business intelligence from a bird’s-eye view.</div>
-
-    <h2>What is AERVO?</h2>
-    <p>
-      AERVO is my vision for a 360-degree assistant for small businesses.
-      It connects to the tools they already use and turns raw numbers into
-      clear answers: “How did I do today? What’s selling? What’s running low?
-      What should I worry about next?”
-    </p>
-
-    <h2>Why I'm building this</h2>
-    <p>
-      Most small business owners are busy surviving the day. They shouldn't
-      have to be data experts to understand how their business is really
-      doing. I want AERVO to feel like a smart, calm partner that looks over
-      everything and says: “Here’s what happened, here’s what changed, and
-      here’s what to do.”
-    </p>
-
-    <!-- ABOUT AERVO SECTION -->
-    <section id="about">
-      <h2>About AERVO</h2>
-      <p>
-        AERVO is built on a simple idea: small business owners deserve clarity.
-        Running a business means juggling sales, inventory, trends, customers,
-        and daily challenges. Most people don’t have time to dig through
-        spreadsheets or dashboards to understand what’s actually happening
-        day to day.
-      </p>
-
-      <p>
-        AERVO is designed to give a calm, high-level view of everything that
-        matters. It takes real business data and turns it into clear answers,
-        simple summaries, and meaningful insights. The goal isn’t to overwhelm
-        people — the goal is to give them confidence and control.
-      </p>
-
-      <p>
-        AERVO helps business owners see the big picture so they can make
-        decisions with clarity instead of stress.
-      </p>
-    </section>
-
-    <div class="promise" id="promise">
-      <h2>Promise to myself</h2>
-      <p>
-        This page is my reminder: I am capable of learning, building, and
-        figuring things out one step at a time. AERVO doesn't need to be
-        perfect today. I just need to keep moving, keep experimenting, and
-        not give up on the version of me who believed this could work.
-      </p>
+    <div class="tagline">
+      A birds-eye view of your business, powered by AI.
     </div>
-
     <div class="footer">
-      AERVO – built with patience, curiosity, and courage.
+      Tap the menu to explore AERVO.
     </div>
   </main>
 
@@ -252,14 +181,6 @@
     toggle.addEventListener("click", () => {
       toggle.classList.toggle("open");
       menu.classList.toggle("open");
-    });
-
-    // Close menu when a link is clicked
-    document.querySelectorAll(".menu a").forEach((link) => {
-      link.addEventListener("click", () => {
-        toggle.classList.remove("open");
-        menu.classList.remove("open");
-      });
     });
   </script>
 </body>
