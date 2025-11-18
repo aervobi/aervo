@@ -72,24 +72,22 @@
       margin-bottom: 20px;
     }
 
-  .hero-title {
-  color: #b4cdff;
-  letter-spacing: 8px;
-  font-size: 40px;
-  margin: 10px 0;
-  text-shadow:
-    0 0 8px rgba(137, 180, 255, 0.8),
-    0 0 18px rgba(80, 130, 255, 0.6),
-    0 0 32px rgba(40, 90, 255, 0.4);
-}
+    .hero-title {
+      color: #b4cdff;
+      letter-spacing: 8px;
+      font-size: 40px;
+      margin: 10px 0;
+      text-shadow:
+        0 0 8px rgba(137, 180, 255, 0.8),
+        0 0 18px rgba(80, 130, 255, 0.6),
+        0 0 32px rgba(40, 90, 255, 0.4);
     }
 
-.hero-tagline {
-  color: #c3d2ff;
-  font-size: 18px;
-  margin-bottom: 28px;
-  text-shadow: 0 0 10px rgba(40, 70, 150, 0.5);
-}
+    .hero-tagline {
+      color: #c3d2ff;
+      font-size: 18px;
+      margin-bottom: 28px;
+      text-shadow: 0 0 10px rgba(40, 70, 150, 0.5);
     }
 
     .hero-btn {
@@ -109,6 +107,33 @@
       background: #222a38;
       box-shadow: 0 0 25px rgba(112, 150, 255, 0.35);
       transform: translateY(-1px);
+    }
+
+    .hero-cta {
+      display: inline-block;
+      padding: 14px 34px;
+      margin-top: 30px;
+      font-size: 18px;
+      color: #b4cdff;
+      background: #1a243d;
+      border-radius: 10px;
+      border: 1px solid rgba(143, 191, 255, 0.4);
+      text-decoration: none;
+      letter-spacing: 1px;
+      box-shadow:
+        0 0 12px rgba(137, 180, 255, 0.45),
+        0 0 28px rgba(80, 130, 255, 0.35),
+        0 0 40px rgba(40, 90, 255, 0.25);
+      transition: all 0.25s ease;
+    }
+
+    .hero-cta:hover {
+      background: #222c48;
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 16px rgba(137, 180, 255, 0.8),
+        0 0 40px rgba(80, 130, 255, 0.6),
+        0 0 60px rgba(40, 90, 255, 0.45);
     }
 
     /* GENERIC SECTIONS */
@@ -183,32 +208,64 @@
       color: #8a94b8;
       margin-top: 60px;
     }
-    .hero-cta {
-  display: inline-block;
-  padding: 14px 34px;
-  margin-top: 30px;
-  font-size: 18px;
-  color: #b4cdff;
-  background: #1a243d;
-  border-radius: 10px;
-  border: 1px solid rgba(143, 191, 255, 0.4);
-  text-decoration: none;
-  letter-spacing: 1px;
-  box-shadow: 
-    0 0 12px rgba(137, 180, 255, 0.45),
-    0 0 28px rgba(80, 130, 255, 0.35),
-    0 0 40px rgba(40, 90, 255, 0.25);
-  transition: all 0.25s ease;
-}
 
-.hero-cta:hover {
-  background: #222c48;
-  transform: translateY(-2px);
-  box-shadow: 
-    0 0 16px rgba(137, 180, 255, 0.8),
-    0 0 40px rgba(80, 130, 255, 0.6),
-    0 0 60px rgba(40, 90, 255, 0.45);
-}
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .nav {
+        padding: 0 16px;
+        height: 56px;
+      }
+
+      .nav-links {
+        display: none; /* hide nav links, keep logo + login */
+      }
+
+      main {
+        padding-top: 90px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero-logo {
+        width: 110px;
+        margin-bottom: 14px;
+      }
+
+      .hero-title {
+        font-size: 28px;
+        letter-spacing: 5px;
+      }
+
+      .hero-tagline {
+        font-size: 15px;
+        margin-bottom: 20px;
+        padding: 0 10px;
+      }
+
+      .hero-cta {
+        padding: 10px 22px;
+        font-size: 15px;
+        margin-top: 20px;
+      }
+
+      .section {
+        padding: 48px 18px;
+      }
+
+      .section-grid {
+        grid-template-columns: 1fr; /* stack columns */
+        gap: 24px;
+      }
+
+      .section h2 {
+        font-size: 22px;
+      }
+
+      .section p,
+      .feature-list li {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 
@@ -233,18 +290,16 @@
 
   <!-- HERO SECTION -->
   <main>
-  <img src="logo.png" class="hero-logo" alt="Aervo Logo">
-  <h1 class="hero-title">AERVO</h1>
-  <p class="hero-tagline">A higher view of your business.</p>
+    <img src="logo.png" class="hero-logo" alt="Aervo Logo">
+    <h1 class="hero-title">AERVO</h1>
+    <p class="hero-tagline">A higher view of your business.</p>
 
- <a
-  href="mailto:omardavila20@gmail.com?subject=Aervo%20Early%20Access&body=Hi%20Omar,%0D%0A%0D%0AI'd%20love%20to%20join%20the%20Aervo%20beta%20and%20get%20a%20higher%20view%20of%20my%20business.%0D%0A%0D%0AHere%20are%20my%20details:%0D%0A-%20Business%20name:%0D%0A-%20Type%20of%20business:%0D%0A-%20Current%20POS/Platform:%0D%0A%0D%0AThanks!"
-  class="hero-cta"
->
-  Rise with Aervo
-</a>
-</main>
-    
+    <a
+      href="mailto:omardavila20@gmail.com?subject=Aervo%20Early%20Early%20Access&body=Hi%20Omar,%0D%0A%0D%0AI'd%20love%20to%20join%20the%20Aervo%20beta%20and%20get%20a%20higher%20view%20of%20my%20business.%0D%0A%0D%0AHere%20are%20my%20details:%0D%0A-%20Business%20name:%0D%0A-%20Type%20of%20business:%0D%0A-%20Current%20POS/Platform:%0D%0A%0D%0AThanks!"
+      class="hero-cta"
+    >
+      Rise with Aervo
+    </a>
   </main>
 
   <!-- PRODUCT SECTION -->
@@ -264,22 +319,22 @@
         </ul>
       </div>
 
-<div>
-  <p style="opacity:0.85; font-size:14px; margin-bottom:10px;">
-    <strong>Coming soon:</strong>
-  </p>
-  <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-    Direct integrations with the tools you already use: Shopify, Square, Stripe, and more.
-  </p>
-  <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-    Connect once and Aervo will automatically pull in your sales each day, so your dashboard and
-    AI answers are always based on fresh, real numbers.
-  </p>
-  <p style="opacity:0.8; font-size:14px; margin:0;">
-    Long term, Aervo will support multi-location and multi-channel data, giving you one place to
-    see how your whole business is performing.
-  </p>
-</div>
+      <div>
+        <p style="opacity:0.85; font-size:14px; margin-bottom:10px;">
+          <strong>Coming soon:</strong>
+        </p>
+        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
+          Direct integrations with the tools you already use: Shopify, Square, Stripe, and more.
+        </p>
+        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
+          Connect once and Aervo will automatically pull in your sales each day, so your dashboard and
+          AI answers are always based on fresh, real numbers.
+        </p>
+        <p style="opacity:0.8; font-size:14px; margin:0;">
+          Long term, Aervo will support multi-location and multi-channel data, giving you one place to
+          see how your whole business is performing.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -323,7 +378,7 @@
           <li>Direct feedback to the team</li>
         </ul>
         <p style="margin-top:18px;">
-          <a href="mailto:your@email.com" style="color:#8fbfff;">Request access</a>
+          <a href="mailto:omardavila20@gmail.com" style="color:#8fbfff;">Request access</a>
         </p>
       </div>
     </div>
