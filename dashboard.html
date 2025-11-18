@@ -401,6 +401,22 @@
       display: block;
     }
 
+    /* Love footer */
+    .love-footer {
+      margin-top: 40px;
+      padding: 22px 0;
+      text-align: center;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      color: #b4cdff;
+      font-weight: 500;
+      opacity: 0.95;
+      text-shadow:
+        0 0 6px rgba(137, 180, 255, 0.6),
+        0 0 14px rgba(80, 130, 255, 0.4),
+        0 0 26px rgba(40, 90, 255, 0.35);
+    }
+
     @media (max-width: 900px) {
       .layout {
         flex-direction: column;
@@ -633,6 +649,10 @@
           <!-- Filled by JS -->
         </div>
       </section>
+
+      <!-- LOVE FOOTER -->
+      <div id="loveFooter" class="love-footer"></div>
+
     </main>
   </div>
 
@@ -759,6 +779,10 @@
     };
 
     const data = demoData[email] || demoData["demo@aervo.com"];
+
+    // Love footer message
+    document.getElementById("loveFooter").textContent =
+      `✨ Aervo appreciates you, ${data.companyName} ❤️`;
 
     // Fill header + basics
     document.getElementById("companyLabel").textContent =
