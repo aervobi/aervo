@@ -1,379 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
-<style>
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #050817;
-    color: #d6def8;
-  }
-
-  /* Top nav */
-  .nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    background: rgba(5, 8, 23, 0.92);
-    backdrop-filter: blur(14px);
-    z-index: 10;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  }
-
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .nav-brand {
-    font-weight: 600;
-    letter-spacing: 4px;
-    font-size: 14px;
-    color: #8fbfff;
-  }
-
-  .nav-links a {
-    margin: 0 12px;
-    font-size: 14px;
-    text-decoration: none;
-    color: #a6b3dd;
-  }
-
-  .nav-links a:hover {
-    color: #dfe7ff;
-  }
-
-  .nav-right .nav-login-btn {
-    padding: 8px 16px;
-    border-radius: 999px;
-    border: 1px solid #3a4a7c;
-    text-decoration: none;
-    font-size: 14px;
-    color: #dfe7ff;
-  }
-
-  .nav-right .nav-login-btn:hover {
-    background: #1a2237;
-  }
-
-  /* Push content down so it isn’t under the nav */
-  main {
-    padding-top: 80px;
-  }
-
-  /* Generic section styling */
-  .section {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 80px 24px;
-  }
-
-  .section h2 {
-    font-size: 28px;
-    margin-bottom: 16px;
-    color: #e5ecff;
-  }
-
-  .section p {
-    color: #b6c3ee;
-    max-width: 640px;
-  }
-
-  .section-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    gap: 40px;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(143,191,255,0.4);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #8fbfff;
-    margin-bottom: 12px;
-  }
-
-  .feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 16px 0 0;
-  }
-
-  .feature-list li {
-    margin-bottom: 10px;
-    color: #c2cff6;
-  }
-
-  .pricing-cards {
-    display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-  }
-
-  .pricing-card {
-    background: radial-gradient(circle at top left, #202642, #0c101f);
-    border-radius: 14px;
-    padding: 24px;
-    border: 1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  }
-
-  .pricing-card h3 {
-    margin-top: 0;
-  }
-
-  .footer {
-    border-top: 1px solid rgba(255,255,255,0.06);
-    padding: 32px 24px 40px;
-    text-align: center;
-    font-size: 13px;
-    color: #8a94b8;
-  }
-</style>
-  <head>
-  <meta charset="UTF-8" />
-  <title>AERVO</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#020617" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aervo – A higher view of your business</title>
   <style>
-    ...
-    * {
-      box-sizing: border-box;
+    body {
       margin: 0;
-      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050817;
+      color: #d6def8;
     }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: #e5e7eb;
-      min-height: 100vh;
+    /* Top nav */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 32px;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(5, 8, 23, 0.92);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-brand {
+      font-weight: 600;
+      letter-spacing: 4px;
+      font-size: 14px;
+      color: #8fbfff;
+    }
+
+    .nav-links a {
+      margin: 0 12px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #a6b3dd;
+    }
+
+    .nav-links a:hover {
+      color: #dfe7ff;
+    }
+
+    .nav-login-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid #3a4a7c;
+      text-decoration: none;
+      font-size: 14px;
+      color: #dfe7ff;
+    }
+
+    .nav-login-btn:hover {
+      background: #1a2237;
+    }
+
+    /* Push main down so nav doesn’t cover it */
+    main {
+      padding-top: 120px;
       text-align: center;
     }
 
-    /* NAV / HAMBURGER */
-    .nav {
-      position: fixed;
-      top: 18px;
-      right: 22px;
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
+    /* HERO SECTION */
+    .hero-logo {
+      width: 160px;
+      margin-bottom: 20px;
     }
 
-    .menu-toggle {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0;
-      gap: 3px;
+    .hero-title {
+      color: #8fbfff;
+      letter-spacing: 6px;
+      font-size: 38px;
+      margin: 10px 0;
     }
 
-    .menu-toggle span {
-      display: block;
-      width: 14px;
-      height: 2px;
-      background: #e5e7eb;
-      border-radius: 999px;
+    .hero-tagline {
+      color: #b6c3ee;
+      font-size: 18px;
+      margin-bottom: 28px;
     }
 
-    .menu {
-      display: none;
-      flex-direction: column;
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 10px 12px;
-      min-width: 180px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    .menu.open {
-      display: flex;
-    }
-
-    .menu a {
-      color: #e5e7eb;
+    .hero-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #1a1f2b;
+      color: #b6c8f5;
+      border: 1px solid #2c3447;
+      border-radius: 6px;
+      font-size: 16px;
       text-decoration: none;
-      padding: 6px 4px;
-      border-radius: 8px;
-      transition: background 0.15s ease, color 0.15s ease;
+      box-shadow: 0 0 15px rgba(112, 150, 255, 0.15);
+      transition: all 0.25s ease;
     }
 
-    .menu a:hover {
-      background: rgba(56, 189, 248, 0.14);
-      color: #f9fafb;
+    .hero-btn:hover {
+      background: #222a38;
+      box-shadow: 0 0 25px rgba(112, 150, 255, 0.35);
+      transform: translateY(-1px);
     }
 
-    /* LOGO */
-    .logo-img {
-      width: 180px;
-      height: 180px;
-      object-fit: contain;
-      display: block;
-      animation: logoFloat 3s ease-in-out infinite;
-      margin-bottom: 24px;
+    /* GENERIC SECTIONS */
+    .section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 80px 24px;
+      text-align: left;
     }
 
-    @keyframes logoFloat {
-      0% {
-        transform: translateY(0) scale(1);
-        filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0));
-      }
-      50% {
-        transform: translateY(-8px) scale(1.03);
-        filter: drop-shadow(0 0 18px rgba(56, 189, 248, 0.5));
-      }
-      100% {
-        transform: translateY(0) scale(1);
-        filter: drop-shadow(0 0 0 rgba(56, 189, 248, 0));
-      }
+    .section h2 {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: #e5ecff;
     }
 
-    /* ANIMATED TITLE */
-    .brand-name {
-      font-size: 40px;
-      letter-spacing: 0.28em;
+    .section p {
+      color: #b6c3ee;
+      max-width: 640px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 40px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(143,191,255,0.4);
+      font-size: 11px;
       text-transform: uppercase;
-      background: linear-gradient(
-        120deg,
-        #22d3ee,
-        #38bdf8,
-        #a5f3fc,
-        #f9fafb
-      );
-      background-size: 250% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: titleGradient 1.8s ease-in-out infinite alternate;
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+      letter-spacing: 1px;
+      color: #8fbfff;
       margin-bottom: 12px;
     }
 
-    @keyframes titleGradient {
-      0% {
-        background-position: 0% 50%;
-      }
-      100% {
-        background-position: 100% 50%;
-      }
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
     }
 
-    .tagline {
-      font-size: 18px;
-      color: #94a3b8;
-      margin-top: 4px;
+    .feature-list li {
+      margin-bottom: 10px;
+      color: #c2cff6;
     }
 
-    @media (max-width: 640px) {
-      .logo-img {
-        width: 140px;
-        height: 140px;
-      }
-      .brand-name {
-        font-size: 32px;
-        letter-spacing: 0.25em;
-      }
-      .tagline {
-        font-size: 16px;
-      }
+    /* PRICING */
+    .pricing-cards {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    }
+
+    .pricing-card {
+      background: radial-gradient(circle at top left, #202642, #0c101f);
+      border-radius: 14px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 32px 24px 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #8a94b8;
+      margin-top: 60px;
     }
   </style>
 </head>
 
 <body>
-<header class="nav">
-  <div class="nav-left">
-    <span class="nav-brand">AERVO</span>
-  </div>
-  <nav class="nav-links">
-    <a href="#product">Product</a>
-    <a href="#how-it-works">How it works</a>
-    <a href="#who-its-for">Who it’s for</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#about">About</a>
-  </nav>
-  <div class="nav-right">
-    <a href="login.html" class="nav-login-btn">Login</a>
-  </div>
-</header>  
 
-  <!-- NAV -->
-  <nav class="nav">
-    <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-
-    <div class="menu" id="menu">
-      <a href="index.html">Home</a>
-      <a href="about.html">About AERVO</a>
-      <a href="promise.html">Promise to myself</a>
+  <!-- NAVIGATION BAR -->
+  <header class="nav">
+    <div class="nav-left">
+      <span class="nav-brand">AERVO</span>
     </div>
-  </nav>
+    <nav class="nav-links">
+      <a href="#product">Product</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#who-its-for">Who it’s for</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login-btn">Login</a>
+    </div>
+  </header>
 
-  <!-- MAIN LOGO + TITLE -->
-  <img src="logo.png" class="logo-img">
+  <!-- HERO SECTION -->
+  <main>
+    <img src="your-logo.png" class="hero-logo" alt="Aervo Logo">
+    <h1 class="hero-title">AERVO</h1>
+    <p class="hero-tagline">A higher view of your business.</p>
 
-  <div class="brand-name">AERVO</div>
+    <a href="login.html" class="hero-btn">Login to Aervo</a>
+  </main>
 
-  <div class="tagline">A higher view of your business.</div>
+  <!-- PRODUCT SECTION -->
+  <section id="product" class="section">
+    <div class="section-grid">
+      <div>
+        <div class="badge">Product</div>
+        <h2>Aervo shows you how your business is really doing.</h2>
+        <p>
+          Upload your sales data or connect your POS. Aervo turns your numbers into
+          simple, readable answers you can act on instantly.
+        </p>
+        <ul class="feature-list">
+          <li>See daily, weekly, and monthly performance at a glance.</li>
+          <li>Spot best sellers and slow movers automatically.</li>
+          <li>Ask “How did we do today?” and get instant answers.</li>
+        </ul>
+      </div>
+
+      <div>
+        <p style="opacity:0.8; font-size:14px;">
+          <strong>Coming soon:</strong><br>
+          Square, Shopify, Stripe, and more.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works" class="section">
+    <div class="badge">How it works</div>
+    <h2>From raw numbers to simple answers in three steps.</h2>
+    <ol class="feature-list">
+      <li><strong>Connect your data.</strong> Use a spreadsheet or a POS export.</li>
+      <li><strong>Ask Aervo anything.</strong> “What were my top items?” “Are we up this week?”</li>
+      <li><strong>Act with confidence.</strong> Make smarter decisions instantly.</li>
+    </ol>
+  </section>
+
+  <!-- WHO IT’S FOR -->
+  <section id="who-its-for" class="section">
+    <div class="badge">Who it’s for</div>
+    <h2>Built for business owners, not analysts.</h2>
+    <p>
+      Aervo makes it simple to understand your numbers even if you’re not a data expert.
+    </p>
+    <ul class="feature-list">
+      <li>Retail shops that want clear daily snapshots.</li>
+      <li>Cafés and small restaurants tracking best sellers.</li>
+      <li>Online stores that want fast clarity without spreadsheets.</li>
+    </ul>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="section">
+    <div class="badge">Pricing</div>
+    <h2>Start in beta while we build Aervo with you.</h2>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <h3>Early Access</h3>
+        <p style="font-size:28px; margin:8px 0;">Free</p>
+        <p>Help shape Aervo during beta.</p>
+        <ul class="feature-list">
+          <li>Dashboard access</li>
+          <li>AI-powered insights</li>
+          <li>Direct feedback to the team</li>
+        </ul>
+        <p style="margin-top:18px;">
+          <a href="mailto:your@email.com" style="color:#8fbfff;">Request access</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="badge">About Aervo</div>
+    <h2>A higher view for everyday business owners.</h2>
+    <p>
+      Aervo was built to give small businesses the same clarity big companies get —
+      without the complexity. Clean, simple insights you can use today.
+    </p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>Aervo © <span id="year"></span>. A higher view of your business.</div>
+  </footer>
 
   <script>
-    const toggle = document.querySelector(".menu-toggle");
-    const menu = document.getElementById("menu");
-
-    toggle.addEventListener("click", () => {
-      menu.classList.toggle("open");
-    });
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 
 </body>
-<a href="login.html" style="
-  display: inline-block;
-  padding: 12px 28px;
-  background: #1a1f2b;
-  color: #b6c8f5;
-  border: 1px solid #2c3447;
-  border-radius: 6px;
-  font-size: 16px;
-  text-decoration: none;
-  margin-top: 24px;
-  box-shadow: 0 0 15px rgba(112, 150, 255, 0.15);
-  transition: all 0.25s ease;
-">
-  Login to Aervo
-</a>
-
-<style>
-a[href="login.html"]:hover {
-  background: #222a38;
-  box-shadow: 0 0 25px rgba(112, 150, 255, 0.35);
-  transform: translateY(-1px);
-}
-</style>
+</html>
