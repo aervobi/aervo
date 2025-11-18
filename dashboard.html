@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aervo – Dashboard</title>
   <style>
+    .nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-logo {
+  width: 38px;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 6px rgba(140, 180, 255, 0.4));
+}
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -464,14 +475,20 @@
 <body>
 
   <!-- TOP NAV -->
-  <header class="nav">
-    <div class="nav-left">
-      <div class="nav-brand">AERVO</div>
-      <div class="nav-sub" id="companyLabel">Loading company…</div>
-    </div>
-    <div class="nav-right">
-      <button id="logoutBtn">Logout</button>
-    </div>
+ <header class="nav">
+  <div class="nav-left">
+    <div class="nav-brand">AERVO</div>
+    <div class="nav-sub" id="companyLabel">Loading company…</div>
+  </div>
+
+  <div class="nav-center">
+    <img src="logo.png" class="nav-logo" alt="Aervo Logo">
+  </div>
+
+  <div class="nav-right">
+    <button id="logoutBtn">Logout</button>
+  </div>
+</header>
   </header>
 
   <div class="layout">
