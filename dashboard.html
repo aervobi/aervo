@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aervo – Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050817;
+      color: #d6def8;
+    }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(5, 8, 23, 0.95);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-brand {
+      font-weight: 600;
+      letter-spacing: 4px;
+      font-size: 14px;
+      color: #8fbfff;
+    }
+
+    .nav-sub {
+      font-size: 12px;
+      color: #9ca7d6;
+    }
+
+    .nav-right button {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid #3a4a7c;
+      background: transparent;
+      color: #dfe7ff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .nav-right button:hover {
+      background: #1a2237;
+    }
+
+    main {
+      padding: 96px 32px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 24px;
+    }
+
+    .page-title h1 {
+      margin: 0;
+      font-size: 26px;
+      color: #e5ecff;
+    }
+
+    .page-title span {
+      font-size: 13px;
+      color: #9ca7d6;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #202642, #050817);
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+    }
+
+    .card h2 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #9ca7d6;
+    }
+
+    .card .value {
+      font-size: 22px;
+      margin: 4px 0;
+      color: #e5ecff;
+    }
+
+    .card .subtext {
+      font-size: 12px;
+      color: #8b94c0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .chat-card textarea {
+      width: 100%;
+      min-height: 80px;
+      resize: vertical;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #323a5c;
+      background: #050817;
+      color: #e5ecff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .chat-card textarea:focus {
+      outline: none;
+      border-color: #6e9bff;
+      box-shadow: 0 0 0 1px rgba(110,155,255,0.5);
+    }
+
+    .chat-card button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #1a243d;
+      color: #b4cdff;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow:
+        0 0 10px rgba(137,180,255,0.4),
+        0 0 24px rgba(80,130,255,0.3);
+    }
+
+    .chat-card button:hover {
+      background: #222c48;
+    }
+
+    .chat-output {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #c5cff6;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 8px;
+      min-height: 40px;
+    }
+
+    .list-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: #c2cff6;
+    }
+
+    .list-card li {
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        padding: 88px 16px 32px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <div>
+      <div class="nav-brand">AERVO</div>
+      <div class="nav-sub" id="companyLabel">Loading company…</div>
+    </div>
+    <div class="nav-right">
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title">
+      <h1 id="welcomeTitle">Welcome back</h1>
+      <span id="dateLabel"></span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Today’s revenue</h2>
+        <div class="value" id="todayRevenue">$0</div>
+        <div class="subtext" id="todayChange">–</div>
+      </div>
+      <div class="card">
+        <h2>This week</h2>
+        <div class="value" id="weekRevenue">$0</div>
+        <div class="subtext" id="weekChange">–</div>
+      </div>
+      <div class="card">
+        <h2>Top product</h2>
+        <div class="value" id="topProduct">–</div>
+        <div class="subtext" id="topProductDetail">–</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card chat-card">
+        <h2>Ask Aervo</h2>
+        <p class="subtext">This is a placeholder for your future AervoGPT. For now it just echoes a sample answer.</p>
+        <textarea id="questionInput" placeholder="Example: How did we do today compared to yesterday?"></textarea>
+        <button id="askBtn">Ask</button>
+        <div class="chat-output" id="chatOutput"></div>
+      </div>
+
+      <div class="card list-card">
+        <h2>Quick insights</h2>
+        <ul id="insightsList">
+          <!-- Filled by JS -->
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Get stored user or redirect to login
+    const rawUser = localStorage.getItem("aervoUser");
+    if (!rawUser) {
+      window.location.href = "login.html";
+    }
+
+    const user = rawUser ? JSON.parse(rawUser) : null;
+
+    // Fake per-user data
+    const demoData = {
+      "demo@aervo.com": {
+        todayRevenue: "$1,240",
+        todayChange: "+12% vs yesterday",
+        weekRevenue: "$8,920",
+        weekChange: "+7% week over week",
+        topProduct: "Iced Vanilla Latte",
+        topProductDetail: "142 sold in the last 7 days",
+        insights: [
+          "Mornings (8–11am) drive 60% of daily revenue.",
+          "Iced drinks outperform hot drinks by 18% this week.",
+          "Thursday and Friday are your strongest days."
+        ]
+      },
+      "owner@shopdemo.com": {
+        todayRevenue: "$2,730",
+        todayChange: "+5% vs yesterday",
+        weekRevenue: "$17,450",
+        weekChange: "+11% week over week",
+        topProduct: "Midnight Skyline Hoodie",
+        topProductDetail: "78 units sold this week",
+        insights: [
+          "Average order value is up 9% this week.",
+          "Hoodies and joggers are driving most of the lift.",
+          "Mobile orders account for 63% of sales."
+        ]
+      }
+    };
+
+    const email = user?.email || "";
+    const data = demoData[email] || demoData["demo@aervo.com"];
+
+    // Fill header
+    document.getElementById("companyLabel").textContent =
+      user.companyName + " · " + user.role;
+    document.getElementById("welcomeTitle").textContent =
+      "Welcome back, " + (user.companyName || "Aervo customer");
+
+    // Fill date
+    const now = new Date();
+    document.getElementById("dateLabel").textContent =
+      now.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+
+    // Fill metric cards
+    document.getElementById("todayRevenue").textContent = data.todayRevenue;
+    document.getElementById("todayChange").textContent = data.todayChange;
+    document.getElementById("weekRevenue").textContent = data.weekRevenue;
+    document.getElementById("weekChange").textContent = data.weekChange;
+    document.getElementById("topProduct").textContent = data.topProduct;
+    document.getElementById("topProductDetail").textContent = data.topProductDetail;
+
+    // Fill insights
+    const insightsList = document.getElementById("insightsList");
+    data.insights.forEach(text => {
+      const li = document.createElement("li");
+      li.textContent = "• " + text;
+      insightsList.appendChild(li);
+    });
+
+    // Fake Ask AervoGPT
+    document.getElementById("askBtn").addEventListener("click", () => {
+      const q = document.getElementById("questionInput").value.trim();
+      const out = document.getElementById("chatOutput");
+      if (!q) {
+        out.textContent = "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+        return;
+      }
+      out.textContent = "If this were connected to your real data, Aervo would answer:\n\n“Based on your latest numbers, you're trending "
+        + data.todayChange.toLowerCase()
+        + " and your top product is " + data.topProduct + ".";
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("aervoUser");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
