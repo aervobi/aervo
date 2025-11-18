@@ -5,17 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aervo – Dashboard</title>
   <style>
-    .nav-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.nav-logo {
-  width: 38px;
-  opacity: 0.95;
-  filter: drop-shadow(0 0 6px rgba(140, 180, 255, 0.4));
-}
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -55,6 +44,19 @@
     .nav-sub {
       font-size: 11px;
       color: #9ca7d6;
+    }
+
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-logo {
+      width: 38px;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 10px rgba(137,180,255,0.8))
+              drop-shadow(0 0 20px rgba(80,130,255,0.6));
     }
 
     .nav-right button {
@@ -266,7 +268,7 @@
       margin-bottom: 6px;
     }
 
-    /* Products table (simple) */
+    /* Products / customers tables */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -475,20 +477,19 @@
 <body>
 
   <!-- TOP NAV -->
- <header class="nav">
-  <div class="nav-left">
-    <div class="nav-brand">AERVO</div>
-    <div class="nav-sub" id="companyLabel">Loading company…</div>
-  </div>
+  <header class="nav">
+    <div class="nav-left">
+      <div class="nav-brand">AERVO</div>
+      <div class="nav-sub" id="companyLabel">Loading company…</div>
+    </div>
 
-  <div class="nav-center">
-    <img src="logo.png" class="nav-logo" alt="Aervo Logo">
-  </div>
+    <div class="nav-center">
+      <img src="logo.png" class="nav-logo" alt="Aervo Logo">
+    </div>
 
-  <div class="nav-right">
-    <button id="logoutBtn">Logout</button>
-  </div>
-</header>
+    <div class="nav-right">
+      <button id="logoutBtn">Logout</button>
+    </div>
   </header>
 
   <div class="layout">
@@ -511,6 +512,10 @@
         <div class="nav-item" data-section="trends">
           <span class="icon">📈</span>
           <span>Trends</span>
+        </div>
+        <div class="nav-item" data-section="customers">
+          <span class="icon">👥</span>
+          <span>Customers</span>
         </div>
         <div class="nav-item" data-section="compare">
           <span class="icon">⚖️</span>
@@ -630,6 +635,37 @@
         </div>
       </section>
 
+      <!-- CUSTOMERS SECTION -->
+      <section id="section-customers" class="page-section">
+        <div class="page-title">
+          <h1>Customers</h1>
+          <span id="customersSubtitle">Who’s driving your sales.</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h2>Customer segments</h2>
+            <table id="customersTable">
+              <thead>
+                <tr>
+                  <th>Segment</th>
+                  <th>Share of sales</th>
+                  <th>Avg. ticket</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card list-card">
+            <h2>Customer insights</h2>
+            <ul id="customerNotes"></ul>
+          </div>
+        </div>
+      </section>
+
       <!-- COMPARE SECTION -->
       <section id="section-compare" class="page-section">
         <div class="page-title">
@@ -737,6 +773,18 @@
             text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
             time: "Yesterday"
           }
+        ],
+        customerSegments: [
+          { name: "Morning regulars", share: "38%", ticket: "$11.40" },
+          { name: "Afternoon students", share: "24%", ticket: "$8.60" },
+          { name: "Remote workers", share: "18%", ticket: "$13.20" },
+          { name: "Weekend families", share: "20%", ticket: "$15.80" }
+        ],
+        customerNotes: [
+          "Loyalty-style perks for morning regulars could lift frequency.",
+          "Students respond well to limited-time cold drink promos.",
+          "Remote workers drive higher average tickets when staying longer.",
+          "Weekend family bundles (drinks + pastry) could raise order size."
         ]
       },
       "owner@shopdemo.com": {
@@ -791,6 +839,18 @@
             text: "Cart size increases when Neon Cap is featured in the hero banner.",
             time: "Yesterday"
           }
+        ],
+        customerSegments: [
+          { name: "Urban creatives", share: "42%", ticket: "$86.20" },
+          { name: "College students", share: "28%", ticket: "$64.10" },
+          { name: "Online drops", share: "18%", ticket: "$112.40" },
+          { name: "Tourist traffic", share: "12%", ticket: "$73.50" }
+        ],
+        customerNotes: [
+          "Urban creatives respond strongly to limited drops and collabs.",
+          "Students are price-sensitive; bundles and tiered discounts perform well.",
+          "Online drop customers buy quickly when inventory looks scarce.",
+          "Tourist traffic spikes on weekends and holidays—great time for in-store events."
         ]
       }
     };
@@ -903,6 +963,25 @@
       trendHighlights.appendChild(li);
     });
 
+    // Customers section
+    const customersTableBody = document.querySelector("#customersTable tbody");
+    data.customerSegments.forEach(seg => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${seg.name}</td>
+        <td>${seg.share}</td>
+        <td>${seg.ticket}</td>
+      `;
+      customersTableBody.appendChild(tr);
+    });
+
+    const customerNotesList = document.getElementById("customerNotes");
+    data.customerNotes.forEach(text => {
+      const li = document.createElement("li");
+      li.textContent = "• " + text;
+      customerNotesList.appendChild(li);
+    });
+
     // Compare section
     document.getElementById("compareThisWeek").textContent = data.compareThisWeek;
     document.getElementById("compareThisDelta").textContent = data.compareThisDelta;
@@ -928,6 +1007,7 @@
       overview: document.getElementById("section-overview"),
       products: document.getElementById("section-products"),
       trends: document.getElementById("section-trends"),
+      customers: document.getElementById("section-customers"),
       compare: document.getElementById("section-compare"),
       notifications: document.getElementById("section-notifications")
     };
