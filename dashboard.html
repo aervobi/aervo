@@ -12,20 +12,26 @@
       color: #d6def8;
     }
 
+    /* Top nav */
     .nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 64px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
-      background: rgba(5, 8, 23, 0.95);
+      padding: 0 20px;
+      background: rgba(5, 8, 23, 0.96);
       backdrop-filter: blur(14px);
-      z-index: 10;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      z-index: 20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-left {
+      display: flex;
+      flex-direction: column;
     }
 
     .nav-brand {
@@ -36,7 +42,7 @@
     }
 
     .nav-sub {
-      font-size: 12px;
+      font-size: 11px;
       color: #9ca7d6;
     }
 
@@ -46,7 +52,7 @@
       border: 1px solid #3a4a7c;
       background: transparent;
       color: #dfe7ff;
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
     }
 
@@ -54,8 +60,74 @@
       background: #1a2237;
     }
 
-    main {
-      padding: 96px 32px 40px;
+    /* Layout with sidebar */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 56px; /* space for nav */
+    }
+
+    .sidebar {
+      width: 220px;
+      padding: 18px 14px 20px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      background: radial-gradient(circle at top left, #121628, #050817);
+      box-shadow: 8px 0 30px rgba(0,0,0,0.5);
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7f8ab8;
+      margin-bottom: 10px;
+    }
+
+    .nav-section {
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #b3c0f0;
+      cursor: pointer;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+    }
+
+    .nav-item span.icon {
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    .nav-item.active {
+      background: #151a2a;
+      border-color: rgba(143,191,255,0.4);
+      box-shadow:
+        0 0 10px rgba(137,180,255,0.4),
+        0 0 20px rgba(40,90,255,0.4);
+      color: #e5ecff;
+    }
+
+    .nav-item:hover:not(.active) {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .sidebar-footer {
+      margin-top: 30px;
+      font-size: 11px;
+      color: #67709d;
+    }
+
+    /* Main area */
+    .main {
+      flex: 1;
+      padding: 24px 28px 40px;
       max-width: 1100px;
       margin: 0 auto;
     }
@@ -71,7 +143,7 @@
 
     .page-title h1 {
       margin: 0;
-      font-size: 26px;
+      font-size: 24px;
       color: #e5ecff;
     }
 
@@ -80,11 +152,19 @@
       color: #9ca7d6;
     }
 
-    .grid {
+    /* Generic cards */
+    .grid-3 {
       display: grid;
-      gap: 18px;
+      gap: 16px;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      margin-bottom: 24px;
     }
 
     .card {
@@ -114,13 +194,7 @@
       color: #8b94c0;
     }
 
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
+    /* Ask Aervo card */
     .chat-card textarea {
       width: 100%;
       min-height: 80px;
@@ -165,8 +239,10 @@
       border-top: 1px solid rgba(255,255,255,0.06);
       padding-top: 8px;
       min-height: 40px;
+      white-space: pre-line;
     }
 
+    /* Lists */
     .list-card ul {
       list-style: none;
       padding: 0;
@@ -179,16 +255,191 @@
       margin-bottom: 6px;
     }
 
+    /* Products table (simple) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 6px 4px;
+      text-align: left;
+    }
+
+    th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #9ca7d6;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    tr + tr td {
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .pill-good {
+      background: rgba(52, 211, 153, 0.14);
+      color: #6ee7b7;
+    }
+
+    .pill-warn {
+      background: rgba(251,191,36,0.12);
+      color: #facc15;
+    }
+
+    .pill-bad {
+      background: rgba(248,113,113,0.14);
+      color: #fecaca;
+    }
+
+    /* Simple fake dark chart */
+    .chart {
+      margin-top: 10px;
+      background: radial-gradient(circle at top, #192238, #050817);
+      border-radius: 12px;
+      padding: 14px 12px 16px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 120px;
+      margin-bottom: 10px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      border-radius: 6px 6px 2px 2px;
+      background: linear-gradient(to top, #3045ff, #7ea8ff);
+      box-shadow: 0 0 12px rgba(80,130,255,0.7);
+      position: relative;
+    }
+
+    .chart-bar span {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #8b94c0;
+      padding: 0 2px;
+    }
+
+    /* Compare module */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .compare-box {
+      background: rgba(15,21,39,0.9);
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .compare-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #9ca7d6;
+    }
+
+    .compare-value {
+      font-size: 18px;
+      margin-top: 4px;
+    }
+
+    .compare-delta {
+      font-size: 12px;
+      color: #6ee7b7;
+    }
+
+    /* Notifications */
+    .notification {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(15,21,39,0.9);
+      border: 1px solid rgba(255,255,255,0.05);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .notification small {
+      display: block;
+      font-size: 11px;
+      color: #8b94c0;
+      margin-top: 2px;
+    }
+
+    /* Page sections (tabs) */
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
     @media (max-width: 900px) {
-      main {
-        padding: 88px 16px 32px;
+      .layout {
+        flex-direction: column;
       }
 
-      .grid {
+      .sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 12px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+
+      .nav-section {
+        display: flex;
+        gap: 6px;
+        margin-right: 16px;
+        margin-bottom: 0;
+      }
+
+      .sidebar-title,
+      .sidebar-footer {
+        display: none;
+      }
+
+      .nav-item {
+        white-space: nowrap;
+      }
+
+      .main {
+        padding: 18px 16px 32px;
+      }
+
+      .grid-3 {
         grid-template-columns: 1fr;
       }
 
-      .two-col {
+      .grid-2 {
         grid-template-columns: 1fr;
       }
     }
@@ -196,8 +447,9 @@
 </head>
 <body>
 
+  <!-- TOP NAV -->
   <header class="nav">
-    <div>
+    <div class="nav-left">
       <div class="nav-brand">AERVO</div>
       <div class="nav-sub" id="companyLabel">Loading company…</div>
     </div>
@@ -206,60 +458,199 @@
     </div>
   </header>
 
-  <main>
-    <div class="page-title">
-      <h1 id="welcomeTitle">Welcome back</h1>
-      <span id="dateLabel"></span>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <h2>Today’s revenue</h2>
-        <div class="value" id="todayRevenue">$0</div>
-        <div class="subtext" id="todayChange">–</div>
-      </div>
-      <div class="card">
-        <h2>This week</h2>
-        <div class="value" id="weekRevenue">$0</div>
-        <div class="subtext" id="weekChange">–</div>
-      </div>
-      <div class="card">
-        <h2>Top product</h2>
-        <div class="value" id="topProduct">–</div>
-        <div class="subtext" id="topProductDetail">–</div>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card chat-card">
-        <h2>Ask Aervo</h2>
-        <p class="subtext">This is a placeholder for your future AervoGPT. For now it just echoes a sample answer.</p>
-        <textarea id="questionInput" placeholder="Example: How did we do today compared to yesterday?"></textarea>
-        <button id="askBtn">Ask</button>
-        <div class="chat-output" id="chatOutput"></div>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="nav-section">
+        <div class="sidebar-title">Overview</div>
+        <div class="nav-item active" data-section="overview">
+          <span class="icon">📊</span>
+          <span>Overview</span>
+        </div>
       </div>
 
-      <div class="card list-card">
-        <h2>Quick insights</h2>
-        <ul id="insightsList">
+      <div class="nav-section">
+        <div class="sidebar-title">Deep dive</div>
+        <div class="nav-item" data-section="products">
+          <span class="icon">📦</span>
+          <span>Products</span>
+        </div>
+        <div class="nav-item" data-section="trends">
+          <span class="icon">📈</span>
+          <span>Trends</span>
+        </div>
+        <div class="nav-item" data-section="compare">
+          <span class="icon">⚖️</span>
+          <span>Compare periods</span>
+        </div>
+        <div class="nav-item" data-section="notifications">
+          <span class="icon">🔔</span>
+          <span>Notifications</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        Early Aervo demo · Not real production data.
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <!-- OVERVIEW SECTION -->
+      <section id="section-overview" class="page-section active">
+        <div class="page-title">
+          <h1 id="welcomeTitle">Welcome back</h1>
+          <span id="dateLabel"></span>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h2>Today’s revenue</h2>
+            <div class="value" id="todayRevenue">$0</div>
+            <div class="subtext" id="todayChange">–</div>
+          </div>
+          <div class="card">
+            <h2>This week</h2>
+            <div class="value" id="weekRevenue">$0</div>
+            <div class="subtext" id="weekChange">–</div>
+          </div>
+          <div class="card">
+            <h2>Top product</h2>
+            <div class="value" id="topProduct">–</div>
+            <div class="subtext" id="topProductDetail">–</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card chat-card">
+            <h2>Ask Aervo</h2>
+            <p class="subtext">This is a placeholder for your future AervoGPT. For now it gives a sample answer based on your demo data.</p>
+            <textarea id="questionInput" placeholder="Example: How did we do today compared to yesterday?"></textarea>
+            <button id="askBtn">Ask</button>
+            <div class="chat-output" id="chatOutput"></div>
+          </div>
+
+          <div class="card list-card">
+            <h2>Quick insights</h2>
+            <ul id="insightsList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS SECTION -->
+      <section id="section-products" class="page-section">
+        <div class="page-title">
+          <h1>Products</h1>
+          <span id="productsSubtitle">Top movers and low-stock alerts.</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h2>Top products (last 7 days)</h2>
+            <table id="productsTable">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Units</th>
+                  <th>Revenue</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card list-card">
+            <h2>Inventory notes</h2>
+            <ul id="inventoryNotes"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRENDS SECTION -->
+      <section id="section-trends" class="page-section">
+        <div class="page-title">
+          <h1>Trends</h1>
+          <span id="trendsSubtitle">Simple view of recent performance.</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h2>Revenue by day</h2>
+            <p class="subtext" id="trendSummary"></p>
+            <div class="chart">
+              <div class="chart-bars" id="chartBars">
+                <!-- Bars filled by JS -->
+              </div>
+              <div class="chart-labels" id="chartLabels">
+                <!-- Labels filled by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="card list-card">
+            <h2>Pattern highlights</h2>
+            <ul id="trendHighlights"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPARE SECTION -->
+      <section id="section-compare" class="page-section">
+        <div class="page-title">
+          <h1>Compare periods</h1>
+          <span id="compareSubtitle">See how key metrics moved.</span>
+        </div>
+
+        <div class="card">
+          <h2>Week over week</h2>
+          <p class="subtext" id="compareSummary"></p>
+          <div class="compare-grid">
+            <div class="compare-box">
+              <div class="compare-label">This week</div>
+              <div class="compare-value" id="compareThisWeek">$0</div>
+              <div class="compare-delta" id="compareThisDelta">–</div>
+            </div>
+            <div class="compare-box">
+              <div class="compare-label">Last week</div>
+              <div class="compare-value" id="compareLastWeek">$0</div>
+              <div class="subtext" id="compareLastNotes">–</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOTIFICATIONS SECTION -->
+      <section id="section-notifications" class="page-section">
+        <div class="page-title">
+          <h1>Notifications</h1>
+          <span>What Aervo wants you to pay attention to.</span>
+        </div>
+
+        <div id="notificationsList">
           <!-- Filled by JS -->
-        </ul>
-      </div>
-    </div>
-  </main>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script>
-    // Get stored user or redirect to login
+    // Protect route: require login
     const rawUser = localStorage.getItem("aervoUser");
     if (!rawUser) {
       window.location.href = "login.html";
     }
 
     const user = rawUser ? JSON.parse(rawUser) : null;
+    const email = user?.email || "";
 
-    // Fake per-user data
+    // Demo per-user data
     const demoData = {
       "demo@aervo.com": {
+        companyName: "Luna Coffee Co.",
+        role: "Owner",
         todayRevenue: "$1,240",
         todayChange: "+12% vs yesterday",
         weekRevenue: "$8,920",
@@ -270,9 +661,50 @@
           "Mornings (8–11am) drive 60% of daily revenue.",
           "Iced drinks outperform hot drinks by 18% this week.",
           "Thursday and Friday are your strongest days."
+        ],
+        products: [
+          { name: "Iced Vanilla Latte", units: 142, revenue: "$712", status: "good" },
+          { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
+          { name: "Blueberry Muffin", units: 64, revenue: "$192", status: "warn" },
+          { name: "Matcha Latte", units: 37, revenue: "$185", status: "warn" },
+          { name: "Bagel w/ Cream Cheese", units: 29, revenue: "$116", status: "bad" }
+        ],
+        inventoryNotes: [
+          "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
+          "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
+          "Matcha Latte is gaining steady traction with younger customers."
+        ],
+        trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
+        trendSummary: "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
+        trendHighlights: [
+          "Friday is your best day, driven largely by iced drinks and morning traffic.",
+          "Weekends hold steady but don’t exceed Friday volumes.",
+          "Early-week promos could help smooth out Monday/Tuesday dips."
+        ],
+        compareThisWeek: "$8,920",
+        compareThisDelta: "+7% vs last week",
+        compareLastWeek: "$8,330",
+        compareLastNotes: "Last week was affected by a slower Monday and Tuesday.",
+        compareSummary: "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
+        notifications: [
+          {
+            text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
+            time: "2 hours ago"
+          },
+          {
+            text: "Blueberry Muffin is close to selling out for today.",
+            time: "4 hours ago"
+          },
+          {
+            text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
+            time: "Yesterday"
+          }
         ]
       },
       "owner@shopdemo.com": {
+        companyName: "Skyline Streetwear",
+        role: "Owner",
         todayRevenue: "$2,730",
         todayChange: "+5% vs yesterday",
         weekRevenue: "$17,450",
@@ -283,25 +715,62 @@
           "Average order value is up 9% this week.",
           "Hoodies and joggers are driving most of the lift.",
           "Mobile orders account for 63% of sales."
+        ],
+        products: [
+          { name: "Midnight Skyline Hoodie", units: 78, revenue: "$5,460", status: "good" },
+          { name: "City Lights Joggers", units: 54, revenue: "$2,160", status: "good" },
+          { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
+          { name: "Oversize Tee – Cloud", units: 33, revenue: "$660", status: "warn" },
+          { name: "Arch Logo Beanie", units: 18, revenue: "$270", status: "bad" }
+        ],
+        inventoryNotes: [
+          "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
+          "Neon Cap sells steadily but infrequently in pairs.",
+          "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory."
+        ],
+        trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
+        trendSummary: "Sales peak on Friday and Saturday with strong mid-week performance.",
+        trendHighlights: [
+          "Friday remains your biggest revenue day, followed closely by Saturday.",
+          "Mid-week drops are small, suggesting consistent demand.",
+          "Drops align with weather changes; hoodies spike on cooler days."
+        ],
+        compareThisWeek: "$17,450",
+        compareThisDelta: "+11% vs last week",
+        compareLastWeek: "$15,720",
+        compareLastNotes: "Last week included one slower promotional day.",
+        compareSummary: "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
+        notifications: [
+          {
+            text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
+            time: "1 hour ago"
+          },
+          {
+            text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
+            time: "Today"
+          },
+          {
+            text: "Cart size increases when Neon Cap is featured in the hero banner.",
+            time: "Yesterday"
+          }
         ]
       }
     };
 
-    const email = user?.email || "";
     const data = demoData[email] || demoData["demo@aervo.com"];
 
-    // Fill header
+    // Fill header + basics
     document.getElementById("companyLabel").textContent =
-      user.companyName + " · " + user.role;
+      data.companyName + " · " + data.role;
     document.getElementById("welcomeTitle").textContent =
-      "Welcome back, " + (user.companyName || "Aervo customer");
+      "Welcome back, " + data.companyName;
 
-    // Fill date
     const now = new Date();
     document.getElementById("dateLabel").textContent =
       now.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
 
-    // Fill metric cards
+    // Overview metrics
     document.getElementById("todayRevenue").textContent = data.todayRevenue;
     document.getElementById("todayChange").textContent = data.todayChange;
     document.getElementById("weekRevenue").textContent = data.weekRevenue;
@@ -309,7 +778,7 @@
     document.getElementById("topProduct").textContent = data.topProduct;
     document.getElementById("topProductDetail").textContent = data.topProductDetail;
 
-    // Fill insights
+    // Insights
     const insightsList = document.getElementById("insightsList");
     data.insights.forEach(text => {
       const li = document.createElement("li");
@@ -317,7 +786,7 @@
       insightsList.appendChild(li);
     });
 
-    // Fake Ask AervoGPT
+    // Ask Aervo fake answer
     document.getElementById("askBtn").addEventListener("click", () => {
       const q = document.getElementById("questionInput").value.trim();
       const out = document.getElementById("chatOutput");
@@ -325,9 +794,117 @@
         out.textContent = "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
         return;
       }
-      out.textContent = "If this were connected to your real data, Aervo would answer:\n\n“Based on your latest numbers, you're trending "
-        + data.todayChange.toLowerCase()
-        + " and your top product is " + data.topProduct + ".";
+      out.textContent =
+        "If this were connected to your real data, Aervo would answer something like:\n\n" +
+        "“Based on your latest numbers, you're trending " +
+        data.todayChange.toLowerCase() +
+        " and your top product is " +
+        data.topProduct +
+        ". This week’s revenue is " +
+        data.weekRevenue +
+        " and is " +
+        data.weekChange.toLowerCase() +
+        ".”";
+    });
+
+    // Products section
+    const productsTableBody = document.querySelector("#productsTable tbody");
+    data.products.forEach(p => {
+      const tr = document.createElement("tr");
+      const statusClass =
+        p.status === "good" ? "pill-good" :
+        p.status === "warn" ? "pill-warn" : "pill-bad";
+      const statusText =
+        p.status === "good" ? "Healthy" :
+        p.status === "warn" ? "Watch" : "At risk";
+
+      tr.innerHTML = `
+        <td>${p.name}</td>
+        <td>${p.units}</td>
+        <td>${p.revenue}</td>
+        <td><span class="pill ${statusClass}">${statusText}</span></td>
+      `;
+      productsTableBody.appendChild(tr);
+    });
+
+    const inventoryList = document.getElementById("inventoryNotes");
+    data.inventoryNotes.forEach(text => {
+      const li = document.createElement("li");
+      li.textContent = "• " + text;
+      inventoryList.appendChild(li);
+    });
+
+    // Trends section
+    document.getElementById("trendSummary").textContent = data.trendSummary;
+
+    const chartBars = document.getElementById("chartBars");
+    const chartLabels = document.getElementById("chartLabels");
+    const maxVal = Math.max(...data.trendValues);
+
+    data.trendValues.forEach((val, idx) => {
+      const heightPercent = (val / maxVal) * 100;
+
+      const bar = document.createElement("div");
+      bar.className = "chart-bar";
+      bar.style.height = heightPercent + "%";
+      bar.innerHTML = `<span>${val.toLocaleString()}</span>`;
+      chartBars.appendChild(bar);
+
+      const label = document.createElement("div");
+      label.textContent = data.trendDays[idx];
+      chartLabels.appendChild(label);
+    });
+
+    const trendHighlights = document.getElementById("trendHighlights");
+    data.trendHighlights.forEach(text => {
+      const li = document.createElement("li");
+      li.textContent = "• " + text;
+      trendHighlights.appendChild(li);
+    });
+
+    // Compare section
+    document.getElementById("compareThisWeek").textContent = data.compareThisWeek;
+    document.getElementById("compareThisDelta").textContent = data.compareThisDelta;
+    document.getElementById("compareLastWeek").textContent = data.compareLastWeek;
+    document.getElementById("compareLastNotes").textContent = data.compareLastNotes;
+    document.getElementById("compareSummary").textContent = data.compareSummary;
+
+    // Notifications section
+    const notificationsList = document.getElementById("notificationsList");
+    data.notifications.forEach(n => {
+      const div = document.createElement("div");
+      div.className = "notification";
+      div.innerHTML = `
+        <div>${n.text}</div>
+        <small>${n.time}</small>
+      `;
+      notificationsList.appendChild(div);
+    });
+
+    // Sidebar navigation logic
+    const navItems = document.querySelectorAll(".nav-item");
+    const sections = {
+      overview: document.getElementById("section-overview"),
+      products: document.getElementById("section-products"),
+      trends: document.getElementById("section-trends"),
+      compare: document.getElementById("section-compare"),
+      notifications: document.getElementById("section-notifications")
+    };
+
+    navItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const sectionName = item.getAttribute("data-section");
+
+        // Active state on sidebar
+        navItems.forEach(n => n.classList.remove("active"));
+        item.classList.add("active");
+
+        // Show matching section
+        Object.keys(sections).forEach(key => {
+          sections[key].classList.remove("active");
+        });
+        sections[sectionName].classList.add("active");
+      });
     });
 
     // Logout
