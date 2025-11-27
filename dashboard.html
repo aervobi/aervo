@@ -507,7 +507,9 @@
   </header>
 
   <!-- Backend Status -->
-  <div id="backend-status" style="
+  <div id="backend-status" 
+  style="
+    display:none;
     padding: 10px;
     background: #ffffff10;
     border: 1px solid #ffffff30;
@@ -516,6 +518,7 @@
     font-weight: bold;
     color: #d6def8;">
     Checking backend…
+
   </div>
 
   <div class="layout">
@@ -759,6 +762,11 @@
       const rawUser =
         localStorage.getItem("aervo_user") ||
         localStorage.getItem("aervoUser");
+        // Show backend status only for Aervo Admin
+const backendBox = document.getElementById("backend-status");
+if (user?.email === "aervoadmin@aervoapp.com") {
+  backendBox.style.display = "block";
+}
 
       if (!rawUser) {
         window.location.href = "login.html";
