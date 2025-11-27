@@ -3,89 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aervo – Create your account</title>
+  <title>Aervo – Create account</title>
   <link rel="icon" type="image/png" href="favicon.png" />
 
   <style>
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #050817;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: #020618;
       color: #d6def8;
-    }
-
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
-      background: rgba(5, 8, 23, 0.92);
-      backdrop-filter: blur(14px);
-      z-index: 10;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    }
-
-    .nav-brand {
-      font-weight: 600;
-      letter-spacing: 4px;
-      font-size: 14px;
-      color: #8fbfff;
-    }
-
-    .nav-links a {
-      margin: 0 12px;
-      font-size: 14px;
-      text-decoration: none;
-      color: #a6b3dd;
-    }
-
-    .nav-links a:hover {
-      color: #dfe7ff;
-    }
-
-    .nav-login-btn {
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid #3a4a7c;
-      text-decoration: none;
-      font-size: 14px;
-      color: #dfe7ff;
-    }
-
-    .nav-login-btn:hover {
-      background: #1a2237;
-    }
-
-    main {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-top: 64px;
+    }
+
+    .nav-back {
+      position: fixed;
+      top: 18px;
+      left: 20px;
+      font-size: 12px;
+    }
+
+    .nav-back a {
+      color: #9ca7d6;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .nav-back a:hover {
+      border-color: #3a4a7c;
+      color: #dfe7ff;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
     }
 
     .card {
-      background: radial-gradient(circle at top left, #1a2237, #050817);
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      padding: 32px 28px 28px;
-      width: 100%;
-      max-width: 420px;
+      background: radial-gradient(circle at top left, #1b2338, #020618);
+      border-radius: 22px;
+      border: 1px solid rgba(148, 163, 255, 0.18);
+      box-shadow:
+        0 24px 80px rgba(15, 23, 42, 1),
+        0 0 60px rgba(37, 99, 235, 0.35);
+      padding: 32px 32px 26px;
     }
 
-    .card h1 {
+    h1 {
       margin: 0 0 4px;
-      font-size: 24px;
-      color: #e5ecff;
+      font-size: 26px;
+      color: #f9fafb;
     }
 
-    .card p {
+    .subtitle {
       margin: 0 0 24px;
       font-size: 14px;
       color: #9ca7d6;
@@ -100,62 +77,57 @@
 
     input {
       width: 100%;
-      padding: 10px 11px;
-      margin-bottom: 14px;
-      border-radius: 8px;
-      border: 1px solid #323a5c;
-      background: #050817;
+      padding: 11px 12px;
+      margin-bottom: 16px;
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
       color: #e5ecff;
       font-size: 14px;
       box-sizing: border-box;
     }
 
+    input::placeholder {
+      color: #6b7280;
+    }
+
     input:focus {
       outline: none;
-      border-color: #6e9bff;
-      box-shadow: 0 0 0 1px rgba(110, 155, 255, 0.5);
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
     }
 
     button {
       width: 100%;
       padding: 11px 0;
-      border-radius: 10px;
+      border-radius: 999px;
       border: none;
-      background: #1a243d;
-      color: #b4cdff;
+      background: radial-gradient(circle at top, #1d2a4a, #12213a);
+      color: #e5ecff;
       font-size: 15px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       cursor: pointer;
       box-shadow:
-        0 0 12px rgba(137, 180, 255, 0.4),
-        0 0 26px rgba(80, 130, 255, 0.3);
-      transition: all 0.2s ease;
+        0 0 18px rgba(129, 140, 248, 0.6),
+        0 0 46px rgba(37, 99, 235, 0.55);
+      transition: all 0.18s ease;
     }
 
     button:hover {
-      background: #222c48;
       transform: translateY(-1px);
       box-shadow:
-        0 0 16px rgba(137, 180, 255, 0.8),
-        0 0 40px rgba(80, 130, 255, 0.6);
-    }
-
-    .error {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #ff7b7b;
-      min-height: 18px;
+        0 0 24px rgba(129, 140, 248, 0.9),
+        0 0 70px rgba(37, 99, 235, 0.75);
     }
 
     .helper {
+      margin-top: 12px;
       font-size: 12px;
-      color: #8b94c0;
-      margin-top: 10px;
-      line-height: 1.5;
+      color: #9ca7d6;
     }
 
     .helper a {
-      color: #8fbfff;
+      color: #93c5fd;
       text-decoration: none;
     }
 
@@ -163,58 +135,73 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 768px) {
-      .nav {
-        padding: 0 16px;
-        height: 56px;
-      }
+    .error {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #fecaca;
+      min-height: 18px;
+    }
 
-      .nav-links {
-        display: none;
-      }
+    .success {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #bbf7d0;
+      min-height: 18px;
+    }
 
-      main {
-        padding: 80px 16px 24px;
+    @media (max-width: 640px) {
+      .shell {
+        padding: 16px;
       }
 
       .card {
-        padding: 24px 20px 20px;
+        padding: 24px 22px 22px;
       }
     }
   </style>
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-left">
-      <span class="nav-brand">AERVO</span>
-    </div>
-    <nav class="nav-links">
-      <a href="index.html#product">Product</a>
-      <a href="index.html#pricing">Pricing</a>
-    </nav>
-    <div class="nav-right">
-      <a href="login.html" class="nav-login-btn">Log in</a>
-    </div>
-  </header>
+  <div class="nav-back">
+    <a href="index.html">← Back to Aervo</a>
+  </div>
 
-  <main>
+  <div class="shell">
     <div class="card">
       <h1>Create your Aervo account</h1>
-      <p>Tell us a bit about you and your business to get started.</p>
+      <p class="subtitle">
+        Tell us a bit about you and your business to get started.
+      </p>
 
       <form id="signup-form">
         <label for="companyName">Business name</label>
-        <input id="companyName" type="text" placeholder="Luna Coffee Co." required />
+        <input
+          id="companyName"
+          type="text"
+          placeholder="Luna Coffee Co."
+          required
+        />
 
         <label for="email">Work email</label>
-        <input id="email" type="email" placeholder="you@business.com" required />
+        <input
+          id="email"
+          type="email"
+          placeholder="you@business.com"
+          required
+        />
 
         <label for="password">Password</label>
-        <input id="password" type="password" placeholder="Create a password" required />
+        <input
+          id="password"
+          type="password"
+          placeholder="Create a password"
+          minlength="6"
+          required
+        />
 
-        <button type="submit">Create account</button>
+        <button type="submit" id="submitBtn">Create account</button>
 
         <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
 
         <div class="helper">
           Already have an account?
@@ -222,57 +209,68 @@
         </div>
       </form>
     </div>
-  </main>
+  </div>
 
   <script>
     const BACKEND_URL = "https://aervo-backend.onrender.com";
 
-    async function handleSignup(event) {
+    const form = document.getElementById("signup-form");
+    const errorEl = document.getElementById("error");
+    const successEl = document.getElementById("success");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      errorEl.textContent = "";
+      successEl.textContent = "";
 
       const companyName = document.getElementById("companyName").value.trim();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-      const errorEl = document.getElementById("error");
 
-      errorEl.textContent = "";
+      if (!companyName || !email || !password) {
+        errorEl.textContent = "Please fill out all fields.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account…";
 
       try {
-        const response = await fetch(\`\${BACKEND_URL}/api/signup\`, {
+        const response = await fetch(`${BACKEND_URL}/api/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, companyName })
+          body: JSON.stringify({ companyName, email, password }),
         });
 
-        const data = await response.json();
-        console.log("Signup response:", data);
+        const data = await response.json().catch(() => ({}));
 
         if (!response.ok || !data.success) {
-          errorEl.textContent = data.message || "Could not create account.";
-          return;
-        }
-
-        // Store token + user so they are "logged in"
-        if (data.token) {
+          const msg =
+            data.message ||
+            `Signup failed with status ${response.status}. Please try again.`;
+          errorEl.textContent = msg;
+          console.error("Signup error:", data);
+        } else {
+          // Save user + token for dashboard
           localStorage.setItem("aervo_token", data.token);
-        }
-        if (data.user) {
           localStorage.setItem("aervo_user", JSON.stringify(data.user));
-          // keep old key name too, just in case
           localStorage.setItem("aervoUser", JSON.stringify(data.user));
+
+          successEl.textContent = "Account created. Redirecting to dashboard…";
+
+          window.location.href = "dashboard.html";
         }
-
-        // Redirect straight to dashboard
-        window.location.href = "dashboard.html";
       } catch (err) {
-        console.error("Signup error:", err);
-        errorEl.textContent = "Error connecting to server. Please try again.";
+        console.error("Network/JS error during signup:", err);
+        errorEl.textContent =
+          "We couldn’t reach the server. Please check your connection and try again.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create account";
       }
-    }
-
-    document
-      .getElementById("signup-form")
-      .addEventListener("submit", handleSignup);
+    });
   </script>
 </body>
 </html>
