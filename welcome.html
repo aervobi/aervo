@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Aervo</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050817;
+      color: #d6def8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 440px;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1a2237, #050817);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow:
+        0 22px 60px rgba(0,0,0,0.75),
+        0 0 40px rgba(40,90,255,0.35);
+      padding: 28px 26px 24px;
+      text-align: left;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(15,26,52,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 14px rgba(137,180,255,0.5),
+        0 0 26px rgba(80,130,255,0.4);
+    }
+
+    .logo img {
+      width: 22px;
+      height: 22px;
+    }
+
+    .brand {
+      font-weight: 600;
+      letter-spacing: 4px;
+      font-size: 13px;
+      color: #8fbfff;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      color: #e5ecff;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #9ca7d6;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(143,191,255,0.6);
+      color: #8fbfff;
+      background: rgba(5,8,23,0.9);
+      margin-bottom: 18px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #34d399;
+      box-shadow: 0 0 8px rgba(52,211,153,0.8);
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #9ca7d6;
+      margin-bottom: 6px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px;
+      font-size: 13px;
+      color: #c5cff6;
+    }
+
+    ul li {
+      margin-bottom: 6px;
+    }
+
+    ul li::before {
+      content: "•";
+      margin-right: 6px;
+      color: #8fbfff;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 11px 0;
+      font-size: 14px;
+      cursor: pointer;
+      background: #1a243d;
+      color: #b4cdff;
+      box-shadow:
+        0 0 12px rgba(137,180,255,0.7),
+        0 0 30px rgba(80,130,255,0.5);
+      transition: all 0.18s ease;
+    }
+
+    .btn-primary:hover {
+      background: #222c48;
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      width: 100%;
+      border-radius: 999px;
+      padding: 10px 0;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid #323a5c;
+      background: transparent;
+      color: #9ca7d6;
+      transition: all 0.18s ease;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.03);
+      color: #dfe7ff;
+    }
+
+    .footnote {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #6c7598;
+      text-align: center;
+    }
+
+    .footnote a {
+      color: #8fbfff;
+      text-decoration: none;
+    }
+
+    .footnote a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 22px 18px 20px;
+        border-radius: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="logo-row">
+        <div class="logo">
+          <img src="logo.png" alt="Aervo logo" />
+        </div>
+        <span class="brand">AERVO</span>
+      </div>
+
+      <h1 id="heroTitle">Welcome to Aervo</h1>
+      <p class="subtitle" id="heroSubtitle">
+        Your account is ready. Next, we’ll take you to your demo dashboard so you can explore how Aervo can give you a higher view of your business.
+      </p>
+
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Account created • You’re all set</span>
+      </div>
+
+      <div class="section-title">What happens next</div>
+      <ul id="nextSteps">
+        <li>We’ll load a sample dashboard so you can see what Aervo feels like with real metrics.</li>
+        <li>From there, you’ll be able to connect your own tools in a future version.</li>
+        <li>You can always come back by logging in at aervoapp.com.</li>
+      </ul>
+
+      <div class="buttons">
+        <button class="btn-primary" id="openDashboardBtn">
+          Go to your dashboard
+        </button>
+        <button class="btn-ghost" id="logoutBtn">
+          Log out
+        </button>
+      </div>
+
+      <div class="footnote" id="footnote">
+        Signed up with <span id="userEmailLabel">your email</span>.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pull user from localStorage (set during signup/login)
+    const rawUser = localStorage.getItem("aervoUser");
+    let companyName = "your team";
+    let email = "";
+
+    if (rawUser) {
+      try {
+        const u = JSON.parse(rawUser);
+        if (u.companyName) companyName = u.companyName;
+        if (u.email) email = u.email;
+      } catch (e) {
+        console.error("Error parsing aervoUser:", e);
+      }
+    }
+
+    // Fill text
+    const titleEl = document.getElementById("heroTitle");
+    const subtitleEl = document.getElementById("heroSubtitle");
+    const emailLabel = document.getElementById("userEmailLabel");
+
+    titleEl.textContent = `Welcome to Aervo, ${companyName}`;
+    if (email) {
+      emailLabel.textContent = email;
+      subtitleEl.textContent =
+        `Your account for ${companyName} is ready. We’ll start you on a demo dashboard so you can see how Aervo surfaces trends and insights for ${email}.`;
+    }
+
+    // Buttons
+    document.getElementById("openDashboardBtn").addEventListener("click", () => {
+      window.location.href = "dashboard.html";
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("aervoUser");
+      localStorage.removeItem("aervo_token");
+      localStorage.removeItem("aervo_user");
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html> 
