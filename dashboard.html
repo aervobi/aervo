@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aervo – Dashboard</title>
   <link rel="icon" type="image/png" href="favicon.png">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aervo – Dashboard</title>
 
-  <link rel="icon" type="image/png" href="favicon.png">
   <style>
     body {
       margin: 0;
@@ -64,6 +59,17 @@
       opacity: 0.95;
       filter: drop-shadow(0 0 10px rgba(137,180,255,0.8))
               drop-shadow(0 0 20px rgba(80,130,255,0.6));
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-user-email {
+      font-size: 11px;
+      color: #9ca7d6;
     }
 
     .nav-right button {
@@ -481,25 +487,6 @@
     }
   </style>
 </head>
-<script>
-  async function checkBackendStatus() {
-    const box = document.getElementById('backend-status');
-
-    try {
-      const response = await fetch('https://aervo-backend.onrender.com/api/status');
-      const data = await response.json();
-
-      box.textContent = `Backend: ${data.status.toUpperCase()} — Env: ${data.environment}`;
-      box.style.color = '#8fffad';
-    } catch (err) {
-      box.textContent = 'Backend: OFFLINE';
-      box.style.color = '#ff8b8b';
-    }
-  }
-
-  checkBackendStatus();
-  setInterval(checkBackendStatus, 5000); // check every 5 seconds
-</script>
 <body>
 
   <!-- TOP NAV -->
@@ -514,13 +501,13 @@
     </div>
 
     <div class="nav-right">
+      <span class="nav-user-email" id="userEmail"></span>
       <button id="logoutBtn">Logout</button>
     </div>
   </header>
-  </header>
 
-<!-- Backend Status -->
-<div id="backend-status" style="
+  <!-- Backend Status -->
+  <div id="backend-status" style="
     padding: 10px;
     background: #ffffff10;
     border: 1px solid #ffffff30;
@@ -529,9 +516,7 @@
     font-weight: bold;
     color: #d6def8;">
     Checking backend…
-</div>
-
-<div class="layout">
+  </div>
 
   <div class="layout">
     <!-- SIDEBAR -->
@@ -751,329 +736,447 @@
   </div>
 
   <script>
-    // Protect route: require login
-    const rawUser = localStorage.getItem("aervoUser");
-    if (!rawUser) {
-      window.location.href = "login.html";
+    // Backend status checker
+    async function checkBackendStatus() {
+      const box = document.getElementById('backend-status');
+      if (!box) return;
+
+      try {
+        const response = await fetch('https://aervo-backend.onrender.com/api/status');
+        const data = await response.json();
+
+        box.textContent = `Backend: ${data.status.toUpperCase()} — Env: ${data.environment}`;
+        box.style.color = '#8fffad';
+      } catch (err) {
+        box.textContent = 'Backend: OFFLINE';
+        box.style.color = '#ff8b8b';
+      }
     }
 
-    const user = rawUser ? JSON.parse(rawUser) : null;
-    const email = user?.email || "";
+    // Main dashboard logic
+    (function () {
+      // Auth guard: support both aervo_user and aervoUser
+      const rawUser =
+        localStorage.getItem("aervo_user") ||
+        localStorage.getItem("aervoUser");
 
-    // Demo per-user data
-    const demoData = {
-      "demo@aervo.com": {
-        companyName: "Luna Coffee Co.",
-        role: "Owner",
-        todayRevenue: "$1,240",
-        todayChange: "+12% vs yesterday",
-        weekRevenue: "$8,920",
-        weekChange: "+7% week over week",
-        topProduct: "Iced Vanilla Latte",
-        topProductDetail: "142 sold in the last 7 days",
-        insights: [
-          "Mornings (8–11am) drive 60% of daily revenue.",
-          "Iced drinks outperform hot drinks by 18% this week.",
-          "Thursday and Friday are your strongest days."
-        ],
-        products: [
-          { name: "Iced Vanilla Latte", units: 142, revenue: "$712", status: "good" },
-          { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
-          { name: "Blueberry Muffin", units: 64, revenue: "$192", status: "warn" },
-          { name: "Matcha Latte", units: 37, revenue: "$185", status: "warn" },
-          { name: "Bagel w/ Cream Cheese", units: 29, revenue: "$116", status: "bad" }
-        ],
-        inventoryNotes: [
-          "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
-          "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
-          "Matcha Latte is gaining steady traction with younger customers."
-        ],
-        trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
-        trendSummary: "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
-        trendHighlights: [
-          "Friday is your best day, driven largely by iced drinks and morning traffic.",
-          "Weekends hold steady but don’t exceed Friday volumes.",
-          "Early-week promos could help smooth out Monday/Tuesday dips."
-        ],
-        compareThisWeek: "$8,920",
-        compareThisDelta: "+7% vs last week",
-        compareLastWeek: "$8,330",
-        compareLastNotes: "Last week was affected by a slower Monday and Tuesday.",
-        compareSummary: "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
-        notifications: [
-          {
-            text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
-            time: "2 hours ago"
-          },
-          {
-            text: "Blueberry Muffin is close to selling out for today.",
-            time: "4 hours ago"
-          },
-          {
-            text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
-            time: "Yesterday"
-          }
-        ],
-        customerSegments: [
-          { name: "Morning regulars", share: "38%", ticket: "$11.40" },
-          { name: "Afternoon students", share: "24%", ticket: "$8.60" },
-          { name: "Remote workers", share: "18%", ticket: "$13.20" },
-          { name: "Weekend families", share: "20%", ticket: "$15.80" }
-        ],
-        customerNotes: [
-          "Loyalty-style perks for morning regulars could lift frequency.",
-          "Students respond well to limited-time cold drink promos.",
-          "Remote workers drive higher average tickets when staying longer.",
-          "Weekend family bundles (drinks + pastry) could raise order size."
-        ]
-      },
-      "owner@shopdemo.com": {
-        companyName: "Skyline Streetwear",
-        role: "Owner",
-        todayRevenue: "$2,730",
-        todayChange: "+5% vs yesterday",
-        weekRevenue: "$17,450",
-        weekChange: "+11% week over week",
-        topProduct: "Midnight Skyline Hoodie",
-        topProductDetail: "78 units sold this week",
-        insights: [
-          "Average order value is up 9% this week.",
-          "Hoodies and joggers are driving most of the lift.",
-          "Mobile orders account for 63% of sales."
-        ],
-        products: [
-          { name: "Midnight Skyline Hoodie", units: 78, revenue: "$5,460", status: "good" },
-          { name: "City Lights Joggers", units: 54, revenue: "$2,160", status: "good" },
-          { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
-          { name: "Oversize Tee – Cloud", units: 33, revenue: "$660", status: "warn" },
-          { name: "Arch Logo Beanie", units: 18, revenue: "$270", status: "bad" }
-        ],
-        inventoryNotes: [
-          "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
-          "Neon Cap sells steadily but infrequently in pairs.",
-          "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory."
-        ],
-        trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
-        trendSummary: "Sales peak on Friday and Saturday with strong mid-week performance.",
-        trendHighlights: [
-          "Friday remains your biggest revenue day, followed closely by Saturday.",
-          "Mid-week drops are small, suggesting consistent demand.",
-          "Drops align with weather changes; hoodies spike on cooler days."
-        ],
-        compareThisWeek: "$17,450",
-        compareThisDelta: "+11% vs last week",
-        compareLastWeek: "$15,720",
-        compareLastNotes: "Last week included one slower promotional day.",
-        compareSummary: "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
-        notifications: [
-          {
-            text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
-            time: "1 hour ago"
-          },
-          {
-            text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
-            time: "Today"
-          },
-          {
-            text: "Cart size increases when Neon Cap is featured in the hero banner.",
-            time: "Yesterday"
-          }
-        ],
-        customerSegments: [
-          { name: "Urban creatives", share: "42%", ticket: "$86.20" },
-          { name: "College students", share: "28%", ticket: "$64.10" },
-          { name: "Online drops", share: "18%", ticket: "$112.40" },
-          { name: "Tourist traffic", share: "12%", ticket: "$73.50" }
-        ],
-        customerNotes: [
-          "Urban creatives respond strongly to limited drops and collabs.",
-          "Students are price-sensitive; bundles and tiered discounts perform well.",
-          "Online drop customers buy quickly when inventory looks scarce.",
-          "Tourist traffic spikes on weekends and holidays—great time for in-store events."
-        ]
-      }
-    };
-
-    const data = demoData[email] || demoData["demo@aervo.com"];
-
-    // Love footer message
-    document.getElementById("loveFooter").textContent =
-      `✨ Aervo appreciates you, ${data.companyName} ❤️`;
-
-    // Fill header + basics
-    document.getElementById("companyLabel").textContent =
-      data.companyName + " · " + data.role;
-    document.getElementById("welcomeTitle").textContent =
-      "Welcome back, " + data.companyName;
-
-    const now = new Date();
-    document.getElementById("dateLabel").textContent =
-      now.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
-
-    // Overview metrics
-    document.getElementById("todayRevenue").textContent = data.todayRevenue;
-    document.getElementById("todayChange").textContent = data.todayChange;
-    document.getElementById("weekRevenue").textContent = data.weekRevenue;
-    document.getElementById("weekChange").textContent = data.weekChange;
-    document.getElementById("topProduct").textContent = data.topProduct;
-    document.getElementById("topProductDetail").textContent = data.topProductDetail;
-
-    // Insights
-    const insightsList = document.getElementById("insightsList");
-    data.insights.forEach(text => {
-      const li = document.createElement("li");
-      li.textContent = "• " + text;
-      insightsList.appendChild(li);
-    });
-
-    // Ask Aervo fake answer
-    document.getElementById("askBtn").addEventListener("click", () => {
-      const q = document.getElementById("questionInput").value.trim();
-      const out = document.getElementById("chatOutput");
-      if (!q) {
-        out.textContent = "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+      if (!rawUser) {
+        window.location.href = "login.html";
         return;
       }
-      out.textContent =
-        "If this were connected to your real data, Aervo would answer something like:\n\n" +
-        "“Based on your latest numbers, you're trending " +
-        data.todayChange.toLowerCase() +
-        " and your top product is " +
-        data.topProduct +
-        ". This week’s revenue is " +
-        data.weekRevenue +
-        " and is " +
-        data.weekChange.toLowerCase() +
-        ".”";
-    });
 
-    // Products section
-    const productsTableBody = document.querySelector("#productsTable tbody");
-    data.products.forEach(p => {
-      const tr = document.createElement("tr");
-      const statusClass =
-        p.status === "good" ? "pill-good" :
-        p.status === "warn" ? "pill-warn" : "pill-bad";
-      const statusText =
-        p.status === "good" ? "Healthy" :
-        p.status === "warn" ? "Watch" : "At risk";
+      let user;
+      try {
+        user = JSON.parse(rawUser);
+      } catch (e) {
+        console.error("Bad user JSON, clearing", e);
+        localStorage.removeItem("aervo_user");
+        localStorage.removeItem("aervoUser");
+        window.location.href = "login.html";
+        return;
+      }
 
-      tr.innerHTML = `
-        <td>${p.name}</td>
-        <td>${p.units}</td>
-        <td>${p.revenue}</td>
-        <td><span class="pill ${statusClass}">${statusText}</span></td>
-      `;
-      productsTableBody.appendChild(tr);
-    });
+      const email = (user.email || "").toLowerCase();
+      const companyName = user.companyName || "Your business";
+      const role = user.role || "Owner";
 
-    const inventoryList = document.getElementById("inventoryNotes");
-    data.inventoryNotes.forEach(text => {
-      const li = document.createElement("li");
-      li.textContent = "• " + text;
-      inventoryList.appendChild(li);
-    });
+      // Show email in header
+      const userEmailEl = document.getElementById("userEmail");
+      if (userEmailEl && user.email) {
+        userEmailEl.textContent = user.email;
+      }
 
-    // Trends section
-    document.getElementById("trendSummary").textContent = data.trendSummary;
+      // Demo data for known demo accounts
+      const demoData = {
+        "demo@aervo.com": {
+          companyName: "Luna Coffee Co.",
+          role: "Owner",
+          todayRevenue: "$1,240",
+          todayChange: "+12% vs yesterday",
+          weekRevenue: "$8,920",
+          weekChange: "+7% week over week",
+          topProduct: "Iced Vanilla Latte",
+          topProductDetail: "142 sold in the last 7 days",
+          insights: [
+            "Mornings (8–11am) drive 60% of daily revenue.",
+            "Iced drinks outperform hot drinks by 18% this week.",
+            "Thursday and Friday are your strongest days."
+          ],
+          products: [
+            { name: "Iced Vanilla Latte", units: 142, revenue: "$712", status: "good" },
+            { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
+            { name: "Blueberry Muffin", units: 64, revenue: "$192", status: "warn" },
+            { name: "Matcha Latte", units: 37, revenue: "$185", status: "warn" },
+            { name: "Bagel w/ Cream Cheese", units: 29, revenue: "$116", status: "bad" }
+          ],
+          inventoryNotes: [
+            "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
+            "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
+            "Matcha Latte is gaining steady traction with younger customers."
+          ],
+          trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
+          trendSummary: "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
+          trendHighlights: [
+            "Friday is your best day, driven largely by iced drinks and morning traffic.",
+            "Weekends hold steady but don’t exceed Friday volumes.",
+            "Early-week promos could help smooth out Monday/Tuesday dips."
+          ],
+          compareThisWeek: "$8,920",
+          compareThisDelta: "+7% vs last week",
+          compareLastWeek: "$8,330",
+          compareLastNotes: "Last week was affected by a slower Monday and Tuesday.",
+          compareSummary: "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
+          notifications: [
+            {
+              text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
+              time: "2 hours ago"
+            },
+            {
+              text: "Blueberry Muffin is close to selling out for today.",
+              time: "4 hours ago"
+            },
+            {
+              text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
+              time: "Yesterday"
+            }
+          ],
+          customerSegments: [
+            { name: "Morning regulars", share: "38%", ticket: "$11.40" },
+            { name: "Afternoon students", share: "24%", ticket: "$8.60" },
+            { name: "Remote workers", share: "18%", ticket: "$13.20" },
+            { name: "Weekend families", share: "20%", ticket: "$15.80" }
+          ],
+          customerNotes: [
+            "Loyalty-style perks for morning regulars could lift frequency.",
+            "Students respond well to limited-time cold drink promos.",
+            "Remote workers drive higher average tickets when staying longer.",
+            "Weekend family bundles (drinks + pastry) could raise order size."
+          ]
+        },
+        "owner@shopdemo.com": {
+          companyName: "Skyline Streetwear",
+          role: "Owner",
+          todayRevenue: "$2,730",
+          todayChange: "+5% vs yesterday",
+          weekRevenue: "$17,450",
+          weekChange: "+11% week over week",
+          topProduct: "Midnight Skyline Hoodie",
+          topProductDetail: "78 units sold this week",
+          insights: [
+            "Average order value is up 9% this week.",
+            "Hoodies and joggers are driving most of the lift.",
+            "Mobile orders account for 63% of sales."
+          ],
+          products: [
+            { name: "Midnight Skyline Hoodie", units: 78, revenue: "$5,460", status: "good" },
+            { name: "City Lights Joggers", units: 54, revenue: "$2,160", status: "good" },
+            { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
+            { name: "Oversize Tee – Cloud", units: 33, revenue: "$660", status: "warn" },
+            { name: "Arch Logo Beanie", units: 18, revenue: "$270", status: "bad" }
+          ],
+          inventoryNotes: [
+            "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
+            "Neon Cap sells steadily but infrequently in pairs.",
+            "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory."
+          ],
+          trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
+          trendSummary: "Sales peak on Friday and Saturday with strong mid-week performance.",
+          trendHighlights: [
+            "Friday remains your biggest revenue day, followed closely by Saturday.",
+            "Mid-week drops are small, suggesting consistent demand.",
+            "Drops align with weather changes; hoodies spike on cooler days."
+          ],
+          compareThisWeek: "$17,450",
+          compareThisDelta: "+11% vs last week",
+          compareLastWeek: "$15,720",
+          compareLastNotes: "Last week included one slower promotional day.",
+          compareSummary: "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
+          notifications: [
+            {
+              text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
+              time: "1 hour ago"
+            },
+            {
+              text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
+              time: "Today"
+            },
+            {
+              text: "Cart size increases when Neon Cap is featured in the hero banner.",
+              time: "Yesterday"
+            }
+          ],
+          customerSegments: [
+            { name: "Urban creatives", share: "42%", ticket: "$86.20" },
+            { name: "College students", share: "28%", ticket: "$64.10" },
+            { name: "Online drops", share: "18%", ticket: "$112.40" },
+            { name: "Tourist traffic", share: "12%", ticket: "$73.50" }
+          ],
+          customerNotes: [
+            "Urban creatives respond strongly to limited drops and collabs.",
+            "Students are price-sensitive; bundles and tiered discounts perform well.",
+            "Online drop customers buy quickly when inventory looks scarce.",
+            "Tourist traffic spikes on weekends and holidays—great time for in-store events."
+          ]
+        }
+      };
 
-    const chartBars = document.getElementById("chartBars");
-    const chartLabels = document.getElementById("chartLabels");
-    const maxVal = Math.max(...data.trendValues);
+      // Generic sample data for real customers
+      function buildGenericData(companyName) {
+        return {
+          companyName,
+          role: "Owner",
+          todayRevenue: "$1,820",
+          todayChange: "+9% vs yesterday",
+          weekRevenue: "$12,430",
+          weekChange: "+6% week over week",
+          topProduct: "Top performer",
+          topProductDetail: "Your leading product by revenue this week",
+          insights: [
+            `${companyName} is trending ahead of last week based on sample data.`,
+            "Your top product is responsible for a large share of revenue.",
+            "Mid-week performance is solid, with room to grow early in the week."
+          ],
+          products: [
+            { name: "Best seller", units: 120, revenue: "$4,300", status: "good" },
+            { name: "Runner up", units: 80, revenue: "$2,150", status: "good" },
+            { name: "Steady mover", units: 55, revenue: "$1,050", status: "warn" },
+            { name: "New item", units: 26, revenue: "$520", status: "warn" },
+            { name: "Slow mover", units: 14, revenue: "$210", status: "bad" }
+          ],
+          inventoryNotes: [
+            "Your best seller looks healthy based on recent sales.",
+            "A few slower items might benefit from promos or bundles.",
+            "Newer items are starting to gain traction."
+          ],
+          trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          trendValues: [900, 1040, 1180, 1320, 1450, 1230, 1310],
+          trendSummary: "Revenue is strongest on Thu–Sat in this sample view.",
+          trendHighlights: [
+            "End of week is your strongest window in this sample.",
+            "Early-week activity could be improved with targeted campaigns.",
+            "Maintaining stock for high-demand days will be important."
+          ],
+          compareThisWeek: "$12,430",
+          compareThisDelta: "+6% vs last week",
+          compareLastWeek: "$11,730",
+          compareLastNotes: "Last week’s dip was mainly in the first two days.",
+          compareSummary: "You’re pacing ahead of last week in this sample dashboard.",
+          notifications: [
+            {
+              text: "Your primary product is driving a large share of sample revenue.",
+              time: "Today"
+            },
+            {
+              text: "A slow-moving item could be a candidate for a bundle.",
+              time: "Yesterday"
+            },
+            {
+              text: "Consider a mid-week promotion to balance out demand.",
+              time: "This week"
+            }
+          ],
+          customerSegments: [
+            { name: "Loyal repeat buyers", share: "40%", ticket: "$78.20" },
+            { name: "New customers", share: "25%", ticket: "$52.10" },
+            { name: "Occasional buyers", share: "20%", ticket: "$60.40" },
+            { name: "High-value customers", share: "15%", ticket: "$142.70" }
+          ],
+          customerNotes: [
+            "Repeat buyers are your strongest foundation.",
+            "New customers may need a clear follow-up touchpoint.",
+            "High-value customers respond well to tailored offers.",
+            "Occasional buyers could be nudged with gentle reminders."
+          ]
+        };
+      }
 
-    data.trendValues.forEach((val, idx) => {
-      const heightPercent = (val / maxVal) * 100;
+      const data = demoData[email] || buildGenericData(companyName);
 
-      const bar = document.createElement("div");
-      bar.className = "chart-bar";
-      bar.style.height = heightPercent + "%";
-      bar.innerHTML = `<span>${val.toLocaleString()}</span>`;
-      chartBars.appendChild(bar);
+      // Love footer message
+      document.getElementById("loveFooter").textContent =
+        `✨ Aervo appreciates you, ${data.companyName} ❤️`;
 
-      const label = document.createElement("div");
-      label.textContent = data.trendDays[idx];
-      chartLabels.appendChild(label);
-    });
+      // Fill header
+      document.getElementById("companyLabel").textContent =
+        data.companyName + " · " + (data.role || role);
+      document.getElementById("welcomeTitle").textContent =
+        "Welcome back, " + data.companyName;
 
-    const trendHighlights = document.getElementById("trendHighlights");
-    data.trendHighlights.forEach(text => {
-      const li = document.createElement("li");
-      li.textContent = "• " + text;
-      trendHighlights.appendChild(li);
-    });
+      const now = new Date();
+      document.getElementById("dateLabel").textContent =
+        now.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
 
-    // Customers section
-    const customersTableBody = document.querySelector("#customersTable tbody");
-    data.customerSegments.forEach(seg => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${seg.name}</td>
-        <td>${seg.share}</td>
-        <td>${seg.ticket}</td>
-      `;
-      customersTableBody.appendChild(tr);
-    });
+      // Overview metrics
+      document.getElementById("todayRevenue").textContent = data.todayRevenue;
+      document.getElementById("todayChange").textContent = data.todayChange;
+      document.getElementById("weekRevenue").textContent = data.weekRevenue;
+      document.getElementById("weekChange").textContent = data.weekChange;
+      document.getElementById("topProduct").textContent = data.topProduct;
+      document.getElementById("topProductDetail").textContent = data.topProductDetail;
 
-    const customerNotesList = document.getElementById("customerNotes");
-    data.customerNotes.forEach(text => {
-      const li = document.createElement("li");
-      li.textContent = "• " + text;
-      customerNotesList.appendChild(li);
-    });
-
-    // Compare section
-    document.getElementById("compareThisWeek").textContent = data.compareThisWeek;
-    document.getElementById("compareThisDelta").textContent = data.compareThisDelta;
-    document.getElementById("compareLastWeek").textContent = data.compareLastWeek;
-    document.getElementById("compareLastNotes").textContent = data.compareLastNotes;
-    document.getElementById("compareSummary").textContent = data.compareSummary;
-
-    // Notifications section
-    const notificationsList = document.getElementById("notificationsList");
-    data.notifications.forEach(n => {
-      const div = document.createElement("div");
-      div.className = "notification";
-      div.innerHTML = `
-        <div>${n.text}</div>
-        <small>${n.time}</small>
-      `;
-      notificationsList.appendChild(div);
-    });
-
-    // Sidebar navigation logic
-    const navItems = document.querySelectorAll(".nav-item");
-    const sections = {
-      overview: document.getElementById("section-overview"),
-      products: document.getElementById("section-products"),
-      trends: document.getElementById("section-trends"),
-      customers: document.getElementById("section-customers"),
-      compare: document.getElementById("section-compare"),
-      notifications: document.getElementById("section-notifications")
-    };
-
-    navItems.forEach(item => {
-      item.addEventListener("click", () => {
-        const sectionName = item.getAttribute("data-section");
-
-        // Active state on sidebar
-        navItems.forEach(n => n.classList.remove("active"));
-        item.classList.add("active");
-
-        // Show matching section
-        Object.keys(sections).forEach(key => {
-          sections[key].classList.remove("active");
-        });
-        sections[sectionName].classList.add("active");
+      // Insights
+      const insightsList = document.getElementById("insightsList");
+      data.insights.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = "• " + text;
+        insightsList.appendChild(li);
       });
-    });
 
-    // Logout
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("aervoUser");
-      window.location.href = "login.html";
-    });
+      // Ask Aervo fake answer
+      document.getElementById("askBtn").addEventListener("click", () => {
+        const q = document.getElementById("questionInput").value.trim();
+        const out = document.getElementById("chatOutput");
+        if (!q) {
+          out.textContent = "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+          return;
+        }
+        out.textContent =
+          "If this were connected to your real data, Aervo would answer something like:\n\n" +
+          "“Based on your latest numbers, you're trending " +
+          data.todayChange.toLowerCase() +
+          " and your top product is " +
+          data.topProduct +
+          ". This week’s revenue is " +
+          data.weekRevenue +
+          " and is " +
+          data.weekChange.toLowerCase() +
+          ".”";
+      });
+
+      // Products section
+      const productsTableBody = document.querySelector("#productsTable tbody");
+      data.products.forEach(p => {
+        const tr = document.createElement("tr");
+        const statusClass =
+          p.status === "good" ? "pill-good" :
+          p.status === "warn" ? "pill-warn" : "pill-bad";
+        const statusText =
+          p.status === "good" ? "Healthy" :
+          p.status === "warn" ? "Watch" : "At risk";
+
+        tr.innerHTML = `
+          <td>${p.name}</td>
+          <td>${p.units}</td>
+          <td>${p.revenue}</td>
+          <td><span class="pill ${statusClass}">${statusText}</span></td>
+        `;
+        productsTableBody.appendChild(tr);
+      });
+
+      const inventoryList = document.getElementById("inventoryNotes");
+      data.inventoryNotes.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = "• " + text;
+        inventoryList.appendChild(li);
+      });
+
+      // Trends section
+      document.getElementById("trendSummary").textContent = data.trendSummary;
+
+      const chartBars = document.getElementById("chartBars");
+      const chartLabels = document.getElementById("chartLabels");
+      const maxVal = Math.max(...data.trendValues);
+
+      data.trendValues.forEach((val, idx) => {
+        const heightPercent = (val / maxVal) * 100;
+
+        const bar = document.createElement("div");
+        bar.className = "chart-bar";
+        bar.style.height = heightPercent + "%";
+        bar.innerHTML = `<span>${val.toLocaleString()}</span>`;
+        chartBars.appendChild(bar);
+
+        const label = document.createElement("div");
+        label.textContent = data.trendDays[idx];
+        chartLabels.appendChild(label);
+      });
+
+      const trendHighlights = document.getElementById("trendHighlights");
+      data.trendHighlights.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = "• " + text;
+        trendHighlights.appendChild(li);
+      });
+
+      // Customers section
+      const customersTableBody = document.querySelector("#customersTable tbody");
+      data.customerSegments.forEach(seg => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${seg.name}</td>
+          <td>${seg.share}</td>
+          <td>${seg.ticket}</td>
+        `;
+        customersTableBody.appendChild(tr);
+      });
+
+      const customerNotesList = document.getElementById("customerNotes");
+      data.customerNotes.forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = "• " + text;
+        customerNotesList.appendChild(li);
+      });
+
+      // Compare section
+      document.getElementById("compareThisWeek").textContent = data.compareThisWeek;
+      document.getElementById("compareThisDelta").textContent = data.compareThisDelta;
+      document.getElementById("compareLastWeek").textContent = data.compareLastWeek;
+      document.getElementById("compareLastNotes").textContent = data.compareLastNotes;
+      document.getElementById("compareSummary").textContent = data.compareSummary;
+
+      // Notifications section
+      const notificationsList = document.getElementById("notificationsList");
+      data.notifications.forEach(n => {
+        const div = document.createElement("div");
+        div.className = "notification";
+        div.innerHTML = `
+          <div>${n.text}</div>
+          <small>${n.time}</small>
+        `;
+        notificationsList.appendChild(div);
+      });
+
+      // Sidebar navigation logic
+      const navItems = document.querySelectorAll(".nav-item");
+      const sections = {
+        overview: document.getElementById("section-overview"),
+        products: document.getElementById("section-products"),
+        trends: document.getElementById("section-trends"),
+        customers: document.getElementById("section-customers"),
+        compare: document.getElementById("section-compare"),
+        notifications: document.getElementById("section-notifications")
+      };
+
+      navItems.forEach(item => {
+        item.addEventListener("click", () => {
+          const sectionName = item.getAttribute("data-section");
+
+          // Active state on sidebar
+          navItems.forEach(n => n.classList.remove("active"));
+          item.classList.add("active");
+
+          // Show matching section
+          Object.keys(sections).forEach(key => {
+            sections[key].classList.remove("active");
+          });
+          sections[sectionName].classList.add("active");
+        });
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervo_token");
+        localStorage.removeItem("aervo_user");
+        localStorage.removeItem("aervoUser");
+        window.location.href = "login.html";
+      });
+
+      // Start backend status checks
+      checkBackendStatus();
+      setInterval(checkBackendStatus, 5000);
+    })();
   </script>
 </body>
 </html>
