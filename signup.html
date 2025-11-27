@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aervo – Sign up</title>
+  <title>Aervo – Create account</title>
   <link rel="icon" type="image/png" href="favicon.png" />
 
   <style>
@@ -140,17 +140,11 @@
         0 0 40px rgba(80, 130, 255, 0.6);
     }
 
-    .error {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #ff7b7b;
-      min-height: 18px;
-    }
-
     .helper {
-      margin-top: 12px;
       font-size: 12px;
       color: #8b94c0;
+      margin-top: 10px;
+      line-height: 1.5;
     }
 
     .helper a {
@@ -160,6 +154,13 @@
 
     .helper a:hover {
       text-decoration: underline;
+    }
+
+    .error {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #ff7b7b;
+      min-height: 18px;
     }
 
     @media (max-width: 768px) {
@@ -199,7 +200,7 @@
   <main>
     <div class="card">
       <h1>Create your account</h1>
-      <p>Sign up to start getting a higher view of your business with Aervo.</p>
+      <p>Set up Aervo for your business in a few seconds.</p>
 
       <form id="signup-form">
         <label for="companyName">Business name</label>
@@ -211,13 +212,16 @@
         <label for="password">Password</label>
         <input id="password" type="password" placeholder="Create a password" required />
 
+        <label for="confirmPassword">Confirm password</label>
+        <input id="confirmPassword" type="password" placeholder="Repeat your password" required />
+
         <button type="submit">Create account</button>
 
         <div class="error" id="error"></div>
 
         <div class="helper">
           Already have an account?
-          <a href="login.html">Log in</a>
+          <a href="login.html">Log in instead</a>
         </div>
       </form>
     </div>
@@ -226,42 +230,50 @@
   <script>
     const BACKEND_URL = "https://aervo-backend.onrender.com";
 
-    document
-      .getElementById("signup-form")
-      .addEventListener("submit", async function (event) {
-        event.preventDefault();
+    async function handleSignup(event) {
+      event.preventDefault();
 
-        const companyName = document.getElementById("companyName").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const errorEl = document.getElementById("error");
-        errorEl.textContent = "";
+      const companyName = document.getElementById("companyName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+      const errorEl = document.getElementById("error");
 
-        try {
-          const response = await fetch(\`\${BACKEND_URL}/api/signup\`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, companyName }),
-          });
+      errorEl.textContent = "";
 
-          const data = await response.json();
+      if (password !== confirmPassword) {
+        errorEl.textContent = "Passwords do not match.";
+        return;
+      }
 
-          if (!response.ok || !data.success) {
-            errorEl.textContent = data.message || "Could not create account.";
-            return;
-          }
+      try {
+        const response = await fetch(\`\${BACKEND_URL}/api/signup\`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, companyName })
+        });
 
-          // Store token + user if you want auto-login
-          localStorage.setItem("aervo_token", data.token);
-          localStorage.setItem("aervo_user", JSON.stringify(data.user));
+        const data = await response.json();
 
-          alert("Account created! Check your email for a welcome message, then log in.");
-          window.location.href = "login.html";
-        } catch (err) {
-          console.error(err);
-          errorEl.textContent = "Error connecting to server. Please try again.";
+        if (!response.ok || !data.success) {
+          errorEl.textContent = data.message || "Could not create account. Please try again.";
+          return;
         }
-      });
+
+        // Save token + user
+        localStorage.setItem("aervo_token", data.token);
+        localStorage.setItem("aervo_user", JSON.stringify(data.user));
+        localStorage.setItem("aervoUser", JSON.stringify(data.user)); // for your existing dashboard code
+
+        // Go to dashboard
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "Error connecting to server. Please try again.";
+      }
+    }
+
+    document.getElementById("signup-form").addEventListener("submit", handleSignup);
   </script>
 </body>
 </html>
