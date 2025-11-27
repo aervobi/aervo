@@ -212,72 +212,66 @@
   </div>
 
   <script>
-    <script>
-  const BACKEND_URL = "https://aervo-backend.onrender.com";
+    const BACKEND_URL = "https://aervo-backend.onrender.com";
 
-  const form = document.getElementById("signup-form");
-  const errorEl = document.getElementById("error");
-  const successEl = document.getElementById("success");
-  const submitBtn = document.getElementById("submitBtn");
+    const form = document.getElementById("signup-form");
+    const errorEl = document.getElementById("error");
+    const successEl = document.getElementById("success");
+    const submitBtn = document.getElementById("submitBtn");
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-    errorEl.textContent = "";
-    successEl.textContent = "";
+      errorEl.textContent = "";
+      successEl.textContent = "";
 
-    const companyName = document.getElementById("companyName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+      const companyName = document.getElementById("companyName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-    if (!companyName || !email || !password) {
-      errorEl.textContent = "Please fill out all fields.";
-      return;
-    }
+      if (!companyName || !email || !password) {
+        errorEl.textContent = "Please fill out all fields.";
+        return;
+      }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Creating account…";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating account…";
 
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyName, email, password }),
-      });
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ companyName, email, password }),
+        });
 
-      const data = await response.json().catch(() => ({}));
+        const data = await response.json().catch(() => ({}));
 
-      if (!response.ok || !data.success) {
-        const msg =
-          data.message ||
-          `Signup failed with status ${response.status}. Please try again.`;
-        errorEl.textContent = msg;
-        console.error("Signup error:", data);
-      } else {
-        // Save user and token
-        if (data.token) {
+        if (!response.ok || !data.success) {
+          const msg =
+            data.message ||
+            `Signup failed with status ${response.status}. Please try again.`;
+          errorEl.textContent = msg;
+          console.error("Signup error:", data);
+        } else {
+          // Save user + token for dashboard
           localStorage.setItem("aervo_token", data.token);
-        }
-        if (data.user) {
           localStorage.setItem("aervo_user", JSON.stringify(data.user));
           localStorage.setItem("aervoUser", JSON.stringify(data.user));
+
+          successEl.textContent = "Account created. Redirecting…";
+
+          // Go to welcome screen first
+          window.location.href = "welcome.html";
         }
-
-        successEl.textContent = "Account created! Redirecting…";
-
-        // 🔥 NEW REDIRECT — send them to the new welcome page
-        window.location.href = "welcome.html";
+      } catch (err) {
+        console.error("Network/JS error during signup:", err);
+        errorEl.textContent =
+          "We couldn’t reach the server. Please check your connection and try again.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create account";
       }
-    } catch (err) {
-      console.error("Network/JS error during signup:", err);
-      errorEl.textContent =
-        "We couldn’t reach the server. Please check your connection and try again.";
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Create account";
-    }
-  });
-</script>
+    });
   </script>
 </body>
 </html>
