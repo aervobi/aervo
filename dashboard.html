@@ -481,6 +481,25 @@
     }
   </style>
 </head>
+<script>
+  async function checkBackendStatus() {
+    const box = document.getElementById('backend-status');
+
+    try {
+      const response = await fetch('https://aervo-backend.onrender.com/api/status');
+      const data = await response.json();
+
+      box.textContent = `Backend: ${data.status.toUpperCase()} — Env: ${data.environment}`;
+      box.style.color = '#8fffad';
+    } catch (err) {
+      box.textContent = 'Backend: OFFLINE';
+      box.style.color = '#ff8b8b';
+    }
+  }
+
+  checkBackendStatus();
+  setInterval(checkBackendStatus, 5000); // check every 5 seconds
+</script>
 <body>
 
   <!-- TOP NAV -->
@@ -498,6 +517,21 @@
       <button id="logoutBtn">Logout</button>
     </div>
   </header>
+  </header>
+
+<!-- Backend Status -->
+<div id="backend-status" style="
+    padding: 10px;
+    background: #ffffff10;
+    border: 1px solid #ffffff30;
+    border-radius: 6px;
+    margin: 80px 20px 10px 20px;
+    font-weight: bold;
+    color: #d6def8;">
+    Checking backend…
+</div>
+
+<div class="layout">
 
   <div class="layout">
     <!-- SIDEBAR -->
