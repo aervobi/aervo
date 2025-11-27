@@ -253,14 +253,15 @@
           errorEl.textContent = msg;
           console.error("Signup error:", data);
         } else {
-          // Save user + token for dashboard
+          // Save user + token for dashboard / welcome
           localStorage.setItem("aervo_token", data.token);
           localStorage.setItem("aervo_user", JSON.stringify(data.user));
           localStorage.setItem("aervoUser", JSON.stringify(data.user));
+          localStorage.setItem("aervo_just_signed_up", "true");
 
           successEl.textContent = "Account created. Redirecting…";
 
-          // Go to welcome screen first
+          // ✅ Go to welcome screen (NOT dashboard directly)
           window.location.href = "welcome.html";
         }
       } catch (err) {
