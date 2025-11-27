@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aervo – Dashboard</title>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <style>
     body {
@@ -59,17 +59,6 @@
       opacity: 0.95;
       filter: drop-shadow(0 0 10px rgba(137,180,255,0.8))
               drop-shadow(0 0 20px rgba(80,130,255,0.6));
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-user-email {
-      font-size: 11px;
-      color: #9ca7d6;
     }
 
     .nav-right button {
@@ -281,7 +270,7 @@
       margin-bottom: 6px;
     }
 
-    /* Products / customers tables */
+    /* Tables */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -443,6 +432,33 @@
         0 0 26px rgba(40, 90, 255, 0.35);
     }
 
+    /* Admin-only backend status */
+    .admin-status {
+      display: none;
+      padding: 10px;
+      background: #111827;
+      border: 1px solid #4b5563;
+      border-radius: 6px;
+      margin: 72px 20px 0 20px;
+      font-weight: 500;
+      color: #d6def8;
+      font-size: 13px;
+    }
+
+    .admin-status.ok {
+      color: #bbf7d0;
+      border-color: #16a34a;
+    }
+
+    .admin-status.error {
+      color: #fecaca;
+      border-color: #dc2626;
+    }
+
+    .hidden {
+      display: none;
+    }
+
     @media (max-width: 900px) {
       .layout {
         flex-direction: column;
@@ -484,6 +500,10 @@
       .grid-2 {
         grid-template-columns: 1fr;
       }
+
+      .admin-status {
+        margin: 72px 16px 0 16px;
+      }
     }
   </style>
 </head>
@@ -497,28 +517,17 @@
     </div>
 
     <div class="nav-center">
-      <img src="logo.png" class="nav-logo" alt="Aervo Logo">
+      <img src="logo.png" class="nav-logo" alt="Aervo Logo" />
     </div>
 
     <div class="nav-right">
-      <span class="nav-user-email" id="userEmail"></span>
       <button id="logoutBtn">Logout</button>
     </div>
   </header>
 
-  <!-- Backend Status -->
-  <div id="backend-status" 
-  style="
-    display:none;
-    padding: 10px;
-    background: #ffffff10;
-    border: 1px solid #ffffff30;
-    border-radius: 6px;
-    margin: 80px 20px 10px 20px;
-    font-weight: bold;
-    color: #d6def8;">
+  <!-- ADMIN-ONLY BACKEND STATUS -->
+  <div id="backendStatus" class="admin-status hidden">
     Checking backend…
-
   </div>
 
   <div class="layout">
@@ -591,7 +600,9 @@
         <div class="grid-2">
           <div class="card chat-card">
             <h2>Ask Aervo</h2>
-            <p class="subtext">This is a placeholder for your future AervoGPT. For now it gives a sample answer based on your demo data.</p>
+            <p class="subtext">
+              This is a placeholder for your future AervoGPT. For now it gives a sample answer based on your demo data.
+            </p>
             <textarea id="questionInput" placeholder="Example: How did we do today compared to yesterday?"></textarea>
             <button id="askBtn">Ask</button>
             <div class="chat-output" id="chatOutput"></div>
@@ -734,67 +745,52 @@
 
       <!-- LOVE FOOTER -->
       <div id="loveFooter" class="love-footer"></div>
-
     </main>
   </div>
 
   <script>
-    // Backend status checker
-    async function checkBackendStatus() {
-      const box = document.getElementById('backend-status');
-      if (!box) return;
-
-      try {
-        const response = await fetch('https://aervo-backend.onrender.com/api/status');
-        const data = await response.json();
-
-        box.textContent = `Backend: ${data.status.toUpperCase()} — Env: ${data.environment}`;
-        box.style.color = '#8fffad';
-      } catch (err) {
-        box.textContent = 'Backend: OFFLINE';
-        box.style.color = '#ff8b8b';
-      }
-    }
-
-    // Main dashboard logic
     (function () {
-      // Auth guard: support both aervo_user and aervoUser
-      const rawUser =
-        localStorage.getItem("aervo_user") ||
-        localStorage.getItem("aervoUser");
-        // Show backend status only for Aervo Admin
-const backendBox = document.getElementById("backend-status");
-if (user?.email === "aervoadmin@aervoapp.com") {
-  backendBox.style.display = "block";
-}
-
+      // Protect route: require login
+      const rawUser = localStorage.getItem("aervoUser");
       if (!rawUser) {
         window.location.href = "login.html";
         return;
       }
 
-      let user;
-      try {
-        user = JSON.parse(rawUser);
-      } catch (e) {
-        console.error("Bad user JSON, clearing", e);
-        localStorage.removeItem("aervo_user");
-        localStorage.removeItem("aervoUser");
-        window.location.href = "login.html";
-        return;
-      }
-
+      const user = JSON.parse(rawUser);
       const email = (user.email || "").toLowerCase();
-      const companyName = user.companyName || "Your business";
-      const role = user.role || "Owner";
+      const companyFromUser = user.companyName || "Your business";
+      const roleFromUser = user.role || "Owner";
 
-      // Show email in header
-      const userEmailEl = document.getElementById("userEmail");
-      if (userEmailEl && user.email) {
-        userEmailEl.textContent = user.email;
+      const isAdmin = email === "aervoadmin@aervoapp.com";
+
+      const backendStatusBox = document.getElementById("backendStatus");
+
+      async function checkBackendStatus() {
+        if (!backendStatusBox) return;
+
+        try {
+          const response = await fetch("https://aervo-backend.onrender.com/api/status");
+          const data = await response.json();
+          backendStatusBox.textContent =
+            `Backend: ${data.status.toUpperCase()} — Env: ${data.environment}`;
+          backendStatusBox.classList.remove("error");
+          backendStatusBox.classList.add("ok");
+        } catch (err) {
+          backendStatusBox.textContent = "Backend: OFFLINE";
+          backendStatusBox.classList.remove("ok");
+          backendStatusBox.classList.add("error");
+        }
       }
 
-      // Demo data for known demo accounts
+      // Only admins see backend status
+      if (isAdmin && backendStatusBox) {
+        backendStatusBox.classList.remove("hidden");
+        checkBackendStatus();
+        setInterval(checkBackendStatus, 5000);
+      }
+
+      // Demo per-user data
       const demoData = {
         "demo@aervo.com": {
           companyName: "Luna Coffee Co.",
@@ -930,87 +926,21 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         }
       };
 
-      // Generic sample data for real customers
-      function buildGenericData(companyName) {
-        return {
-          companyName,
-          role: "Owner",
-          todayRevenue: "$1,820",
-          todayChange: "+9% vs yesterday",
-          weekRevenue: "$12,430",
-          weekChange: "+6% week over week",
-          topProduct: "Top performer",
-          topProductDetail: "Your leading product by revenue this week",
-          insights: [
-            `${companyName} is trending ahead of last week based on sample data.`,
-            "Your top product is responsible for a large share of revenue.",
-            "Mid-week performance is solid, with room to grow early in the week."
-          ],
-          products: [
-            { name: "Best seller", units: 120, revenue: "$4,300", status: "good" },
-            { name: "Runner up", units: 80, revenue: "$2,150", status: "good" },
-            { name: "Steady mover", units: 55, revenue: "$1,050", status: "warn" },
-            { name: "New item", units: 26, revenue: "$520", status: "warn" },
-            { name: "Slow mover", units: 14, revenue: "$210", status: "bad" }
-          ],
-          inventoryNotes: [
-            "Your best seller looks healthy based on recent sales.",
-            "A few slower items might benefit from promos or bundles.",
-            "Newer items are starting to gain traction."
-          ],
-          trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          trendValues: [900, 1040, 1180, 1320, 1450, 1230, 1310],
-          trendSummary: "Revenue is strongest on Thu–Sat in this sample view.",
-          trendHighlights: [
-            "End of week is your strongest window in this sample.",
-            "Early-week activity could be improved with targeted campaigns.",
-            "Maintaining stock for high-demand days will be important."
-          ],
-          compareThisWeek: "$12,430",
-          compareThisDelta: "+6% vs last week",
-          compareLastWeek: "$11,730",
-          compareLastNotes: "Last week’s dip was mainly in the first two days.",
-          compareSummary: "You’re pacing ahead of last week in this sample dashboard.",
-          notifications: [
-            {
-              text: "Your primary product is driving a large share of sample revenue.",
-              time: "Today"
-            },
-            {
-              text: "A slow-moving item could be a candidate for a bundle.",
-              time: "Yesterday"
-            },
-            {
-              text: "Consider a mid-week promotion to balance out demand.",
-              time: "This week"
-            }
-          ],
-          customerSegments: [
-            { name: "Loyal repeat buyers", share: "40%", ticket: "$78.20" },
-            { name: "New customers", share: "25%", ticket: "$52.10" },
-            { name: "Occasional buyers", share: "20%", ticket: "$60.40" },
-            { name: "High-value customers", share: "15%", ticket: "$142.70" }
-          ],
-          customerNotes: [
-            "Repeat buyers are your strongest foundation.",
-            "New customers may need a clear follow-up touchpoint.",
-            "High-value customers respond well to tailored offers.",
-            "Occasional buyers could be nudged with gentle reminders."
-          ]
-        };
-      }
+      // pick data set (fallback to coffee shop)
+      const data = demoData[email] || demoData["demo@aervo.com"];
 
-      const data = demoData[email] || buildGenericData(companyName);
+      const displayCompany = companyFromUser || data.companyName;
+      const displayRole = roleFromUser || data.role;
 
       // Love footer message
       document.getElementById("loveFooter").textContent =
-        `✨ Aervo appreciates you, ${data.companyName} ❤️`;
+        `✨ Aervo appreciates you, ${displayCompany} ❤️`;
 
-      // Fill header
+      // Header + basics
       document.getElementById("companyLabel").textContent =
-        data.companyName + " · " + (data.role || role);
+        displayCompany + " · " + displayRole;
       document.getElementById("welcomeTitle").textContent =
-        "Welcome back, " + data.companyName;
+        "Welcome back, " + displayCompany;
 
       const now = new Date();
       document.getElementById("dateLabel").textContent =
@@ -1037,7 +967,8 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         const q = document.getElementById("questionInput").value.trim();
         const out = document.getElementById("chatOutput");
         if (!q) {
-          out.textContent = "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+          out.textContent =
+            "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
           return;
         }
         out.textContent =
@@ -1053,7 +984,7 @@ if (user?.email === "aervoadmin@aervoapp.com") {
           ".”";
       });
 
-      // Products section
+      // Products
       const productsTableBody = document.querySelector("#productsTable tbody");
       data.products.forEach(p => {
         const tr = document.createElement("tr");
@@ -1080,7 +1011,7 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         inventoryList.appendChild(li);
       });
 
-      // Trends section
+      // Trends
       document.getElementById("trendSummary").textContent = data.trendSummary;
 
       const chartBars = document.getElementById("chartBars");
@@ -1108,7 +1039,7 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         trendHighlights.appendChild(li);
       });
 
-      // Customers section
+      // Customers
       const customersTableBody = document.querySelector("#customersTable tbody");
       data.customerSegments.forEach(seg => {
         const tr = document.createElement("tr");
@@ -1127,14 +1058,14 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         customerNotesList.appendChild(li);
       });
 
-      // Compare section
+      // Compare
       document.getElementById("compareThisWeek").textContent = data.compareThisWeek;
       document.getElementById("compareThisDelta").textContent = data.compareThisDelta;
       document.getElementById("compareLastWeek").textContent = data.compareLastWeek;
       document.getElementById("compareLastNotes").textContent = data.compareLastNotes;
       document.getElementById("compareSummary").textContent = data.compareSummary;
 
-      // Notifications section
+      // Notifications
       const notificationsList = document.getElementById("notificationsList");
       data.notifications.forEach(n => {
         const div = document.createElement("div");
@@ -1161,11 +1092,9 @@ if (user?.email === "aervoadmin@aervoapp.com") {
         item.addEventListener("click", () => {
           const sectionName = item.getAttribute("data-section");
 
-          // Active state on sidebar
           navItems.forEach(n => n.classList.remove("active"));
           item.classList.add("active");
 
-          // Show matching section
           Object.keys(sections).forEach(key => {
             sections[key].classList.remove("active");
           });
@@ -1175,15 +1104,11 @@ if (user?.email === "aervoadmin@aervoapp.com") {
 
       // Logout
       document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervoUser");
         localStorage.removeItem("aervo_token");
         localStorage.removeItem("aervo_user");
-        localStorage.removeItem("aervoUser");
         window.location.href = "login.html";
       });
-
-      // Start backend status checks
-      checkBackendStatus();
-      setInterval(checkBackendStatus, 5000);
     })();
   </script>
 </body>
