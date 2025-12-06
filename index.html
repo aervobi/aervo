@@ -1,415 +1,1141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Aervo – A higher view of your business</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aervo – Dashboard</title>
-
-  <link rel="icon" type="image/png" href="favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Aervo gives small and online business owners an AI powered dashboard that connects sales, inventory, and customer data in one place." />
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #050817;
-      color: #d6def8;
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1020;
+      --card: #101526;
+      --border: rgba(255, 255, 255, 0.06);
+      --text: #f7f7ff;
+      --muted: #a0a3b8;
+      --accent: #7c5cff;
+      --accent-soft: rgba(124, 92, 255, 0.3);
+      --accent-2: #29c8ff;
+      --radius-xl: 18px;
+      --radius-full: 999px;
+      --shadow-soft: 0 18px 60px rgba(0, 0, 0, 0.7);
     }
 
-    /* Top nav */
-    .nav {
-      position: fixed;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+      background: radial-gradient(circle at top, #1a1f3a 0, #050816 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 20px 60px;
+    }
+
+    header {
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(5, 8, 22, 0.96), rgba(5, 8, 22, 0.85));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
-      background: rgba(5, 8, 23, 0.92);
-      backdrop-filter: blur(14px);
-      z-index: 10;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      gap: 12px;
     }
 
-    .nav-brand {
-      font-weight: 600;
-      letter-spacing: 4px;
-      font-size: 14px;
-      color: #8fbfff;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .nav-links a {
-      margin: 0 12px;
-      font-size: 14px;
-      text-decoration: none;
-      color: #a6b3dd;
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, var(--accent-2), var(--accent));
+      box-shadow: 0 0 24px rgba(124, 92, 255, 0.7);
+      position: relative;
+      overflow: hidden;
     }
 
-    .nav-links a:hover {
-      color: #dfe7ff;
-    }
-
-    .nav-login-btn {
-      padding: 8px 16px;
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
       border-radius: 999px;
-      border: 1px solid #3a4a7c;
-      text-decoration: none;
-      font-size: 14px;
-      color: #dfe7ff;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: transparent;
+      transform: rotate(-25deg);
     }
 
-    .nav-login-btn:hover {
-      background: #1a2237;
+    .logo-text-main {
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.95rem;
     }
 
-    /* Push main down so nav doesn’t cover it */
-    main {
-      padding-top: 120px;
-      text-align: center;
+    .logo-text-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
     }
 
-    /* HERO SECTION */
-    .hero-logo {
-      width: 160px;
-      margin-bottom: 20px;
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.88rem;
+      color: var(--muted);
     }
 
-    .hero-title {
-      color: #b4cdff;
-      letter-spacing: 8px;
-      font-size: 40px;
-      margin: 10px 0;
-      text-shadow:
-        0 0 8px rgba(137, 180, 255, 0.8),
-        0 0 18px rgba(80, 130, 255, 0.6),
-        0 0 32px rgba(40, 90, 255, 0.4);
+    nav a:hover {
+      color: var(--text);
     }
 
-    .hero-tagline {
-      color: #c3d2ff;
-      font-size: 18px;
-      margin-bottom: 28px;
-      text-shadow: 0 0 10px rgba(40, 70, 150, 0.5);
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .hero-btn {
-      display: inline-block;
-      padding: 12px 28px;
-      background: #1a1f2b;
-      color: #b6c8f5;
-      border: 1px solid #2c3447;
-      border-radius: 6px;
-      font-size: 16px;
-      text-decoration: none;
-      box-shadow: 0 0 15px rgba(112, 150, 255, 0.15);
-      transition: all 0.25s ease;
+    .btn {
+      border-radius: var(--radius-full);
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
     }
 
-    .hero-btn:hover {
-      background: #222a38;
-      box-shadow: 0 0 25px rgba(112, 150, 255, 0.35);
+    .btn-primary {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #050816;
+      box-shadow: 0 10px 30px rgba(41, 200, 255, 0.4);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 45px rgba(41, 200, 255, 0.55);
+    }
+
+    .btn-ghost {
+      border-color: var(--border);
+      background: rgba(11, 16, 32, 0.95);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.12);
+      color: var(--text);
       transform: translateY(-1px);
     }
 
-    .hero-cta {
-      display: inline-block;
-      padding: 14px 34px;
-      margin-top: 30px;
-      font-size: 18px;
-      color: #b4cdff;
-      background: #1a243d;
-      border-radius: 10px;
-      border: 1px solid rgba(143, 191, 255, 0.4);
-      text-decoration: none;
-      letter-spacing: 1px;
-      box-shadow:
-        0 0 12px rgba(137, 180, 255, 0.45),
-        0 0 28px rgba(80, 130, 255, 0.35),
-        0 0 40px rgba(40, 90, 255, 0.25);
-      transition: all 0.25s ease;
+    .pill {
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(124, 92, 255, 0.5);
+      background: rgba(12, 17, 40, 0.9);
+      color: var(--muted);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .hero-cta:hover {
-      background: #222c48;
-      transform: translateY(-2px);
-      box-shadow:
-        0 0 16px rgba(137, 180, 255, 0.8),
-        0 0 40px rgba(80, 130, 255, 0.6),
-        0 0 60px rgba(40, 90, 255, 0.45);
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px rgba(41, 200, 255, 0.9);
     }
 
-    /* GENERIC SECTIONS */
-    .section {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 80px 24px;
-      text-align: left;
+    main {
+      padding-top: 14px;
     }
 
-    .section h2 {
-      font-size: 28px;
-      margin-bottom: 16px;
-      color: #e5ecff;
-    }
-
-    .section p {
-      color: #b6c3ee;
-      max-width: 640px;
-    }
-
-    .section-grid {
+    /* Hero */
+    .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-      gap: 40px;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 32px;
+      align-items: center;
+      margin-top: 30px;
+      margin-bottom: 50px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title span {
+      background-image: linear-gradient(120deg, var(--accent-2), var(--accent));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      max-width: 36rem;
+      font-size: 0.98rem;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .hero-footnote {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
+
+    .hero-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .metric-card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, rgba(41, 200, 255, 0.08), rgba(5, 8, 22, 0.9));
+      padding: 10px 14px;
+      min-width: 130px;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .hero-right {
+      position: relative;
+    }
+
+    .hero-panel {
+      border-radius: 22px;
+      padding: 18px;
+      background: radial-gradient(circle at top, rgba(124, 92, 255, 0.25), rgba(5, 8, 22, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-panel-title {
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
     .badge {
-      display: inline-block;
-      padding: 4px 10px;
+      font-size: 0.7rem;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(11, 16, 32, 0.9);
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      gap: 14px;
+      align-items: stretch;
+      margin-bottom: 14px;
+    }
+
+    .fake-chart {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(135deg, rgba(41, 200, 255, 0.08), rgba(124, 92, 255, 0.05));
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-bars {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      align-items: end;
+      height: 80px;
+    }
+
+    .chart-bar {
       border-radius: 999px;
-      border: 1px solid rgba(143,191,255,0.4);
-      font-size: 11px;
+      background: linear-gradient(to top, rgba(124, 92, 255, 0.5), rgba(41, 200, 255, 0.9));
+    }
+
+    .chart-bar:nth-child(1) { height: 35%; }
+    .chart-bar:nth-child(2) { height: 55%; }
+    .chart-bar:nth-child(3) { height: 80%; }
+    .chart-bar:nth-child(4) { height: 60%; }
+    .chart-bar:nth-child(5) { height: 45%; }
+
+    .chart-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .mini-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .mini-card {
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(5, 8, 22, 0.9);
+      padding: 8px;
+    }
+
+    .mini-label {
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    .mini-value {
+      font-weight: 600;
+      margin-top: 2px;
+      font-size: 0.86rem;
+    }
+
+    .mini-pill {
+      font-size: 0.7rem;
+      color: #2ff5aa;
+      margin-top: 2px;
+    }
+
+    .hero-ai {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(5, 8, 22, 0.96);
+      padding: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.8rem;
+    }
+
+    .hero-ai-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .hero-ai-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      background: radial-gradient(circle at 30% 20%, var(--accent-2), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 60px;
+    }
+
+    .section-header {
+      margin-bottom: 24px;
+      max-width: 38rem;
+    }
+
+    .section-kicker {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #8fbfff;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    .section-body {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, rgba(41, 200, 255, 0.05), rgba(5, 8, 22, 0.98));
+      padding: 16px 18px;
+      font-size: 0.9rem;
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill-soft {
+      border-radius: var(--radius-full);
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(11, 16, 32, 0.9);
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .features-grid .card {
+      height: 100%;
+    }
+
+    /* Integrations */
+    .integration-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .integration-pill {
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: rgba(5, 8, 22, 0.9);
+    }
+
+    /* Analytics preview */
+    .preview {
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, rgba(124, 92, 255, 0.2), rgba(5, 8, 22, 0.98));
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
     }
 
-    .feature-list {
-      list-style: none;
-      padding: 0;
-      margin: 16px 0 0;
+    .preview-tabs {
+      display: flex;
+      gap: 6px;
+      font-size: 0.75rem;
     }
 
-    .feature-list li {
-      margin-bottom: 10px;
-      color: #c2cff6;
+    .preview-tab {
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid transparent;
+      color: var(--muted);
+      background: rgba(11, 16, 32, 0.9);
     }
 
-    /* PRICING */
-    .pricing-cards {
+    .preview-tab.active {
+      border-color: rgba(255, 255, 255, 0.18);
+      color: var(--text);
+    }
+
+    .preview-body {
       display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      grid-template-columns: 2fr 1.1fr;
+      gap: 14px;
+    }
+
+    .preview-main {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      background: rgba(5, 8, 22, 0.95);
+      font-size: 0.8rem;
+    }
+
+    .preview-main-title {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .preview-lines {
+      height: 90px;
+      background-image: linear-gradient(to right, rgba(124, 92, 255, 0.6), rgba(41, 200, 255, 0.9));
+      border-radius: 999px;
+      filter: blur(0.4px);
+      opacity: 0.9;
+    }
+
+    .preview-side {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .preview-side-item {
+      border-radius: 11px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px;
+      background: rgba(5, 8, 22, 0.96);
+    }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .pricing-card {
-      background: radial-gradient(circle at top left, #202642, #0c101f);
-      border-radius: 14px;
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, rgba(41, 200, 255, 0.12), rgba(5, 8, 22, 0.98));
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    /* FOOTER */
-    .footer {
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 32px 24px 40px;
-      text-align: center;
-      font-size: 13px;
-      color: #8a94b8;
-      margin-top: 60px;
+    .pricing-name {
+      font-weight: 600;
+      font-size: 1rem;
     }
 
-    /* Mobile styles */
-    @media (max-width: 768px) {
-      .nav {
-        padding: 0 16px;
-        height: 56px;
+    .pricing-price {
+      font-size: 1.3rem;
+      font-weight: 650;
+    }
+
+    .pricing-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .pricing-features {
+      list-style: none;
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 6px 0 10px;
+    }
+
+    .pricing-features li::before {
+      content: "• ";
+      color: var(--accent-2);
+    }
+
+    /* Testimonials */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .quote-card {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(5, 8, 22, 0.96);
+      padding: 16px;
+      font-size: 0.9rem;
+    }
+
+    .quote-text {
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .quote-name {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* FAQ */
+    .faq {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .faq-item {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      background: rgba(5, 8, 22, 0.96);
+      font-size: 0.88rem;
+    }
+
+    .faq-q {
+      font-weight: 550;
+      margin-bottom: 6px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .nav-links {
-        display: none; /* hide nav links, keep logo + login */
+      .hero-right {
+        order: -1;
       }
 
-      main {
-        padding-top: 90px;
-        padding-left: 16px;
-        padding-right: 16px;
+      .grid-3,
+      .features-grid,
+      .pricing-grid,
+      .testimonials,
+      .faq {
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .hero-logo {
-        width: 110px;
-        margin-bottom: 14px;
+      .preview-body,
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .hero-title {
-        font-size: 28px;
-        letter-spacing: 5px;
+      nav {
+        display: none;
       }
 
-      .hero-tagline {
-        font-size: 15px;
-        margin-bottom: 20px;
-        padding: 0 10px;
+      .header-inner {
+        padding-inline: 16px;
       }
 
-      .hero-cta {
-        padding: 10px 22px;
-        font-size: 15px;
-        margin-top: 20px;
-      }
-
-      .section {
-        padding: 48px 18px;
-      }
-
-      .section-grid {
-        grid-template-columns: 1fr; /* stack columns */
-        gap: 24px;
-      }
-
-      .section h2 {
-        font-size: 22px;
-      }
-
-      .section p,
-      .feature-list li {
-        font-size: 14px;
+      .page {
+        padding-inline: 16px;
       }
     }
   </style>
 </head>
-
 <body>
-
-  <!-- NAVIGATION BAR -->
-  <header class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-brand">AERVO</a>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div>
+          <div class="logo-text-main">Aervo</div>
+          <div class="logo-text-sub">A higher view of your business</div>
+        </div>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="header-cta">
+        <button class="btn btn-ghost">Log in</button>
+        <button class="btn btn-primary">Get early access</button>
+      </div>
     </div>
-    <nav class="nav-links">
-      <a href="#product">Product</a>
-      <a href="#how-it-works">How it works</a>
-      <a href="#who-its-for">Who it’s for</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#about">About</a>
-    </nav>
-  <div class="nav-right">
-    <a href="signup.html" class="nav-login-btn">Sign up</a>
-    <a href="login.html" class="nav-login-btn">Log in</a>
-  </div>
   </header>
 
-  <!-- HERO SECTION -->
-  <main>
-    <img src="logo.png" class="hero-logo" alt="Aervo Logo">
-    <h1 class="hero-title">AERVO</h1>
-    <p class="hero-tagline">A higher view of your business.</p>
+  <div class="page">
+    <main>
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-left">
+          <div class="pill">
+            <span class="pill-dot"></span>
+            Live business insights for small and online businesses
+          </div>
+          <h1 class="hero-title" id="hero-title">
+            A <span>higher view</span> of your business in one AI dashboard
+          </h1>
+          <p class="hero-sub">
+            Aervo connects your sales, inventory, and customer data, then surfaces the insights that
+            actually matter. Spend less time in spreadsheets and more time growing the business.
+          </p>
+          <div class="hero-cta-row">
+            <button class="btn btn-primary">Get early access</button>
+            <button class="btn btn-ghost">Watch product overview</button>
+          </div>
+          <p class="hero-footnote">
+            No credit card needed. Designed for busy owners, not data teams.
+          </p>
+          <div class="hero-metrics">
+            <div class="metric-card">
+              <div class="metric-label">Weekly review time</div>
+              <div class="metric-value">15 min</div>
+              <div class="metric-label">Typical for Aervo users</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Key metrics in one view</div>
+              <div class="metric-value">360°</div>
+              <div class="metric-label">Sales, inventory, customers</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-panel" aria-hidden="true">
+            <div class="hero-panel-header">
+              <div class="hero-panel-title">Today at a glance</div>
+              <span class="badge">AI summary</span>
+            </div>
+            <div class="chart-row">
+              <div class="fake-chart">
+                <div class="chart-bars">
+                  <div class="chart-bar"></div>
+                  <div class="chart-bar"></div>
+                  <div class="chart-bar"></div>
+                  <div class="chart-bar"></div>
+                  <div class="chart-bar"></div>
+                </div>
+                <div class="chart-footer">
+                  <span>Last 7 days</span>
+                  <span>Revenue +18%</span>
+                </div>
+              </div>
+              <div class="mini-cards">
+                <div class="mini-card">
+                  <div class="mini-label">Repeat buyers</div>
+                  <div class="mini-value">+12% this week</div>
+                  <div class="mini-pill">Healthy</div>
+                </div>
+                <div class="mini-card">
+                  <div class="mini-label">Low stock alerts</div>
+                  <div class="mini-value">3 products</div>
+                  <div class="mini-pill">Restock suggested</div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-ai">
+              <div class="hero-ai-icon">AI</div>
+              <div>
+                <div class="hero-ai-label">Insight</div>
+                <div>
+                  Your top 3 products drove 61 percent of revenue, but returns increased on one of them.
+                  Consider reviewing pricing and descriptions for “Signature Hoodie”.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <a
-      href="mailto:omardavila20@gmail.com?subject=Aervo%20Early%20Early%20Access&body=Hi%20Omar,%0D%0A%0D%0AI'd%20love%20to%20join%20the%20Aervo%20beta%20and%20get%20a%20higher%20view%20of%20my%20business.%0D%0A%0D%0AHere%20are%20my%20details:%0D%0A-%20Business%20name:%0D%0A-%20Type%20of%20business:%0D%0A-%20Current%20POS/Platform:%0D%0A%0D%0AThanks!"
-      class="hero-cta"
-    >
-      Rise with Aervo
-    </a>
-  </main>
+      <!-- Who it is for -->
+      <section aria-labelledby="for-title">
+        <div class="section-header">
+          <div class="section-kicker">Who Aervo is for</div>
+          <h2 class="section-title" id="for-title">Built for busy owners, not data teams</h2>
+          <p class="section-body">
+            Whether you run a local shop, an online brand, or a blended business, Aervo helps you keep a clear
+            view of what is working and what is leaking money.
+          </p>
+        </div>
+        <div class="pill-row">
+          <div class="pill-soft">Shopify and online store owners</div>
+          <div class="pill-soft">Service businesses and studios</div>
+          <div class="pill-soft">Retail and local shops</div>
+        </div>
+      </section>
 
-  <!-- PRODUCT SECTION -->
-  <section id="product" class="section">
-    <div class="section-grid">
-      <div>
-        <div class="badge">Product</div>
-        <h2>Aervo shows you how your business is really doing.</h2>
-        <p>
-          Upload your sales data or connect your POS. Aervo turns your numbers into
-          simple, readable answers you can act on instantly.
-        </p>
-        <ul class="feature-list">
-          <li>See daily, weekly, and monthly performance at a glance.</li>
-          <li>Spot best sellers and slow movers automatically.</li>
-          <li>Ask “How did we do today?” and get instant answers.</li>
-        </ul>
+      <!-- What Aervo does -->
+      <section aria-labelledby="what-title">
+        <div class="section-header">
+          <div class="section-kicker">What it does</div>
+          <h2 class="section-title" id="what-title">What Aervo does in plain language</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">Connects your tools</div>
+            <p>
+              Plug in platforms like Shopify, Stripe, and Square to create a single source of truth for your
+              sales, customers, and inventory.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Finds patterns for you</div>
+            <p>
+              Aervo uses AI to scan trends in orders, returns, stock levels, and customer behavior so you do
+              not have to dig through reports.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Tells you what to do next</div>
+            <p>
+              Get clear, actionable prompts instead of raw charts. Think “restock this item” or “this channel
+              is hurting your margin.”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section id="how" aria-labelledby="how-title">
+        <div class="section-header">
+          <div class="section-kicker">How it works</div>
+          <h2 class="section-title" id="how-title">From scattered data to a clear view</h2>
+          <p class="section-body">
+            Aervo gives you a simple three step setup that turns all your separate tools into one live control
+            center for your business.
+          </p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-title">1. Connect your data</div>
+            <p>
+              Link your store, payments, and accounting tools in a few clicks. No engineering degree required.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">2. Train your AI view</div>
+            <p>
+              Tell Aervo what matters most, such as inventory risk, profit margin, or repeat customers, and
+              it tunes your dashboard around those.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">3. Act on live insights</div>
+            <p>
+              Get a live control center with alerts, summaries, and clear next steps so you can make decisions
+              with confidence.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features" aria-labelledby="features-title">
+        <div class="section-header">
+          <div class="section-kicker">Features</div>
+          <h2 class="section-title" id="features-title">Smart and analytical, without being complex</h2>
+        </div>
+        <div class="features-grid">
+          <div class="card">
+            <div class="card-title">360 business dashboard</div>
+            <p>
+              See revenue, orders, inventory, and customer metrics in one clean view instead of four different tabs.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Smart alerts and summaries</div>
+            <p>
+              Get simple daily or weekly summaries that call out what changed, what is off, and what deserves your time.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Revenue and margin lenses</div>
+            <p>
+              Compare products, channels, and campaigns by the numbers that keep you in business, not just vanity metrics.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Inventory health tracking</div>
+            <p>
+              Spot slow movers, stock outs, and risky trends before they become expensive problems.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">AI questions in plain English</div>
+            <p>
+              Ask questions like “Which products drive most of my returns?” and get a clear answer instead of another pivot table.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Collaboration ready</div>
+            <p>
+              Share views with your accountant, operations lead, or co founder so everyone works from the same numbers.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Integrations -->
+      <section aria-labelledby="integrations-title">
+        <div class="section-header">
+          <div class="section-kicker">Integrations</div>
+          <h2 class="section-title" id="integrations-title">Works with the tools you already use</h2>
+          <p class="section-body">
+            Aervo connects to the platforms that power your business and brings their data into one story.
+          </p>
+        </div>
+        <div class="integration-row">
+          <div class="integration-pill">Shopify</div>
+          <div class="integration-pill">WooCommerce</div>
+          <div class="integration-pill">Stripe</div>
+          <div class="integration-pill">Square</div>
+          <div class="integration-pill">QuickBooks Online</div>
+          <div class="integration-pill">And more coming soon</div>
+        </div>
+      </section>
+
+      <!-- Analytics preview -->
+      <section aria-labelledby="preview-title">
+        <div class="section-header">
+          <div class="section-kicker">Control center</div>
+          <h2 class="section-title" id="preview-title">See your business the way a CFO would</h2>
+          <p class="section-body">
+            Give yourself a bird’s eye view of sales, costs, and trends without living inside spreadsheets.
+            Aervo turns raw data into a clean control panel you can check in minutes.
+          </p>
+        </div>
+        <div class="preview">
+          <div class="preview-top">
+            <div class="preview-tabs">
+              <div class="preview-tab active">Overview</div>
+              <div class="preview-tab">Sales</div>
+              <div class="preview-tab">Inventory</div>
+              <div class="preview-tab">Customers</div>
+            </div>
+            <span class="badge">Live data</span>
+          </div>
+          <div class="preview-body">
+            <div class="preview-main">
+              <div class="preview-main-title">This week</div>
+              <div class="preview-lines"></div>
+            </div>
+            <div class="preview-side">
+              <div class="preview-side-item">
+                <strong>Top driver</strong><br />
+                Apparel is driving 48 percent of revenue with the highest margin across channels.
+              </div>
+              <div class="preview-side-item">
+                <strong>Risk</strong><br />
+                Three products will hit low stock within 5 days at the current sales pace.
+              </div>
+              <div class="preview-side-item">
+                <strong>Action</strong><br />
+                Consider a small restock on “Signature Hoodie” and “Everyday Tee” to avoid out of stock weekends.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section id="pricing" aria-labelledby="pricing-title">
+        <div class="section-header">
+          <div class="section-kicker">Pricing</div>
+          <h2 class="section-title" id="pricing-title">Simple pricing as you grow</h2>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-name">Starter</div>
+            <div class="pricing-price">$39 / month</div>
+            <div class="pricing-note">For solo owners and small shops.</div>
+            <ul class="pricing-features">
+              <li>Up to 3 data sources</li>
+              <li>Core dashboard and insights</li>
+              <li>Email summaries</li>
+            </ul>
+            <button class="btn btn-ghost">Join waitlist</button>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-name">Growth</div>
+            <div class="pricing-price">$89 / month</div>
+            <div class="pricing-note">For growing online brands.</div>
+            <ul class="pricing-features">
+              <li>Up to 7 data sources</li>
+              <li>Advanced alerts and segments</li>
+              <li>Priority support</li>
+            </ul>
+            <button class="btn btn-primary">Get early access</button>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-name">Scale</div>
+            <div class="pricing-price">Let’s talk</div>
+            <div class="pricing-note">For multi location and complex setups.</div>
+            <ul class="pricing-features">
+              <li>Unlimited data sources</li>
+              <li>Custom views and onboarding</li>
+              <li>Dedicated success partner</li>
+            </ul>
+            <button class="btn btn-ghost">Talk to sales</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section aria-labelledby="testimonials-title">
+        <div class="section-header">
+          <div class="section-kicker">Testimonials</div>
+          <h2 class="section-title" id="testimonials-title">Owners who like clear numbers</h2>
+        </div>
+        <div class="testimonials">
+          <div class="quote-card">
+            <p class="quote-text">
+              “I used to piece everything together from three dashboards and a spreadsheet. Now I open Aervo in the morning and know exactly what to focus on.”
+            </p>
+            <p class="quote-name">Maria, online apparel brand owner</p>
+          </div>
+          <div class="quote-card">
+            <p class="quote-text">
+              “Aervo is like having a part time analyst who already understands my store. The insights are simple and actionable.”
+            </p>
+            <p class="quote-name">Jason, coffee shop and roastery owner</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" aria-labelledby="faq-title">
+        <div class="section-header">
+          <div class="section-kicker">FAQ</div>
+          <h2 class="section-title" id="faq-title">Questions owners often ask</h2>
+        </div>
+        <div class="faq">
+          <div class="faq-item">
+            <div class="faq-q">Is Aervo only for online stores?</div>
+            <div>
+              No. Aervo is built for both online and local businesses. If you track sales and customers, Aervo can help.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Do I need a data team to use this?</div>
+            <div>
+              No. Aervo is designed for owners and operators who want clarity without extra headcount or complicated tools.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Can I try it before committing?</div>
+            <div>
+              Yes. We offer a free trial for new accounts so you can see how Aervo fits your business.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How secure is my data?</div>
+            <div>
+              Your data is encrypted in transit and at rest. You control what you connect and can disconnect any time.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> Aervo. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#">Privacy</a>
       </div>
-
-      <div>
-        <p style="opacity:0.85; font-size:14px; margin-bottom:10px;">
-          <strong>Coming soon:</strong>
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-          Direct integrations with the tools you already use: Shopify, Square, Stripe, and more.
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-          Connect once and Aervo will automatically pull in your sales each day, so your dashboard and
-          AI answers are always based on fresh, real numbers.
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0;">
-          Long term, Aervo will support multi-location and multi-channel data, giving you one place to
-          see how your whole business is performing.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" class="section">
-    <div class="badge">How it works</div>
-    <h2>From raw numbers to simple answers in three steps.</h2>
-    <ol class="feature-list">
-      <li><strong>Connect your data.</strong> Use a spreadsheet or a POS export.</li>
-      <li><strong>Ask Aervo anything.</strong> “What were my top items?” “Are we up this week?”</li>
-      <li><strong>Act with confidence.</strong> Make smarter decisions instantly.</li>
-    </ol>
-  </section>
-
-  <!-- WHO IT’S FOR -->
-  <section id="who-its-for" class="section">
-    <div class="badge">Who it’s for</div>
-    <h2>Built for business owners, not analysts.</h2>
-    <p>
-      Aervo makes it simple to understand your numbers even if you’re not a data expert.
-    </p>
-    <ul class="feature-list">
-      <li>Retail shops that want clear daily snapshots.</li>
-      <li>Cafés and small restaurants tracking best sellers.</li>
-      <li>Online stores that want fast clarity without spreadsheets.</li>
-    </ul>
-  </section>
-
-  <!-- PRICING -->
-  <section id="pricing" class="section">
-    <div class="badge">Pricing</div>
-    <h2>Start in beta while we build Aervo with you.</h2>
-    <div class="pricing-cards">
-      <div class="pricing-card">
-        <h3>Early Access</h3>
-        <p style="font-size:28px; margin:8px 0;">Free</p>
-        <p>Help shape Aervo during beta.</p>
-        <ul class="feature-list">
-          <li>Dashboard access</li>
-          <li>AI-powered insights</li>
-          <li>Direct feedback to the team</li>
-        </ul>
-        <p style="margin-top:18px;">
-          <a href="mailto:omardavila20@gmail.com" style="color:#8fbfff;">Request access</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about" class="section">
-    <div class="badge">About Aervo</div>
-    <h2>A higher view for everyday business owners.</h2>
-    <p>
-      Aervo was built to give small businesses the same clarity big companies get —
-      without the complexity. Clean, simple insights you can use today.
-    </p>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div>Aervo © <span id="year"></span>. A higher view of your business.</div>
-  </footer>
+    </footer>
+  </div>
 
   <script>
+    // Set current year in footer
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
-
 </body>
 </html>
