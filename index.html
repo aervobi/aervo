@@ -1,364 +1,1006 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Aervo – A higher view of your business</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    :root {
-      --bg: #050816;
-      --border: rgba(255,255,255,0.08);
-      --text: #f7f7ff;
-      --muted: #a0a3b8;
-      --accent: #7c5cff;
-      --accent-2: #29c8ff;
-      --radius-xl: 18px;
-      --radius-full: 999px;
-      --shadow-soft: 0 18px 60px rgba(0,0,0,0.5);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Aervo – A higher view of your business</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Aervo pulls in sales, inventory, and customer data to give modern businesses one live, AI-powered view."
+    />
+    <style>
+      :root {
+        --bg: #02030a;
+        --bg-alt: #070b17;
+        --card: #0d1224;
+        --border: rgba(255, 255, 255, 0.06);
+        --border-strong: rgba(124, 92, 255, 0.7);
+        --text: #f7f7ff;
+        --muted: #a0a3b8;
+        --accent: #7c5cff;
+        --accent-2: #29c8ff;
+        --accent-3: #23e6a8;
+        --radius-lg: 18px;
+        --radius-xl: 26px;
+        --radius-pill: 999px;
+        --shadow-soft: 0 24px 90px rgba(0, 0, 0, 0.85);
+        --max-width: 1120px;
+      }
 
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      font-family: "Inter", system-ui, sans-serif;
-      background: radial-gradient(circle at top, #1a1f3a 0, #050816 60%);
-      color: var(--text);
-    }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    /* Header */
-    header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      backdrop-filter:blur(14px);
-      background:rgba(5,8,22,0.88);
-      border-bottom:1px solid var(--border);
-    }
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Inter", sans-serif;
+        background: radial-gradient(circle at 50% 0%, #1d2247 0, #02030a 52%);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
 
-    .header-inner{
-      max-width:1120px;
-      margin:auto;
-      padding:12px 20px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
 
-    .logo{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
+      .page {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 20px 20px 72px;
+        position: relative;
+      }
 
-    .logo-img{
-      height:32px;
-      width:auto;
-    }
+      /* Header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        backdrop-filter: blur(16px);
+        background: linear-gradient(
+          to bottom,
+          rgba(2, 3, 10, 0.95),
+          rgba(2, 3, 10, 0.88)
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
 
-    nav{
-      display:flex;
-      gap:18px;
-      font-size:0.9rem;
-      color:var(--muted);
-    }
-    nav a:hover{color:var(--text);}
+      .header-inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
 
-    .btn{
-      padding:8px 18px;
-      border-radius:var(--radius-full);
-      font-size:0.86rem;
-      cursor:pointer;
-      border:1px solid transparent;
-      transition:0.15s ease;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .btn-primary{
-      background:linear-gradient(120deg,var(--accent),var(--accent-2));
-      color:#050816;
-      font-weight:600;
-      box-shadow:0 8px 30px rgba(41,200,255,0.45);
-    }
-    .btn-primary:hover{transform:translateY(-2px);}
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .btn-ghost{
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border);
-      color:var(--muted);
-    }
+      .logo-img {
+        height: 30px;
+        width: auto;
+      }
 
-    /* Reveal animations */
-    .reveal{
-      opacity:0;
-      transform:translateY(20px);
-      transition:opacity .5s ease, transform .5s ease;
-    }
-    .reveal-visible{
-      opacity:1;
-      transform:translateY(0);
-    }
+      .logo-wordmark {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
 
-    main{
-      max-width:1120px;
-      margin:auto;
-      padding:40px 20px 70px;
-    }
+      .logo-wordmark-main {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
 
-    /* HERO */
-    .hero{
-      display:grid;
-      grid-template-columns:1.1fr 1fr;
-      gap:30px;
-      align-items:center;
-      margin-bottom:60px;
-    }
+      .logo-wordmark-sub {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
 
-    .hero-title{
-      font-size:2.4rem;
-      font-weight:700;
-    }
-    .hero-title span{
-      background:linear-gradient(120deg,var(--accent-2),var(--accent));
-      -webkit-background-clip:text;
-      color:transparent;
-    }
-    .hero-sub{color:var(--muted);max-width:32rem;font-size:1rem;}
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 0.88rem;
+        color: var(--muted);
+      }
 
-    .hero-panel{
-      border-radius:20px;
-      padding:20px;
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border);
-      box-shadow:var(--shadow-soft);
-    }
+      nav a {
+        position: relative;
+        padding-bottom: 2px;
+      }
 
-    /* Section Headers */
-    section{margin-bottom:60px;}
-    h2{font-size:1.6rem;margin-bottom:10px;}
-    .section-body{color:var(--muted);margin-bottom:20px;}
+      nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 1px;
+        background: linear-gradient(120deg, var(--accent-2), var(--accent));
+        transition: width 0.18s ease;
+      }
 
-    /* Cards */
-    .grid-3{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:16px;
-    }
+      nav a:hover {
+        color: var(--text);
+      }
+      nav a:hover::after {
+        width: 100%;
+      }
 
-    .card{
-      padding:16px;
-      border-radius:var(--radius-xl);
-      background:rgba(255,255,255,0.03);
-      border:1px solid var(--border);
-    }
-    .card-title{font-weight:600;margin-bottom:6px;}
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    /* Pricing */
-    .pricing-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:18px;
-    }
-    .pricing-card{
-      padding:20px;
-      border-radius:20px;
-      background:rgba(255,255,255,0.04);
-      border:1px solid var(--border);
-    }
+      /* Base button – used for all buttons on the site */
+      .btn {
+        background: linear-gradient(90deg, #29c8ff, #7c5cff);
+        color: #050816;
+        font-weight: 600;
+        font-size: 0.9rem;
 
-    .pricing-name{font-weight:600;margin-bottom:4px;}
-    .pricing-price{font-size:1.25rem;font-weight:700;margin-bottom:10px;}
-    .pricing-note{color:var(--muted);margin-bottom:12px;font-size:0.9rem;}
-    .pricing-features li{
-      margin-left:16px;
-      color:var(--muted);
-      font-size:0.9rem;
-    }
+        border: none;
+        outline: none;
+        padding: 12px 28px;
+        border-radius: 999px;
 
-    footer{
-      border-top:1px solid var(--border);
-      padding:20px;
-      font-size:0.85rem;
-      text-align:center;
-      color:var(--muted);
-    }
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
 
-    @media(max-width:900px){
-      .hero{grid-template-columns:1fr;}
-      nav{display:none;}
-      .pricing-grid,.grid-3{grid-template-columns:1fr;}
-    }
-  </style>
-</head>
+        line-height: 1;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
 
-<body>
-  <header>
-    <div class="header-inner">
-      <div class="logo">
-        <img src="logo.png" alt="Aervo Logo" class="logo-img">
-      </div>
+        /* Glow */
+        box-shadow: 0 0 18px rgba(41, 200, 255, 0.45),
+          0 0 32px rgba(124, 92, 255, 0.35);
 
-      <nav>
-        <a href="#how">How it works</a>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-      </nav>
+        transition: transform 0.18s ease, box-shadow 0.18s ease,
+          opacity 0.18s ease;
+      }
 
-      <div style="display:flex; gap:10px;">
-        <button class="btn btn-ghost">Log in</button>
-        <button class="btn btn-primary">Get early access</button>
-      </div>
-    </div>
-  </header>
+      /* Hover glow */
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 22px rgba(41, 200, 255, 0.7),
+          0 0 40px rgba(124, 92, 255, 0.55);
+      }
 
-  <main>
+      /* Clicked state */
+      .btn:active {
+        transform: translateY(0);
+        opacity: 0.9;
+      }
 
-    <!-- HERO -->
-    <section class="hero reveal">
-      <div>
-        <h1 class="hero-title">A <span>higher view</span> of your business</h1>
-        <p class="hero-sub">Aervo gives you simple insights across sales, customers, and inventory without digging through dashboards.</p>
+      /* Keep these for semantics – they now just reuse .btn */
+      .btn-primary,
+      .btn-ghost {
+        /* no extra visual changes; they inherit from .btn */
+      }
 
-        <div style="margin-top:18px;display:flex;gap:12px;">
-          <button class="btn btn-primary">Get early access</button>
-          <button class="btn btn-ghost">Learn more</button>
-        </div>
-      </div>
+      /* Scroll reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .reveal-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-      <div class="hero-panel">
-        <h4 style="color:var(--muted);margin-bottom:8px;">Today’s summary</h4>
-        <p style="font-size:0.9rem;">Revenue is up 18% this week and customer repeat rate is trending upward.</p>
-      </div>
-    </section>
+      main {
+        padding-top: 40px;
+      }
 
-    <!-- WHAT IT DOES -->
-    <section class="reveal">
-      <h2>What Aervo does</h2>
-      <p class="section-body">Clear insights that help owners make smarter decisions.</p>
+      /* HERO -------------------------------------------------------- */
+      .hero {
+        position: relative;
+        height: 100vh;
+        min-height: 560px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">Connect your tools</div>
-          <p>Sync Shopify, Stripe, Square, and more.</p>
-        </div>
+      .hero-inner {
+        position: relative;
+        z-index: 5;
+        max-width: 720px;
+        padding: 0 16px;
+        margin: 0 auto;
+      }
 
-        <div class="card">
-          <div class="card-title">Find patterns</div>
-          <p>AI highlights changes worth paying attention to.</p>
-        </div>
+      .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 14px;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: radial-gradient(
+          circle at top left,
+          rgba(124, 92, 255, 0.85),
+          rgba(0, 0, 0, 0.92)
+        );
+        font-size: 0.78rem;
+      }
 
-        <div class="card">
-          <div class="card-title">Clear next steps</div>
-          <p>Aervo explains what’s happening and what to do next.</p>
-        </div>
-      </div>
-    </section>
+      .hero-pill-label {
+        border-radius: var(--radius-pill);
+        padding: 2px 8px;
+        background: rgba(0, 0, 0, 0.7);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
 
-    <!-- HOW IT WORKS -->
-    <section id="how" class="reveal">
-      <h2>How it works</h2>
-      <p class="section-body">Three quick steps to get clarity.</p>
+      .hero-pill-text {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">1. Connect</div>
-          <p>Link your tools in minutes.</p>
-        </div>
+      .hero-title {
+        margin-top: 18px;
+        font-size: clamp(2.4rem, 4.5vw, 3.5rem);
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
 
-        <div class="card">
-          <div class="card-title">2. Train</div>
-          <p>Tell Aervo what matters most.</p>
-        </div>
+      .hero-title span {
+        background-image: linear-gradient(
+          120deg,
+          var(--accent-2),
+          var(--accent)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+      }
 
-        <div class="card">
-          <div class="card-title">3. Insights</div>
-          <p>See trends and take action fast.</p>
-        </div>
-      </div>
-    </section>
+      .hero-sub {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
 
-    <!-- FEATURES -->
-    <section id="features" class="reveal">
-      <h2>Features</h2>
-      <p class="section-body">Made for small and online business owners.</p>
+      .hero-actions {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="card-title">Unified dashboard</div>
-          <p>Sales, inventory, and customers in one place.</p>
-        </div>
+      .hero-footnote {
+        margin-top: 10px;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
 
-        <div class="card">
-          <div class="card-title">Smart alerts</div>
-          <p>Quick prompts when something changes.</p>
-        </div>
+      /* Background logo + glow */
+      .hero-glow {
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 520px;
+        height: 520px;
+        transform: translate(-50%, -55%);
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(124, 92, 255, 0.55) 0,
+          transparent 55%
+        );
+        filter: blur(8px);
+        opacity: 0.8;
+        z-index: 1;
+        pointer-events: none;
+      }
 
-        <div class="card">
-          <div class="card-title">Ask Aervo</div>
-          <p>Ask questions in plain English.</p>
-        </div>
-      </div>
-    </section>
+      .hero-logo-bg {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 260px;
+        max-width: 60vw;
+        transform: translate(-50%, -55%);
+        opacity: 0.9;
+        z-index: 2;
+        filter: drop-shadow(0 0 38px rgba(124, 92, 255, 0.9));
+        pointer-events: none;
+      }
 
-    <!-- PRICING -->
-    <section id="pricing" class="reveal">
-      <h2>Pricing</h2>
-      <p class="section-body">Simple, predictable pricing.</p>
+      /* Canvas layer for "data stars" */
+      .hero-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        display: block;
+      }
 
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <div class="pricing-name">Starter</div>
-          <div class="pricing-price">$39/mo</div>
-          <div class="pricing-note">For small shops</div>
-          <ul class="pricing-features">
-            <li>Up to 3 data sources</li>
-            <li>Basic insights</li>
-            <li>Email summaries</li>
-          </ul>
-        </div>
+      /* Tiny twinkling background stars (CSS only, behind canvas) */
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+            1px 1px at 10% 20%,
+            rgba(255, 255, 255, 0.35),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 80% 30%,
+            rgba(255, 255, 255, 0.25),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 20% 80%,
+            rgba(255, 255, 255, 0.25),
+            transparent
+          ),
+          radial-gradient(
+            1px 1px at 60% 75%,
+            rgba(255, 255, 255, 0.18),
+            transparent
+          );
+        opacity: 0.35;
+        z-index: 0;
+      }
 
-        <div class="pricing-card">
-          <div class="pricing-name">Growth</div>
-          <div class="pricing-price">$89/mo</div>
-          <div class="pricing-note">For growing brands</div>
-          <ul class="pricing-features">
-            <li>7 data sources</li>
-            <li>Advanced insights</li>
-            <li>Priority support</li>
-          </ul>
-        </div>
+      /* Sections ---------------------------------------------------- */
+      section.content-section {
+        margin-top: 96px;
+        margin-bottom: 96px;
+      }
 
-        <div class="pricing-card">
-          <div class="pricing-name">Scale</div>
-          <div class="pricing-price">Custom</div>
-          <div class="pricing-note">For multi-location ops</div>
-          <ul class="pricing-features">
-            <li>Unlimited sources</li>
-            <li>Dedicated onboarding</li>
-            <li>Custom dashboards</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      .section-header {
+        margin-bottom: 26px;
+        max-width: 40rem;
+      }
 
-  </main>
+      .section-kicker {
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #7f85a5;
+        margin-bottom: 12px;
+      }
 
-  <footer>© <span id="year"></span> Aervo</footer>
+      .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 10px;
+        letter-spacing: -0.03em;
+      }
 
-  <script>
-    // Reveal animations
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          entry.target.classList.add('reveal-visible');
+      .section-body {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #c2c5d8;
+        max-width: 620px;
+        margin-bottom: 20px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        background: linear-gradient(
+          145deg,
+          rgba(9, 13, 32, 0.98),
+          rgba(9, 17, 42, 0.98)
+        );
+        padding: 16px 18px;
+        font-size: 0.9rem;
+        transition: transform 0.16s ease, box-shadow 0.16s ease,
+          border-color 0.16s ease, background 0.16s ease;
+      }
+
+      .card-title {
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 0.98rem;
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(124, 92, 255, 0.8);
+        background: linear-gradient(
+          145deg,
+          rgba(16, 24, 66, 0.98),
+          rgba(9, 17, 42, 0.98)
+        );
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.9);
+      }
+
+      .step-label {
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+        margin-bottom: 2px;
+      }
+
+      .usecase-tag {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      /* Pricing */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .pricing-card {
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        background: radial-gradient(
+          circle at top,
+          rgba(124, 92, 255, 0.2),
+          rgba(7, 11, 23, 0.98)
+        );
+        padding: 18px 18px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 0.9rem;
+      }
+
+      .pricing-name {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .pricing-price {
+        font-size: 1.3rem;
+        font-weight: 650;
+      }
+
+      .pricing-note {
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .pricing-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 6px 0 10px;
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .pricing-list li::before {
+        content: "• ";
+        color: var(--accent-2);
+      }
+
+      /* CTA strip */
+      .cta-strip {
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(124, 92, 255, 0.7);
+        background: radial-gradient(
+          circle at top left,
+          rgba(41, 200, 255, 0.2),
+          rgba(5, 8, 22, 0.96)
+        );
+        padding: 18px 18px 16px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 32px;
+      }
+
+      .cta-strip-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .cta-strip-body {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.8rem;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .footer-links a {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .footer-links a:hover {
+        color: var(--text);
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 960px) {
+        .pricing-grid,
+        .grid-3 {
+          grid-template-columns: minmax(0, 1fr);
         }
-      });
-    }, {threshold:0.15});
+      }
 
-    reveals.forEach(section=>observer.observe(section));
+      @media (max-width: 820px) {
+        nav {
+          display: none;
+        }
+        .header-inner,
+        .page {
+          padding-inline: 16px;
+        }
 
-    // Current year
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-</body>
+        .hero-inner {
+          max-width: 92vw;
+        }
+        .hero-logo-bg {
+          width: 220px;
+          transform: translate(-50%, -60%);
+        }
+        .hero-glow {
+          width: 420px;
+          height: 420px;
+          transform: translate(-50%, -62%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <div class="logo">
+          <img src="logo.png" alt="Aervo logo" class="logo-img" />
+          <div class="logo-wordmark">
+            <div class="logo-wordmark-main">Aervo</div>
+            <div class="logo-wordmark-sub">A higher view of your business</div>
+          </div>
+        </div>
+
+        <nav aria-label="Main navigation">
+          <a href="#why">Why Aervo</a>
+          <a href="#how">How it works</a>
+          <a href="#use-cases">Use cases</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="btn btn-ghost">Log in</button>
+          <button class="btn btn-primary">Get early access</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO with data particles into logo -->
+
+    <section class="hero">
+      <canvas id="dataCanvas" class="hero-canvas"></canvas>
+      <div class="hero-glow"></div>
+      <img src="logo.png" alt="" class="hero-logo-bg" />
+
+      <div class="hero-inner reveal">
+        <!-- Text content below the logo -->
+        <div class="hero-content" style="margin-top: 500px">
+          <h1 class="hero-title">
+            Intelligent visibility for <span>modern businesses</span>.
+          </h1>
+
+          <p class="hero-sub">
+            Aervo pulls live data from your tools and turns it into one clear,
+            AI powered view so you can see issues, opportunities, and next steps
+            at a glance.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">Get in touch ↗</a>
+            <a href="#why" class="btn btn-ghost">View features</a>
+          </div>
+
+          <p class="hero-footnote">
+            Built for small and online business owners – no data team required.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="page">
+      <main>
+        <!-- WHY AERVO -->
+        <section
+          id="why"
+          class="content-section reveal"
+          aria-labelledby="why-title"
+        >
+          <div class="section-header">
+            <div class="section-kicker">Why Aervo</div>
+            <h2 class="section-title" id="why-title">
+              One live source of truth for your decisions.
+            </h2>
+            <p class="section-body">
+              Instead of bouncing between dashboards and spreadsheets, Aervo
+              gives you a single place to check the health of your business and
+              act quickly.
+            </p>
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-title">One view, not ten tabs</div>
+              <p>
+                Sales, inventory, and key customer metrics in one clean, live
+                dashboard.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">AI that explains</div>
+              <p>
+                Patterns and anomalies are surfaced for you, with short
+                explanations and next steps.
+              </p>
+            </div>
+            <div class="card">
+              <div class="card-title">Built for operators</div>
+              <p>
+                Designed for owners and managers who want clarity in minutes,
+                not new busywork.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section
+          id="how"
+          class="content-section reveal"
+          aria-labelledby="how-title"
+        >
+          <div class="section-header">
+            <div class="section-kicker">How it works</div>
+            <h2 class="section-title" id="how-title">
+              From scattered tools to a clear control center.
+            </h2>
+            <p class="section-body">
+              Three simple steps to get a live, AI powered view of your
+              business.
+            </p>
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <div class="step-label">Step 1</div>
+              <div class="card-title">Connect your tools</div>
+              <p>
+                Link Shopify, payment processors, and accounting apps in a few
+                clicks.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-label">Step 2</div>
+              <div class="card-title">Set what matters</div>
+              <p>
+                Tell Aervo what you care about most: margin, inventory risk,
+                repeat customers, or channel mix.
+              </p>
+            </div>
+            <div class="card">
+              <div class="step-label">Step 3</div>
+              <div class="card-title">Review & act</div>
+              <p>
+                Get short summaries, alerts, and suggested actions instead of
+                raw charts.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- USE CASES -->
+        <section
+          id="use-cases"
+          class="content-section reveal"
+          aria-labelledby="use-title"
+        >
+          <div class="section-header">
+            <div class="section-kicker">Use cases</div>
+            <h2 class="section-title" id="use-title">Where Aervo shines.</h2>
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <div class="usecase-tag">Ecommerce</div>
+              <div class="card-title">Product profitability</div>
+              <p>
+                See which products really drive profit after returns, discounts,
+                and shipping.
+              </p>
+            </div>
+            <div class="card">
+              <div class="usecase-tag">Retail & local</div>
+              <div class="card-title">Stock health</div>
+              <p>
+                Spot low stock and slow movers early so you can plan orders
+                instead of scrambling.
+              </p>
+            </div>
+            <div class="card">
+              <div class="usecase-tag">Service & hybrid</div>
+              <div class="card-title">Pipeline clarity</div>
+              <p>
+                Keep a clear picture of booked work, repeat clients, and revenue
+                pacing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRICING -->
+        <section
+          id="pricing"
+          class="content-section reveal"
+          aria-labelledby="pricing-title"
+        >
+          <div class="section-header">
+            <div class="section-kicker">Pricing</div>
+            <h2 class="section-title" id="pricing-title">
+              Start simple, scale up as you grow.
+            </h2>
+            <p class="section-body">
+              All plans include the core Aervo dashboard, AI insights, and
+              secure data connections.
+            </p>
+          </div>
+          <div class="pricing-grid">
+            <div class="pricing-card">
+              <div class="pricing-name">Starter</div>
+              <div class="pricing-price">$39 / month</div>
+              <div class="pricing-note">For solo owners and small shops.</div>
+              <ul class="pricing-list">
+                <li>Up to 3 data sources</li>
+                <li>Core dashboard</li>
+                <li>Email summaries</li>
+              </ul>
+              <button class="btn btn-ghost">Join waitlist</button>
+            </div>
+            <div class="pricing-card">
+              <div class="pricing-name">Growth</div>
+              <div class="pricing-price">$89 / month</div>
+              <div class="pricing-note">
+                For growing brands that need deeper insights.
+              </div>
+              <ul class="pricing-list">
+                <li>Up to 7 data sources</li>
+                <li>Advanced alerts & segments</li>
+                <li>Priority support</li>
+              </ul>
+              <button class="btn btn-primary">Get early access</button>
+            </div>
+            <div class="pricing-card">
+              <div class="pricing-name">Scale</div>
+              <div class="pricing-price">Let’s talk</div>
+              <div class="pricing-note">
+                For multi-location or complex setups.
+              </div>
+              <ul class="pricing-list">
+                <li>Unlimited data sources</li>
+                <li>Custom views & onboarding</li>
+                <li>Dedicated success partner</li>
+              </ul>
+              <button class="btn btn-ghost">Talk to sales</button>
+            </div>
+          </div>
+
+          <div class="cta-strip">
+            <div>
+              <div class="cta-strip-title">
+                Ready for a higher view of your business?
+              </div>
+              <div class="cta-strip-body">
+                Share your store and tools, and we will set up a tailored
+                preview of Aervo for your business.
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary">Request a demo</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div>© <span id="year"></span> Aervo. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="#why">Why Aervo</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#use-cases">Use cases</a>
+          <a href="#">Privacy</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Scroll reveal for sections
+      const revealEls = document.querySelectorAll(".reveal");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("reveal-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.18 }
+      );
+      revealEls.forEach((el) => observer.observe(el));
+
+      // Current year in footer
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Data particle animation into the logo
+      const canvas = document.getElementById("dataCanvas");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      const PARTICLE_COUNT = 90;
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.setTransform(
+          window.devicePixelRatio,
+          0,
+          0,
+          window.devicePixelRatio,
+          0,
+          0
+        );
+      }
+
+      function createParticle() {
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        // spawn from edges
+        const edge = Math.floor(Math.random() * 4);
+        let x, y;
+        if (edge === 0) {
+          x = Math.random() * w;
+          y = -10;
+        } else if (edge === 1) {
+          x = w + 10;
+          y = Math.random() * h;
+        } else if (edge === 2) {
+          x = Math.random() * w;
+          y = h + 10;
+        } else {
+          x = -10;
+          y = Math.random() * h;
+        }
+
+        // target is center (logo)
+        const cx = w / 2;
+        const cy = h / 2 - 30; // slightly above center
+        const dx = cx - x;
+        const dy = cy - y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const speed = 0.6 + Math.random() * 0.6;
+        const vx = (dx / dist) * speed;
+        const vy = (dy / dist) * speed;
+
+        return {
+          x,
+          y,
+          vx,
+          vy,
+          size: 1 + Math.random() * 1.6,
+          alpha: 0.35 + Math.random() * 0.4,
+        };
+      }
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push(createParticle());
+        }
+      }
+
+      function updateParticles() {
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        const cx = w / 2;
+        const cy = h / 2 - 30;
+
+        ctx.clearRect(0, 0, w, h);
+
+        for (let p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // draw
+          const gradient = ctx.createRadialGradient(
+            p.x,
+            p.y,
+            0,
+            p.x,
+            p.y,
+            p.size * 3
+          );
+          gradient.addColorStop(0, `rgba(180, 230, 255, ${p.alpha})`);
+          gradient.addColorStop(1, "rgba(180, 230, 255, 0)");
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          const dToCenter = Math.hypot(p.x - cx, p.y - cy);
+          if (dToCenter < 30) {
+            // absorbed by the logo, respawn
+            const idx = particles.indexOf(p);
+            particles[idx] = createParticle();
+          }
+        }
+        requestAnimationFrame(updateParticles);
+      }
+
+      function handleResize() {
+        resizeCanvas();
+        initParticles();
+      }
+
+      window.addEventListener("resize", handleResize);
+      // init
+      resizeCanvas();
+      initParticles();
+      requestAnimationFrame(updateParticles);
+    </script>
+  </body>
 </html>
