@@ -5,411 +5,901 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aervo – A higher view of your business</title>
   <link rel="icon" type="image/png" href="favicon.png">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aervo – Dashboard</title>
-
-  <link rel="icon" type="image/png" href="favicon.png">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #050817;
-      color: #d6def8;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    /* Top nav */
+    :root {
+      --navy: #0a1628;
+      --navy-light: #1a2c4a;
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --cyan: #06b6d4;
+      --purple: #8b5cf6;
+      --accent: #8fbfff;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0a1628 0%, #050817 100%);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Animated gradient orbs background */
+    .bg-orbs {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #2563eb, transparent);
+      top: -250px;
+      right: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #8b5cf6, transparent);
+      bottom: -200px;
+      left: -100px;
+      animation-delay: 5s;
+    }
+
+    .orb-3 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #06b6d4, transparent);
+      top: 50%;
+      left: 50%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 30px) scale(0.9); }
+    }
+
+    /* Navigation */
     .nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
-      background: rgba(5, 8, 23, 0.92);
-      backdrop-filter: blur(14px);
-      z-index: 10;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      z-index: 1000;
+      padding: 1.5rem 0;
+      backdrop-filter: blur(20px);
+      background: rgba(10, 22, 40, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
     }
 
-    .nav-brand {
-      font-weight: 600;
-      letter-spacing: 4px;
-      font-size: 14px;
-      color: #8fbfff;
+    .nav.scrolled {
+      padding: 1rem 0;
+      background: rgba(10, 22, 40, 0.95);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      transition: transform 0.3s ease;
+    }
+
+    .logo-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      filter: drop-shadow(0 0 10px rgba(143, 191, 255, 0.5));
+    }
+
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, #8fbfff, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      list-style: none;
     }
 
     .nav-links a {
-      margin: 0 12px;
-      font-size: 14px;
+      color: var(--text-muted);
       text-decoration: none;
-      color: #a6b3dd;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
     }
 
     .nav-links a:hover {
-      color: #dfe7ff;
+      color: var(--text);
     }
 
-    .nav-login-btn {
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid #3a4a7c;
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.75rem 1.75rem;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
       text-decoration: none;
-      font-size: 14px;
-      color: #dfe7ff;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
     }
 
-    .nav-login-btn:hover {
-      background: #1a2237;
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Push main down so nav doesn’t cover it */
-    main {
-      padding-top: 120px;
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 30px rgba(37, 99, 235, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .hero-container {
+      max-width: 1400px;
+      margin: 0 auto;
       text-align: center;
     }
 
-    /* HERO SECTION */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: 50px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-badge::before {
+      content: '✨';
+      font-size: 1rem;
+    }
+
     .hero-logo {
-      width: 160px;
-      margin-bottom: 20px;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 2rem;
+      filter: drop-shadow(0 0 40px rgba(143, 191, 255, 0.6));
+      animation: floatLogo 3s ease-in-out infinite;
+    }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .hero-title {
-      color: #b4cdff;
-      letter-spacing: 8px;
-      font-size: 40px;
-      margin: 10px 0;
-      text-shadow:
-        0 0 8px rgba(137, 180, 255, 0.8),
-        0 0 18px rgba(80, 130, 255, 0.6),
-        0 0 32px rgba(40, 90, 255, 0.4);
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #8fbfff 50%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInUp 0.8s ease-out 0.2s backwards;
     }
 
-    .hero-tagline {
-      color: #c3d2ff;
-      font-size: 18px;
-      margin-bottom: 28px;
-      text-shadow: 0 0 10px rgba(40, 70, 150, 0.5);
+    .hero-subtitle {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeInUp 0.8s ease-out 0.4s backwards;
     }
 
-    .hero-btn {
-      display: inline-block;
-      padding: 12px 28px;
-      background: #1a1f2b;
-      color: #b6c8f5;
-      border: 1px solid #2c3447;
-      border-radius: 6px;
-      font-size: 16px;
-      text-decoration: none;
-      box-shadow: 0 0 15px rgba(112, 150, 255, 0.15);
-      transition: all 0.25s ease;
-    }
-
-    .hero-btn:hover {
-      background: #222a38;
-      box-shadow: 0 0 25px rgba(112, 150, 255, 0.35);
-      transform: translateY(-1px);
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .hero-cta {
-      display: inline-block;
-      padding: 14px 34px;
-      margin-top: 30px;
-      font-size: 18px;
-      color: #b4cdff;
-      background: #1a243d;
-      border-radius: 10px;
-      border: 1px solid rgba(143, 191, 255, 0.4);
-      text-decoration: none;
-      letter-spacing: 1px;
-      box-shadow:
-        0 0 12px rgba(137, 180, 255, 0.45),
-        0 0 28px rgba(80, 130, 255, 0.35),
-        0 0 40px rgba(40, 90, 255, 0.25);
-      transition: all 0.25s ease;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+      animation: fadeInUp 0.8s ease-out 0.6s backwards;
     }
 
-    .hero-cta:hover {
-      background: #222c48;
-      transform: translateY(-2px);
-      box-shadow:
-        0 0 16px rgba(137, 180, 255, 0.8),
-        0 0 40px rgba(80, 130, 255, 0.6),
-        0 0 60px rgba(40, 90, 255, 0.45);
+    .btn-hero {
+      padding: 1.25rem 3rem;
+      font-size: 1.1rem;
     }
 
-    /* GENERIC SECTIONS */
-    .section {
-      max-width: 960px;
+    .btn-hero-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-hero-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-hero-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-hero-primary:hover {
+      box-shadow: 0 12px 40px rgba(37, 99, 235, 0.7);
+      transform: translateY(-3px);
+    }
+
+    .btn-hero-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text);
+    }
+
+    .btn-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Dashboard Preview */
+    .dashboard-preview {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 80px 24px;
-      text-align: left;
+      perspective: 1500px;
+      animation: fadeInUp 0.8s ease-out 0.8s backwards;
     }
 
-    .section h2 {
-      font-size: 28px;
-      margin-bottom: 16px;
-      color: #e5ecff;
+    .dashboard-card {
+      background: rgba(26, 44, 74, 0.3);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.5),
+        0 0 100px rgba(37, 99, 235, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transform: rotateX(10deg);
+      transition: all 0.5s ease;
     }
 
-    .section p {
-      color: #b6c3ee;
-      max-width: 640px;
+    .dashboard-card:hover {
+      transform: rotateX(0deg) translateY(-10px);
+      box-shadow: 
+        0 40px 80px rgba(0, 0, 0, 0.6),
+        0 0 120px rgba(37, 99, 235, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
-    .section-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-      gap: 40px;
+    .dashboard-mockup {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.4));
+      border-radius: 16px;
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .badge {
+    .dashboard-mockup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    }
+
+    .dashboard-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      color: var(--accent);
+      filter: drop-shadow(0 0 20px rgba(143, 191, 255, 0.5));
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .dashboard-mockup h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .dashboard-mockup p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Section Styles */
+    section {
+      padding: 8rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .section-badge {
       display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(143,191,255,0.4);
-      font-size: 11px;
+      padding: 0.5rem 1.25rem;
+      background: rgba(37, 99, 235, 0.1);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: 50px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #8fbfff;
-      margin-bottom: 12px;
+      margin-bottom: 1.5rem;
     }
 
-    .feature-list {
-      list-style: none;
-      padding: 0;
-      margin: 16px 0 0;
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #ffffff, #8fbfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .feature-list li {
-      margin-bottom: 10px;
-      color: #c2cff6;
+    .section-description {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.8;
     }
 
-    /* PRICING */
-    .pricing-cards {
+    /* Feature Cards */
+    .features-grid {
       display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .feature-card {
+      background: rgba(26, 44, 74, 0.3);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 2.5rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #2563eb, #8b5cf6, #06b6d4);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .feature-card:hover::before {
+      transform: translateX(0);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(37, 99, 235, 0.2);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(139, 92, 246, 0.2));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-icon::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.5), rgba(139, 92, 246, 0.5));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    .feature-icon svg {
+      width: 35px;
+      height: 35px;
+      color: var(--accent);
+      z-index: 1;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .feature-card ul {
+      list-style: none;
+      margin-top: 1.5rem;
+    }
+
+    .feature-card li {
+      padding: 0.75rem 0;
+      padding-left: 1.75rem;
+      position: relative;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .feature-card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* Steps Section */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #2563eb, #8b5cf6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      margin: 0 auto 2rem;
+      box-shadow: 
+        0 10px 40px rgba(37, 99, 235, 0.4),
+        0 0 60px rgba(37, 99, 235, 0.2);
+      position: relative;
+    }
+
+    .step-number::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #8b5cf6);
+      opacity: 0.3;
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .step h3 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .step p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    /* Audience Cards */
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .audience-card {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(139, 92, 246, 0.15));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .audience-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .audience-card:hover::before {
+      opacity: 1;
+    }
+
+    .audience-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(37, 99, 235, 0.5);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 60px rgba(37, 99, 235, 0.3);
+    }
+
+    .audience-card h3 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .audience-card p {
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+
+    /* Pricing Card */
+    .pricing-container {
+      max-width: 600px;
+      margin: 4rem auto 0;
     }
 
     .pricing-card {
-      background: radial-gradient(circle at top left, #202642, #0c101f);
-      border-radius: 14px;
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-
-    /* FOOTER */
-    .footer {
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 32px 24px 40px;
+      background: rgba(26, 44, 74, 0.4);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(37, 99, 235, 0.5);
+      border-radius: 24px;
+      padding: 3.5rem 3rem;
       text-align: center;
-      font-size: 13px;
-      color: #8a94b8;
-      margin-top: 60px;
+      position: relative;
+      overflow: hidden;
     }
 
-    /* Mobile styles */
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.2), transparent);
+    }
+
+    .pricing-badge {
+      background: linear-gradient(135deg, #2563eb, #8b5cf6);
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+      position: relative;
+      z-index: 1;
+    }
+
+    .price {
+      font-size: 5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff, #8fbfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 1.5rem 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-description {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-features {
+      list-style: none;
+      text-align: left;
+      margin: 2.5rem 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pricing-features li {
+      padding: 1rem 0;
+      padding-left: 2rem;
+      position: relative;
+      color: var(--text);
+      font-size: 1.05rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      background: rgba(10, 22, 40, 0.5);
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Mobile Responsive */
     @media (max-width: 768px) {
-      .nav {
-        padding: 0 16px;
-        height: 56px;
-      }
-
       .nav-links {
-        display: none; /* hide nav links, keep logo + login */
+        display: none;
       }
 
-      main {
-        padding-top: 90px;
-        padding-left: 16px;
-        padding-right: 16px;
+      .hero {
+        padding: 6rem 1.5rem 3rem;
       }
 
       .hero-logo {
-        width: 110px;
-        margin-bottom: 14px;
+        width: 80px;
+        height: 80px;
       }
 
-      .hero-title {
-        font-size: 28px;
-        letter-spacing: 5px;
+      .dashboard-card {
+        padding: 2rem 1.5rem;
       }
 
-      .hero-tagline {
-        font-size: 15px;
-        margin-bottom: 20px;
-        padding: 0 10px;
+      section {
+        padding: 5rem 1.5rem;
       }
 
-      .hero-cta {
-        padding: 10px 22px;
-        font-size: 15px;
-        margin-top: 20px;
+      .features-grid,
+      .steps-grid,
+      .audience-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
       }
 
-      .section {
-        padding: 48px 18px;
+      .pricing-card {
+        padding: 2.5rem 2rem;
       }
+    }
 
-      .section-grid {
-        grid-template-columns: 1fr; /* stack columns */
-        gap: 24px;
-      }
+    /* Scroll Reveal Animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-      .section h2 {
-        font-size: 22px;
-      }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-      .section p,
-      .feature-list li {
-        font-size: 14px;
-      }
+    /* Gradient text utility */
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff, #8fbfff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   </style>
 </head>
 
 <body>
-
-  <!-- NAVIGATION BAR -->
-  <header class="nav">
-    <div class="nav-left">
-      <a href="/" class="nav-brand">AERVO</a>
-    </div>
-    <nav class="nav-links">
-      <a href="#product">Product</a>
-      <a href="#how-it-works">How it works</a>
-      <a href="#who-its-for">Who it’s for</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#about">About</a>
-    </nav>
-  <div class="nav-right">
-    <a href="signup.html" class="nav-login-btn">Sign up</a>
-    <a href="login.html" class="nav-login-btn">Log in</a>
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
   </div>
-  </header>
 
-  <!-- HERO SECTION -->
-  <main>
-    <img src="logo.png" class="hero-logo" alt="Aervo Logo">
-    <h1 class="hero-title">AERVO</h1>
-    <p class="hero-tagline">A higher view of your business.</p>
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo-link">
+        <img src="logo.png" alt="Aervo Logo" class="logo-img">
+        <span class="logo-text">AERVO</span>
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="#product">Product</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#who-its-for">Who it's for</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
 
-    <a
-      href="mailto:omardavila20@gmail.com?subject=Aervo%20Early%20Early%20Access&body=Hi%20Omar,%0D%0A%0D%0AI'd%20love%20to%20join%20the%20Aervo%20beta%20and%20get%20a%20higher%20view%20of%20my%20business.%0D%0A%0D%0AHere%20are%20my%20details:%0D%0A-%20Business%20name:%0D%0A-%20Type%20of%20business:%0D%0A-%20Current%20POS/Platform:%0D%0A%0D%0AThanks!"
-      class="hero-cta"
-    >
-      Rise with Aervo
-    </a>
-  </main>
-
-  <!-- PRODUCT SECTION -->
-  <section id="product" class="section">
-    <div class="section-grid">
-      <div>
-        <div class="badge">Product</div>
-        <h2>Aervo shows you how your business is really doing.</h2>
-        <p>
-          Upload your sales data or connect your POS. Aervo turns your numbers into
-          simple, readable answers you can act on instantly.
-        </p>
-        <ul class="feature-list">
-          <li>See daily, weekly, and monthly performance at a glance.</li>
-          <li>Spot best sellers and slow movers automatically.</li>
-          <li>Ask “How did we do today?” and get instant answers.</li>
-        </ul>
-      </div>
-
-      <div>
-        <p style="opacity:0.85; font-size:14px; margin-bottom:10px;">
-          <strong>Coming soon:</strong>
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-          Direct integrations with the tools you already use: Shopify, Square, Stripe, and more.
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0 0 8px;">
-          Connect once and Aervo will automatically pull in your sales each day, so your dashboard and
-          AI answers are always based on fresh, real numbers.
-        </p>
-        <p style="opacity:0.8; font-size:14px; margin:0;">
-          Long term, Aervo will support multi-location and multi-channel data, giving you one place to
-          see how your whole business is performing.
-        </p>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-secondary">Log in</a>
+        <a href="signup.html" class="btn btn-primary">Sign up</a>
       </div>
     </div>
-  </section>
+  </nav>
 
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" class="section">
-    <div class="badge">How it works</div>
-    <h2>From raw numbers to simple answers in three steps.</h2>
-    <ol class="feature-list">
-      <li><strong>Connect your data.</strong> Use a spreadsheet or a POS export.</li>
-      <li><strong>Ask Aervo anything.</strong> “What were my top items?” “Are we up this week?”</li>
-      <li><strong>Act with confidence.</strong> Make smarter decisions instantly.</li>
-    </ol>
-  </section>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-badge">Join the Beta</div>
+      
+      <img src="logo.png" alt="Aervo Logo" class="hero-logo">
+      
+      <h1 class="hero-title">A higher view of your business</h1>
+      
+      <p class="hero-subtitle">
+        Turn your sales data into simple, actionable insights. No spreadsheets. No complexity. Just clarity.
+      </p>
 
-  <!-- WHO IT’S FOR -->
-  <section id="who-its-for" class="section">
-    <div class="badge">Who it’s for</div>
-    <h2>Built for business owners, not analysts.</h2>
-    <p>
-      Aervo makes it simple to understand your numbers even if you’re not a data expert.
-    </p>
-    <ul class="feature-list">
-      <li>Retail shops that want clear daily snapshots.</li>
-      <li>Cafés and small restaurants tracking best sellers.</li>
-      <li>Online stores that want fast clarity without spreadsheets.</li>
-    </ul>
-  </section>
-
-  <!-- PRICING -->
-  <section id="pricing" class="section">
-    <div class="badge">Pricing</div>
-    <h2>Start in beta while we build Aervo with you.</h2>
-    <div class="pricing-cards">
-      <div class="pricing-card">
-        <h3>Early Access</h3>
-        <p style="font-size:28px; margin:8px 0;">Free</p>
-        <p>Help shape Aervo during beta.</p>
-        <ul class="feature-list">
-          <li>Dashboard access</li>
-          <li>AI-powered insights</li>
-          <li>Direct feedback to the team</li>
-        </ul>
-        <p style="margin-top:18px;">
-          <a href="mailto:omardavila20@gmail.com" style="color:#8fbfff;">Request access</a>
-        </p>
+      <div class="hero-cta">
+        <a href="mailto:omardavila20@gmail.com?subject=Aervo%20Early%20Access&body=Hi%20Omar,%0D%0A%0D%0AI'd%20love%20to%20join%20the%20Aervo%20beta!%0D%0A%0D%0ABusiness%20name:%0D%0AType%20of%20business:%0D%0ACurrent%20POS/Platform:%0D%0A%0D%0AThanks!" class="btn btn-hero btn-hero-primary">
+          Rise with Aervo
+        </a>
+        <a href="#how-it-works" class="btn btn-hero btn-hero-secondary">
+          Learn More
+        </a>
       </div>
-    </div>
-  </section>
 
-  <!-- ABOUT -->
-  <section id="about" class="section">
-    <div class="badge">About Aervo</div>
-    <h2>A higher view for everyday business owners.</h2>
-    <p>
-      Aervo was built to give small businesses the same clarity big companies get —
-      without the complexity. Clean, simple insights you can use today.
-    </p>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div>Aervo © <span id="year"></span>. A higher view of your business.</div>
-  </footer>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
-
-</body>
-</html>
+      <div class="dashboard-preview">
+        <div class="dashboard-card">
+          <div class="dashboard-mockup">
+            <svg class="dashboard-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0
