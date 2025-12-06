@@ -390,6 +390,11 @@
       text-align: center;
       position: relative;
       overflow: hidden;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .dashboard-mockup::before {
@@ -405,7 +410,7 @@
     .dashboard-icon {
       width: 100px;
       height: 100px;
-      margin: 0 auto 2rem;
+      margin-bottom: 2rem;
       color: var(--accent);
       filter: drop-shadow(0 0 20px rgba(143, 191, 255, 0.5));
       animation: pulse 2s ease-in-out infinite;
@@ -438,20 +443,6 @@
     .section-header {
       text-align: center;
       margin-bottom: 5rem;
-    }
-
-    .section-badge {
-      display: inline-block;
-      padding: 0.5rem 1.25rem;
-      background: rgba(37, 99, 235, 0.1);
-      border: 1px solid rgba(37, 99, 235, 0.3);
-      border-radius: 50px;
-      color: var(--accent);
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 1.5rem;
     }
 
     .section-title {
@@ -528,18 +519,6 @@
       overflow: hidden;
     }
 
-    .feature-icon::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.5), rgba(139, 92, 246, 0.5));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-    }
-
     .feature-icon svg {
       width: 35px;
       height: 35px;
@@ -567,7 +546,7 @@
     }
 
     .feature-card li::before {
-      content: '→';
+      content: '✓';
       position: absolute;
       left: 0;
       color: var(--accent);
@@ -774,6 +753,20 @@
       font-size: 1.3rem;
     }
 
+    /* About */
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-content p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
     /* Footer */
     footer {
       border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -807,6 +800,10 @@
         padding: 2rem 1.5rem;
       }
 
+      .dashboard-mockup {
+        padding: 3rem 1.5rem;
+      }
+
       section {
         padding: 5rem 1.5rem;
       }
@@ -833,14 +830,6 @@
     .reveal.active {
       opacity: 1;
       transform: translateY(0);
-    }
-
-    /* Gradient text utility */
-    .gradient-text {
-      background: linear-gradient(135deg, #ffffff, #8fbfff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
   </style>
 </head>
@@ -902,4 +891,11 @@
         <div class="dashboard-card">
           <div class="dashboard-mockup">
             <svg class="dashboard-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h3>Your Dashboard Awaits</h3>
+            <p>Clean insights at a glance • Real-time data • AI-powered answers</p>
+          </div>
+        </div>
+      </div>
+    
