@@ -258,8 +258,12 @@
 
             successEl.textContent = "Account created. Redirecting…";
 
-            // ✅ Go to welcome screen (NOT dashboard directly)
-            window.location.href = "welcome.html";
+            successEl.textContent = "Account created. Redirecting…";
+
+            // Onboarding checklist should show on dashboard
+            localStorage.setItem("aervo_onboarding_new", "1");
+
+            window.location.href = "dashboard.html";
           }
         } catch (err) {
           console.error("Network/JS error during signup:", err);
