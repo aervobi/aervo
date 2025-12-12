@@ -1606,6 +1606,8 @@
 
         // Ask Aervo fake answer
         document.getElementById("askBtn").addEventListener("click", () => {
+          const stepAsk = document.getElementById("stepAsk");
+          if (stepAsk) stepAsk.checked = true;
           const q = document.getElementById("questionInput").value.trim();
           const out = document.getElementById("chatOutput");
           if (!q) {
