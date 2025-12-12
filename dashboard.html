@@ -850,6 +850,45 @@
         <!-- OVERVIEW SECTION -->
         <section id="section-overview" class="page-section active">
           <div class="page-title">
+            <!-- ONBOARDING CHECKLIST -->
+            <div
+              id="onboardingCard"
+              class="card"
+              style="margin-bottom: 24px; display: none"
+            >
+              <h2>Next steps</h2>
+              <p class="subtext">
+                Get your first value from Aervo in under 2 minutes.
+              </p>
+
+              <ul
+                style="
+                  list-style: none;
+                  padding: 0;
+                  margin-top: 10px;
+                  font-size: 13px;
+                "
+              >
+                <li>
+                  <label>
+                    <input type="checkbox" id="stepShopify" />
+                    Connect Shopify (or skip for now)
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" id="stepInvite" />
+                    Invite a teammate
+                  </label>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" id="stepAsk" />
+                    Ask Aervo a question
+                  </label>
+                </li>
+              </ul>
+            </div>
             <h1 id="welcomeTitle">Welcome back</h1>
             <span id="dateLabel"></span>
           </div>
@@ -1780,6 +1819,31 @@
           localStorage.removeItem("aervo_user");
           window.location.href = "login.html";
         });
+        // --- Onboarding checklist logic ---
+        const onboardingFlag = localStorage.getItem("aervo_onboarding_new");
+        const onboardingCard = document.getElementById("onboardingCard");
+
+        if (onboardingFlag && onboardingCard) {
+          onboardingCard.style.display = "block";
+
+          const steps = [
+            document.getElementById("stepShopify"),
+            document.getElementById("stepInvite"),
+            document.getElementById("stepAsk"),
+          ];
+
+          steps.forEach((checkbox) => {
+            checkbox.addEventListener("change", () => {
+              const completed = steps.filter((s) => s.checked).length;
+
+              // Hide after 2 actions
+              if (completed >= 2) {
+                onboardingCard.style.display = "none";
+                localStorage.removeItem("aervo_onboarding_new");
+              }
+            });
+          });
+        }
       })();
     </script>
   </body>
