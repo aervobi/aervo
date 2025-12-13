@@ -1369,8 +1369,8 @@
           });
 
           if (completed >= 2) {
-            localStorage.setItem(DONE_KEY, "true");
-            localStorage.removeItem(JUST_SIGNED_UP_KEY);
+            localStorage.setItem(DONE_KEY(email), "true");
+            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
             if (onboardingCard) onboardingCard.style.display = "none";
           }
         }
@@ -1388,8 +1388,8 @@
           if (!onboardingCard) return;
 
           const shouldShowOnboarding =
-            localStorage.getItem(JUST_SIGNED_UP_KEY) === "true" &&
-            localStorage.getItem(DONE_KEY) !== "true";
+            localStorage.getItem(JUST_SIGNED_UP_KEY(email)) === "true" &&
+            localStorage.getItem(DONE_KEY(email)) !== "true";
 
           if (!shouldShowOnboarding) {
             onboardingCard.style.display = "none";
@@ -1424,8 +1424,8 @@
 
           if (dismissBtn) {
             dismissBtn.addEventListener("click", () => {
-              localStorage.setItem(DONE_KEY, "true");
-              localStorage.removeItem(JUST_SIGNED_UP_KEY);
+              localStorage.setItem(DONE_KEY(email), "true");
+              localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
               onboardingCard.style.display = "none";
             });
           }
@@ -1902,7 +1902,7 @@
             localStorage.removeItem("aervoUser");
             localStorage.removeItem("aervo_token");
             localStorage.removeItem("aervo_user");
-            localStorage.removeItem(JUST_SIGNED_UP_KEY);
+            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
             window.location.href = "login.html";
           });
         }
