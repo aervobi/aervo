@@ -77,7 +77,7 @@
       input {
         width: 100%;
         padding: 11px 12px;
-        margin-bottom: 16px;
+        margin-bottom: 10px;
         border-radius: 10px;
         border: 1px solid #1f2937;
         background: #020617;
@@ -146,6 +146,73 @@
         min-height: 18px;
       }
 
+      /* --- New UI helpers --- */
+      .field-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .field-wrap {
+        position: relative;
+      }
+
+      .toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 1px solid #1f2937;
+        background: rgba(15, 23, 42, 0.7);
+        color: #cbd5e1;
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .toggle:hover {
+        border-color: #3a4a7c;
+        color: #e5ecff;
+      }
+
+      .hint {
+        margin: 0 0 14px;
+        font-size: 12px;
+        color: #9ca7d6;
+        min-height: 16px;
+      }
+
+      .hint.good {
+        color: #bbf7d0;
+      }
+      .hint.bad {
+        color: #fecaca;
+      }
+
+      .meter {
+        height: 8px;
+        background: rgba(148, 163, 255, 0.12);
+        border: 1px solid rgba(148, 163, 255, 0.18);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 6px 0 8px;
+      }
+
+      .meter > div {
+        height: 100%;
+        width: 0%;
+        background: rgba(96, 165, 250, 0.85); /* default fill */
+        transition: width 0.18s ease;
+      }
+
+      .meter-label {
+        margin: 0 0 14px;
+        font-size: 12px;
+        color: #9ca7d6;
+        min-height: 16px;
+      }
+
       @media (max-width: 640px) {
         .shell {
           padding: 16px;
@@ -188,22 +255,41 @@
           />
 
           <label for="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Create a password"
-            minlength="6"
-            required
-          />
+          <div class="field-wrap">
+            <input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+              minlength="6"
+              required
+            />
+            <button type="button" class="toggle" id="togglePassword">
+              Show
+            </button>
+          </div>
+
+          <!-- Password strength meter -->
+          <div class="meter" aria-label="Password strength meter">
+            <div id="strengthBar"></div>
+          </div>
+          <div class="meter-label" id="strengthLabel"></div>
 
           <label for="confirmPassword">Confirm password</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            placeholder="Re-enter your password"
-            minlength="6"
-            required
-          />
+          <div class="field-wrap">
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Re-enter your password"
+              minlength="6"
+              required
+            />
+            <button type="button" class="toggle" id="toggleConfirmPassword">
+              Show
+            </button>
+          </div>
+
+          <!-- Passwords match indicator -->
+          <div class="hint" id="matchHint"></div>
 
           <button type="submit" id="submitBtn">Create account</button>
 
@@ -226,11 +312,101 @@
       const successEl = document.getElementById("success");
       const submitBtn = document.getElementById("submitBtn");
 
-      // Optional UX: clear error as they type in password fields
-      ["password", "confirmPassword"].forEach((id) => {
+      const passwordEl = document.getElementById("password");
+      const confirmEl = document.getElementById("confirmPassword");
+
+      const matchHint = document.getElementById("matchHint");
+
+      const strengthBar = document.getElementById("strengthBar");
+      const strengthLabel = document.getElementById("strengthLabel");
+
+      const togglePasswordBtn = document.getElementById("togglePassword");
+      const toggleConfirmBtn = document.getElementById("toggleConfirmPassword");
+
+      // --- Show/Hide toggle helpers ---
+      function attachToggle(btn, input) {
+        btn.addEventListener("click", () => {
+          const isHidden = input.type === "password";
+          input.type = isHidden ? "text" : "password";
+          btn.textContent = isHidden ? "Hide" : "Show";
+        });
+      }
+
+      attachToggle(togglePasswordBtn, passwordEl);
+      attachToggle(toggleConfirmBtn, confirmEl);
+
+      // --- Password strength scoring (simple + practical) ---
+      function scorePassword(pw) {
+        if (!pw) return 0;
+
+        let score = 0;
+
+        // length
+        if (pw.length >= 6) score += 1;
+        if (pw.length >= 10) score += 1;
+        if (pw.length >= 14) score += 1;
+
+        // character variety
+        if (/[a-z]/.test(pw)) score += 1;
+        if (/[A-Z]/.test(pw)) score += 1;
+        if (/\d/.test(pw)) score += 1;
+        if (/[^A-Za-z0-9]/.test(pw)) score += 1;
+
+        // cap score to 7
+        return Math.min(score, 7);
+      }
+
+      function renderStrength(pw) {
+        const score = scorePassword(pw); // 0..7
+        const pct = Math.round((score / 7) * 100);
+
+        strengthBar.style.width = `${pct}%`;
+
+        // Labels (keep it simple and friendly)
+        let label = "";
+        if (!pw) label = "";
+        else if (score <= 2) label = "Strength: weak (add length + a number)";
+        else if (score <= 4) label = "Strength: okay (add caps or a symbol)";
+        else if (score <= 6) label = "Strength: strong";
+        else label = "Strength: very strong";
+
+        strengthLabel.textContent = label;
+      }
+
+      // --- Passwords match indicator ---
+      function renderMatchHint() {
+        const pw = passwordEl.value;
+        const cpw = confirmEl.value;
+
+        matchHint.classList.remove("good", "bad");
+        matchHint.textContent = "";
+
+        if (!pw && !cpw) return;
+        if (!cpw) return;
+
+        if (pw === cpw) {
+          matchHint.textContent = "Passwords match ✓";
+          matchHint.classList.add("good");
+        } else {
+          matchHint.textContent = "Passwords do not match";
+          matchHint.classList.add("bad");
+        }
+      }
+
+      // Clear general error as they type
+      ["companyName", "email", "password", "confirmPassword"].forEach((id) => {
         document.getElementById(id)?.addEventListener("input", () => {
           errorEl.textContent = "";
         });
+      });
+
+      passwordEl.addEventListener("input", () => {
+        renderStrength(passwordEl.value);
+        renderMatchHint();
+      });
+
+      confirmEl.addEventListener("input", () => {
+        renderMatchHint();
       });
 
       form.addEventListener("submit", async (event) => {
@@ -241,10 +417,8 @@
 
         const companyName = document.getElementById("companyName").value.trim();
         const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const confirmPassword = document
-          .getElementById("confirmPassword")
-          .value.trim();
+        const password = passwordEl.value.trim();
+        const confirmPassword = confirmEl.value.trim();
 
         if (!companyName || !email || !password || !confirmPassword) {
           errorEl.textContent = "Please fill out all fields.";
@@ -299,6 +473,10 @@
           submitBtn.textContent = "Create account";
         }
       });
+
+      // init UI on load
+      renderStrength("");
+      renderMatchHint();
     </script>
   </body>
 </html>
