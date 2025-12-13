@@ -1718,13 +1718,9 @@
               " and is " +
               String(data.weekChange || "").toLowerCase() +
               ".”";
-
-            // Count onboarding "ask" as done after they actually click Ask
-            if (localStorage.getItem(JUST_SIGNED_UP_KEY) === "true") {
-              const actions = getActions();
-              actions.add("ask");
-              saveActions(actions);
-              updateProgressUI(actions);
+            // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
+            if (localStorage.getItem(DONE_KEY(email)) !== "true") {
+              markAction("ask"); // this already saves + updates progress + renderTodo
             }
           });
         }
