@@ -1334,18 +1334,25 @@
         const progressEl = document.getElementById("onboardingProgress");
         const dismissBtn = document.getElementById("dismissOnboardingBtn");
 
-        const JUST_SIGNED_UP_KEY = "aervo_just_signed_up";
-        const DONE_KEY = "aervo_onboarding_done";
-        const ACTIONS_KEY = "aervo_onboarding_actions"; // JSON array
+        const JUST_SIGNED_UP_KEY = (email) => `aervo_just_signed_up:${email}`;
+        const DONE_KEY = (email) => `aervo_onboarding_done:${email}`;
+        const ACTIONS_KEY = (email) => `aervo_onboarding_actions:${email}`;
 
         function getActions() {
           try {
             return new Set(
-              JSON.parse(localStorage.getItem(ACTIONS_KEY) || "[]")
+              JSON.parse(localStorage.getItem(ACTIONS_KEY(email)) || "[]")
             );
-          } catch (err) {
+          } catch {
             return new Set();
           }
+        }
+
+        function saveActions(set) {
+          localStorage.setItem(
+            ACTIONS_KEY(email),
+            JSON.stringify(Array.from(set))
+          );
         }
 
         function saveActions(set) {
