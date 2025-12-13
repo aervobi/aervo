@@ -1268,13 +1268,33 @@
     <script>
       (function () {
         // Protect route: require login
-        const rawUser = localStorage.getItem("aervoUser");
+        // Protect route: require login (accept old/new keys)
+        let rawUser = localStorage.getItem("aervoUser");
+
+        // fallback if other pages saved the user under a different key
+        if (!rawUser) rawUser = localStorage.getItem("aervo_user");
+
+        // if we found the old key, migrate it so everything is consistent
+        if (rawUser && !localStorage.getItem("aervoUser")) {
+          localStorage.setItem("aervoUser", rawUser);
+        }
+
         if (!rawUser) {
           window.location.href = "login.html";
           return;
         }
 
-        const user = JSON.parse(rawUser);
+        let user;
+        try {
+          user = JSON.parse(rawUser);
+        } catch (e) {
+          // corrupted storage, force clean login
+          localStorage.removeItem("aervoUser");
+          localStorage.removeItem("aervo_user");
+          window.location.href = "login.html";
+          return;
+        }
+
         const email = (user.email || "").toLowerCase();
         const companyFromUser = user.companyName || "Your business";
         const roleFromUser = user.role || "Owner";
