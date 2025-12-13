@@ -52,10 +52,6 @@
         font-size: 28px;
       }
 
-      .business {
-        color: #93c5fd;
-      }
-
       p.lead {
         margin: 0 0 16px;
         font-size: 14px;
@@ -194,19 +190,18 @@
     <script>
       // Personalize based on saved signup info
       const rawUser =
-        localStorage.getItem("aervoUser") || localStorage.getItem("aervo_user");
-      const justSignedUp =
-        localStorage.getItem("aervo_just_signed_up") === "true";
+        localStorage.getItem("aervo_user") || localStorage.getItem("aervoUser");
+
+      const jsu = localStorage.getItem("aervo_just_signed_up");
+      const justSignedUp = jsu === "true" || jsu === "1";
 
       if (!rawUser) {
-        // If no user info, send them back to login
         window.location.href = "login.html";
       } else {
-        let user = null;
+        let user = {};
         try {
           user = JSON.parse(rawUser);
         } catch (e) {
-          // If parsing fails, don't crash the page
           user = {};
         }
 

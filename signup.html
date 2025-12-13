@@ -35,11 +35,6 @@
         background: rgba(15, 23, 42, 0.9);
       }
 
-      .nav-back a:hover {
-        border-color: #3a4a7c;
-        color: #dfe7ff;
-      }
-
       .shell {
         width: 100%;
         max-width: 520px;
@@ -52,7 +47,7 @@
         border: 1px solid rgba(148, 163, 255, 0.18);
         box-shadow: 0 24px 80px rgba(15, 23, 42, 1),
           0 0 60px rgba(37, 99, 235, 0.35);
-        padding: 32px 32px 26px;
+        padding: 32px;
       }
 
       h1 {
@@ -74,10 +69,14 @@
         color: #c5cff6;
       }
 
+      .field-wrap {
+        position: relative;
+      }
+
       input {
         width: 100%;
-        padding: 11px 12px;
-        margin-bottom: 10px;
+        padding: 11px 56px 11px 12px; /* space for eye icon */
+        margin-bottom: 12px;
         border-radius: 10px;
         border: 1px solid #1f2937;
         background: #020617;
@@ -96,131 +95,81 @@
         box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
       }
 
-      button {
-        width: 100%;
-        padding: 11px 0;
-        border-radius: 999px;
-        border: none;
-        background: radial-gradient(circle at top, #1d2a4a, #12213a);
-        color: #e5ecff;
-        font-size: 15px;
-        letter-spacing: 0.4px;
-        cursor: pointer;
-        box-shadow: 0 0 18px rgba(129, 140, 248, 0.6),
-          0 0 46px rgba(37, 99, 235, 0.55);
-        transition: all 0.18s ease;
-      }
-
-      button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 0 24px rgba(129, 140, 248, 0.9),
-          0 0 70px rgba(37, 99, 235, 0.75);
-      }
-
-      .helper {
-        margin-top: 12px;
-        font-size: 12px;
-        color: #9ca7d6;
-      }
-
-      .helper a {
-        color: #93c5fd;
-        text-decoration: none;
-      }
-
-      .helper a:hover {
-        text-decoration: underline;
-      }
-
-      .error {
-        margin-top: 8px;
-        font-size: 13px;
-        color: #fecaca;
-        min-height: 18px;
-      }
-
-      .success {
-        margin-top: 8px;
-        font-size: 13px;
-        color: #bbf7d0;
-        min-height: 18px;
-      }
-
-      /* --- New UI helpers --- */
-      .field-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .field-wrap {
-        position: relative;
-      }
-
       .toggle {
         position: absolute;
-        right: 10px;
+        right: 12px;
         top: 50%;
         transform: translateY(-50%);
-        border: 1px solid #1f2937;
-        background: rgba(15, 23, 42, 0.7);
-        color: #cbd5e1;
-        font-size: 12px;
-        padding: 6px 10px;
-        border-radius: 999px;
+        background: transparent;
+        border: none;
         cursor: pointer;
+        font-size: 16px;
+        color: #93c5fd;
+        opacity: 0.9;
       }
 
       .toggle:hover {
-        border-color: #3a4a7c;
-        color: #e5ecff;
-      }
-
-      .hint {
-        margin: 0 0 14px;
-        font-size: 12px;
-        color: #9ca7d6;
-        min-height: 16px;
-      }
-
-      .hint.good {
-        color: #bbf7d0;
-      }
-      .hint.bad {
-        color: #fecaca;
+        opacity: 1;
       }
 
       .meter {
-        height: 8px;
-        background: rgba(148, 163, 255, 0.12);
-        border: 1px solid rgba(148, 163, 255, 0.18);
+        height: 6px;
+        background: rgba(148, 163, 255, 0.15);
         border-radius: 999px;
         overflow: hidden;
-        margin: 6px 0 8px;
+        margin-bottom: 6px;
       }
 
       .meter > div {
         height: 100%;
         width: 0%;
-        background: rgba(96, 165, 250, 0.85); /* default fill */
-        transition: width 0.18s ease;
+        background: #60a5fa;
+        transition: width 0.2s ease;
       }
 
-      .meter-label {
-        margin: 0 0 14px;
+      .hint {
+        font-size: 12px;
+        min-height: 16px;
+        margin-bottom: 14px;
+        color: #9ca7d6;
+      }
+
+      .hint.good {
+        color: #bbf7d0;
+      }
+
+      .hint.bad {
+        color: #fecaca;
+      }
+
+      button[type="submit"] {
+        width: 100%;
+        padding: 12px 0;
+        border-radius: 999px;
+        border: none;
+        background: radial-gradient(circle at top, #1d2a4a, #12213a);
+        color: #e5ecff;
+        font-size: 15px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .error {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #fecaca;
+      }
+
+      .helper {
+        margin-top: 14px;
         font-size: 12px;
         color: #9ca7d6;
-        min-height: 16px;
+        text-align: center;
       }
 
-      @media (max-width: 640px) {
-        .shell {
-          padding: 16px;
-        }
-
-        .card {
-          padding: 24px 22px 22px;
-        }
+      .helper a {
+        color: #93c5fd;
+        text-decoration: none;
       }
     </style>
   </head>
@@ -238,15 +187,10 @@
         </p>
 
         <form id="signup-form">
-          <label for="companyName">Business name</label>
-          <input
-            id="companyName"
-            type="text"
-            placeholder="Luna Coffee Co."
-            required
-          />
+          <label>Business name</label>
+          <input id="companyName" placeholder="Luna Coffee Co." required />
 
-          <label for="email">Work email</label>
+          <label>Work email</label>
           <input
             id="email"
             type="email"
@@ -254,51 +198,38 @@
             required
           />
 
-          <label for="password">Password</label>
+          <label>Password</label>
           <div class="field-wrap">
             <input
               id="password"
               type="password"
               placeholder="Create a password"
-              minlength="6"
               required
             />
-            <button type="button" class="toggle" id="togglePassword">
-              Show
-            </button>
+            <button type="button" class="toggle" id="togglePassword">👁</button>
           </div>
 
-          <!-- Password strength meter -->
-          <div class="meter" aria-label="Password strength meter">
-            <div id="strengthBar"></div>
-          </div>
-          <div class="meter-label" id="strengthLabel"></div>
+          <div class="meter"><div id="strengthBar"></div></div>
+          <div class="hint" id="strengthHint"></div>
 
-          <label for="confirmPassword">Confirm password</label>
+          <label>Confirm password</label>
           <div class="field-wrap">
             <input
               id="confirmPassword"
               type="password"
               placeholder="Re-enter your password"
-              minlength="6"
               required
             />
-            <button type="button" class="toggle" id="toggleConfirmPassword">
-              Show
-            </button>
+            <button type="button" class="toggle" id="toggleConfirm">👁</button>
           </div>
 
-          <!-- Passwords match indicator -->
           <div class="hint" id="matchHint"></div>
 
-          <button type="submit" id="submitBtn">Create account</button>
-
+          <button type="submit">Create account</button>
           <div class="error" id="error"></div>
-          <div class="success" id="success"></div>
 
           <div class="helper">
-            Already have an account?
-            <a href="login.html">Log in</a>
+            Already have an account? <a href="login.html">Log in</a>
           </div>
         </form>
       </div>
@@ -307,176 +238,78 @@
     <script>
       const BACKEND_URL = "https://aervo-backend.onrender.com";
 
-      const form = document.getElementById("signup-form");
-      const errorEl = document.getElementById("error");
-      const successEl = document.getElementById("success");
-      const submitBtn = document.getElementById("submitBtn");
-
-      const passwordEl = document.getElementById("password");
-      const confirmEl = document.getElementById("confirmPassword");
-
-      const matchHint = document.getElementById("matchHint");
-
+      const password = document.getElementById("password");
+      const confirm = document.getElementById("confirmPassword");
       const strengthBar = document.getElementById("strengthBar");
-      const strengthLabel = document.getElementById("strengthLabel");
+      const strengthHint = document.getElementById("strengthHint");
+      const matchHint = document.getElementById("matchHint");
+      const errorEl = document.getElementById("error");
 
-      const togglePasswordBtn = document.getElementById("togglePassword");
-      const toggleConfirmBtn = document.getElementById("toggleConfirmPassword");
-
-      // --- Show/Hide toggle helpers ---
-      function attachToggle(btn, input) {
-        btn.addEventListener("click", () => {
-          const isHidden = input.type === "password";
-          input.type = isHidden ? "text" : "password";
-          btn.textContent = isHidden ? "Hide" : "Show";
-        });
+      function toggle(btn, input) {
+        btn.onclick = () => {
+          input.type = input.type === "password" ? "text" : "password";
+          btn.textContent = input.type === "password" ? "👁" : "🙈";
+        };
       }
 
-      attachToggle(togglePasswordBtn, passwordEl);
-      attachToggle(toggleConfirmBtn, confirmEl);
+      toggle(document.getElementById("togglePassword"), password);
+      toggle(document.getElementById("toggleConfirm"), confirm);
 
-      // --- Password strength scoring (simple + practical) ---
-      function scorePassword(pw) {
-        if (!pw) return 0;
+      password.oninput = () => {
+        let score = password.value.length;
+        let pct = Math.min((score / 12) * 100, 100);
+        strengthBar.style.width = pct + "%";
+        strengthHint.textContent =
+          pct < 40
+            ? "Weak password"
+            : pct < 70
+            ? "Okay password"
+            : "Strong password";
+      };
 
-        let score = 0;
-
-        // length
-        if (pw.length >= 6) score += 1;
-        if (pw.length >= 10) score += 1;
-        if (pw.length >= 14) score += 1;
-
-        // character variety
-        if (/[a-z]/.test(pw)) score += 1;
-        if (/[A-Z]/.test(pw)) score += 1;
-        if (/\d/.test(pw)) score += 1;
-        if (/[^A-Za-z0-9]/.test(pw)) score += 1;
-
-        // cap score to 7
-        return Math.min(score, 7);
-      }
-
-      function renderStrength(pw) {
-        const score = scorePassword(pw); // 0..7
-        const pct = Math.round((score / 7) * 100);
-
-        strengthBar.style.width = `${pct}%`;
-
-        // Labels (keep it simple and friendly)
-        let label = "";
-        if (!pw) label = "";
-        else if (score <= 2) label = "Strength: weak (add length + a number)";
-        else if (score <= 4) label = "Strength: okay (add caps or a symbol)";
-        else if (score <= 6) label = "Strength: strong";
-        else label = "Strength: very strong";
-
-        strengthLabel.textContent = label;
-      }
-
-      // --- Passwords match indicator ---
-      function renderMatchHint() {
-        const pw = passwordEl.value;
-        const cpw = confirmEl.value;
-
-        matchHint.classList.remove("good", "bad");
-        matchHint.textContent = "";
-
-        if (!pw && !cpw) return;
-        if (!cpw) return;
-
-        if (pw === cpw) {
+      confirm.oninput = () => {
+        if (!confirm.value) matchHint.textContent = "";
+        else if (password.value === confirm.value) {
           matchHint.textContent = "Passwords match ✓";
-          matchHint.classList.add("good");
+          matchHint.className = "hint good";
         } else {
           matchHint.textContent = "Passwords do not match";
-          matchHint.classList.add("bad");
+          matchHint.className = "hint bad";
         }
-      }
+      };
 
-      // Clear general error as they type
-      ["companyName", "email", "password", "confirmPassword"].forEach((id) => {
-        document.getElementById(id)?.addEventListener("input", () => {
-          errorEl.textContent = "";
-        });
-      });
-
-      passwordEl.addEventListener("input", () => {
-        renderStrength(passwordEl.value);
-        renderMatchHint();
-      });
-
-      confirmEl.addEventListener("input", () => {
-        renderMatchHint();
-      });
-
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
+      document.getElementById("signup-form").onsubmit = async (e) => {
+        e.preventDefault();
         errorEl.textContent = "";
-        successEl.textContent = "";
 
-        const companyName = document.getElementById("companyName").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = passwordEl.value.trim();
-        const confirmPassword = confirmEl.value.trim();
-
-        if (!companyName || !email || !password || !confirmPassword) {
-          errorEl.textContent = "Please fill out all fields.";
-          return;
-        }
-
-        if (password !== confirmPassword) {
+        if (password.value !== confirm.value) {
           errorEl.textContent = "Passwords do not match.";
           return;
         }
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Creating account…";
+        const res = await fetch(`${BACKEND_URL}/api/signup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            companyName: companyName.value,
+            email: email.value,
+            password: password.value,
+          }),
+        });
 
-        try {
-          const response = await fetch(`${BACKEND_URL}/api/signup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ companyName, email, password }),
-          });
+        const data = await res.json();
 
-          const data = await response.json().catch(() => ({}));
-
-          if (!response.ok || !data.success) {
-            const msg =
-              data.message ||
-              `Signup failed with status ${response.status}. Please try again.`;
-            errorEl.textContent = msg;
-            console.error("Signup error:", data);
-            return;
-          }
-
-          // Save auth + user
-          localStorage.setItem("aervo_token", data.token);
-          localStorage.setItem("aervo_user", JSON.stringify(data.user));
-
-          // Onboarding flags (single source of truth)
-          localStorage.setItem("aervo_just_signed_up", "1");
-          localStorage.removeItem("aervo_onboarding_done");
-          localStorage.setItem("aervo_onboarding_actions", "[]");
-
-          successEl.textContent = "Account created. Redirecting…";
-
-          // IMPORTANT: send new users to welcome first
-          window.location.href = "welcome.html";
-        } catch (err) {
-          console.error("Network/JS error during signup:", err);
-          errorEl.textContent =
-            "We couldn’t reach the server. Please check your connection and try again.";
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Create account";
+        if (!res.ok) {
+          errorEl.textContent = data.message || "Signup failed.";
+          return;
         }
-      });
 
-      // init UI on load
-      renderStrength("");
-      renderMatchHint();
+        localStorage.setItem("aervo_token", data.token);
+        localStorage.setItem("aervo_user", JSON.stringify(data.user));
+        localStorage.setItem("aervo_just_signed_up", "1");
+
+        window.location.href = "welcome.html";
+      };
     </script>
   </body>
 </html>

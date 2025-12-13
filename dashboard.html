@@ -976,8 +976,11 @@
             </div>
 
             <div class="card list-card">
-              <h2>Quick insights</h2>
-              <ul id="insightsList"></ul>
+              <h2>Getting started</h2>
+              <ul id="todoList"></ul>
+              <div class="subtext" style="margin-top: 10px">
+                Finish 2 items to clear onboarding.
+              </div>
             </div>
           </div>
         </section>
@@ -1351,6 +1354,7 @@
           actions.add(action);
           saveActions(actions);
           updateProgressUI(actions);
+          renderTodo();
         }
 
         function initOnboarding() {
@@ -1401,6 +1405,28 @@
         }
 
         initOnboarding();
+        function renderTodo() {
+          const todo = document.getElementById("todoList");
+          if (!todo) return;
+
+          const actions = getActions();
+          const items = [
+            { key: "ask", label: "Ask Aervo a question" },
+            { key: "connect", label: "Connect a tool (demo)" },
+            { key: "invite", label: "Invite a teammate (demo)" },
+          ];
+
+          todo.innerHTML = "";
+          items.forEach((it) => {
+            const li = document.createElement("li");
+            const done = actions.has(it.key);
+            li.textContent = `${done ? "✅" : "⬜️"} ${it.label}`;
+            todo.appendChild(li);
+          });
+        }
+
+        // run once on load
+        renderTodo();
 
         // ---------------- Demo per-user data ----------------
         const demoData = {
