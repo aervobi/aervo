@@ -157,6 +157,7 @@
       }
     </style>
   </head>
+
   <body>
     <div class="nav-back">
       <a href="index.html">← Back to Aervo</a>
@@ -195,6 +196,15 @@
             required
           />
 
+          <label for="confirmPassword">Confirm password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Re-enter your password"
+            minlength="6"
+            required
+          />
+
           <button type="submit" id="submitBtn">Create account</button>
 
           <div class="error" id="error"></div>
@@ -216,6 +226,13 @@
       const successEl = document.getElementById("success");
       const submitBtn = document.getElementById("submitBtn");
 
+      // Optional UX: clear error as they type in password fields
+      ["password", "confirmPassword"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("input", () => {
+          errorEl.textContent = "";
+        });
+      });
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -225,9 +242,17 @@
         const companyName = document.getElementById("companyName").value.trim();
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+        const confirmPassword = document
+          .getElementById("confirmPassword")
+          .value.trim();
 
-        if (!companyName || !email || !password) {
+        if (!companyName || !email || !password || !confirmPassword) {
           errorEl.textContent = "Please fill out all fields.";
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          errorEl.textContent = "Passwords do not match.";
           return;
         }
 
@@ -249,22 +274,22 @@
               `Signup failed with status ${response.status}. Please try again.`;
             errorEl.textContent = msg;
             console.error("Signup error:", data);
-          } else {
-            // Save user + token for dashboard / welcome
-            localStorage.setItem("aervo_token", data.token);
-            localStorage.setItem("aervo_user", JSON.stringify(data.user));
-            localStorage.setItem("aervoUser", JSON.stringify(data.user));
-            localStorage.setItem("aervo_just_signed_up", "true");
-
-            successEl.textContent = "Account created. Redirecting…";
-
-            successEl.textContent = "Account created. Redirecting…";
-
-            // Onboarding checklist should show on dashboard
-            localStorage.setItem("aervo_onboarding_new", "1");
-
-            window.location.href = "dashboard.html";
+            return;
           }
+
+          // Save auth + user
+          localStorage.setItem("aervo_token", data.token);
+          localStorage.setItem("aervo_user", JSON.stringify(data.user));
+
+          // Onboarding flags (single source of truth)
+          localStorage.setItem("aervo_just_signed_up", "1");
+          localStorage.removeItem("aervo_onboarding_done");
+          localStorage.setItem("aervo_onboarding_actions", "[]");
+
+          successEl.textContent = "Account created. Redirecting…";
+
+          // IMPORTANT: send new users to welcome first
+          window.location.href = "welcome.html";
         } catch (err) {
           console.error("Network/JS error during signup:", err);
           errorEl.textContent =
