@@ -1,217 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aervo – Welcome</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #020617, #020213);
-      color: #e5ecff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Welcome</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #020617, #020213);
+        color: #e5ecff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
 
-    .shell {
-      max-width: 720px;
-      width: 100%;
-    }
+      .shell {
+        max-width: 720px;
+        width: 100%;
+      }
 
-    .card {
-      background: radial-gradient(circle at top left, #111827, #020617);
-      border-radius: 24px;
-      border: 1px solid rgba(148, 163, 255, 0.25);
-      box-shadow:
-        0 24px 80px rgba(15, 23, 42, 1),
-        0 0 60px rgba(37, 99, 235, 0.45);
-      padding: 32px 30px 26px;
-      text-align: left;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 255, 0.45);
-      font-size: 11px;
-      color: #c7d2fe;
-      background: rgba(15,23,42,0.9);
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: 28px;
-    }
-
-    .business {
-      color: #93c5fd;
-    }
-
-    p.lead {
-      margin: 0 0 16px;
-      font-size: 14px;
-      color: #9ca7d6;
-      line-height: 1.7;
-    }
-
-    .grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin: 18px 0 18px;
-    }
-
-    .feature {
-      background: radial-gradient(circle at top left, #111827, #020617);
-      border-radius: 14px;
-      border: 1px solid rgba(31,41,55,1);
-      padding: 12px 11px 10px;
-      font-size: 12px;
-      color: #cbd5f5;
-    }
-
-    .feature-title {
-      font-size: 12px;
-      margin-bottom: 4px;
-      color: #e5ecff;
-    }
-
-    .feature span {
-      font-size: 18px;
-      margin-bottom: 4px;
-      display: inline-block;
-    }
-
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      margin-top: 16px;
-    }
-
-    .primary-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 999px;
-      border: none;
-      background: radial-gradient(circle at top, #1d2a4a, #12213a);
-      color: #e5ecff;
-      font-size: 14px;
-      text-decoration: none;
-      cursor: pointer;
-      box-shadow:
-        0 0 18px rgba(129, 140, 248, 0.8),
-        0 0 46px rgba(37, 99, 235, 0.7);
-    }
-
-    .secondary-link {
-      font-size: 12px;
-      color: #93c5fd;
-      text-decoration: none;
-    }
-
-    .secondary-link:hover {
-      text-decoration: underline;
-    }
-
-    .small {
-      margin-top: 22px;
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    @media (max-width: 720px) {
       .card {
-        padding: 24px 20px 20px;
+        background: radial-gradient(circle at top left, #111827, #020617);
+        border-radius: 24px;
+        border: 1px solid rgba(148, 163, 255, 0.25);
+        box-shadow: 0 24px 80px rgba(15, 23, 42, 1),
+          0 0 60px rgba(37, 99, 235, 0.45);
+        padding: 32px 30px 26px;
+        text-align: left;
       }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 255, 0.45);
+        font-size: 11px;
+        color: #c7d2fe;
+        background: rgba(15, 23, 42, 0.9);
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 28px;
+      }
+
+      .business {
+        color: #93c5fd;
+      }
+
+      p.lead {
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: #9ca7d6;
+        line-height: 1.7;
+      }
+
       .grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 18px 0 18px;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="shell">
-    <div class="card">
-      <div class="pill">
-        <span>✨</span>
-        <span>Welcome to Aervo</span>
-      </div>
 
-      <h1 id="welcomeTitle">Welcome to Aervo</h1>
-      <p class="lead" id="leadCopy">
-        Aervo gives you a higher view of your business by pulling key numbers into one clear, AI-ready
-        dashboard.
-      </p>
+      .feature {
+        background: radial-gradient(circle at top left, #111827, #020617);
+        border-radius: 14px;
+        border: 1px solid rgba(31, 41, 55, 1);
+        padding: 12px 11px 10px;
+        font-size: 12px;
+        color: #cbd5f5;
+      }
 
-      <div class="grid">
-        <div class="feature">
-          <span>📊</span>
-          <div class="feature-title">See your performance</div>
-          Get a simple overview of sales and trends without digging through reports.
+      .feature-title {
+        font-size: 12px;
+        margin-bottom: 4px;
+        color: #e5ecff;
+      }
+
+      .feature span {
+        font-size: 18px;
+        margin-bottom: 4px;
+        display: inline-block;
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 16px;
+      }
+
+      .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        border: none;
+        background: radial-gradient(circle at top, #1d2a4a, #12213a);
+        color: #e5ecff;
+        font-size: 14px;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 0 18px rgba(129, 140, 248, 0.8),
+          0 0 46px rgba(37, 99, 235, 0.7);
+      }
+
+      .secondary-link {
+        font-size: 12px;
+        color: #93c5fd;
+        text-decoration: none;
+      }
+
+      .secondary-link:hover {
+        text-decoration: underline;
+      }
+
+      .small {
+        margin-top: 22px;
+        font-size: 11px;
+        color: #6b7280;
+      }
+
+      @media (max-width: 720px) {
+        .card {
+          padding: 24px 20px 20px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card">
+        <div class="pill">
+          <span>✨</span>
+          <span>Welcome to Aervo</span>
         </div>
-        <div class="feature">
-          <span>🤖</span>
-          <div class="feature-title">Ask Aervo anything</div>
-          Ask natural questions like “How did we do this week?” and get clear answers.
-        </div>
-        <div class="feature">
-          <span>⚡</span>
-          <div class="feature-title">Spot what matters</div>
-          Surface patterns, slowdowns, and opportunities before they become problems.
-        </div>
-      </div>
 
-      <div class="cta-row">
-        <a href="dashboard.html" class="primary-btn" id="goDashboardBtn">
-          Go to your dashboard
-        </a>
-        <a href="index.html" class="secondary-link">Back to aervoapp.com</a>
-      </div>
+        <h1 id="welcomeTitle">Welcome to Aervo</h1>
+        <p class="lead" id="leadCopy">
+          Aervo gives you a higher view of your business by pulling key numbers
+          into one clear, AI-ready dashboard.
+        </p>
 
-      <div class="small">
-        Tip: You can always return here by visiting <code>/welcome.html</code> while signed in.
+        <div class="grid">
+          <div class="feature">
+            <span>📊</span>
+            <div class="feature-title">See your performance</div>
+            Get a simple overview of sales and trends without digging through
+            reports.
+          </div>
+          <div class="feature">
+            <span>🤖</span>
+            <div class="feature-title">Ask Aervo anything</div>
+            Ask natural questions like “How did we do this week?” and get clear
+            answers.
+          </div>
+          <div class="feature">
+            <span>⚡</span>
+            <div class="feature-title">Spot what matters</div>
+            Surface patterns, slowdowns, and opportunities before they become
+            problems.
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <a href="dashboard.html" class="primary-btn" id="goDashboardBtn">
+            Go to your dashboard
+          </a>
+          <a href="index.html" class="secondary-link">Back to aervoapp.com</a>
+        </div>
+
+        <div class="small">
+          Tip: You can always return here by visiting
+          <code>/welcome.html</code> while signed in.
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    // Try to personalize based on saved signup info
-    const rawUser = localStorage.getItem("aervoUser") || localStorage.getItem("aervo_user");
-    const justSignedUp = localStorage.getItem("aervo_just_signed_up") === "true";
+    <script>
+      // Personalize based on saved signup info
+      const rawUser =
+        localStorage.getItem("aervoUser") || localStorage.getItem("aervo_user");
+      const justSignedUp =
+        localStorage.getItem("aervo_just_signed_up") === "true";
 
-    if (!rawUser) {
-      // If no user info, send them back to login
-      window.location.href = "login.html";
-    } else {
-      const user = JSON.parse(rawUser);
-      const businessName = user.companyName || user.company_name || "your business";
+      if (!rawUser) {
+        // If no user info, send them back to login
+        window.location.href = "login.html";
+      } else {
+        let user = null;
+        try {
+          user = JSON.parse(rawUser);
+        } catch (e) {
+          // If parsing fails, don't crash the page
+          user = {};
+        }
 
-      const titleEl = document.getElementById("welcomeTitle");
-      const leadEl = document.getElementById("leadCopy");
+        const businessName =
+          user.companyName || user.company_name || "your business";
 
-      titleEl.textContent = `Welcome to Aervo, ${businessName}`;
-      if (justSignedUp) {
-        leadEl.textContent =
-          "We’ve set up your space. Next, explore your sample dashboard and imagine this powered by your real data.";
+        const titleEl = document.getElementById("welcomeTitle");
+        const leadEl = document.getElementById("leadCopy");
+
+        if (titleEl) titleEl.textContent = `Welcome to Aervo, ${businessName}`;
+
+        if (leadEl && justSignedUp) {
+          leadEl.textContent =
+            "We’ve set up your space. Next, explore your dashboard and complete the quick setup checklist.";
+        }
       }
-    }
 
-    // Clear the just_signed_up flag so this is only “special” right after signup
-    localStorage.removeItem("aervo_just_signed_up");
-  </script>
-</body>
+      // IMPORTANT:
+      // Do NOT clear aervo_just_signed_up here.
+      // Let the dashboard onboarding logic clear it when onboarding is completed.
+    </script>
+  </body>
 </html>
