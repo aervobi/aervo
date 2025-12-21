@@ -283,32 +283,70 @@
         errorEl.textContent = "";
 
         if (password.value !== confirm.value) {
-          errorEl.textContent = "Passwords do not match.";
+          const msg = "Passwords do not match.";
+          errorEl.textContent = msg;
+          if (typeof showAuthMsg === "function") {
+            showAuthMsg("error", msg);
+          }
           return;
         }
 
-        const res = await fetch(`${BACKEND_URL}/api/signup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            companyName: companyName.value,
-            email: email.value,
-            password: password.value,
-          }),
-        });
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              companyName: companyName.value,
+              email: email.value,
+              password: password.value,
+            }),
+          });
 
-        const data = await res.json();
+          // ✅ HANDLE RATE LIMIT FIRST
+          if (response.status === 429) {
+            const data = await response.json().catch(() => ({}));
+            const msg =
+              data.message ||
+              "Aervo Shield is on. Please wait a moment and try again.";
+            errorEl.textContent = msg;
+            if (typeof showAuthMsg === "function") {
+              showAuthMsg("error", msg);
+            }
+            return;
+          }
 
-        if (!res.ok) {
-          errorEl.textContent = data.message || "Signup failed.";
-          return;
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok || !data.success) {
+            const msg = data.message || "Signup failed. Please try again.";
+            errorEl.textContent = msg;
+            if (typeof showAuthMsg === "function") {
+              showAuthMsg("error", msg);
+            }
+            return;
+          }
+
+          // ✅ SUCCESS
+          if (typeof showAuthMsg === "function") {
+            showAuthMsg(
+              "success",
+              "Account created 🎉 Check your email to verify your workspace."
+            );
+          }
+
+          localStorage.setItem("aervo_token", data.token);
+          localStorage.setItem("aervo_user", JSON.stringify(data.user));
+          localStorage.setItem("aervo_just_signed_up", "1");
+
+          window.location.href = "welcome.html";
+        } catch (err) {
+          console.error(err);
+          const msg = "Error connecting to server. Please try again.";
+          errorEl.textContent = msg;
+          if (typeof showAuthMsg === "function") {
+            showAuthMsg("error", msg);
+          }
         }
-
-        localStorage.setItem("aervo_token", data.token);
-        localStorage.setItem("aervo_user", JSON.stringify(data.user));
-        localStorage.setItem("aervo_just_signed_up", "1");
-
-        window.location.href = "welcome.html";
       };
     </script>
   </body>
