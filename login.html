@@ -187,6 +187,10 @@
     </style>
   </head>
   <body>
+    <div
+      id="authMsg"
+      style="display: none; margin: 16px auto 0; max-width: 520px"
+    ></div>
     <header class="nav">
       <div class="nav-left">
         <a href="index.html" class="nav-brand">AERVO</a>
@@ -241,16 +245,16 @@
     </main>
 
     <script>
-      async function handleLogin(event) {
-        event.preventDefault();
+      const BACKEND_URL = "https://aervo-backend.onrender.com"; // <-- keep yours if different
+
+      async function handleLogin(e) {
+        e.preventDefault();
 
         const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const errorEl = document.getElementById("error");
+        const password = document.getElementById("password").value;
 
-        errorEl.textContent = ""; // clear any old error
-
-        const BACKEND_URL = "https://aervo-backend.onrender.com";
+        // If you have these already, keep them:
+        const errorEl = document.getElementById("loginError"); // or whatever your error element is
 
         try {
           const response = await fetch(`${BACKEND_URL}/api/login`, {
@@ -259,19 +263,39 @@
             body: JSON.stringify({ email, password }),
           });
 
-          const data = await response.json();
-
-          if (data.success) {
-            localStorage.setItem("aervo_token", data.token);
-            localStorage.setItem("aervo_user", JSON.stringify(data.user));
-            localStorage.setItem("aervoUser", JSON.stringify(data.user));
-            window.location.href = "dashboard.html";
-          } else {
-            errorEl.textContent = data.message || "Invalid email or password.";
+          // Handle rate limit FIRST
+          if (response.status === 429) {
+            const data = await response.json().catch(() => ({}));
+            const msg =
+              data.message ||
+              "Aervo Shield is on. Please wait a moment and try again.";
+            showAuthMsg("error", msg);
+            if (errorEl) errorEl.textContent = msg;
+            return;
           }
+
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok || !data.success) {
+            const msg = data.message || "Invalid email or password.";
+            showAuthMsg("error", msg);
+            if (errorEl) errorEl.textContent = msg;
+            return;
+          }
+
+          // ✅ success
+          showAuthMsg("success", "Welcome back 👋 Redirecting…");
+
+          localStorage.setItem("aervo_token", data.token);
+          localStorage.setItem("aervo_user", JSON.stringify(data.user));
+          localStorage.setItem("aervoUser", JSON.stringify(data.user));
+
+          window.location.href = "dashboard.html";
         } catch (error) {
           console.error(error);
-          errorEl.textContent = "Error connecting to server. Please try again.";
+          const msg = "Error connecting to server. Please try again.";
+          showAuthMsg("error", msg);
+          if (errorEl) errorEl.textContent = msg;
         }
       }
 
