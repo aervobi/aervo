@@ -253,81 +253,86 @@
         const passwordEl = document.getElementById("password");
         const errorEl = document.getElementById("error");
         const submitBtn = form.querySelector('button[type="submit"]');
-        const banner = document.getElementById("authMsg"); // you already have this div at the top
+        const banner = document.getElementById("authMsg");
 
         let isSubmitting = false;
 
         function showAuthMsg(type, text) {
-          if (!banner) return;
-
+          banner.textContent = text;
           banner.style.display = "block";
+
+          banner.style.position = "fixed";
+          banner.style.top = "78px";
+          banner.style.left = "50%";
+          banner.style.transform = "translateX(-50%)";
+          banner.style.zIndex = "99999";
+          banner.style.maxWidth = "520px";
+          banner.style.width = "calc(100% - 32px)";
           banner.style.padding = "10px 12px";
           banner.style.borderRadius = "12px";
           banner.style.fontSize = "13px";
-          banner.style.border = "1px solid #1f2937";
-          banner.style.background = "rgba(15,23,42,0.85)";
+          banner.style.background = "rgba(15,23,42,0.92)";
           banner.style.color = "#e5ecff";
-          banner.style.maxWidth = "520px";
-
-          banner.textContent = text;
-
-          if (type === "error") {
-            banner.style.borderColor = "rgba(248,113,113,0.45)";
-          } else {
-            banner.style.borderColor = "rgba(96,165,250,0.45)";
-          }
+          banner.style.boxShadow = "0 16px 50px rgba(0,0,0,0.55)";
+          banner.style.border =
+            type === "error"
+              ? "1px solid rgba(248,113,113,0.55)"
+              : "1px solid rgba(96,165,250,0.55)";
         }
 
         form.addEventListener("submit", async (e) => {
-          e.preventDefault(); // ✅ stops the refresh
+          e.preventDefault();
 
           if (isSubmitting) return;
           isSubmitting = true;
           submitBtn.disabled = true;
 
-          if (errorEl) errorEl.textContent = "";
-          showAuthMsg("success", "Signing in…");
+          errorEl.textContent = "";
+          banner.style.display = "none";
 
           try {
             const response = await fetch(`${BACKEND_URL}/api/login`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                email: emailEl.value.trim(),
+                email: emailEl.value,
                 password: passwordEl.value,
               }),
             });
 
             const data = await response.json().catch(() => ({}));
 
+            // 🚨 Rate limit
             if (response.status === 429) {
               showAuthMsg(
                 "error",
                 data.message ||
-                  "Aervo Shield is on. Please wait a moment and try again."
+                  "Aervo Shield is on. Too many attempts. Please wait and try again."
               );
               return;
             }
 
+            // ❌ Invalid login
             if (!response.ok || !data.success) {
               const msg = data.message || "Invalid email or password.";
               showAuthMsg("error", msg);
-              if (errorEl) errorEl.textContent = msg;
+              errorEl.textContent = msg;
               return;
             }
 
             // ✅ Success
+            showAuthMsg("success", "Welcome back 👋 Redirecting…");
+
             localStorage.setItem("aervo_token", data.token);
             localStorage.setItem("aervo_user", JSON.stringify(data.user));
-            localStorage.setItem("aervoUser", JSON.stringify(data.user));
 
-            showAuthMsg("success", "Welcome back 👋 Redirecting…");
-            window.location.assign("dashboard.html");
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 600);
           } catch (err) {
             console.error(err);
             showAuthMsg("error", "Network error. Please try again.");
-            if (errorEl)
-              errorEl.textContent = "Network error. Please try again.";
+            errorEl.textContent = "Network error. Please try again.";
           } finally {
             isSubmitting = false;
             submitBtn.disabled = false;
