@@ -245,63 +245,99 @@
     </main>
 
     <script>
-      const BACKEND_URL = "https://aervo-backend.onrender.com"; // <-- keep yours if different
+     const BACKEND_URL = "https://aervo-backend.onrender.com";
 
-      async function handleLogin(e) {
-        e.preventDefault();
+const form = document.getElementById("login-form");
+const emailEl = document.getElementById("email");
+const passwordEl = document.getElementById("password");
+const errorEl = document.getElementById("error"); // if you have one
+const submitBtn = form.querySelector('button[type="submit"]');
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
+let isSubmitting = false;
 
-        // If you have these already, keep them:
-        const errorEl = document.getElementById("loginError"); // or whatever your error element is
+function showAuthMsg(type, text) {
+  // If you already have a banner element, use it. Otherwise create one.
+  let el = document.getElementById("authMsg");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "authMsg";
+    el.style.marginTop = "12px";
+    el.style.padding = "10px 12px";
+    el.style.borderRadius = "12px";
+    el.style.fontSize = "13px";
+    el.style.border = "1px solid #1f2937";
+    el.style.background = "rgba(15,23,42,0.85)";
+    el.style.color = "#e5ecff";
+    form.appendChild(el);
+  }
 
-        try {
-          const response = await fetch(`${BACKEND_URL}/api/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          });
+  el.textContent = text;
 
-          // Handle rate limit FIRST
-          if (response.status === 429) {
-            const data = await response.json().catch(() => ({}));
-            const msg =
-              data.message ||
-              "Aervo Shield is on. Please wait a moment and try again.";
-            showAuthMsg("error", msg);
-            if (errorEl) errorEl.textContent = msg;
-            return;
-          }
+  if (type === "error") {
+    el.style.borderColor = "rgba(248,113,113,0.45)";
+  } else {
+    el.style.borderColor = "rgba(96,165,250,0.45)";
+  }
+}
 
-          const data = await response.json().catch(() => ({}));
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-          if (!response.ok || !data.success) {
-            const msg = data.message || "Invalid email or password.";
-            showAuthMsg("error", msg);
-            if (errorEl) errorEl.textContent = msg;
-            return;
-          }
+  if (isSubmitting) return; // ✅ prevents spam
+  isSubmitting = true;
+  if (submitBtn) submitBtn.disabled = true;
+  if (errorEl) errorEl.textContent = "";
 
-          // ✅ success
-          showAuthMsg("success", "Welcome back 👋 Redirecting…");
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailEl.value,
+        password: passwordEl.value,
+      }),
+    });
 
-          localStorage.setItem("aervo_token", data.token);
-          localStorage.setItem("aervo_user", JSON.stringify(data.user));
-          localStorage.setItem("aervoUser", JSON.stringify(data.user));
+    // Read body ONCE (avoid "body stream already read" issues)
+    const data = await response.json().catch(() => ({}));
 
-          window.location.href = "dashboard.html";
-        } catch (error) {
-          console.error(error);
-          const msg = "Error connecting to server. Please try again.";
-          showAuthMsg("error", msg);
-          if (errorEl) errorEl.textContent = msg;
-        }
-      }
+    // ✅ Handle rate limit
+    if (response.status === 429) {
+      showAuthMsg(
+        "error",
+        data.message || "Aervo Shield is on. Please wait a moment and try again."
+      );
+      return;
+    }
 
-      document
-        .getElementById("login-form")
-        .addEventListener("submit", handleLogin);
-    </script>
-  </body>
-</html>
+    // ✅ Handle unverified (when we add it)
+    if (response.status === 403 && data.code === "EMAIL_NOT_VERIFIED") {
+      showAuthMsg("error", data.message || "Please verify your email first.");
+      return;
+    }
+
+    // ✅ Any other failure (401 invalid password, 400, 500, etc.)
+    if (!response.ok || !data.success) {
+      const msg = data.message || "Invalid email or password.";
+      showAuthMsg("error", msg);
+      if (errorEl) errorEl.textContent = msg;
+      return;
+    }
+
+    // ✅ Success
+    showAuthMsg("success", "Welcome back 👋 Redirecting…");
+
+    localStorage.setItem("aervo_token", data.token);
+    localStorage.setItem("aervo_user", JSON.stringify(data.user));
+    localStorage.setItem("aervoUser", JSON.stringify(data.user));
+
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.error(err);
+    showAuthMsg("error", "Network error. Please try again.");
+    if (errorEl) errorEl.textContent = "Network error. Please try again.";
+  } finally {
+    isSubmitting = false;
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
