@@ -245,45 +245,48 @@
     </main>
 
     <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+
       document.addEventListener("DOMContentLoaded", () => {
-        console.log("login.js loaded ✅");
-
-        const BACKEND_URL = "https://aervo-backend.onrender.com";
-
         const form = document.getElementById("login-form");
         const emailEl = document.getElementById("email");
         const passwordEl = document.getElementById("password");
         const errorEl = document.getElementById("error");
         const submitBtn = form.querySelector('button[type="submit"]');
-        const authMsgEl = document.getElementById("authMsg");
+        const banner = document.getElementById("authMsg"); // you already have this div at the top
 
         let isSubmitting = false;
 
         function showAuthMsg(type, text) {
-          authMsgEl.style.display = "block";
-          authMsgEl.style.padding = "12px 14px";
-          authMsgEl.style.borderRadius = "14px";
-          authMsgEl.style.fontSize = "13px";
-          authMsgEl.style.border = "1px solid #1f2937";
-          authMsgEl.style.background = "rgba(15,23,42,0.85)";
-          authMsgEl.style.color = "#e5ecff";
-          authMsgEl.textContent = text;
+          if (!banner) return;
 
-          authMsgEl.style.borderColor =
-            type === "error"
-              ? "rgba(248,113,113,0.45)"
-              : "rgba(96,165,250,0.45)";
+          banner.style.display = "block";
+          banner.style.padding = "10px 12px";
+          banner.style.borderRadius = "12px";
+          banner.style.fontSize = "13px";
+          banner.style.border = "1px solid #1f2937";
+          banner.style.background = "rgba(15,23,42,0.85)";
+          banner.style.color = "#e5ecff";
+          banner.style.maxWidth = "520px";
+
+          banner.textContent = text;
+
+          if (type === "error") {
+            banner.style.borderColor = "rgba(248,113,113,0.45)";
+          } else {
+            banner.style.borderColor = "rgba(96,165,250,0.45)";
+          }
         }
 
         form.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          console.log("submit intercepted ✅");
+          e.preventDefault(); // ✅ stops the refresh
 
           if (isSubmitting) return;
           isSubmitting = true;
           submitBtn.disabled = true;
+
           if (errorEl) errorEl.textContent = "";
-          showAuthMsg("success", "Signing you in…");
+          showAuthMsg("success", "Signing in…");
 
           try {
             const response = await fetch(`${BACKEND_URL}/api/login`, {
@@ -296,7 +299,6 @@
             });
 
             const data = await response.json().catch(() => ({}));
-            console.log("login response:", response.status, data);
 
             if (response.status === 429) {
               showAuthMsg(
@@ -314,6 +316,7 @@
               return;
             }
 
+            // ✅ Success
             localStorage.setItem("aervo_token", data.token);
             localStorage.setItem("aervo_user", JSON.stringify(data.user));
             localStorage.setItem("aervoUser", JSON.stringify(data.user));
