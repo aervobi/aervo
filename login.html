@@ -257,10 +257,18 @@
 
         let isSubmitting = false;
 
-        function showAuthMsg(type, text) {
-          banner.textContent = text;
-          banner.style.display = "block";
+        let authMsgTimer = null;
 
+        function showAuthMsg(type, text, hint = "") {
+          if (!banner) return;
+
+          // Clear previous timer
+          if (authMsgTimer) {
+            clearTimeout(authMsgTimer);
+            authMsgTimer = null;
+          }
+
+          banner.style.display = "block";
           banner.style.position = "fixed";
           banner.style.top = "78px";
           banner.style.left = "50%";
@@ -268,8 +276,8 @@
           banner.style.zIndex = "99999";
           banner.style.maxWidth = "520px";
           banner.style.width = "calc(100% - 32px)";
-          banner.style.padding = "10px 12px";
-          banner.style.borderRadius = "12px";
+          banner.style.padding = "12px 14px";
+          banner.style.borderRadius = "14px";
           banner.style.fontSize = "13px";
           banner.style.background = "rgba(15,23,42,0.92)";
           banner.style.color = "#e5ecff";
@@ -278,6 +286,28 @@
             type === "error"
               ? "1px solid rgba(248,113,113,0.55)"
               : "1px solid rgba(96,165,250,0.55)";
+
+          banner.innerHTML = `
+    <div style="font-weight:600; margin-bottom:${hint ? "6px" : "0"};">
+      ${text}
+    </div>
+    ${
+      hint
+        ? `<div style="font-size:12px; color:#9ca3af; line-height:1.5;">
+             ${hint}
+           </div>`
+        : ""
+    }
+  `;
+
+          // Auto-dismiss
+          authMsgTimer = setTimeout(
+            () => {
+              banner.style.display = "none";
+              banner.innerHTML = "";
+            },
+            type === "error" ? 9000 : 3500
+          );
         }
 
         form.addEventListener("submit", async (e) => {
