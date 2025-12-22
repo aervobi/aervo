@@ -337,7 +337,9 @@
               showAuthMsg(
                 "error",
                 data.message ||
-                  "Aervo Shield is on. Too many attempts. Please wait and try again."
+                  "Aervo Shield is on. Too many attempts from this device.",
+                data.hint ||
+                  "Wait a minute and try again. If you're stuck, use “Forgot password.”"
               );
               return;
             }
