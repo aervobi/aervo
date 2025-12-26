@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname)));
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY || '';
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET || '';
 const HOST = process.env.HOST || 'http://localhost:3000';
+const APP_URL = process.env.APP_URL || HOST; // public URL for OAuth redirects
 const SCOPES = process.env.SHOPIFY_SCOPES || 'read_products,read_orders';
 const DB_FILE = process.env.DB_FILE || './data.sqlite';
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
@@ -81,6 +82,31 @@ function getToken(shop) {
 }
 
 app.get('/auth/shopify', (req, res) => {
+  // If a `shop` query param is provided, start OAuth immediately and redirect to Shopify
+  const shopFromQuery = (req.query.shop || '').trim();
+  const shopFromSession = req.session && req.session.connectedShop;
+  const shop = shopFromQuery || shopFromSession;
+
+  if (shop) {
+    // Create state tied to session
+    const state = crypto.randomBytes(16).toString('hex');
+    if (req.session) {
+      req.session.oauthState = state;
+      req.session.oauthShop = shop;
+    }
+
+    const redirectUri = `${APP_URL.replace(/\/$/, '')}/auth/shopify/callback`;
+    const params = new URLSearchParams({
+      client_id: SHOPIFY_API_KEY,
+      scope: SCOPES,
+      redirect_uri: redirectUri,
+      state,
+    });
+    const installUrl = `https://${shop}/admin/oauth/authorize?${params.toString()}`;
+    return res.redirect(302, installUrl);
+  }
+
+  // Otherwise show a tiny form for merchants to enter their shop domain
   res.send(`
     <html>
       <head>

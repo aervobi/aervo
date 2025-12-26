@@ -47,12 +47,12 @@ Quick Render steps:
 3. Build command: leave empty or `npm install` (Render will run install automatically).
 4. Start command: `npm start` (this runs `node server.js` from `package.json`).
 5. Environment:
-	 - Add the following environment variables in Render (Environment > New Variable):
-		 - `SHOPIFY_API_KEY` = <your Shopify API key>
-		 - `SHOPIFY_API_SECRET` = <your Shopify API secret>
-		 - `SESSION_SECRET` = <a long random string>
-		 - `HOST` = `https://aervoapp.com`
-		 - `DB_FILE` = `./data.sqlite` (optional, default)
+   - Add the following environment variables in Render (Environment > New Variable):
+     - `SHOPIFY_API_KEY` = <your Shopify API key>
+     - `SHOPIFY_API_SECRET` = <your Shopify API secret>
+     - `SESSION_SECRET` = <a long random string>
+     - `HOST` = `https://aervoapp.com`
+     - `DB_FILE` = `./data.sqlite` (optional, default)
 6. After deploy, map your custom domain `aervoapp.com` to the Render service (Render Domains settings). Ensure the domain is assigned to the Web Service (not a static site).
 7. In your Shopify Partner App settings set the app redirect URI to `https://aervoapp.com/auth/shopify/callback` and your app's allowed redirection URLs.
 
