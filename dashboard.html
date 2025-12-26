@@ -1128,8 +1128,14 @@
                   insight into revenue and inventory.
                 </div>
                 <div class="integration-footer">
-                  <span class="integration-status-pill">Coming soon</span>
-                  <button class="integration-btn" disabled>Connect</button>
+                  <span class="integration-status-pill">Not connected</span>
+                  <button
+                    id="shopify-connect-btn"
+                    class="integration-btn"
+                    data-auth-url="/auth/shopify"
+                  >
+                    Connect with Shopify
+                  </button>
                 </div>
               </div>
 
@@ -1901,6 +1907,208 @@
             localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
             window.location.href = "login.html";
           });
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        const btn = document.getElementById("shopify-connect-btn");
+        const statusPill = document.querySelector(".integration-status-pill");
+        const integrationCard = btn ? btn.closest(".integration-card") : null;
+
+        function getQueryParam(name) {
+          return new URLSearchParams(window.location.search).get(name);
+        }
+
+        async function fetchAndRender(shop) {
+          if (!shop) return;
+          // render shop name
+          let shopEl = integrationCard.querySelector(".integration-shop-name");
+          if (!shopEl) {
+            shopEl = document.createElement("div");
+            shopEl.className = "integration-shop-name";
+            shopEl.style.fontSize = "12px";
+            shopEl.style.color = "#bcd0ff";
+            integrationCard
+              .querySelector(".integration-header > div")
+              .appendChild(shopEl);
+          }
+          shopEl.textContent = shop;
+
+          // add fetch buttons
+          let actions = integrationCard.querySelector(".integration-actions");
+          if (!actions) {
+            actions = document.createElement("div");
+            actions.className = "integration-actions";
+            actions.style.marginTop = "8px";
+            actions.style.display = "flex";
+            actions.style.gap = "8px";
+            const prodBtn = document.createElement("button");
+            prodBtn.textContent = "Fetch products";
+            prodBtn.className = "onboard-btn";
+            prodBtn.addEventListener("click", () => loadProducts(shop));
+
+            const ordersBtn = document.createElement("button");
+            ordersBtn.textContent = "Fetch orders";
+            ordersBtn.className = "onboard-btn";
+            ordersBtn.addEventListener("click", () => loadOrders(shop));
+
+            actions.appendChild(prodBtn);
+            actions.appendChild(ordersBtn);
+            integrationCard.appendChild(actions);
+          }
+
+          // auto-load a small set
+          loadProducts(shop);
+          loadMetrics(shop);
+        }
+
+        async function loadProducts(shop) {
+          const containerId = "shopify-products";
+          let container = document.getElementById(containerId);
+          if (!container) {
+            container = document.createElement("div");
+            container.id = containerId;
+            container.className = "card";
+            container.style.marginTop = "12px";
+            integrationCard.parentNode.insertBefore(
+              container,
+              integrationCard.nextSibling
+            );
+          }
+          container.innerHTML =
+            '<h2>Products</h2><div class="subtext">Loading...</div>';
+          try {
+            const resp = await fetch(
+              `/api/shop/${encodeURIComponent(shop)}/products`
+            );
+            const data = await resp.json();
+            const products = data.products || [];
+            if (!products.length) {
+              container.innerHTML =
+                '<h2>Products</h2><div class="subtext">No products found.</div>';
+              return;
+            }
+            const rows = products
+              .slice(0, 10)
+              .map(
+                (p) =>
+                  `<tr><td>${p.id}</td><td>${p.title}</td><td>${
+                    p.variants && p.variants.length
+                  }</td></tr>`
+              )
+              .join("");
+            container.innerHTML = `<h2>Products</h2><table><thead><tr><th>ID</th><th>Title</th><th>Variants</th></tr></thead><tbody>${rows}</tbody></table>`;
+          } catch (err) {
+            container.innerHTML =
+              '<h2>Products</h2><div class="subtext">Failed to load products.</div>';
+          }
+        }
+
+        async function loadOrders(shop) {
+          const containerId = "shopify-orders";
+          let container = document.getElementById(containerId);
+          if (!container) {
+            container = document.createElement("div");
+            container.id = containerId;
+            container.className = "card";
+            container.style.marginTop = "12px";
+            const parent = integrationCard.parentNode;
+            parent.insertBefore(container, integrationCard.nextSibling);
+          }
+          container.innerHTML =
+            '<h2>Orders</h2><div class="subtext">Loading...</div>';
+          try {
+            const resp = await fetch(
+              `/api/shop/${encodeURIComponent(shop)}/orders`
+            );
+            const data = await resp.json();
+            const orders = data.orders || [];
+            if (!orders.length) {
+              container.innerHTML =
+                '<h2>Orders</h2><div class="subtext">No orders found.</div>';
+              return;
+            }
+            const rows = orders
+              .slice(0, 10)
+              .map(
+                (o) =>
+                  `<tr><td>${o.id}</td><td>${o.email || ""}</td><td>${
+                    o.total_price
+                  }</td></tr>`
+              )
+              .join("");
+            container.innerHTML = `<h2>Orders</h2><table><thead><tr><th>ID</th><th>Email</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;
+          } catch (err) {
+            container.innerHTML =
+              '<h2>Orders</h2><div class="subtext">Failed to load orders.</div>';
+          }
+        }
+
+        async function loadMetrics(shop) {
+          const id = "shopify-metrics";
+          let el = document.getElementById(id);
+          if (!el) {
+            el = document.createElement("div");
+            el.id = id;
+            el.className = "card";
+            el.style.marginTop = "12px";
+            integrationCard.parentNode.insertBefore(
+              el,
+              integrationCard.nextSibling
+            );
+          }
+          el.innerHTML =
+            '<h2>Store Metrics</h2><div class="subtext">Loading...</div>';
+          try {
+            const r = await fetch(
+              `/api/shop/${encodeURIComponent(shop)}/metrics`
+            );
+            const m = await r.json();
+            el.innerHTML = `
+              <h2>Store Metrics</h2>
+              <div style="display:flex;gap:16px;flex-wrap:wrap">
+                <div class="card" style="padding:10px;min-width:140px"><h2>Orders</h2><div class="value">${
+                  m.orders_count
+                }</div></div>
+                <div class="card" style="padding:10px;min-width:160px"><h2>Total Revenue</h2><div class="value">$${(
+                  m.total_revenue || 0
+                ).toFixed(2)}</div></div>
+                <div class="card" style="padding:10px;min-width:160px"><h2>AOV</h2><div class="value">$${(
+                  m.average_order_value || 0
+                ).toFixed(2)}</div></div>
+                <div class="card" style="padding:10px;min-width:140px"><h2>Products</h2><div class="value">${
+                  m.products_count
+                }</div></div>
+              </div>
+            `;
+          } catch (err) {
+            el.innerHTML =
+              '<h2>Store Metrics</h2><div class="subtext">Failed to load metrics.</div>';
+          }
+        }
+
+        if (btn) {
+          btn.addEventListener("click", function (e) {
+            const url = btn.dataset.authUrl || "/auth/shopify";
+            window.location.href = url;
+          });
+        }
+
+        // If redirected after OAuth, show connected state and auto-fetch
+        const shop = getQueryParam("shop");
+        const connected = getQueryParam("connected");
+        if (shop && connected === "1" && statusPill && integrationCard) {
+          statusPill.textContent = "Connected";
+          statusPill.style.background = "rgba(52,211,153,0.12)";
+          statusPill.style.color = "#bbf7d0";
+          btn.textContent = "Manage connection";
+          btn.disabled = false;
+          btn.addEventListener("click", (e) => {
+            // optionally open Shopify admin
+            window.location.href = `https://${shop}/admin`;
+          });
+          fetchAndRender(shop);
         }
       })();
     </script>
