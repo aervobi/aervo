@@ -18,6 +18,7 @@ const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 
 const app = express();
+console.log("BOOT: running server.js");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
@@ -124,6 +125,11 @@ app.get('/auth/shopify', (req, res) => {
       </body>
     </html>
   `);
+});
+
+// Temporary debug route to verify the running file and environment in production
+app.get('/__debug', (req, res) => {
+  res.json({ filename: 'server.js', PORT: process.env.PORT || null, APP_URL: process.env.APP_URL || null });
 });
 
 app.post('/auth/shopify/start', (req, res) => {
