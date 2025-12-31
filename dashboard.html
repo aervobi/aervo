@@ -77,22 +77,11 @@
       }
 
       /* Layout with sidebar */
+      /* Layout with sidebar */
       .layout {
         display: flex;
         min-height: 100vh;
-        // Minimal shop detection (detection and persistence only)
-        (function detectAndStoreShopLocal() {
-          const s1 = new URLSearchParams(window.location.search).get("shop_installed");
-          const s2 = new URLSearchParams(window.location.search).get("shop");
-          if (s1) {
-            localStorage.setItem("aervo_shop", s1);
-          } else if (s2) {
-            localStorage.setItem("aervo_shop", s2);
-          }
-        })();
-
-        const connectedShop = localStorage.getItem("aervo_shop");
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 56px; /* account for fixed nav */
       }
 
       tr + tr td {
@@ -532,6 +521,171 @@
 
       @media (max-width: 900px) {
         .integration-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      /* ---- Core UI layout ---- */
+      .sidebar {
+        width: 240px;
+        position: sticky;
+        top: 56px;
+        height: calc(100vh - 56px);
+        padding: 16px 14px;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(6, 10, 22, 0.72);
+        backdrop-filter: blur(12px);
+        overflow-y: auto;
+      }
+
+      .main {
+        flex: 1;
+        padding: 24px 24px 40px;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .page-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .page-title h1 {
+        margin: 0;
+        font-size: 26px;
+        letter-spacing: -0.02em;
+      }
+
+      .page-title span {
+        color: #9ca7d6;
+        font-size: 13px;
+      }
+
+      /* ---- Cards ---- */
+      .card {
+        background: radial-gradient(circle at top left, #171d36, #050817);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9ca7d6;
+      }
+
+      .value {
+        margin-top: 10px;
+        font-size: 34px;
+        font-weight: 650;
+        color: #e8eeff;
+      }
+
+      .subtext {
+        margin-top: 6px;
+        font-size: 13px;
+        color: #9ca7d6;
+      }
+
+      /* ---- Grids ---- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+      }
+
+      /* Your grid-4 is inline-styled in HTML, but this helps other uses */
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 12px;
+      }
+
+      /* ---- Ask Aervo styles ---- */
+      .chat-card textarea {
+        width: 100%;
+        min-height: 74px;
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(124, 92, 255, 0.35);
+        background: rgba(5, 8, 23, 0.65);
+        color: #e8eeff;
+        outline: none;
+        resize: vertical;
+      }
+
+      #askBtn {
+        margin-top: 10px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(124, 92, 255, 0.7);
+        background: rgba(15, 21, 39, 0.75);
+        color: #dfe7ff;
+        cursor: pointer;
+      }
+
+      #askBtn:hover {
+        background: rgba(15, 21, 39, 0.95);
+        box-shadow: 0 0 14px rgba(80, 130, 255, 0.18);
+      }
+
+      .chat-output {
+        margin-top: 10px;
+        white-space: pre-line;
+        color: #cfe0ff;
+        font-size: 13px;
+        opacity: 0.95;
+      }
+
+      /* ---- Table clean-up (matches your columns) ---- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+
+      thead th {
+        text-align: left;
+        font-size: 12px;
+        color: #9ca7d6;
+        font-weight: 600;
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      tbody td {
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: #e5ecff;
+        font-size: 13px;
+      }
+
+      tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* Responsive */
+      @media (max-width: 1100px) {
+        .grid-4 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 900px) {
+        .main {
+          padding: 18px 16px 32px;
+        }
+        .grid-2 {
           grid-template-columns: 1fr;
         }
       }
@@ -1171,315 +1325,6 @@
             ACTIONS_KEY(email),
             JSON.stringify(Array.from(set))
           );
-        }
-
-        // ---------------- Shopify shop detection + live data ----------------
-        const AERVO_API_BASE = "https://api.aervoapp.com";
-
-        function getQueryParam(name) {
-          return new URLSearchParams(window.location.search).get(name);
-        }
-
-        // Prefer shop_installed then shop query param and persist to localStorage
-        (function detectAndStoreShop() {
-          const s1 = getQueryParam("shop_installed");
-          const s2 = getQueryParam("shop");
-          if (s1) {
-            localStorage.setItem("aervo_shop", s1);
-          } else if (s2) {
-            localStorage.setItem("aervo_shop", s2);
-          }
-        })();
-
-        const connectedShop = localStorage.getItem("aervo_shop");
-
-        async function fetchJson(url) {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        }
-
-        async function fetchShopifyDataAndRender(shop) {
-          if (!shop) return;
-
-          // resolve DOM elements now (avoid relying on later-declared vars)
-          const companyLabelEl = document.getElementById("companyLabel");
-          const welcomeTitleEl = document.getElementById("welcomeTitle");
-          const todayRevenueEl_local = document.getElementById("todayRevenue");
-          const todayChangeEl_local = document.getElementById("todayChange");
-          const weekRevenueEl_local = document.getElementById("weekRevenue");
-          const weekChangeEl_local = document.getElementById("weekChange");
-          const topProductEl_local = document.getElementById("topProduct");
-          const topProductDetailEl_local =
-            document.getElementById("topProductDetail");
-
-          // show shop in header and welcome
-          if (companyLabelEl)
-            companyLabelEl.textContent = `${shop} · ${displayRole}`;
-          if (welcomeTitleEl)
-            welcomeTitleEl.textContent = `Welcome back, ${shop}`;
-
-          const statusPill = document.querySelector(".integration-status-pill");
-          if (statusPill) {
-            statusPill.textContent = "Connected";
-            statusPill.classList.remove("");
-          }
-
-          try {
-            // 1) locations
-            const locUrl = `${AERVO_API_BASE}/auth/shopify/locations?shop=${encodeURIComponent(
-              shop
-            )}`;
-            const locData = await fetchJson(locUrl);
-            const locations = Array.isArray(locData)
-              ? locData
-              : locData.locations || [];
-            let chosen = null;
-            if (locations && locations.length) {
-              chosen =
-                locations.find((l) => l.active || l.is_active || l.enabled) ||
-                locations[0];
-            }
-
-            const locationId =
-              chosen &&
-              (chosen.id || chosen.location_id || chosen.location?.id);
-            const locationName =
-              chosen && (chosen.name || chosen.location?.name || "");
-
-            // show small status message
-            const backendStatusEl = document.getElementById("backendStatus");
-            if (backendStatusEl) {
-              backendStatusEl.classList.remove("hidden");
-              backendStatusEl.textContent = `Shop: ${shop} ${
-                locationName ? "· " + locationName : ""
-              }`;
-              backendStatusEl.classList.add("ok");
-            }
-
-            if (!locationId) {
-              // no location — we can still try products
-            }
-
-            // 2) insights
-            let insights = null;
-            if (locationId) {
-              const insightsUrl = `${AERVO_API_BASE}/auth/shopify/insights?shop=${encodeURIComponent(
-                shop
-              )}&location_id=${encodeURIComponent(locationId)}`;
-              try {
-                insights = await fetchJson(insightsUrl);
-              } catch (err) {
-                console.warn("Failed fetching insights", err);
-              }
-            }
-
-            // 3) products (optional)
-            let productsResp = null;
-            try {
-              const prodUrl = `${AERVO_API_BASE}/auth/shopify/products?shop=${encodeURIComponent(
-                shop
-              )}`;
-              productsResp = await fetchJson(prodUrl);
-            } catch (err) {
-              console.warn("Failed fetching products", err);
-            }
-
-            // Now map fields to the UI per spec
-            // Overview cards
-            if (todayRevenueEl_local) todayRevenueEl_local.textContent = "—";
-            if (todayChangeEl_local)
-              todayChangeEl_local.textContent = "Live inventory connected";
-            if (weekRevenueEl_local) weekRevenueEl_local.textContent = "—";
-
-            const totals = (insights && insights.totals) || {};
-            if (weekChangeEl)
-              weekChangeEl.textContent = `Total units on hand: ${
-                totals.total_units || 0
-              }`;
-
-            // Determine top product from insights.items (highest available)
-            let top = null;
-            const items = (insights && insights.items) || [];
-            if (items && items.length) {
-              top = items.reduce((best, it) => {
-                const avail = Number(it.available || 0);
-                if (!best || avail > (Number(best.available) || 0)) return it;
-                return best;
-              }, null);
-            }
-
-            // fallback: look in low_stock/out_of_stock
-            const lowStock = (insights && insights.low_stock) || [];
-            const outStock = (insights && insights.out_of_stock) || [];
-            const missingSku = (insights && insights.missing_sku) || [];
-
-            if (!top) {
-              const combined = [...lowStock, ...outStock];
-              if (combined.length) {
-                top = combined.reduce((best, it) => {
-                  const avail = Number(it.available || 0);
-                  if (!best || avail > (Number(best.available) || 0)) return it;
-                  return best;
-                }, null);
-              }
-            }
-
-            if (top && top.product_title) {
-              if (topProductEl_local)
-                topProductEl_local.textContent = `${top.product_title}`;
-              if (topProductDetailEl_local)
-                topProductDetailEl_local.textContent = `SKU missing: ${
-                  totals.missing_sku_count || 0
-                } · Low stock: ${lowStock.length} · Out of stock: ${
-                  outStock.length
-                }`;
-            } else if (
-              productsResp &&
-              productsResp.products &&
-              productsResp.products.length
-            ) {
-              const p = productsResp.products[0];
-              if (topProductEl_local)
-                topProductEl_local.textContent = p.title || "—";
-              if (topProductDetailEl_local)
-                topProductDetailEl_local.textContent = `SKU missing: ${
-                  totals.missing_sku_count || 0
-                } · Low stock: ${lowStock.length} · Out of stock: ${
-                  outStock.length
-                }`;
-            } else {
-              if (topProductEl_local) topProductEl_local.textContent = "—";
-              if (topProductDetailEl_local)
-                topProductDetailEl_local.textContent = `SKU missing: ${
-                  totals.missing_sku_count || 0
-                } · Low stock: ${lowStock.length} · Out of stock: ${
-                  outStock.length
-                }`;
-            }
-
-            // Products table: merge low_stock + out_of_stock + missing_sku deduped by inventory_item_id
-            const tableBody = document.querySelector("#productsTable tbody");
-            if (tableBody) {
-              tableBody.innerHTML = "";
-              const map = new Map();
-              function addList(arr, tag) {
-                (arr || []).forEach((it) => {
-                  const id =
-                    it.inventory_item_id ||
-                    it.inventory_item ||
-                    it.id ||
-                    `${it.product_id || ""}:${it.variant_id || ""}`;
-                  if (!id) return;
-                  const existing =
-                    map.get(id) || Object.assign({}, it, { tags: new Set() });
-                  (existing.tags || new Set()).add(tag);
-                  map.set(id, existing);
-                });
-              }
-
-              addList(lowStock, "low_stock");
-              addList(outStock, "out_of_stock");
-              addList(missingSku, "missing_sku");
-
-              // also ensure items are represented
-              (items || []).forEach((it) => {
-                const id =
-                  it.inventory_item_id ||
-                  it.inventory_item ||
-                  it.id ||
-                  `${it.product_id || ""}:${it.variant_id || ""}`;
-                if (!id) return;
-                const existing =
-                  map.get(id) || Object.assign({}, it, { tags: new Set() });
-                map.set(
-                  id,
-                  Object.assign(existing, it, {
-                    tags: existing.tags || new Set(),
-                  })
-                );
-              });
-
-              // Render rows
-              Array.from(map.values()).forEach((it) => {
-                const productTitle =
-                  it.product_title ||
-                  it.title ||
-                  it.product_name ||
-                  it.product ||
-                  "Unknown product";
-                const variantTitle = it.variant_title || it.variant || "";
-                const units =
-                  it.available != null ? it.available : it.quantity || 0;
-                const tags =
-                  it.tags instanceof Set ? Array.from(it.tags) : it.tags || [];
-                let statusClass = "pill-good";
-                let statusText = "Healthy";
-                if (tags.includes("out_of_stock")) {
-                  statusClass = "pill-bad";
-                  statusText = "At risk";
-                } else if (tags.includes("low_stock")) {
-                  statusClass = "pill-warn";
-                  statusText = "Watch";
-                }
-
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                  <td>${productTitle} ${
-                  variantTitle ? `(${variantTitle})` : ""
-                }</td>
-                  <td>${units}</td>
-                  <td>—</td>
-                  <td><span class="pill ${statusClass}">${statusText}</span></td>
-                `;
-                tableBody.appendChild(tr);
-              });
-            }
-
-            // Inventory notes
-            const notesEl = document.getElementById("inventoryNotes");
-            if (notesEl) {
-              notesEl.innerHTML = "";
-              if ((outStock || []).length)
-                notesEl.appendChild(
-                  Object.assign(document.createElement("li"), {
-                    textContent: `• You have ${outStock.length} variants out of stock.`,
-                  })
-                );
-              if ((lowStock || []).length)
-                notesEl.appendChild(
-                  Object.assign(document.createElement("li"), {
-                    textContent: `• ${lowStock.length} variants are low stock (<= 10).`,
-                  })
-                );
-              if (
-                (totals && totals.missing_sku_count) ||
-                (missingSku || []).length
-              )
-                notesEl.appendChild(
-                  Object.assign(document.createElement("li"), {
-                    textContent: `• ${
-                      totals.missing_sku_count || missingSku.length
-                    } variants are missing SKU. Add SKUs to improve tracking.`,
-                  })
-                );
-            }
-          } catch (err) {
-            console.error("Shopify fetch/render error", err);
-            const backendStatusEl = document.getElementById("backendStatus");
-            if (backendStatusEl) {
-              backendStatusEl.classList.remove("ok");
-              backendStatusEl.classList.add("error");
-              backendStatusEl.textContent = `Failed loading shop data: ${String(
-                err.message || err
-              )}`;
-            }
-          }
-        }
-
-        // If a shop is present at load, fetch live data
-        if (connectedShop) {
-          fetchShopifyDataAndRender(connectedShop);
         }
 
         function updateProgressUI(actions) {
