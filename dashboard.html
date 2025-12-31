@@ -813,10 +813,15 @@
         align-items: center;
         justify-content: center;
         gap: 4px;
-        cursor: not-allowed;
-        opacity: 0.9;
+        cursor: pointer;
+        opacity: 0.95;
         box-shadow: 0 0 10px rgba(137, 180, 255, 0.45),
           0 0 22px rgba(80, 130, 255, 0.35);
+      }
+
+      .integration-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
       }
 
       @media (max-width: 900px) {
