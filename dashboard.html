@@ -931,6 +931,75 @@
             </div>
           </div>
 
+          <div class="grid-2" style="margin-top: 12px">
+            <div class="card">
+              <h2>Sales Snapshot (Today)</h2>
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: flex-start;
+                  margin-top: 10px;
+                "
+              >
+                <div style="flex: 1">
+                  <div class="review-item" style="padding: 10px">
+                    <div class="review-header">
+                      <div class="review-author">Orders today</div>
+                      <div class="review-meta" id="ordersToday">—</div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="review-item"
+                    style="margin-top: 8px; padding: 10px"
+                  >
+                      <div class="review-author">Items sold today</div>
+                      <div class="review-meta" id="itemsSoldToday">—</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="flex: 1">
+                  <div class="review-item" style="padding: 10px">
+                    <div class="review-header">
+                      <div class="review-author">Gross sales today</div>
+                      <div class="review-meta" id="grossSalesToday">—</div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="review-item"
+                    style="margin-top: 8px; padding: 10px"
+                  >
+                    <div class="review-header">
+                      <div class="review-author">Top product today</div>
+                      <div class="review-meta" id="topProductToday">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="subtext"
+                id="salesSummaryText"
+                style="margin-top: 10px"
+              >
+                —
+              </div>
+            </div>
+
+            <div class="card list-card">
+              <h2>Recent Sales</h2>
+              <div
+                id="recentSalesList"
+                class="review-list"
+                style="margin-top: 10px"
+              >
+                <div class="subtext">Loading recent sales…</div>
+              </div>
+            </div>
+          </div>
+
           <div class="card" id="actionCenter" style="margin-top: 16px">
             <h2>Action Center</h2>
             <div
@@ -2017,6 +2086,171 @@
           );
         }
 
+        // Fetch sales summary (read-only). Returns parsed JSON or null on error.
+        async function fetchSalesSummary(shop, locationId) {
+          try {
+            return await fetchJson(
+              `${API_BASE}/auth/shopify/sales-summary?shop=${encodeURIComponent(
+                shop
+              )}&location_id=${encodeURIComponent(locationId || "")}`
+            );
+          } catch (err) {
+            return null;
+          }
+        }
+
+        // Render a simple sales snapshot into the Overview cards. Handles missing data gracefully.
+        function renderSalesSnapshot(data) {
+          const ordersEl = document.getElementById("ordersToday");
+          const itemsEl = document.getElementById("itemsSoldToday");
+          const grossEl = document.getElementById("grossSalesToday");
+          const topEl = document.getElementById("topProductToday");
+          const summaryEl = document.getElementById("salesSummaryText");
+
+          const ordersCount =
+            (data &&
+              (data.orders_count ?? (data.orders && data.orders.length))) ||
+            0;
+          const itemsSold =
+            (data &&
+              (data.items_sold ?? (data.totals && data.totals.items_sold))) ||
+            0;
+          const gross =
+            (data &&
+              (data.gross_sales ?? (data.totals && data.totals.gross_sales))) ||
+            null;
+          const topProduct =
+            (data &&
+              (data.top_product?.name ||
+                data.top_product ||
+                (data.totals && data.totals.top_product))) ||
+            null;
+
+          if (ordersEl)
+            ordersEl.textContent = ordersCount ? String(ordersCount) : "—";
+          if (itemsEl)
+            itemsEl.textContent = itemsSold ? String(itemsSold) : "—";
+          if (grossEl)
+            grossEl.textContent = gross
+              ? typeof gross === "number"
+                ? gross.toLocaleString(undefined, {
+                    style: "currency",
+                    currency: "USD",
+                  })
+                : String(gross)
+              : "—";
+          if (topEl) topEl.textContent = topProduct || "—";
+
+          if (summaryEl) {
+            if (!data || (!ordersCount && !itemsSold && !gross)) {
+              summaryEl.textContent = "No sales yet today";
+            } else {
+              summaryEl.textContent = `Showing last 24 hours · ${ordersCount} orders`;
+            }
+          }
+        }
+
+        // Render the recent sales list (last 5-6 orders). Accepts null/empty data.
+        function renderRecentSales(data) {
+          const container = document.getElementById("recentSalesList");
+          if (!container) return;
+          container.innerHTML = "";
+
+          const orders = (data && data.orders) || [];
+          if (!orders || orders.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "subtext";
+            empty.textContent = "No sales yet today";
+            container.appendChild(empty);
+            return;
+          }
+
+          // take most recent 6 orders
+          orders.slice(0, 6).forEach((o) => {
+            const box = document.createElement("div");
+            box.className = "review-item";
+
+            const custName =
+              (o.customer &&
+                (o.customer.name ||
+                  `${o.customer.first_name || ""} ${
+                    o.customer.last_name || ""
+                  }`.trim())) ||
+              (o.email && o.email.split("@")[0]) ||
+              "Customer";
+
+            const orderNum = o.name || o.order_number || o.id || "—";
+            const addr = o.shipping_address || o.billing_address || {};
+            const city = addr.city || addr.province || addr.region || "";
+            const total =
+              o.total_price ||
+              o.total ||
+              o.order_total ||
+              o.subtotal_price ||
+              o.amount ||
+              "—";
+
+            const header = document.createElement("div");
+            header.className = "review-header";
+            header.innerHTML = `<div class="review-author">${escapeHtml(
+              custName
+            )}</div><div class="review-meta">${escapeHtml(
+              String(orderNum)
+            )} · ${city ? escapeHtml(city) : "—"}</div>`;
+
+            const details = document.createElement("div");
+            details.style.marginTop = "6px";
+            details.innerHTML = `<div style="font-size:13px;color:#9ca7d6;margin-bottom:6px">Total: ${escapeHtml(
+              String(formatCurrencyIfLooksLikeNumber(total))
+            )}</div>`;
+
+            const lines = document.createElement("div");
+            (o.line_items || o.items || []).forEach((li) => {
+              const title =
+                li.title || li.name || li.product_name || li.product || "Item";
+              const qty = li.quantity || li.qty || li.count || 1;
+              const row = document.createElement("div");
+              row.style.fontSize = "13px";
+              row.style.color = "#e5ecff";
+              row.textContent = `• ${title} × ${qty}`;
+              lines.appendChild(row);
+            });
+
+            box.appendChild(header);
+            if ((o.note || "").length) {
+              const note = document.createElement("div");
+              note.className = "review-meta";
+              note.textContent = o.note;
+              box.appendChild(note);
+            }
+            box.appendChild(details);
+            if (lines.children.length) box.appendChild(lines);
+            container.appendChild(box);
+          });
+        }
+
+        // Small helper: escape simple HTML to avoid accidental markup injection
+        function escapeHtml(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+
+        function formatCurrencyIfLooksLikeNumber(v) {
+          if (v == null) return "—";
+          const n = Number(String(v).replace(/[^0-9.-]+/g, ""));
+          if (!isFinite(n)) return v;
+          return n.toLocaleString(undefined, {
+            style: "currency",
+            currency: "USD",
+          });
+        }
+        // Expose for quick console testing (optional)
+        window.__aervoSales = { renderSalesSnapshot, renderRecentSales };
+
         function dedupeAndMerge(itemsArrs) {
           const map = new Map();
           (itemsArrs.flat() || []).forEach((it) => {
@@ -2303,21 +2537,23 @@
 
           // Build content
           const html = `
-            <div class="card">
-              <h2>Summary</h2>
-              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px">
-                <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Missing SKUs</div><div style="font-size:18px">${missing}</div></div>
-                <div class="review-item"><div style="font-size:12px;color:#9ca7d6">SKU completeness</div><div style="font-size:18px">${
-                  totalItems
-                    ? Math.round(((totalItems - missing) / totalItems) * 100)
-                    : 0
-                }%</div></div>
-                <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Low stock</div><div style="font-size:18px">${low}</div></div>
-                <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Out of stock</div><div style="font-size:18px">${out}</div></div>
-              </div>
-            </div>
-            <div class="card list-card" style="margin-top:12px"><h2>Insights</h2><ul id="catalogInsights"></ul></div>
-          `;
+                  <div class="card">
+                    <h2>Summary</h2>
+                    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px">
+                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Missing SKUs</div><div style="font-size:18px">${missing}</div></div>
+                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">SKU completeness</div><div style="font-size:18px">${
+                        totalItems
+                          ? Math.round(
+                              ((totalItems - missing) / totalItems) * 100
+                            )
+                          : 0
+                      }%</div></div>
+                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Low stock</div><div style="font-size:18px">${low}</div></div>
+                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Out of stock</div><div style="font-size:18px">${out}</div></div>
+                    </div>
+                  </div>
+                  <div class="card list-card" style="margin-top:12px"><h2>Insights</h2><ul id="catalogInsights"></ul></div>
+                `;
           section.querySelector(".grid-2").innerHTML = html;
 
           const insightsList = document.getElementById("catalogInsights");
@@ -2485,6 +2721,19 @@
             const shopStatus = document.getElementById("shopStatusSmall");
             if (shopStatus)
               shopStatus.textContent = `${shop} · ${locationName || "—"}`;
+
+            // Fetch and render sales summary (only when shop connected). This runs after inventory UI loads.
+            (async () => {
+              try {
+                const sales = await fetchSalesSummary(shop, locationId);
+                // Renderers are defensive; they handle null/empty data.
+                renderSalesSnapshot(sales);
+                renderRecentSales(sales);
+              } catch (err) {
+                renderSalesSnapshot(null);
+                renderRecentSales(null);
+              }
+            })();
           } catch (err) {
             console.error("Shop UI init error", err);
             const bs = document.getElementById("backendStatus");
