@@ -1361,8 +1361,313 @@
           );
         }
 
-        function saveActions(set) {
-          localStorage.setItem(ACTIONS_KEY, JSON.stringify(Array.from(set)));
+        // ---------------- Shopify shop detection + live data ----------------
+        const AERVO_API_BASE = "https://api.aervoapp.com";
+
+        function getQueryParam(name) {
+          return new URLSearchParams(window.location.search).get(name);
+        }
+
+        // Prefer shop_installed then shop query param and persist to localStorage
+        (function detectAndStoreShop() {
+          const s1 = getQueryParam("shop_installed");
+          const s2 = getQueryParam("shop");
+          if (s1) {
+            localStorage.setItem("aervo_shop", s1);
+          } else if (s2) {
+            localStorage.setItem("aervo_shop", s2);
+          }
+        })();
+
+        const connectedShop = localStorage.getItem("aervo_shop");
+
+        async function fetchJson(url) {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        }
+
+        async function fetchShopifyDataAndRender(shop) {
+          if (!shop) return;
+
+          // resolve DOM elements now (avoid relying on later-declared vars)
+          const companyLabelEl = document.getElementById("companyLabel");
+          const welcomeTitleEl = document.getElementById("welcomeTitle");
+          const todayRevenueEl_local = document.getElementById("todayRevenue");
+          const todayChangeEl_local = document.getElementById("todayChange");
+          const weekRevenueEl_local = document.getElementById("weekRevenue");
+          const weekChangeEl_local = document.getElementById("weekChange");
+          const topProductEl_local = document.getElementById("topProduct");
+          const topProductDetailEl_local =
+            document.getElementById("topProductDetail");
+
+          // show shop in header and welcome
+          if (companyLabelEl)
+            companyLabelEl.textContent = `${shop} · ${displayRole}`;
+          if (welcomeTitleEl)
+            welcomeTitleEl.textContent = `Welcome back, ${shop}`;
+
+          const statusPill = document.querySelector(".integration-status-pill");
+          if (statusPill) {
+            statusPill.textContent = "Connected";
+            statusPill.classList.remove("");
+          }
+
+          try {
+            // 1) locations
+            const locUrl = `${AERVO_API_BASE}/auth/shopify/locations?shop=${encodeURIComponent(
+              shop
+            )}`;
+            const locData = await fetchJson(locUrl);
+            const locations = Array.isArray(locData)
+              ? locData
+              : locData.locations || [];
+            let chosen = null;
+            if (locations && locations.length) {
+              chosen =
+                locations.find((l) => l.active || l.is_active || l.enabled) ||
+                locations[0];
+            }
+
+            const locationId =
+              chosen &&
+              (chosen.id || chosen.location_id || chosen.location?.id);
+            const locationName =
+              chosen && (chosen.name || chosen.location?.name || "");
+
+            // show small status message
+            const backendStatusEl = document.getElementById("backendStatus");
+            if (backendStatusEl) {
+              backendStatusEl.classList.remove("hidden");
+              backendStatusEl.textContent = `Shop: ${shop} ${
+                locationName ? "· " + locationName : ""
+              }`;
+              backendStatusEl.classList.add("ok");
+            }
+
+            if (!locationId) {
+              // no location — we can still try products
+            }
+
+            // 2) insights
+            let insights = null;
+            if (locationId) {
+              const insightsUrl = `${AERVO_API_BASE}/auth/shopify/insights?shop=${encodeURIComponent(
+                shop
+              )}&location_id=${encodeURIComponent(locationId)}`;
+              try {
+                insights = await fetchJson(insightsUrl);
+              } catch (err) {
+                console.warn("Failed fetching insights", err);
+              }
+            }
+
+            // 3) products (optional)
+            let productsResp = null;
+            try {
+              const prodUrl = `${AERVO_API_BASE}/auth/shopify/products?shop=${encodeURIComponent(
+                shop
+              )}`;
+              productsResp = await fetchJson(prodUrl);
+            } catch (err) {
+              console.warn("Failed fetching products", err);
+            }
+
+            // Now map fields to the UI per spec
+            // Overview cards
+            if (todayRevenueEl_local) todayRevenueEl_local.textContent = "—";
+            if (todayChangeEl_local)
+              todayChangeEl_local.textContent = "Live inventory connected";
+            if (weekRevenueEl_local) weekRevenueEl_local.textContent = "—";
+
+            const totals = (insights && insights.totals) || {};
+            if (weekChangeEl)
+              weekChangeEl.textContent = `Total units on hand: ${
+                totals.total_units || 0
+              }`;
+
+            // Determine top product from insights.items (highest available)
+            let top = null;
+            const items = (insights && insights.items) || [];
+            if (items && items.length) {
+              top = items.reduce((best, it) => {
+                const avail = Number(it.available || 0);
+                if (!best || avail > (Number(best.available) || 0)) return it;
+                return best;
+              }, null);
+            }
+
+            // fallback: look in low_stock/out_of_stock
+            const lowStock = (insights && insights.low_stock) || [];
+            const outStock = (insights && insights.out_of_stock) || [];
+            const missingSku = (insights && insights.missing_sku) || [];
+
+            if (!top) {
+              const combined = [...lowStock, ...outStock];
+              if (combined.length) {
+                top = combined.reduce((best, it) => {
+                  const avail = Number(it.available || 0);
+                  if (!best || avail > (Number(best.available) || 0)) return it;
+                  return best;
+                }, null);
+              }
+            }
+
+            if (top && top.product_title) {
+              if (topProductEl_local)
+                topProductEl_local.textContent = `${top.product_title}`;
+              if (topProductDetailEl_local)
+                topProductDetailEl_local.textContent = `SKU missing: ${
+                  totals.missing_sku_count || 0
+                } · Low stock: ${lowStock.length} · Out of stock: ${
+                  outStock.length
+                }`;
+            } else if (
+              productsResp &&
+              productsResp.products &&
+              productsResp.products.length
+            ) {
+              const p = productsResp.products[0];
+              if (topProductEl_local)
+                topProductEl_local.textContent = p.title || "—";
+              if (topProductDetailEl_local)
+                topProductDetailEl_local.textContent = `SKU missing: ${
+                  totals.missing_sku_count || 0
+                } · Low stock: ${lowStock.length} · Out of stock: ${
+                  outStock.length
+                }`;
+            } else {
+              if (topProductEl_local) topProductEl_local.textContent = "—";
+              if (topProductDetailEl_local)
+                topProductDetailEl_local.textContent = `SKU missing: ${
+                  totals.missing_sku_count || 0
+                } · Low stock: ${lowStock.length} · Out of stock: ${
+                  outStock.length
+                }`;
+            }
+
+            // Products table: merge low_stock + out_of_stock + missing_sku deduped by inventory_item_id
+            const tableBody = document.querySelector("#productsTable tbody");
+            if (tableBody) {
+              tableBody.innerHTML = "";
+              const map = new Map();
+              function addList(arr, tag) {
+                (arr || []).forEach((it) => {
+                  const id =
+                    it.inventory_item_id ||
+                    it.inventory_item ||
+                    it.id ||
+                    `${it.product_id || ""}:${it.variant_id || ""}`;
+                  if (!id) return;
+                  const existing =
+                    map.get(id) || Object.assign({}, it, { tags: new Set() });
+                  (existing.tags || new Set()).add(tag);
+                  map.set(id, existing);
+                });
+              }
+
+              addList(lowStock, "low_stock");
+              addList(outStock, "out_of_stock");
+              addList(missingSku, "missing_sku");
+
+              // also ensure items are represented
+              (items || []).forEach((it) => {
+                const id =
+                  it.inventory_item_id ||
+                  it.inventory_item ||
+                  it.id ||
+                  `${it.product_id || ""}:${it.variant_id || ""}`;
+                if (!id) return;
+                const existing =
+                  map.get(id) || Object.assign({}, it, { tags: new Set() });
+                map.set(
+                  id,
+                  Object.assign(existing, it, {
+                    tags: existing.tags || new Set(),
+                  })
+                );
+              });
+
+              // Render rows
+              Array.from(map.values()).forEach((it) => {
+                const productTitle =
+                  it.product_title ||
+                  it.title ||
+                  it.product_name ||
+                  it.product ||
+                  "Unknown product";
+                const variantTitle = it.variant_title || it.variant || "";
+                const units =
+                  it.available != null ? it.available : it.quantity || 0;
+                const tags =
+                  it.tags instanceof Set ? Array.from(it.tags) : it.tags || [];
+                let statusClass = "pill-good";
+                let statusText = "Healthy";
+                if (tags.includes("out_of_stock")) {
+                  statusClass = "pill-bad";
+                  statusText = "At risk";
+                } else if (tags.includes("low_stock")) {
+                  statusClass = "pill-warn";
+                  statusText = "Watch";
+                }
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                  <td>${productTitle} ${
+                  variantTitle ? `(${variantTitle})` : ""
+                }</td>
+                  <td>${units}</td>
+                  <td>—</td>
+                  <td><span class="pill ${statusClass}">${statusText}</span></td>
+                `;
+                tableBody.appendChild(tr);
+              });
+            }
+
+            // Inventory notes
+            const notesEl = document.getElementById("inventoryNotes");
+            if (notesEl) {
+              notesEl.innerHTML = "";
+              if ((outStock || []).length)
+                notesEl.appendChild(
+                  Object.assign(document.createElement("li"), {
+                    textContent: `• You have ${outStock.length} variants out of stock.`,
+                  })
+                );
+              if ((lowStock || []).length)
+                notesEl.appendChild(
+                  Object.assign(document.createElement("li"), {
+                    textContent: `• ${lowStock.length} variants are low stock (<= 10).`,
+                  })
+                );
+              if (
+                (totals && totals.missing_sku_count) ||
+                (missingSku || []).length
+              )
+                notesEl.appendChild(
+                  Object.assign(document.createElement("li"), {
+                    textContent: `• ${
+                      totals.missing_sku_count || missingSku.length
+                    } variants are missing SKU. Add SKUs to improve tracking.`,
+                  })
+                );
+            }
+          } catch (err) {
+            console.error("Shopify fetch/render error", err);
+            const backendStatusEl = document.getElementById("backendStatus");
+            if (backendStatusEl) {
+              backendStatusEl.classList.remove("ok");
+              backendStatusEl.classList.add("error");
+              backendStatusEl.textContent = `Failed loading shop data: ${String(
+                err.message || err
+              )}`;
+            }
+          }
+        }
+
+        // If a shop is present at load, fetch live data
+        if (connectedShop) {
+          fetchShopifyDataAndRender(connectedShop);
         }
 
         function updateProgressUI(actions) {
@@ -1642,231 +1947,238 @@
           },
         };
 
-        const data = demoData[email] || demoData["demo@aervo.com"];
-        const displayCompany = companyFromUser || data.companyName;
-        const displayRole = roleFromUser || data.role;
+        // Only use demo data when no Shopify shop is connected.
+        if (!connectedShop) {
+          const data = demoData[email] || demoData["demo@aervo.com"];
+          const displayCompany = companyFromUser || data.companyName;
+          const displayRole = roleFromUser || data.role;
 
-        // Love footer
-        const loveFooter = document.getElementById("loveFooter");
-        if (loveFooter)
-          loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
+          // Love footer
+          const loveFooter = document.getElementById("loveFooter");
+          if (loveFooter)
+            loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
 
-        // Header
-        const companyLabel = document.getElementById("companyLabel");
-        if (companyLabel)
-          companyLabel.textContent = displayCompany + " · " + displayRole;
+          // Header
+          const companyLabel = document.getElementById("companyLabel");
+          if (companyLabel)
+            companyLabel.textContent = displayCompany + " · " + displayRole;
 
-        const welcomeTitle = document.getElementById("welcomeTitle");
-        if (welcomeTitle)
-          welcomeTitle.textContent = "Welcome back, " + displayCompany;
+          const welcomeTitle = document.getElementById("welcomeTitle");
+          if (welcomeTitle)
+            welcomeTitle.textContent = "Welcome back, " + displayCompany;
 
-        const dateLabel = document.getElementById("dateLabel");
-        if (dateLabel) {
-          const now = new Date();
-          dateLabel.textContent = now.toLocaleDateString(undefined, {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          });
-        }
+          const dateLabel = document.getElementById("dateLabel");
+          if (dateLabel) {
+            const now = new Date();
+            dateLabel.textContent = now.toLocaleDateString(undefined, {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            });
+          }
 
-        // Overview
-        const todayRevenueEl = document.getElementById("todayRevenue");
-        const todayChangeEl = document.getElementById("todayChange");
-        const weekRevenueEl = document.getElementById("weekRevenue");
-        const weekChangeEl = document.getElementById("weekChange");
-        const topProductEl = document.getElementById("topProduct");
-        const topProductDetailEl = document.getElementById("topProductDetail");
+          // Overview
+          const todayRevenueEl = document.getElementById("todayRevenue");
+          const todayChangeEl = document.getElementById("todayChange");
+          const weekRevenueEl = document.getElementById("weekRevenue");
+          const weekChangeEl = document.getElementById("weekChange");
+          const topProductEl = document.getElementById("topProduct");
+          const topProductDetailEl =
+            document.getElementById("topProductDetail");
 
-        if (todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue;
-        if (todayChangeEl) todayChangeEl.textContent = data.todayChange;
-        if (weekRevenueEl) weekRevenueEl.textContent = data.weekRevenue;
-        if (weekChangeEl) weekChangeEl.textContent = data.weekChange;
-        if (topProductEl) topProductEl.textContent = data.topProduct;
-        if (topProductDetailEl)
-          topProductDetailEl.textContent = data.topProductDetail;
+          if (todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue;
+          if (todayChangeEl) todayChangeEl.textContent = data.todayChange;
+          if (weekRevenueEl) weekRevenueEl.textContent = data.weekRevenue;
+          if (weekChangeEl) weekChangeEl.textContent = data.weekChange;
+          if (topProductEl) topProductEl.textContent = data.topProduct;
+          if (topProductDetailEl)
+            topProductDetailEl.textContent = data.topProductDetail;
 
-        // Insights
-        const insightsList = document.getElementById("insightsList");
-        if (insightsList) {
-          insightsList.innerHTML = "";
-          (data.insights || []).forEach((text) => {
-            const li = document.createElement("li");
-            li.textContent = "• " + text;
-            insightsList.appendChild(li);
-          });
-        }
+          // Insights
+          const insightsList = document.getElementById("insightsList");
+          if (insightsList) {
+            insightsList.innerHTML = "";
+            (data.insights || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              insightsList.appendChild(li);
+            });
+          }
 
-        // Ask Aervo
-        const askBtn = document.getElementById("askBtn");
-        if (askBtn) {
-          askBtn.addEventListener("click", () => {
-            const q = document.getElementById("questionInput");
-            const out = document.getElementById("chatOutput");
+          // Ask Aervo
+          const askBtn = document.getElementById("askBtn");
+          if (askBtn) {
+            askBtn.addEventListener("click", () => {
+              const q = document.getElementById("questionInput");
+              const out = document.getElementById("chatOutput");
 
-            const question = q ? q.value.trim() : "";
-            if (!out) return;
+              const question = q ? q.value.trim() : "";
+              if (!out) return;
 
-            if (!question) {
+              if (!question) {
+                out.textContent =
+                  "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+                return;
+              }
+
               out.textContent =
-                "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
-              return;
-            }
+                "If this were connected to your real data, Aervo would answer something like:\n\n" +
+                "“Based on your latest numbers, you're trending " +
+                String(data.todayChange || "").toLowerCase() +
+                " and your top product is " +
+                data.topProduct +
+                ". This week’s revenue is " +
+                data.weekRevenue +
+                " and is " +
+                String(data.weekChange || "").toLowerCase() +
+                ".”";
+              // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
+              if (localStorage.getItem(DONE_KEY(email)) !== "true") {
+                markAction("ask"); // this already saves + updates progress + renderTodo
+              }
+            });
+          }
 
-            out.textContent =
-              "If this were connected to your real data, Aervo would answer something like:\n\n" +
-              "“Based on your latest numbers, you're trending " +
-              String(data.todayChange || "").toLowerCase() +
-              " and your top product is " +
-              data.topProduct +
-              ". This week’s revenue is " +
-              data.weekRevenue +
-              " and is " +
-              String(data.weekChange || "").toLowerCase() +
-              ".”";
-            // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
-            if (localStorage.getItem(DONE_KEY(email)) !== "true") {
-              markAction("ask"); // this already saves + updates progress + renderTodo
-            }
-          });
-        }
+          // Products table
+          const productsTableBody = document.querySelector(
+            "#productsTable tbody"
+          );
+          if (productsTableBody) {
+            productsTableBody.innerHTML = "";
+            (data.products || []).forEach((p) => {
+              const tr = document.createElement("tr");
+              const statusClass =
+                p.status === "good"
+                  ? "pill-good"
+                  : p.status === "warn"
+                  ? "pill-warn"
+                  : "pill-bad";
+              const statusText =
+                p.status === "good"
+                  ? "Healthy"
+                  : p.status === "warn"
+                  ? "Watch"
+                  : "At risk";
 
-        // Products table
-        const productsTableBody = document.querySelector(
-          "#productsTable tbody"
-        );
-        if (productsTableBody) {
-          productsTableBody.innerHTML = "";
-          (data.products || []).forEach((p) => {
-            const tr = document.createElement("tr");
-            const statusClass =
-              p.status === "good"
-                ? "pill-good"
-                : p.status === "warn"
-                ? "pill-warn"
-                : "pill-bad";
-            const statusText =
-              p.status === "good"
-                ? "Healthy"
-                : p.status === "warn"
-                ? "Watch"
-                : "At risk";
-
-            tr.innerHTML = `
+              tr.innerHTML = `
               <td>${p.name}</td>
               <td>${p.units}</td>
               <td>${p.revenue}</td>
               <td><span class="pill ${statusClass}">${statusText}</span></td>
             `;
-            productsTableBody.appendChild(tr);
-          });
-        }
+              productsTableBody.appendChild(tr);
+            });
+          }
 
-        const inventoryList = document.getElementById("inventoryNotes");
-        if (inventoryList) {
-          inventoryList.innerHTML = "";
-          (data.inventoryNotes || []).forEach((text) => {
-            const li = document.createElement("li");
-            li.textContent = "• " + text;
-            inventoryList.appendChild(li);
-          });
-        }
+          const inventoryList = document.getElementById("inventoryNotes");
+          if (inventoryList) {
+            inventoryList.innerHTML = "";
+            (data.inventoryNotes || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              inventoryList.appendChild(li);
+            });
+          }
 
-        // Trends
-        const trendSummaryEl = document.getElementById("trendSummary");
-        if (trendSummaryEl)
-          trendSummaryEl.textContent = data.trendSummary || "";
+          // Trends
+          const trendSummaryEl = document.getElementById("trendSummary");
+          if (trendSummaryEl)
+            trendSummaryEl.textContent = data.trendSummary || "";
 
-        const chartBars = document.getElementById("chartBars");
-        const chartLabels = document.getElementById("chartLabels");
-        if (chartBars && chartLabels) {
-          chartBars.innerHTML = "";
-          chartLabels.innerHTML = "";
+          const chartBars = document.getElementById("chartBars");
+          const chartLabels = document.getElementById("chartLabels");
+          if (chartBars && chartLabels) {
+            chartBars.innerHTML = "";
+            chartLabels.innerHTML = "";
 
-          const maxVal = Math.max(...(data.trendValues || [1]));
-          (data.trendValues || []).forEach((val, idx) => {
-            const heightPercent = (val / maxVal) * 100;
+            const maxVal = Math.max(...(data.trendValues || [1]));
+            (data.trendValues || []).forEach((val, idx) => {
+              const heightPercent = (val / maxVal) * 100;
 
-            const bar = document.createElement("div");
-            bar.className = "chart-bar";
-            bar.style.height = heightPercent + "%";
-            bar.innerHTML = `<span>${Number(val).toLocaleString()}</span>`;
-            chartBars.appendChild(bar);
+              const bar = document.createElement("div");
+              bar.className = "chart-bar";
+              bar.style.height = heightPercent + "%";
+              bar.innerHTML = `<span>${Number(val).toLocaleString()}</span>`;
+              chartBars.appendChild(bar);
 
-            const label = document.createElement("div");
-            label.textContent = (data.trendDays || [])[idx] || "";
-            chartLabels.appendChild(label);
-          });
-        }
+              const label = document.createElement("div");
+              label.textContent = (data.trendDays || [])[idx] || "";
+              chartLabels.appendChild(label);
+            });
+          }
 
-        const trendHighlights = document.getElementById("trendHighlights");
-        if (trendHighlights) {
-          trendHighlights.innerHTML = "";
-          (data.trendHighlights || []).forEach((text) => {
-            const li = document.createElement("li");
-            li.textContent = "• " + text;
-            trendHighlights.appendChild(li);
-          });
-        }
+          const trendHighlights = document.getElementById("trendHighlights");
+          if (trendHighlights) {
+            trendHighlights.innerHTML = "";
+            (data.trendHighlights || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              trendHighlights.appendChild(li);
+            });
+          }
 
-        // Customers
-        const customersTableBody = document.querySelector(
-          "#customersTable tbody"
-        );
-        if (customersTableBody) {
-          customersTableBody.innerHTML = "";
-          (data.customerSegments || []).forEach((seg) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
+          // Customers
+          const customersTableBody = document.querySelector(
+            "#customersTable tbody"
+          );
+          if (customersTableBody) {
+            customersTableBody.innerHTML = "";
+            (data.customerSegments || []).forEach((seg) => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
               <td>${seg.name}</td>
               <td>${seg.share}</td>
               <td>${seg.ticket}</td>
             `;
-            customersTableBody.appendChild(tr);
-          });
-        }
+              customersTableBody.appendChild(tr);
+            });
+          }
 
-        const customerNotesList = document.getElementById("customerNotes");
-        if (customerNotesList) {
-          customerNotesList.innerHTML = "";
-          (data.customerNotes || []).forEach((text) => {
-            const li = document.createElement("li");
-            li.textContent = "• " + text;
-            customerNotesList.appendChild(li);
-          });
-        }
+          const customerNotesList = document.getElementById("customerNotes");
+          if (customerNotesList) {
+            customerNotesList.innerHTML = "";
+            (data.customerNotes || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              customerNotesList.appendChild(li);
+            });
+          }
 
-        // Compare
-        const compareThisWeekEl = document.getElementById("compareThisWeek");
-        const compareThisDeltaEl = document.getElementById("compareThisDelta");
-        const compareLastWeekEl = document.getElementById("compareLastWeek");
-        const compareLastNotesEl = document.getElementById("compareLastNotes");
-        const compareSummaryEl = document.getElementById("compareSummary");
+          // Compare
+          const compareThisWeekEl = document.getElementById("compareThisWeek");
+          const compareThisDeltaEl =
+            document.getElementById("compareThisDelta");
+          const compareLastWeekEl = document.getElementById("compareLastWeek");
+          const compareLastNotesEl =
+            document.getElementById("compareLastNotes");
+          const compareSummaryEl = document.getElementById("compareSummary");
 
-        if (compareThisWeekEl)
-          compareThisWeekEl.textContent = data.compareThisWeek || "$0";
-        if (compareThisDeltaEl)
-          compareThisDeltaEl.textContent = data.compareThisDelta || "–";
-        if (compareLastWeekEl)
-          compareLastWeekEl.textContent = data.compareLastWeek || "$0";
-        if (compareLastNotesEl)
-          compareLastNotesEl.textContent = data.compareLastNotes || "–";
-        if (compareSummaryEl)
-          compareSummaryEl.textContent = data.compareSummary || "";
+          if (compareThisWeekEl)
+            compareThisWeekEl.textContent = data.compareThisWeek || "$0";
+          if (compareThisDeltaEl)
+            compareThisDeltaEl.textContent = data.compareThisDelta || "–";
+          if (compareLastWeekEl)
+            compareLastWeekEl.textContent = data.compareLastWeek || "$0";
+          if (compareLastNotesEl)
+            compareLastNotesEl.textContent = data.compareLastNotes || "–";
+          if (compareSummaryEl)
+            compareSummaryEl.textContent = data.compareSummary || "";
 
-        // Notifications
-        const notificationsList = document.getElementById("notificationsList");
-        if (notificationsList) {
-          notificationsList.innerHTML = "";
-          (data.notifications || []).forEach((n) => {
-            const div = document.createElement("div");
-            div.className = "notification";
-            div.innerHTML = `
+          // Notifications
+          const notificationsList =
+            document.getElementById("notificationsList");
+          if (notificationsList) {
+            notificationsList.innerHTML = "";
+            (data.notifications || []).forEach((n) => {
+              const div = document.createElement("div");
+              div.className = "notification";
+              div.innerHTML = `
               <div>${n.text}</div>
               <small>${n.time}</small>
             `;
-            notificationsList.appendChild(div);
-          });
+              notificationsList.appendChild(div);
+            });
+          }
         }
 
         // Sidebar navigation
@@ -1935,7 +2247,7 @@
           }
           shopEl.textContent = shop;
 
-          // add fetch buttons
+          // add fetch buttons (products only — orders are blocked)
           let actions = integrationCard.querySelector(".integration-actions");
           if (!actions) {
             actions = document.createElement("div");
@@ -1948,19 +2260,12 @@
             prodBtn.className = "onboard-btn";
             prodBtn.addEventListener("click", () => loadProducts(shop));
 
-            const ordersBtn = document.createElement("button");
-            ordersBtn.textContent = "Fetch orders";
-            ordersBtn.className = "onboard-btn";
-            ordersBtn.addEventListener("click", () => loadOrders(shop));
-
             actions.appendChild(prodBtn);
-            actions.appendChild(ordersBtn);
             integrationCard.appendChild(actions);
           }
 
-          // auto-load a small set
+          // auto-load products
           loadProducts(shop);
-          loadMetrics(shop);
         }
 
         async function loadProducts(shop) {
@@ -1980,10 +2285,12 @@
             '<h2>Products</h2><div class="subtext">Loading...</div>';
           try {
             const resp = await fetch(
-              `/api/shop/${encodeURIComponent(shop)}/products`
+              `https://api.aervoapp.com/auth/shopify/products?shop=${encodeURIComponent(
+                shop
+              )}`
             );
             const data = await resp.json();
-            const products = data.products || [];
+            const products = data.products || data || [];
             if (!products.length) {
               container.innerHTML =
                 '<h2>Products</h2><div class="subtext">No products found.</div>';
@@ -2005,93 +2312,31 @@
           }
         }
 
-        async function loadOrders(shop) {
-          const containerId = "shopify-orders";
-          let container = document.getElementById(containerId);
-          if (!container) {
-            container = document.createElement("div");
-            container.id = containerId;
-            container.className = "card";
-            container.style.marginTop = "12px";
-            const parent = integrationCard.parentNode;
-            parent.insertBefore(container, integrationCard.nextSibling);
-          }
-          container.innerHTML =
-            '<h2>Orders</h2><div class="subtext">Loading...</div>';
-          try {
-            const resp = await fetch(
-              `/api/shop/${encodeURIComponent(shop)}/orders`
-            );
-            const data = await resp.json();
-            const orders = data.orders || [];
-            if (!orders.length) {
-              container.innerHTML =
-                '<h2>Orders</h2><div class="subtext">No orders found.</div>';
-              return;
-            }
-            const rows = orders
-              .slice(0, 10)
-              .map(
-                (o) =>
-                  `<tr><td>${o.id}</td><td>${o.email || ""}</td><td>${
-                    o.total_price
-                  }</td></tr>`
-              )
-              .join("");
-            container.innerHTML = `<h2>Orders</h2><table><thead><tr><th>ID</th><th>Email</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>`;
-          } catch (err) {
-            container.innerHTML =
-              '<h2>Orders</h2><div class="subtext">Failed to load orders.</div>';
-          }
-        }
-
-        async function loadMetrics(shop) {
-          const id = "shopify-metrics";
-          let el = document.getElementById(id);
-          if (!el) {
-            el = document.createElement("div");
-            el.id = id;
-            el.className = "card";
-            el.style.marginTop = "12px";
-            integrationCard.parentNode.insertBefore(
-              el,
-              integrationCard.nextSibling
-            );
-          }
-          el.innerHTML =
-            '<h2>Store Metrics</h2><div class="subtext">Loading...</div>';
-          try {
-            const r = await fetch(
-              `/api/shop/${encodeURIComponent(shop)}/metrics`
-            );
-            const m = await r.json();
-            el.innerHTML = `
-              <h2>Store Metrics</h2>
-              <div style="display:flex;gap:16px;flex-wrap:wrap">
-                <div class="card" style="padding:10px;min-width:140px"><h2>Orders</h2><div class="value">${
-                  m.orders_count
-                }</div></div>
-                <div class="card" style="padding:10px;min-width:160px"><h2>Total Revenue</h2><div class="value">$${(
-                  m.total_revenue || 0
-                ).toFixed(2)}</div></div>
-                <div class="card" style="padding:10px;min-width:160px"><h2>AOV</h2><div class="value">$${(
-                  m.average_order_value || 0
-                ).toFixed(2)}</div></div>
-                <div class="card" style="padding:10px;min-width:140px"><h2>Products</h2><div class="value">${
-                  m.products_count
-                }</div></div>
-              </div>
-            `;
-          } catch (err) {
-            el.innerHTML =
-              '<h2>Store Metrics</h2><div class="subtext">Failed to load metrics.</div>';
-          }
-        }
-
         if (btn) {
           btn.addEventListener("click", function (e) {
-            const url = btn.dataset.authUrl || "/auth/shopify";
-            window.location.href = url;
+            // Prefer stored shop or ask user to paste their shop domain
+            const stored = localStorage.getItem("aervo_shop");
+            if (stored) {
+              window.location.href = `https://api.aervoapp.com/auth/shopify?shop=${encodeURIComponent(
+                stored
+              )}`;
+              return;
+            }
+
+            const input = window.prompt(
+              "Please paste your Shopify domain (e.g. mystore.myshopify.com)"
+            );
+            if (input && input.trim()) {
+              const s = input.trim();
+              localStorage.setItem("aervo_shop", s);
+              window.location.href = `https://api.aervoapp.com/auth/shopify?shop=${encodeURIComponent(
+                s
+              )}`;
+            } else {
+              alert(
+                "No shop provided — paste your mystore.myshopify.com domain to connect."
+              );
+            }
           });
         }
 
@@ -2108,6 +2353,8 @@
             // optionally open Shopify admin
             window.location.href = `https://${shop}/admin`;
           });
+          // persist shop and render
+          localStorage.setItem("aervo_shop", shop);
           fetchAndRender(shop);
         }
       })();
