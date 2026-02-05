@@ -2150,6 +2150,24 @@ header::after{
     gap: 12px !important;
   }
 }
+/* Hero logo should be a real element, not an absolute layer */
+.hero-logo{
+  display: inline-block;
+  width: 120px;
+  height: auto;
+  margin-bottom: 14px;
+  filter:
+    drop-shadow(0 0 18px rgba(124, 92, 255, 0.35))
+    drop-shadow(0 0 10px rgba(41, 200, 255, 0.22));
+}
+
+/* Mobile sizing */
+@media (max-width: 520px){
+  .hero-logo{
+    width: 96px;
+    margin-bottom: 12px;
+  }
+}
     </style>
   </head>
 
