@@ -361,6 +361,13 @@ nav a {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.08);
   }
+  nav a.active {
+  color: rgba(245, 247, 255, 0.95);
+}
+nav a.active::after {
+  opacity: 0.9;
+  transform: scaleX(1);
+}
 }
 
 /* slimmer, cleaner underline */
