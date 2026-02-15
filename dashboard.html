@@ -1399,626 +1399,651 @@
     </div>
 
     <script>
-            (function () {
-              // Protect route: require login
-              // Protect route: require login (accept old/new keys)
-              let rawUser = localStorage.getItem("aervoUser");
+      (function () {
+        // Protect route: require login
+        // Protect route: require login (accept old/new keys)
+        let rawUser = localStorage.getItem("aervoUser");
 
-              // fallback if other pages saved the user under a different key
-              if (!rawUser) rawUser = localStorage.getItem("aervo_user");
+        // fallback if other pages saved the user under a different key
+        if (!rawUser) rawUser = localStorage.getItem("aervo_user");
 
-              // if we found the old key, migrate it so everything is consistent
-              if (rawUser && !localStorage.getItem("aervoUser")) {
-                localStorage.setItem("aervoUser", rawUser);
-              }
+        // if we found the old key, migrate it so everything is consistent
+        if (rawUser && !localStorage.getItem("aervoUser")) {
+          localStorage.setItem("aervoUser", rawUser);
+        }
 
-              if (!rawUser) {
-                window.location.href = "login.html";
+        if (!rawUser) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        let user;
+        try {
+          user = JSON.parse(rawUser);
+        } catch (e) {
+          // corrupted storage, force clean login
+          localStorage.removeItem("aervoUser");
+          localStorage.removeItem("aervo_user");
+          window.location.href = "login.html";
+          return;
+        }
+
+        const email = (user.email || "").toLowerCase();
+        const companyFromUser = user.companyName || "Your business";
+        const roleFromUser = user.role || "Owner";
+
+        const isAdmin = email === "aervoadmin@aervoapp.com";
+        const backendStatusBox = document.getElementById("backendStatus");
+
+        async function checkBackendStatus() {
+          if (!backendStatusBox) return;
+
+          try {
+            const response = await fetch(
+              "https://aervo-backend.onrender.com/api/status",
+            );
+            const data = await response.json();
+            backendStatusBox.textContent = `Backend: ${String(
+              data.status || "",
+            ).toUpperCase()} — Env: ${data.environment || ""}`;
+            backendStatusBox.classList.remove("error");
+            backendStatusBox.classList.add("ok");
+          } catch (err) {
+            backendStatusBox.textContent = "Backend: OFFLINE";
+            backendStatusBox.classList.remove("ok");
+            backendStatusBox.classList.add("error");
+          }
+        }
+
+        // Only admins see backend status
+        if (isAdmin && backendStatusBox) {
+          backendStatusBox.classList.remove("hidden");
+          checkBackendStatus();
+          setInterval(checkBackendStatus, 5000);
+        }
+
+        // ---------------- Onboarding banner logic ----------------
+        const onboardingCard = document.getElementById("onboardingBanner");
+        const progressEl = document.getElementById("onboardingProgress");
+        const dismissBtn = document.getElementById("dismissOnboardingBtn");
+
+        const JUST_SIGNED_UP_KEY = (email) => `aervo_just_signed_up:${email}`;
+        const DONE_KEY = (email) => `aervo_onboarding_done:${email}`;
+        const ACTIONS_KEY = (email) => `aervo_onboarding_actions:${email}`;
+
+        function getActions() {
+          try {
+            return new Set(
+              JSON.parse(localStorage.getItem(ACTIONS_KEY(email)) || "[]"),
+            );
+          } catch {
+            return new Set();
+          }
+        }
+
+        function saveActions(set) {
+          localStorage.setItem(
+            ACTIONS_KEY(email),
+            JSON.stringify(Array.from(set)),
+          );
+        }
+
+        function updateProgressUI(actions) {
+          const completed = Math.min(actions.size, 2);
+          if (progressEl) progressEl.textContent = `${completed}/2`;
+
+          document.querySelectorAll(".onboard-btn").forEach((btn) => {
+            const a = btn.getAttribute("data-action");
+            if (a && actions.has(a) && a !== "skip") btn.classList.add("done");
+          });
+
+          if (completed >= 2) {
+            localStorage.setItem(DONE_KEY(email), "true");
+            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
+            if (onboardingCard) onboardingCard.style.display = "none";
+          }
+        }
+
+        function markAction(action) {
+          if (!action || action === "skip") return;
+          const actions = getActions();
+          actions.add(action);
+          saveActions(actions);
+          updateProgressUI(actions);
+          renderTodo();
+        }
+
+        function initOnboarding() {
+          if (!onboardingCard) return;
+
+          const shouldShowOnboarding =
+            localStorage.getItem(JUST_SIGNED_UP_KEY(email)) === "true" &&
+            localStorage.getItem(DONE_KEY(email)) !== "true";
+
+          if (!shouldShowOnboarding) {
+            onboardingCard.style.display = "none";
+            return;
+          }
+
+          const actions = getActions();
+          updateProgressUI(actions);
+
+          document.querySelectorAll(".onboard-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const action = btn.getAttribute("data-action");
+
+              if (action === "ask") {
+                const q = document.getElementById("questionInput");
+                if (q) q.focus();
                 return;
               }
 
-              let user;
-              try {
-                user = JSON.parse(rawUser);
-              } catch (e) {
-                // corrupted storage, force clean login
-                localStorage.removeItem("aervoUser");
-                localStorage.removeItem("aervo_user");
-                window.location.href = "login.html";
+              if (action === "skip") {
+                const a = getActions();
+                a.add("connect"); // count as 1 step
+                saveActions(a);
+                updateProgressUI(a);
                 return;
               }
 
-              const email = (user.email || "").toLowerCase();
-              const companyFromUser = user.companyName || "Your business";
-              const roleFromUser = user.role || "Owner";
+              markAction(action);
+              alert("Coming soon — this is a demo step for now.");
+            });
+          });
 
-              const isAdmin = email === "aervoadmin@aervoapp.com";
-              const backendStatusBox = document.getElementById("backendStatus");
+          if (dismissBtn) {
+            dismissBtn.addEventListener("click", () => {
+              localStorage.setItem(DONE_KEY(email), "true");
+              localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
+              onboardingCard.style.display = "none";
+            });
+          }
+        }
 
-              async function checkBackendStatus() {
-                if (!backendStatusBox) return;
+        initOnboarding();
+        function renderTodo() {
+          const todo = document.getElementById("todoList");
+          if (!todo) return;
 
-                try {
-                  const response = await fetch(
-                    "https://aervo-backend.onrender.com/api/status"
-                  );
-                  const data = await response.json();
-                  backendStatusBox.textContent = `Backend: ${String(
-                    data.status || ""
-                  ).toUpperCase()} — Env: ${data.environment || ""}`;
-                  backendStatusBox.classList.remove("error");
-                  backendStatusBox.classList.add("ok");
-                } catch (err) {
-                  backendStatusBox.textContent = "Backend: OFFLINE";
-                  backendStatusBox.classList.remove("ok");
-                  backendStatusBox.classList.add("error");
-                }
+          const actions = getActions();
+          const items = [
+            { key: "ask", label: "Ask Aervo a question" },
+            { key: "connect", label: "Connect a tool (demo)" },
+            { key: "invite", label: "Invite a teammate (demo)" },
+          ];
+
+          todo.innerHTML = "";
+          items.forEach((it) => {
+            const li = document.createElement("li");
+            const done = actions.has(it.key);
+            li.textContent = `${done ? "✅" : "⬜️"} ${it.label}`;
+            todo.appendChild(li);
+          });
+        }
+
+        // run once on load
+        renderTodo();
+
+        // ---------------- Demo per-user data ----------------
+        const demoData = {
+          "demo@aervo.com": {
+            companyName: "Luna Coffee Co.",
+            role: "Owner",
+            todayRevenue: "$1,240",
+            todayChange: "+12% vs yesterday",
+            weekRevenue: "$8,920",
+            weekChange: "+7% week over week",
+            topProduct: "Iced Vanilla Latte",
+            topProductDetail: "142 sold in the last 7 days",
+            insights: [
+              "Mornings (8–11am) drive 60% of daily revenue.",
+              "Iced drinks outperform hot drinks by 18% this week.",
+              "Thursday and Friday are your strongest days.",
+            ],
+            products: [
+              {
+                name: "Iced Vanilla Latte",
+                units: 142,
+                revenue: "$712",
+                status: "good",
+              },
+              { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
+              {
+                name: "Blueberry Muffin",
+                units: 64,
+                revenue: "$192",
+                status: "warn",
+              },
+              {
+                name: "Matcha Latte",
+                units: 37,
+                revenue: "$185",
+                status: "warn",
+              },
+              {
+                name: "Bagel w/ Cream Cheese",
+                units: 29,
+                revenue: "$116",
+                status: "bad",
+              },
+            ],
+            inventoryNotes: [
+              "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
+              "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
+              "Matcha Latte is gaining steady traction with younger customers.",
+            ],
+            trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
+            trendSummary:
+              "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
+            trendHighlights: [
+              "Friday is your best day, driven largely by iced drinks and morning traffic.",
+              "Weekends hold steady but don’t exceed Friday volumes.",
+              "Early-week promos could help smooth out Monday/Tuesday dips.",
+            ],
+            compareThisWeek: "$8,920",
+            compareThisDelta: "+7% vs last week",
+            compareLastWeek: "$8,330",
+            compareLastNotes:
+              "Last week was affected by a slower Monday and Tuesday.",
+            compareSummary:
+              "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
+            notifications: [
+              {
+                text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
+                time: "2 hours ago",
+              },
+              {
+                text: "Blueberry Muffin is close to selling out for today.",
+                time: "4 hours ago",
+              },
+              {
+                text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
+                time: "Yesterday",
+              },
+            ],
+            customerSegments: [
+              { name: "Morning regulars", share: "38%", ticket: "$11.40" },
+              { name: "Afternoon students", share: "24%", ticket: "$8.60" },
+              { name: "Remote workers", share: "18%", ticket: "$13.20" },
+              { name: "Weekend families", share: "20%", ticket: "$15.80" },
+            ],
+            customerNotes: [
+              "Loyalty-style perks for morning regulars could lift frequency.",
+              "Students respond well to limited-time cold drink promos.",
+              "Remote workers drive higher average tickets when staying longer.",
+              "Weekend family bundles (drinks + pastry) could raise order size.",
+            ],
+          },
+          "owner@shopdemo.com": {
+            companyName: "Skyline Streetwear",
+            role: "Owner",
+            todayRevenue: "$2,730",
+            todayChange: "+5% vs yesterday",
+            weekRevenue: "$17,450",
+            weekChange: "+11% week over week",
+            topProduct: "Midnight Skyline Hoodie",
+            topProductDetail: "78 units sold this week",
+            insights: [
+              "Average order value is up 9% this week.",
+              "Hoodies and joggers are driving most of the lift.",
+              "Mobile orders account for 63% of sales.",
+            ],
+            products: [
+              {
+                name: "Midnight Skyline Hoodie",
+                units: 78,
+                revenue: "$5,460",
+                status: "good",
+              },
+              {
+                name: "City Lights Joggers",
+                units: 54,
+                revenue: "$2,160",
+                status: "good",
+              },
+              { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
+              {
+                name: "Oversize Tee – Cloud",
+                units: 33,
+                revenue: "$660",
+                status: "warn",
+              },
+              {
+                name: "Arch Logo Beanie",
+                units: 18,
+                revenue: "$270",
+                status: "bad",
+              },
+            ],
+            inventoryNotes: [
+              "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
+              "Neon Cap sells steadily but infrequently in pairs.",
+              "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory.",
+            ],
+            trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
+            trendSummary:
+              "Sales peak on Friday and Saturday with strong mid-week performance.",
+            trendHighlights: [
+              "Friday remains your biggest revenue day, followed closely by Saturday.",
+              "Mid-week drops are small, suggesting consistent demand.",
+              "Drops align with weather changes; hoodies spike on cooler days.",
+            ],
+            compareThisWeek: "$17,450",
+            compareThisDelta: "+11% vs last week",
+            compareLastWeek: "$15,720",
+            compareLastNotes: "Last week included one slower promotional day.",
+            compareSummary:
+              "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
+            notifications: [
+              {
+                text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
+                time: "1 hour ago",
+              },
+              {
+                text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
+                time: "Today",
+              },
+              {
+                text: "Cart size increases when Neon Cap is featured in the hero banner.",
+                time: "Yesterday",
+              },
+            ],
+            customerSegments: [
+              { name: "Urban creatives", share: "42%", ticket: "$86.20" },
+              { name: "College students", share: "28%", ticket: "$64.10" },
+              { name: "Online drops", share: "18%", ticket: "$112.40" },
+              { name: "Tourist traffic", share: "12%", ticket: "$73.50" },
+            ],
+            customerNotes: [
+              "Urban creatives respond strongly to limited drops and collabs.",
+              "Students are price-sensitive; bundles and tiered discounts perform well.",
+              "Online drop customers buy quickly when inventory looks scarce.",
+              "Tourist traffic spikes on weekends and holidays—great time for in-store events.",
+            ],
+          },
+        };
+
+        // Only use demo data when no Shopify shop is connected.
+        const connectedShop =
+          new URLSearchParams(window.location.search).get("shop_installed") ||
+          new URLSearchParams(window.location.search).get("shop") ||
+          localStorage.getItem("aervo_shop");
+        {
+          const data = demoData[email] || demoData["demo@aervo.com"];
+          const displayCompany = companyFromUser || data.companyName;
+          const displayRole = roleFromUser || data.role;
+
+          // Love footer
+          const loveFooter = document.getElementById("loveFooter");
+          if (loveFooter)
+            loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
+
+          // Header
+          const companyLabel = document.getElementById("companyLabel");
+          if (companyLabel) {
+            companyLabel.textContent = displayCompany + " · " + displayRole;
+          }
+
+          const welcomeTitle = document.getElementById("welcomeTitle");
+          if (welcomeTitle)
+            welcomeTitle.textContent = "Welcome back, " + displayCompany;
+
+          const dateLabel = document.getElementById("dateLabel");
+          if (dateLabel) {
+            const now = new Date();
+            dateLabel.textContent = now.toLocaleDateString(undefined, {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            });
+          }
+
+          // Overview
+          const todayRevenueEl = document.getElementById("todayRevenue");
+          const todayChangeEl = document.getElementById("todayChange");
+          const weekRevenueEl = document.getElementById("weekRevenue");
+          const weekChangeEl = document.getElementById("weekChange");
+          const topProductEl = document.getElementById("topProduct");
+          const topProductDetailEl =
+            document.getElementById("topProductDetail");
+
+          if (todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue;
+          if (todayChangeEl) todayChangeEl.textContent = data.todayChange;
+          if (weekRevenueEl) weekRevenueEl.textContent = data.weekRevenue;
+          if (weekChangeEl) weekChangeEl.textContent = data.weekChange;
+          if (topProductEl) topProductEl.textContent = data.topProduct;
+          if (topProductDetailEl)
+            topProductDetailEl.textContent = data.topProductDetail;
+
+          // Insights
+          const insightsList = document.getElementById("insightsList");
+          if (insightsList) {
+            insightsList.innerHTML = "";
+            (data.insights || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              insightsList.appendChild(li);
+            });
+          }
+
+          // Ask Aervo
+          const askBtn = document.getElementById("askBtn");
+          if (askBtn) {
+            askBtn.addEventListener("click", () => {
+              const q = document.getElementById("questionInput");
+              const out = document.getElementById("chatOutput");
+
+              const question = q ? q.value.trim() : "";
+              if (!out) return;
+
+              if (!question) {
+                out.textContent =
+                  "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
+                return;
               }
 
-              // Only admins see backend status
-              if (isAdmin && backendStatusBox) {
-                backendStatusBox.classList.remove("hidden");
-                checkBackendStatus();
-                setInterval(checkBackendStatus, 5000);
+              out.textContent =
+                "If this were connected to your real data, Aervo would answer something like:\n\n" +
+                "“Based on your latest numbers, you're trending " +
+                String(data.todayChange || "").toLowerCase() +
+                " and your top product is " +
+                data.topProduct +
+                ". This week’s revenue is " +
+                data.weekRevenue +
+                " and is " +
+                String(data.weekChange || "").toLowerCase() +
+                ".”";
+              // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
+              if (localStorage.getItem(DONE_KEY(email)) !== "true") {
+                markAction("ask"); // this already saves + updates progress + renderTodo
               }
+            });
+          }
 
-              // ---------------- Onboarding banner logic ----------------
-              const onboardingCard = document.getElementById("onboardingBanner");
-              const progressEl = document.getElementById("onboardingProgress");
-              const dismissBtn = document.getElementById("dismissOnboardingBtn");
+          // Products table
+          const productsTableBody = document.querySelector(
+            "#productsTable tbody",
+          );
+          if (productsTableBody) {
+            productsTableBody.innerHTML = "";
+            (data.products || []).forEach((p) => {
+              const tr = document.createElement("tr");
+              const statusClass =
+                p.status === "good"
+                  ? "pill-good"
+                  : p.status === "warn"
+                    ? "pill-warn"
+                    : "pill-bad";
+              const statusText =
+                p.status === "good"
+                  ? "Healthy"
+                  : p.status === "warn"
+                    ? "Watch"
+                    : "At risk";
 
-              const JUST_SIGNED_UP_KEY = (email) => `aervo_just_signed_up:${email}`;
-              const DONE_KEY = (email) => `aervo_onboarding_done:${email}`;
-              const ACTIONS_KEY = (email) => `aervo_onboarding_actions:${email}`;
+              tr.innerHTML = `
+              <td>${p.name}</td>
+              <td>${p.units}</td>
+              <td>${p.revenue}</td>
+              <td><span class="pill ${statusClass}">${statusText}</span></td>
+            `;
+              productsTableBody.appendChild(tr);
+            });
+          }
 
-              function getActions() {
-                try {
-                  return new Set(
-                    JSON.parse(localStorage.getItem(ACTIONS_KEY(email)) || "[]")
-                  );
-                } catch {
-                  return new Set();
-                }
-              }
+          const inventoryList = document.getElementById("inventoryNotes");
+          if (inventoryList) {
+            inventoryList.innerHTML = "";
+            (data.inventoryNotes || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              inventoryList.appendChild(li);
+            });
+          }
 
-              function saveActions(set) {
-                localStorage.setItem(
-                  ACTIONS_KEY(email),
-                  JSON.stringify(Array.from(set))
-                );
-              }
+          // Trends
+          const trendSummaryEl = document.getElementById("trendSummary");
+          if (trendSummaryEl)
+            trendSummaryEl.textContent = data.trendSummary || "";
 
-              function updateProgressUI(actions) {
-                const completed = Math.min(actions.size, 2);
-                if (progressEl) progressEl.textContent = `${completed}/2`;
+          const chartBars = document.getElementById("chartBars");
+          const chartLabels = document.getElementById("chartLabels");
+          if (chartBars && chartLabels) {
+            chartBars.innerHTML = "";
+            chartLabels.innerHTML = "";
 
-                document.querySelectorAll(".onboard-btn").forEach((btn) => {
-                  const a = btn.getAttribute("data-action");
-                  if (a && actions.has(a) && a !== "skip") btn.classList.add("done");
-                });
+            const maxVal = Math.max(...(data.trendValues || [1]));
+            (data.trendValues || []).forEach((val, idx) => {
+              const heightPercent = (val / maxVal) * 100;
 
-                if (completed >= 2) {
-                  localStorage.setItem(DONE_KEY(email), "true");
-                  localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-                  if (onboardingCard) onboardingCard.style.display = "none";
-                }
-              }
+              const bar = document.createElement("div");
+              bar.className = "chart-bar";
+              bar.style.height = heightPercent + "%";
+              bar.innerHTML = `<span>${Number(val).toLocaleString()}</span>`;
+              chartBars.appendChild(bar);
 
-              function markAction(action) {
-                if (!action || action === "skip") return;
-                const actions = getActions();
-                actions.add(action);
-                saveActions(actions);
-                updateProgressUI(actions);
-                renderTodo();
-              }
+              const label = document.createElement("div");
+              label.textContent = (data.trendDays || [])[idx] || "";
+              chartLabels.appendChild(label);
+            });
+          }
 
-              function initOnboarding() {
-                if (!onboardingCard) return;
+          const trendHighlights = document.getElementById("trendHighlights");
+          if (trendHighlights) {
+            trendHighlights.innerHTML = "";
+            (data.trendHighlights || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              trendHighlights.appendChild(li);
+            });
+          }
 
-                const shouldShowOnboarding =
-                  localStorage.getItem(JUST_SIGNED_UP_KEY(email)) === "true" &&
-                  localStorage.getItem(DONE_KEY(email)) !== "true";
+          // Customers
+          const customersTableBody = document.querySelector(
+            "#customersTable tbody",
+          );
+          if (customersTableBody) {
+            customersTableBody.innerHTML = "";
+            (data.customerSegments || []).forEach((seg) => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+              <td>${seg.name}</td>
+              <td>${seg.share}</td>
+              <td>${seg.ticket}</td>
+            `;
+              customersTableBody.appendChild(tr);
+            });
+          }
 
-                if (!shouldShowOnboarding) {
-                  onboardingCard.style.display = "none";
-                  return;
-                }
+          const customerNotesList = document.getElementById("customerNotes");
+          if (customerNotesList) {
+            customerNotesList.innerHTML = "";
+            (data.customerNotes || []).forEach((text) => {
+              const li = document.createElement("li");
+              li.textContent = "• " + text;
+              customerNotesList.appendChild(li);
+            });
+          }
 
-                const actions = getActions();
-                updateProgressUI(actions);
+          // Compare
+          const compareThisWeekEl = document.getElementById("compareThisWeek");
+          const compareThisDeltaEl =
+            document.getElementById("compareThisDelta");
+          const compareLastWeekEl = document.getElementById("compareLastWeek");
+          const compareLastNotesEl =
+            document.getElementById("compareLastNotes");
+          const compareSummaryEl = document.getElementById("compareSummary");
 
-                document.querySelectorAll(".onboard-btn").forEach((btn) => {
-                  btn.addEventListener("click", () => {
-                    const action = btn.getAttribute("data-action");
+          if (compareThisWeekEl)
+            compareThisWeekEl.textContent = data.compareThisWeek || "$0";
+          if (compareThisDeltaEl)
+            compareThisDeltaEl.textContent = data.compareThisDelta || "–";
+          if (compareLastWeekEl)
+            compareLastWeekEl.textContent = data.compareLastWeek || "$0";
+          if (compareLastNotesEl)
+            compareLastNotesEl.textContent = data.compareLastNotes || "–";
+          if (compareSummaryEl)
+            compareSummaryEl.textContent = data.compareSummary || "";
 
-                    if (action === "ask") {
-                      const q = document.getElementById("questionInput");
-                      if (q) q.focus();
-                      return;
-                    }
+          // Notifications
+          const notificationsList =
+            document.getElementById("notificationsList");
+          if (notificationsList) {
+            notificationsList.innerHTML = "";
+            (data.notifications || []).forEach((n) => {
+              const div = document.createElement("div");
+              div.className = "notification";
+              div.innerHTML = `
+              <div>${n.text}</div>
+              <small>${n.time}</small>
+            `;
+              notificationsList.appendChild(div);
+            });
+          }
+        }
 
-                    if (action === "skip") {
-                      const a = getActions();
-                      a.add("connect"); // count as 1 step
-                      saveActions(a);
-                      updateProgressUI(a);
-                      return;
-                    }
+        // Sidebar navigation
+        const navItems = document.querySelectorAll(".nav-item");
+        const sections = {
+          overview: document.getElementById("section-overview"),
+          products: document.getElementById("section-products"),
+          trends: document.getElementById("section-trends"),
+          customers: document.getElementById("section-customers"),
+          compare: document.getElementById("section-compare"),
+          integrations: document.getElementById("section-integrations"),
+          notifications: document.getElementById("section-notifications"),
+        };
 
-                    markAction(action);
-                    alert("Coming soon — this is a demo step for now.");
-                  });
-                });
+        navItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            const sectionName = item.getAttribute("data-section");
 
-                if (dismissBtn) {
-                  dismissBtn.addEventListener("click", () => {
-                    localStorage.setItem(DONE_KEY(email), "true");
-                    localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-                    onboardingCard.style.display = "none";
-                  });
-                }
-              }
+            navItems.forEach((n) => n.classList.remove("active"));
+            item.classList.add("active");
 
-              initOnboarding();
-              function renderTodo() {
-                const todo = document.getElementById("todoList");
-                if (!todo) return;
+            Object.values(sections).forEach((sec) => {
+              if (sec) sec.classList.remove("active");
+            });
 
-                const actions = getActions();
-                const items = [
-                  { key: "ask", label: "Ask Aervo a question" },
-                  { key: "connect", label: "Connect a tool (demo)" },
-                  { key: "invite", label: "Invite a teammate (demo)" },
-                ];
+            const target = sections[sectionName];
+            if (target) target.classList.add("active");
+          });
+        });
 
-                todo.innerHTML = "";
-                items.forEach((it) => {
-                  const li = document.createElement("li");
-                  const done = actions.has(it.key);
-                  li.textContent = `${done ? "✅" : "⬜️"} ${it.label}`;
-                  todo.appendChild(li);
-                });
-              }
-
-              // run once on load
-              renderTodo();
-
-              // ---------------- Demo per-user data ----------------
-              const demoData = {
-                "demo@aervo.com": {
-                  companyName: "Luna Coffee Co.",
-                  role: "Owner",
-                  todayRevenue: "$1,240",
-                  todayChange: "+12% vs yesterday",
-                  weekRevenue: "$8,920",
-                  weekChange: "+7% week over week",
-                  topProduct: "Iced Vanilla Latte",
-                  topProductDetail: "142 sold in the last 7 days",
-                  insights: [
-                    "Mornings (8–11am) drive 60% of daily revenue.",
-                    "Iced drinks outperform hot drinks by 18% this week.",
-                    "Thursday and Friday are your strongest days.",
-                  ],
-                  products: [
-                    {
-                      name: "Iced Vanilla Latte",
-                      units: 142,
-                      revenue: "$712",
-                      status: "good",
-                    },
-                    { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
-                    {
-                      name: "Blueberry Muffin",
-                      units: 64,
-                      revenue: "$192",
-                      status: "warn",
-                    },
-                    {
-                      name: "Matcha Latte",
-                      units: 37,
-                      revenue: "$185",
-                      status: "warn",
-                    },
-                    {
-                      name: "Bagel w/ Cream Cheese",
-                      units: 29,
-                      revenue: "$116",
-                      status: "bad",
-                    },
-                  ],
-                  inventoryNotes: [
-                    "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
-                    "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
-                    "Matcha Latte is gaining steady traction with younger customers.",
-                  ],
-                  trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                  trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
-                  trendSummary:
-                    "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
-                  trendHighlights: [
-                    "Friday is your best day, driven largely by iced drinks and morning traffic.",
-                    "Weekends hold steady but don’t exceed Friday volumes.",
-                    "Early-week promos could help smooth out Monday/Tuesday dips.",
-                  ],
-                  compareThisWeek: "$8,920",
-                  compareThisDelta: "+7% vs last week",
-                  compareLastWeek: "$8,330",
-                  compareLastNotes:
-                    "Last week was affected by a slower Monday and Tuesday.",
-                  compareSummary:
-                    "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
-                  notifications: [
-                    {
-                      text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
-                      time: "2 hours ago",
-                    },
-                    {
-                      text: "Blueberry Muffin is close to selling out for today.",
-                      time: "4 hours ago",
-                    },
-                    {
-                      text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
-                      time: "Yesterday",
-                    },
-                  ],
-                  customerSegments: [
-                    { name: "Morning regulars", share: "38%", ticket: "$11.40" },
-                    { name: "Afternoon students", share: "24%", ticket: "$8.60" },
-                    { name: "Remote workers", share: "18%", ticket: "$13.20" },
-                    { name: "Weekend families", share: "20%", ticket: "$15.80" },
-                  ],
-                  customerNotes: [
-                    "Loyalty-style perks for morning regulars could lift frequency.",
-                    "Students respond well to limited-time cold drink promos.",
-                    "Remote workers drive higher average tickets when staying longer.",
-                    "Weekend family bundles (drinks + pastry) could raise order size.",
-                  ],
-                },
-                "owner@shopdemo.com": {
-                  companyName: "Skyline Streetwear",
-                  role: "Owner",
-                  todayRevenue: "$2,730",
-                  todayChange: "+5% vs yesterday",
-                  weekRevenue: "$17,450",
-                  weekChange: "+11% week over week",
-                  topProduct: "Midnight Skyline Hoodie",
-                  topProductDetail: "78 units sold this week",
-                  insights: [
-                    "Average order value is up 9% this week.",
-                    "Hoodies and joggers are driving most of the lift.",
-                    "Mobile orders account for 63% of sales.",
-                  ],
-                  products: [
-                    {
-                      name: "Midnight Skyline Hoodie",
-                      units: 78,
-                      revenue: "$5,460",
-                      status: "good",
-                    },
-                    {
-                      name: "City Lights Joggers",
-                      units: 54,
-                      revenue: "$2,160",
-                      status: "good",
-                    },
-                    { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
-                    {
-                      name: "Oversize Tee – Cloud",
-                      units: 33,
-                      revenue: "$660",
-                      status: "warn",
-                    },
-                    {
-                      name: "Arch Logo Beanie",
-                      units: 18,
-                      revenue: "$270",
-                      status: "bad",
-                    },
-                  ],
-                  inventoryNotes: [
-                    "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
-                    "Neon Cap sells steadily but infrequently in pairs.",
-                    "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory.",
-                  ],
-                  trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                  trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
-                  trendSummary:
-                    "Sales peak on Friday and Saturday with strong mid-week performance.",
-                  trendHighlights: [
-                    "Friday remains your biggest revenue day, followed closely by Saturday.",
-                    "Mid-week drops are small, suggesting consistent demand.",
-                    "Drops align with weather changes; hoodies spike on cooler days.",
-                  ],
-                  compareThisWeek: "$17,450",
-                  compareThisDelta: "+11% vs last week",
-                  compareLastWeek: "$15,720",
-                  compareLastNotes: "Last week included one slower promotional day.",
-                  compareSummary:
-                    "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
-                  notifications: [
-                    {
-                      text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
-                      time: "1 hour ago",
-                    },
-                    {
-                      text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
-                      time: "Today",
-                    },
-                    {
-                      text: "Cart size increases when Neon Cap is featured in the hero banner.",
-                      time: "Yesterday",
-                    },
-                  ],
-                  customerSegments: [
-                    { name: "Urban creatives", share: "42%", ticket: "$86.20" },
-                    { name: "College students", share: "28%", ticket: "$64.10" },
-                    { name: "Online drops", share: "18%", ticket: "$112.40" },
-                    { name: "Tourist traffic", share: "12%", ticket: "$73.50" },
-                  ],
-                  customerNotes: [
-                    "Urban creatives respond strongly to limited drops and collabs.",
-                    "Students are price-sensitive; bundles and tiered discounts perform well.",
-                    "Online drop customers buy quickly when inventory looks scarce.",
-                    "Tourist traffic spikes on weekends and holidays—great time for in-store events.",
-                  ],
-                },
-              };
-
-             // Only use demo data when no Shopify shop is connected.
-      const connectedShop =
-        new URLSearchParams(window.location.search).get("shop_installed") ||
-        new URLSearchParams(window.location.search).get("shop") ||
-        localStorage.getItem("aervo_shop");
-
-      if (!connectedShop) {
-        const data = demoData[email] || demoData["demo@aervo.com"];
-        // ... keep everything inside exactly as-is
-      }
-                // Overview
-                const todayRevenueEl = document.getElementById("todayRevenue");
-                const todayChangeEl = document.getElementById("todayChange");
-                const weekRevenueEl = document.getElementById("weekRevenue");
-                const weekChangeEl = document.getElementById("weekChange");
-                const topProductEl = document.getElementById("topProduct");
-                const topProductDetailEl =
-                  document.getElementById("topProductDetail");
-
-                if (todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue;
-                if (todayChangeEl) todayChangeEl.textContent = data.todayChange;
-                if (weekRevenueEl) weekRevenueEl.textContent = data.weekRevenue;
-                if (weekChangeEl) weekChangeEl.textContent = data.weekChange;
-                if (topProductEl) topProductEl.textContent = data.topProduct;
-                if (topProductDetailEl)
-                  topProductDetailEl.textContent = data.topProductDetail;
-
-                // Insights
-                const insightsList = document.getElementById("insightsList");
-                if (insightsList) {
-                  insightsList.innerHTML = "";
-                  (data.insights || []).forEach((text) => {
-                    const li = document.createElement("li");
-                    li.textContent = "• " + text;
-                    insightsList.appendChild(li);
-                  });
-                }
-
-                // Ask Aervo
-                const askBtn = document.getElementById("askBtn");
-                if (askBtn) {
-                  askBtn.addEventListener("click", () => {
-                    const q = document.getElementById("questionInput");
-                    const out = document.getElementById("chatOutput");
-
-                    const question = q ? q.value.trim() : "";
-                    if (!out) return;
-
-                    if (!question) {
-                      out.textContent =
-                        "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
-                      return;
-                    }
-
-                    out.textContent =
-                      "If this were connected to your real data, Aervo would answer something like:\n\n" +
-                      "“Based on your latest numbers, you're trending " +
-                      String(data.todayChange || "").toLowerCase() +
-                      " and your top product is " +
-                      data.topProduct +
-                      ". This week’s revenue is " +
-                      data.weekRevenue +
-                      " and is " +
-                      String(data.weekChange || "").toLowerCase() +
-                      ".”";
-                    // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
-                    if (localStorage.getItem(DONE_KEY(email)) !== "true") {
-                      markAction("ask"); // this already saves + updates progress + renderTodo
-                    }
-                  });
-                }
-
-                // Products table
-                const productsTableBody = document.querySelector(
-                  "#productsTable tbody"
-                );
-                if (productsTableBody) {
-                  productsTableBody.innerHTML = "";
-                  (data.products || []).forEach((p) => {
-                    const tr = document.createElement("tr");
-                    const statusClass =
-                      p.status === "good"
-                        ? "pill-good"
-                        : p.status === "warn"
-                        ? "pill-warn"
-                        : "pill-bad";
-                    const statusText =
-                      p.status === "good"
-                        ? "Healthy"
-                        : p.status === "warn"
-                        ? "Watch"
-                        : "At risk";
-
-                    tr.innerHTML = `
-                    <td>${p.name}</td>
-                    <td>${p.units}</td>
-                    <td>${p.revenue}</td>
-                    <td><span class="pill ${statusClass}">${statusText}</span></td>
-                  `;
-                    productsTableBody.appendChild(tr);
-                  });
-                }
-
-                const inventoryList = document.getElementById("inventoryNotes");
-                if (inventoryList) {
-                  inventoryList.innerHTML = "";
-                  (data.inventoryNotes || []).forEach((text) => {
-                    const li = document.createElement("li");
-                    li.textContent = "• " + text;
-                    inventoryList.appendChild(li);
-                  });
-                }
-
-                // Trends
-                const trendSummaryEl = document.getElementById("trendSummary");
-                if (trendSummaryEl)
-                  trendSummaryEl.textContent = data.trendSummary || "";
-
-                const chartBars = document.getElementById("chartBars");
-                const chartLabels = document.getElementById("chartLabels");
-                if (chartBars && chartLabels) {
-                  chartBars.innerHTML = "";
-                  chartLabels.innerHTML = "";
-
-                  const maxVal = Math.max(...(data.trendValues || [1]));
-                  (data.trendValues || []).forEach((val, idx) => {
-                    const heightPercent = (val / maxVal) * 100;
-
-                    const bar = document.createElement("div");
-                    bar.className = "chart-bar";
-                    bar.style.height = heightPercent + "%";
-                    bar.innerHTML = `<span>${Number(val).toLocaleString()}</span>`;
-                    chartBars.appendChild(bar);
-
-                    const label = document.createElement("div");
-                    label.textContent = (data.trendDays || [])[idx] || "";
-                    chartLabels.appendChild(label);
-                  });
-                }
-
-                const trendHighlights = document.getElementById("trendHighlights");
-                if (trendHighlights) {
-                  trendHighlights.innerHTML = "";
-                  (data.trendHighlights || []).forEach((text) => {
-                    const li = document.createElement("li");
-                    li.textContent = "• " + text;
-                    trendHighlights.appendChild(li);
-                  });
-                }
-
-                // Customers
-                const customersTableBody = document.querySelector(
-                  "#customersTable tbody"
-                );
-                if (customersTableBody) {
-                  customersTableBody.innerHTML = "";
-                  (data.customerSegments || []).forEach((seg) => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                    <td>${seg.name}</td>
-                    <td>${seg.share}</td>
-                    <td>${seg.ticket}</td>
-                  `;
-                    customersTableBody.appendChild(tr);
-                  });
-                }
-
-                const customerNotesList = document.getElementById("customerNotes");
-                if (customerNotesList) {
-                  customerNotesList.innerHTML = "";
-                  (data.customerNotes || []).forEach((text) => {
-                    const li = document.createElement("li");
-                    li.textContent = "• " + text;
-                    customerNotesList.appendChild(li);
-                  });
-                }
-
-                // Compare
-                const compareThisWeekEl = document.getElementById("compareThisWeek");
-                const compareThisDeltaEl =
-                  document.getElementById("compareThisDelta");
-                const compareLastWeekEl = document.getElementById("compareLastWeek");
-                const compareLastNotesEl =
-                  document.getElementById("compareLastNotes");
-                const compareSummaryEl = document.getElementById("compareSummary");
-
-                if (compareThisWeekEl)
-                  compareThisWeekEl.textContent = data.compareThisWeek || "$0";
-                if (compareThisDeltaEl)
-                  compareThisDeltaEl.textContent = data.compareThisDelta || "–";
-                if (compareLastWeekEl)
-                  compareLastWeekEl.textContent = data.compareLastWeek || "$0";
-                if (compareLastNotesEl)
-                  compareLastNotesEl.textContent = data.compareLastNotes || "–";
-                if (compareSummaryEl)
-                  compareSummaryEl.textContent = data.compareSummary || "";
-
-                // Notifications
-                const notificationsList =
-                  document.getElementById("notificationsList");
-                if (notificationsList) {
-                  notificationsList.innerHTML = "";
-                  (data.notifications || []).forEach((n) => {
-                    const div = document.createElement("div");
-                    div.className = "notification";
-                    div.innerHTML = `
-                    <div>${n.text}</div>
-                    <small>${n.time}</small>
-                  `;
-                    notificationsList.appendChild(div);
-                  });
-                }
-              }
-
-              // Sidebar navigation
-              const navItems = document.querySelectorAll(".nav-item");
-              const sections = {
-                overview: document.getElementById("section-overview"),
-                products: document.getElementById("section-products"),
-                trends: document.getElementById("section-trends"),
-                customers: document.getElementById("section-customers"),
-                compare: document.getElementById("section-compare"),
-                integrations: document.getElementById("section-integrations"),
-                notifications: document.getElementById("section-notifications"),
-              };
-
-              navItems.forEach((item) => {
-                item.addEventListener("click", () => {
-                  const sectionName = item.getAttribute("data-section");
-
-                  navItems.forEach((n) => n.classList.remove("active"));
-                  item.classList.add("active");
-
-                  Object.values(sections).forEach((sec) => {
-                    if (sec) sec.classList.remove("active");
-                  });
-
-                  const target = sections[sectionName];
-                  if (target) target.classList.add("active");
-                });
-              });
-
-              // Logout
-              const logoutBtn = document.getElementById("logoutBtn");
-              if (logoutBtn) {
-                logoutBtn.addEventListener("click", () => {
-                  localStorage.removeItem("aervoUser");
-                  localStorage.removeItem("aervo_token");
-                  localStorage.removeItem("aervo_user");
-                  localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-                  window.location.href = "login.html";
-                });
-              }
-            })();
+        // Logout
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("aervoUser");
+            localStorage.removeItem("aervo_token");
+            localStorage.removeItem("aervo_user");
+            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
+            window.location.href = "login.html";
+          });
+        }
+      })();
     </script>
     <script>
       (function () {
