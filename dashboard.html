@@ -857,7 +857,36 @@
 
       <!-- MAIN CONTENT -->
       <main class="main">
-      
+        <!-- ONBOARDING BANNER (shows only right after signup) -->
+        <div id="onboardingBanner" class="onboarding-banner">
+          <div class="onboarding-top">
+            <div class="onboarding-title">
+              <strong>Welcome to Aervo</strong>
+              <span
+                >Finish 2 quick steps to get the most out of your
+                dashboard.</span
+              >
+            </div>
+
+            <div class="onboarding-progress">
+              Progress: <span id="onboardingProgress">0/2</span>
+            </div>
+
+            <button id="dismissOnboardingBtn" class="onboard-dismiss">
+              Dismiss
+            </button>
+          </div>
+
+          <div class="onboarding-actions">
+            <button class="onboard-btn" data-action="ask">💬 Ask Aervo</button>
+            <button class="onboard-btn" data-action="connect">
+              🧩 Connect a tool
+            </button>
+            <button class="onboard-btn" data-action="invite">
+              👥 Invite a teammate
+            </button>
+            <button class="onboard-btn" data-action="skip">⏭ Skip</button>
+          </div>
         </div>
 
         <!-- OVERVIEW SECTION -->
@@ -1736,7 +1765,40 @@
           },
         };
 
+        // Only use demo data when no Shopify shop is connected.
+        const connectedShop =
+          new URLSearchParams(window.location.search).get("shop_installed") ||
+          new URLSearchParams(window.location.search).get("shop") ||
+          localStorage.getItem("aervo_shop");
+        {
+          const data = demoData[email] || demoData["demo@aervo.com"];
+          const displayCompany = companyFromUser || data.companyName;
+          const displayRole = roleFromUser || data.role;
 
+          // Love footer
+          const loveFooter = document.getElementById("loveFooter");
+          if (loveFooter)
+            loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
+
+          // Header
+          const companyLabel = document.getElementById("companyLabel");
+          if (companyLabel) {
+            companyLabel.textContent = displayCompany + " · " + displayRole;
+          }
+
+          const welcomeTitle = document.getElementById("welcomeTitle");
+          if (welcomeTitle)
+            welcomeTitle.textContent = "Welcome back, " + displayCompany;
+
+          const dateLabel = document.getElementById("dateLabel");
+          if (dateLabel) {
+            const now = new Date();
+            dateLabel.textContent = now.toLocaleDateString(undefined, {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            });
+          }
 
           // Overview
           const todayRevenueEl = document.getElementById("todayRevenue");
