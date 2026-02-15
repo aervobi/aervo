@@ -1765,40 +1765,7 @@
           },
         };
 
-        // Only use demo data when no Shopify shop is connected.
-        const connectedShop =
-          new URLSearchParams(window.location.search).get("shop_installed") ||
-          new URLSearchParams(window.location.search).get("shop") ||
-          localStorage.getItem("aervo_shop");
-        {
-          const data = demoData[email] || demoData["demo@aervo.com"];
-          const displayCompany = companyFromUser || data.companyName;
-          const displayRole = roleFromUser || data.role;
 
-          // Love footer
-          const loveFooter = document.getElementById("loveFooter");
-          if (loveFooter)
-            loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
-
-          // Header
-          const companyLabel = document.getElementById("companyLabel");
-          if (companyLabel) {
-            companyLabel.textContent = displayCompany + " · " + displayRole;
-          }
-
-          const welcomeTitle = document.getElementById("welcomeTitle");
-          if (welcomeTitle)
-            welcomeTitle.textContent = "Welcome back, " + displayCompany;
-
-          const dateLabel = document.getElementById("dateLabel");
-          if (dateLabel) {
-            const now = new Date();
-            dateLabel.textContent = now.toLocaleDateString(undefined, {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            });
-          }
 
           // Overview
           const todayRevenueEl = document.getElementById("todayRevenue");
