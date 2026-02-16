@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy - Aervo</title>
+    <style>
+      :root {
+        --bg-dark: #0a1628;
+        --bg-darker: #050d1a;
+        --card-bg: rgba(15, 30, 50, 0.6);
+        --card-border: rgba(80, 120, 180, 0.15);
+        --text-primary: #ffffff;
+        --text-secondary: #b8c5d6;
+        --text-muted: #7a8ba0;
+        --accent-blue: #5b9cf5;
+        --accent-cyan: #4dd4d4;
+        --accent-purple: #7b68ee;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        background: linear-gradient(
+          135deg,
+          #0a1628 0%,
+          #0d1f35 50%,
+          #0a1628 100%
+        );
+        background-attachment: fixed;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+      }
+
+      /* Subtle background dots pattern */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 1px
+        );
+        background-size: 40px 40px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 32px 100px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .header {
+        margin-bottom: 56px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--card-border);
+      }
+
+      .logo {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .last-updated {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      h1 {
+        font-size: 52px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+
+      h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 64px;
+        margin-bottom: 20px;
+        letter-spacing: -0.01em;
+      }
+
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-top: 32px;
+        margin-bottom: 16px;
+      }
+
+      p {
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.8;
+      }
+
+      ul,
+      ol {
+        margin-left: 24px;
+        margin-bottom: 24px;
+      }
+
+      li {
+        margin-bottom: 12px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      strong {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      a {
+        color: var(--accent-cyan);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      a:hover {
+        color: var(--accent-blue);
+      }
+
+      .intro {
+        font-size: 18px;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 24px;
+      }
+
+      .contact-box {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 32px;
+        margin: 48px 0;
+      }
+
+      .contact-box p {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+      }
+
+      .contact-box a {
+        color: var(--accent-cyan);
+      }
+
+      .important-note {
+        background: rgba(77, 212, 212, 0.08);
+        border-left: 3px solid var(--accent-cyan);
+        padding: 20px 24px;
+        margin: 32px 0;
+        border-radius: 8px;
+      }
+
+      .important-note p {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 15px;
+      }
+
+      .section-highlight {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        padding: 32px;
+        border-radius: 12px;
+        margin: 32px 0;
+        border: 1px solid var(--card-border);
+      }
+
+      .section-highlight h3 {
+        margin-top: 24px;
+      }
+
+      .section-highlight h3:first-child {
+        margin-top: 0;
+      }
+
+      .toc {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 40px;
+        margin: 56px 0;
+      }
+
+      .toc h2 {
+        margin-top: 0;
+        font-size: 24px;
+        margin-bottom: 24px;
+        color: var(--text-primary);
+      }
+
+      .toc ol {
+        margin-left: 20px;
+      }
+
+      .toc li {
+        margin-bottom: 10px;
+      }
+
+      .toc a {
+        color: var(--text-secondary);
+        transition: color 0.2s ease;
+      }
+
+      .toc a:hover {
+        color: var(--accent-cyan);
+      }
+
+      .footer-section {
+        margin-top: 100px;
+        padding-top: 32px;
+        border-top: 1px solid var(--card-border);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      .footer-section p {
+        color: var(--text-muted);
+      }
+
+      @media (max-width: 640px) {
+        .container {
+          padding: 40px 24px 72px;
+        }
+
+        h1 {
+          font-size: 36px;
+        }
+
+        h2 {
+          font-size: 24px;
+          margin-top: 48px;
+        }
+
+        .toc {
+          padding: 28px 24px;
+        }
+
+        .contact-box {
+          padding: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">Aervo</div>
+        <div class="last-updated">Last Updated: February 15, 2026</div>
+      </div>
+
+      <h1>Privacy Policy</h1>
+
+      <p class="intro">
+        Aervo LLC ("Aervo," "we," "us," or "our") is committed to protecting the
+        privacy and security of your data. This Privacy Policy explains how we
+        collect, use, store, and protect information when you use the Aervo app
+        (the "App") for Shopify.
+      </p>
+
+      <p class="intro">
+        By installing and using Aervo, you agree to the collection and use of
+        information in accordance with this Privacy Policy.
+      </p>
+
+      <div class="contact-box">
+        <p><strong>Aervo LLC</strong></p>
+        <p>2248 Broadway #1526<br />New York, NY 10024<br />United States</p>
+        <p>
+          <strong>Email:</strong>
+          <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>
+        </p>
+        <p style="margin-top: 16px; font-size: 14px; color: var(--text-muted)">
+          For privacy-related questions or requests, please contact us at the
+          email address above.
+        </p>
+      </div>
+
+      <div class="toc">
+        <h2>Table of Contents</h2>
+        <ol>
+          <li><a href="#information-we-collect">Information We Collect</a></li>
+          <li><a href="#how-we-use">How We Use Your Information</a></li>
+          <li><a href="#data-storage">Data Storage and Security</a></li>
+          <li><a href="#third-party">Third-Party Service Providers</a></li>
+          <li><a href="#data-retention">Data Retention</a></li>
+          <li>
+            <a href="#your-rights">Your Rights (GDPR & CCPA Compliance)</a>
+          </li>
+          <li><a href="#gdpr-webhooks">GDPR Webhook Compliance</a></li>
+          <li><a href="#cookies">Cookies and Tracking</a></li>
+          <li><a href="#childrens-privacy">Children's Privacy</a></li>
+          <li>
+            <a href="#international-transfers">International Data Transfers</a>
+          </li>
+          <li><a href="#data-breach">Data Breach Notification</a></li>
+          <li><a href="#your-responsibilities">Your Responsibilities</a></li>
+          <li><a href="#changes">Changes to This Privacy Policy</a></li>
+          <li><a href="#legal-basis">Legal Basis for Processing (GDPR)</a></li>
+          <li><a href="#third-party-links">Third-Party Links</a></li>
+          <li><a href="#dispute-resolution">Dispute Resolution</a></li>
+          <li>
+            <a href="#shopify-compliance">Compliance with Shopify Policies</a>
+          </li>
+        </ol>
+      </div>
+
+      <h2 id="information-we-collect">1. Information We Collect</h2>
+      <p>
+        When you install and use Aervo, we collect and process the following
+        types of data from your Shopify store:
+      </p>
+
+      <h3>Store Data</h3>
+      <ul>
+        <li>
+          <strong>Sales Data:</strong> Orders, transactions, revenue, refunds,
+          and payment information
+        </li>
+        <li>
+          <strong>Product Data:</strong> Product listings, inventory levels,
+          SKUs, pricing, variants, and product descriptions
+        </li>
+        <li>
+          <strong>Customer Data:</strong> Customer names, email addresses,
+          purchase history, order frequency, and customer segments
+        </li>
+        <li>
+          <strong>Store Analytics:</strong> Traffic data, conversion rates,
+          shopping behavior, and performance metrics
+        </li>
+        <li>
+          <strong>Store Information:</strong> Store name, domain, currency,
+          timezone, and store settings
+        </li>
+      </ul>
+
+      <h3>Usage Data</h3>
+      <p>
+        We may also collect information about how you interact with the App,
+        including:
+      </p>
+      <ul>
+        <li>Features used</li>
+        <li>Time spent in the App</li>
+        <li>Frequency of use</li>
+        <li>Error logs and diagnostic information</li>
+      </ul>
+
+      <h2 id="how-we-use">2. How We Use Your Information</h2>
+      <p>
+        We use the collected data solely to provide and improve the Aervo
+        service:
+      </p>
+
+      <h3>Primary Uses</h3>
+      <ul>
+        <li>
+          <strong>Generate Business Insights:</strong> Analyze your store data
+          to create actionable business intelligence and recommendations
+        </li>
+        <li>
+          <strong>Real-Time Analytics:</strong> Process sales, inventory, and
+          customer trends to deliver timely insights
+        </li>
+        <li>
+          <strong>Smart Recommendations:</strong> Use AI to identify
+          opportunities and provide strategic guidance
+        </li>
+        <li>
+          <strong>Dashboard & Reporting:</strong> Present your data in clear,
+          easy-to-understand visualizations
+        </li>
+        <li>
+          <strong>Performance Monitoring:</strong> Track key metrics and alert
+          you to important changes
+        </li>
+      </ul>
+
+      <h3>Secondary Uses</h3>
+      <ul>
+        <li>
+          <strong>Service Improvement:</strong> Understand how merchants use
+          Aervo to enhance features and user experience
+        </li>
+        <li>
+          <strong>Technical Support:</strong> Diagnose and resolve technical
+          issues
+        </li>
+        <li>
+          <strong>Security:</strong> Detect and prevent fraud, abuse, or
+          security vulnerabilities
+        </li>
+      </ul>
+
+      <h2 id="data-storage">3. Data Storage and Security</h2>
+
+      <h3>Where We Store Data</h3>
+      <p>Your data is stored securely using:</p>
+      <ul>
+        <li>
+          <strong>Cloud Infrastructure:</strong> Render (cloud hosting platform)
+        </li>
+        <li><strong>Database:</strong> Hosted PostgreSQL database</li>
+        <li><strong>Data Center Locations:</strong> United States</li>
+      </ul>
+
+      <h3>Security Measures</h3>
+      <p>
+        We implement industry-standard security practices to protect your data:
+      </p>
+      <ul>
+        <li>
+          <strong>Encryption:</strong> Data is encrypted in transit (TLS/SSL)
+          and at rest
+        </li>
+        <li>
+          <strong>Access Controls:</strong> Strict authentication and
+          authorization protocols
+        </li>
+        <li>
+          <strong>Regular Security Audits:</strong> Ongoing monitoring and
+          vulnerability assessments
+        </li>
+        <li>
+          <strong>Secure Infrastructure:</strong> Use of SOC 2 compliant hosting
+          providers
+        </li>
+        <li>
+          <strong>Limited Access:</strong> Only authorized personnel have access
+          to merchant data, and only as necessary to provide the service
+        </li>
+      </ul>
+
+      <h2 id="third-party">4. Third-Party Service Providers</h2>
+      <p>
+        We share data with the following categories of third-party service
+        providers to operate and improve Aervo:
+      </p>
+
+      <h3>Infrastructure & Hosting</h3>
+      <ul>
+        <li>
+          <strong>Render:</strong> Cloud hosting and infrastructure services
+        </li>
+        <li>
+          <strong>PostgreSQL Hosting Provider:</strong> Database storage and
+          management
+        </li>
+      </ul>
+
+      <h3>AI & Machine Learning Services</h3>
+      <ul>
+        <li>
+          <strong>OpenAI:</strong> AI-powered analysis and natural language
+          processing for generating insights
+        </li>
+        <li>
+          <strong>Anthropic (Claude):</strong> AI-powered analysis and
+          recommendation generation
+        </li>
+      </ul>
+
+      <h3>Analytics & Monitoring</h3>
+      <p>
+        We may use analytics tools to understand App usage and performance
+        (e.g., error tracking, performance monitoring).
+      </p>
+
+      <h3>Data Protection</h3>
+      <p>All third-party service providers:</p>
+      <ul>
+        <li>Are contractually obligated to protect your data</li>
+        <li>
+          Only have access to data necessary to perform their specific functions
+        </li>
+        <li>Are prohibited from using your data for their own purposes</li>
+        <li>Comply with applicable privacy laws and regulations</li>
+      </ul>
+
+      <div class="important-note">
+        <p>
+          <strong>Important:</strong> We do NOT sell your data to third parties
+          for marketing or advertising purposes.
+        </p>
+      </div>
+
+      <h2 id="data-retention">5. Data Retention</h2>
+
+      <h3>Active Merchants</h3>
+      <p>
+        We retain your store data for as long as you actively use the Aervo App.
+        This allows us to:
+      </p>
+      <ul>
+        <li>Maintain historical trends and analytics</li>
+        <li>Provide accurate insights over time</li>
+        <li>Preserve your custom settings and preferences</li>
+      </ul>
+
+      <h3>After Uninstallation</h3>
+      <p>When you uninstall Aervo:</p>
+      <ul>
+        <li>We stop collecting new data immediately</li>
+        <li>
+          We retain your data for up to <strong>30 days</strong> to allow for:
+          <ul>
+            <li>Reactivation of your account if you reinstall</li>
+            <li>Final report generation</li>
+            <li>Backup and disaster recovery purposes</li>
+          </ul>
+        </li>
+        <li>
+          After 30 days, we permanently delete all your store data from our
+          systems
+        </li>
+      </ul>
+
+      <p>
+        You may request immediate deletion of your data at any time by
+        contacting us at
+        <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>.
+      </p>
+
+      <h2 id="your-rights">6. Your Rights (GDPR & CCPA Compliance)</h2>
+      <p>You have the following rights regarding your data:</p>
+
+      <div class="section-highlight">
+        <h3>Right to Access</h3>
+        <p>
+          You can request a copy of all data we have collected about your store.
+        </p>
+
+        <h3>Right to Deletion</h3>
+        <p>
+          You can request that we delete all your store data from our systems at
+          any time.
+        </p>
+
+        <h3>Right to Correction</h3>
+        <p>You can request that we correct any inaccurate information.</p>
+
+        <h3>Right to Data Portability</h3>
+        <p>
+          You can request your data in a structured, machine-readable format.
+        </p>
+
+        <h3>Right to Object</h3>
+        <p>You can object to certain types of data processing.</p>
+      </div>
+
+      <h3>How to Exercise Your Rights</h3>
+      <p>
+        To exercise any of these rights, please contact us at
+        <strong>aervoadmin@aervoapp.com</strong> with:
+      </p>
+      <ul>
+        <li>Your store name and domain</li>
+        <li>The specific right you wish to exercise</li>
+        <li>Any additional details about your request</li>
+      </ul>
+      <p>We will respond to your request within <strong>30 days</strong>.</p>
+
+      <h2 id="gdpr-webhooks">7. GDPR Webhook Compliance</h2>
+      <p>Aervo complies with Shopify's mandatory GDPR webhooks:</p>
+
+      <h3>Customer Data Request</h3>
+      <p>
+        If a customer requests their data from your store, we will provide all
+        data we hold about that customer within 30 days.
+      </p>
+
+      <h3>Customer Redaction</h3>
+      <p>
+        If a customer requests deletion of their data, we will permanently
+        delete all personal information associated with that customer within 30
+        days.
+      </p>
+
+      <h3>Shop Redaction</h3>
+      <p>
+        When you uninstall Aervo or delete your Shopify store, we will
+        permanently delete all your store data within 30 days.
+      </p>
+
+      <p>
+        To initiate any GDPR request, contact us at
+        <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>.
+      </p>
+
+      <h2 id="cookies">8. Cookies and Tracking</h2>
+      <p>Aervo may use cookies and similar tracking technologies to:</p>
+      <ul>
+        <li>Maintain your session and keep you logged in</li>
+        <li>Remember your preferences and settings</li>
+        <li>Analyze App usage and performance</li>
+      </ul>
+      <p>
+        You can control cookies through your browser settings, but disabling
+        cookies may affect the functionality of the App.
+      </p>
+
+      <h2 id="childrens-privacy">9. Children's Privacy</h2>
+      <p>
+        Aervo is not intended for use by anyone under the age of 13. We do not
+        knowingly collect personal information from children under 13. If we
+        become aware that we have collected data from a child under 13, we will
+        take steps to delete that information promptly.
+      </p>
+
+      <h2 id="international-transfers">10. International Data Transfers</h2>
+      <p>
+        Your data may be transferred to and processed in countries other than
+        your own, including the United States. We ensure appropriate safeguards
+        are in place to protect your data in accordance with this Privacy Policy
+        and applicable laws.
+      </p>
+
+      <h2 id="data-breach">11. Data Breach Notification</h2>
+      <p>
+        In the unlikely event of a data breach that affects your information, we
+        will:
+      </p>
+      <ul>
+        <li>
+          Notify you within <strong>72 hours</strong> of becoming aware of the
+          breach
+        </li>
+        <li>Describe the nature of the breach and data affected</li>
+        <li>Provide guidance on steps you can take to protect yourself</li>
+        <li>Report the breach to relevant authorities as required by law</li>
+      </ul>
+
+      <h2 id="your-responsibilities">12. Your Responsibilities</h2>
+      <p>As a merchant using Aervo, you are responsible for:</p>
+      <ul>
+        <li>
+          Obtaining proper consent from your customers for data collection and
+          processing
+        </li>
+        <li>Complying with applicable privacy laws in your jurisdiction</li>
+        <li>Maintaining the security of your Shopify admin credentials</li>
+        <li>
+          Informing your customers about third-party apps you use (including
+          Aervo)
+        </li>
+      </ul>
+
+      <h2 id="changes">13. Changes to This Privacy Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time to reflect changes
+        in:
+      </p>
+      <ul>
+        <li>Our data practices</li>
+        <li>Legal requirements</li>
+        <li>New features or services</li>
+      </ul>
+
+      <p>When we make changes:</p>
+      <ul>
+        <li>
+          We will update the "Last Updated" date at the top of this policy
+        </li>
+        <li>
+          We will notify you via email at your Shopify admin email address
+        </li>
+        <li>
+          For material changes, we will provide at least
+          <strong>30 days' notice</strong> before the changes take effect
+        </li>
+        <li>
+          Continued use of Aervo after changes take effect constitutes
+          acceptance of the updated policy
+        </li>
+      </ul>
+
+      <h2 id="legal-basis">14. Legal Basis for Processing (GDPR)</h2>
+      <p>
+        For users in the European Economic Area (EEA), our legal basis for
+        processing your data is:
+      </p>
+      <ul>
+        <li>
+          <strong>Contractual Necessity:</strong> Processing is necessary to
+          provide the Aervo service you've requested
+        </li>
+        <li>
+          <strong>Legitimate Interests:</strong> We have a legitimate interest
+          in improving our service and ensuring security
+        </li>
+        <li>
+          <strong>Consent:</strong> Where required, we obtain your explicit
+          consent for specific data processing activities
+        </li>
+      </ul>
+
+      <h2 id="third-party-links">15. Third-Party Links</h2>
+      <p>
+        The App may contain links to third-party websites or services. We are
+        not responsible for the privacy practices of these third parties. We
+        encourage you to review their privacy policies before providing any
+        information.
+      </p>
+
+      <h2 id="dispute-resolution">16. Dispute Resolution</h2>
+      <p>If you have concerns about how we handle your data:</p>
+      <ol>
+        <li>
+          Contact us first at
+          <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>
+        </li>
+        <li>We will investigate and respond within 30 days</li>
+        <li>
+          If unresolved, you may file a complaint with your local data
+          protection authority
+        </li>
+      </ol>
+
+      <h2 id="shopify-compliance">17. Compliance with Shopify Policies</h2>
+      <p>Aervo complies with:</p>
+      <ul>
+        <li>Shopify Partner Program Agreement</li>
+        <li>Shopify API License and Terms of Use</li>
+        <li>All applicable Shopify App Store requirements</li>
+      </ul>
+
+      <div class="contact-box" style="margin-top: 56px">
+        <h3 style="margin-top: 0">Questions or Concerns?</h3>
+        <p>
+          If you have any questions, concerns, or requests regarding this
+          Privacy Policy or our data practices, please contact us:
+        </p>
+        <p>
+          <strong>Email:</strong>
+          <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>
+        </p>
+        <p>
+          <strong>Mail:</strong> Aervo LLC, 2248 Broadway #1526, New York, NY
+          10024, United States
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <p><strong>Effective Date:</strong> February 15, 2026</p>
+        <p style="margin-top: 8px">
+          This Privacy Policy applies to all users of the Aervo app for Shopify.
+        </p>
+        <p style="margin-top: 24px">© 2026 Aervo LLC. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
