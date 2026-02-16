@@ -2168,6 +2168,48 @@ header::after{
     margin-bottom: 12px;
   }
 }
+/* Footer styling */
+footer {
+  margin-top: 60px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  color: rgba(215, 220, 240, 0.65);
+  font-size: 0.88rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: rgba(215, 220, 240, 0.75);
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--a1);
+}
+
+@media (max-width: 640px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .footer-links {
+    justify-content: center;
+  }
+}
     </style>
   </head>
 
@@ -2611,17 +2653,17 @@ header::after{
           </form>
         </div>
 
-        <footer>
-          <div class="footer-inner">
-            <div>© <span id="year"></span> Aervo. All rights reserved.</div>
-            <div class="footer-links">
-              <a href="#services">Capabilities</a>
-              <a href="#about">About</a>
-              <a href="#proof">Results</a>
-              <a href="#">Privacy</a>
-            </div>
-          </div>
-        </footer>
+       <footer>
+  <div class="footer-inner">
+    <div>© <span id="year"></span> Aervo. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#services">Capabilities</a>
+      <a href="#about">About</a>
+      <a href="#proof">Results</a>
+      <a href="/privacy">Privacy</a>
+    </div>
+  </div>
+</footer>
       </div>
     </section>
 
