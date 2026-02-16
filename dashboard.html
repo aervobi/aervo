@@ -614,7 +614,7 @@
             document.getElementById("shopBadge").style.display = "flex";
             document.getElementById("shopName").textContent =
               shopData.shopOrigin.replace(".myshopify.com", "");
-              await fetchShopifyData(shopData.shopOrigin);
+              
           }
 
           renderView("overview");
@@ -656,21 +656,7 @@
         }
       }
 
-      function renderOverview() {
-  return renderOverviewWithRealData();
-}
-
-      function renderAnalytics() {
-  return renderAnalyticsWithRealData();
-}
-
-      function renderInventory() {
-  return renderInventoryWithRealData();
-}
-
-      function renderCustomers() {
-  return renderCustomersWithRealData();
-}
+   
 
       function renderConnectShopify() {
         return `
@@ -778,7 +764,7 @@
       // Load dashboard
       loadUserData();
     </script>
-    <script src="dashboard-real-data.js"></script>
+    
 </body>
 </html>
   </body>
