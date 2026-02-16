@@ -1,2778 +1,345 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aervo – Dashboard</title>
-    <link rel="icon" type="image/png" href="favicon.png" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aervo – Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e5e7eb;
+      min-height: 100vh;
+    }
 
-    <style>
-      .main {
-        flex: 1;
-        padding: 22px 22px 36px;
-      }
-      body {
-        margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        background: #050817;
-        color: #d6def8;
-      }
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(5, 8, 23, 0.96);
+      backdrop-filter: blur(14px);
+      z-index: 20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-      /* Top nav */
+    .nav-brand {
+      font-weight: 600;
+      letter-spacing: 4px;
+      font-size: 14px;
+      color: #8fbfff;
+    }
+
+    .nav-right button {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid #3a4a7c;
+      background: transparent;
+      color: #dfe7ff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-right button:hover {
+      background: #1a2237;
+      border-color: #4a5a8c;
+    }
+
+    .main {
+      padding: 96px 32px 48px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .welcome {
+      margin-bottom: 32px;
+    }
+
+    .welcome h1 {
+      font-size: 32px;
+      margin: 0 0 8px;
+      color: #f9fafb;
+    }
+
+    .welcome p {
+      margin: 0;
+      font-size: 15px;
+      color: #9ca7d6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1e293b, #0f172a);
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      color: #e5ecff;
+    }
+
+    .stat {
+      font-size: 36px;
+      font-weight: 600;
+      color: #60a5fa;
+      margin: 8px 0;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #9ca7d6;
+      margin-top: 4px;
+    }
+
+    .connect-box {
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    .connect-box h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #e5ecff;
+    }
+
+    .connect-box p {
+      margin: 0 0 20px;
+      color: #9ca7d6;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca7d6;
+    }
+
+    .error {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #fecaca;
+    }
+
+    .shop-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: #6ee7b7;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
       .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 56px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        background: rgba(5, 8, 23, 0.96);
-        backdrop-filter: blur(14px);
-        z-index: 20;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0 16px;
       }
-
-      .nav-left {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .nav-brand {
-        font-weight: 600;
-        letter-spacing: 4px;
-        font-size: 14px;
-        color: #8fbfff;
-      }
-
-      .nav-sub {
-        font-size: 11px;
-        color: #9ca7d6;
-      }
-
-      .nav-center {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      .nav-logo {
-        width: 38px;
-        opacity: 0.95;
-        filter: drop-shadow(0 0 10px rgba(137, 180, 255, 0.8))
-          drop-shadow(0 0 20px rgba(80, 130, 255, 0.6));
-      }
-
-      .nav-right button {
-        padding: 6px 14px;
-        border-radius: 999px;
-        border: 1px solid #3a4a7c;
-        background: transparent;
-        color: #dfe7ff;
-        font-size: 12px;
-        cursor: pointer;
-      }
-
-      .nav-right button:hover {
-        background: #1a2237;
-      }
-
-      /* Layout with sidebar */
-      .layout {
-        display: flex;
-        min-height: 100vh;
-        padding-top: 56px; /* accounts for fixed top nav */
-        position: relative;
-        z-index: 1; /* above the global dots */
-      }
-      /* Sidebar */
-      .sidebar {
-        width: 260px;
-        flex: 0 0 260px;
-        padding: 18px 14px;
-        background: rgba(7, 10, 25, 0.78);
-        backdrop-filter: blur(14px);
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .sidebar-title {
-        font-size: 11px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: #8b94c0;
-        margin: 14px 10px 8px;
-        opacity: 0.9;
-      }
-
-      .nav-section {
-        margin-bottom: 14px;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 10px;
-        border-radius: 12px;
-        color: #d6def8;
-        cursor: pointer;
-        user-select: none;
-        transition:
-          background 0.15s ease,
-          border-color 0.15s ease,
-          transform 0.12s ease;
-        border: 1px solid transparent;
-      }
-
-      .nav-item:hover {
-        background: rgba(143, 191, 255, 0.08);
-        border-color: rgba(143, 191, 255, 0.14);
-        transform: translateY(-1px);
-      }
-
-      .nav-item.active {
-        background: radial-gradient(circle at top left, #1c2442, #0b1026);
-        border-color: rgba(143, 191, 255, 0.22);
-        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
-      }
-
-      .nav-item span:last-child {
-        font-size: 14px;
-        font-weight: 520;
-      }
-
-      .icon {
-        width: 30px;
-        height: 30px;
-        display: grid;
-        place-items: center;
-        border-radius: 10px;
-        background: rgba(143, 191, 255, 0.1);
-        border: 1px solid rgba(143, 191, 255, 0.14);
-      }
-
-      .sidebar-footer {
-        margin-top: 16px;
-        padding: 12px 10px;
-        border-radius: 12px;
-        background: rgba(15, 21, 39, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        color: #9ca7d6;
-        font-size: 12px;
-        line-height: 1.35;
-      }
-
-      tr + tr td {
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-      }
-
-      .pill {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-size: 11px;
-      }
-
-      .pill-good {
-        background: rgba(52, 211, 153, 0.14);
-        color: #6ee7b7;
-      }
-
-      .pill-warn {
-        background: rgba(251, 191, 36, 0.12);
-        color: #facc15;
-      }
-
-      .pill-bad {
-        background: rgba(248, 113, 113, 0.14);
-        color: #fecaca;
-      }
-
-      /* Simple fake dark chart */
-      .chart {
-        margin-top: 10px;
-        background: radial-gradient(circle at top, #192238, #050817);
-        border-radius: 12px;
-        padding: 14px 12px 16px;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-      }
-
-      .chart-bars {
-        display: flex;
-        align-items: flex-end;
-        gap: 10px;
-        height: 120px;
-        margin-bottom: 10px;
-      }
-
-      .chart-bar {
-        flex: 1;
-        border-radius: 6px 6px 2px 2px;
-        background: linear-gradient(to top, #3045ff, #7ea8ff);
-        box-shadow: 0 0 12px rgba(80, 130, 255, 0.7);
-        position: relative;
-      }
-
-      .chart-bar span {
-        position: absolute;
-        bottom: 4px;
-        left: 4px;
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.85);
-      }
-
-      .chart-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: 10px;
-        color: #8b94c0;
-        padding: 0 2px;
-      }
-
-      /* Compare module */
-      .compare-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 10px;
-      }
-
-      .compare-box {
-        background: rgba(15, 21, 39, 0.9);
-        border-radius: 10px;
-        padding: 10px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .compare-label {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #9ca7d6;
-      }
-
-      .compare-value {
-        font-size: 18px;
-        margin-top: 4px;
-      }
-
-      .compare-delta {
-        font-size: 12px;
-        color: #6ee7b7;
-      }
-
-      /* Notifications */
-      .notification {
-        padding: 8px 10px;
-        border-radius: 10px;
-        background: rgba(15, 21, 39, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-
-      .notification small {
-        display: block;
-        font-size: 11px;
-        color: #8b94c0;
-        margin-top: 2px;
-      }
-
-      /* Review insights */
-      .review-metrics {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 12px;
-      }
-
-      .review-metric-label {
-        color: #8b94c0;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 2px;
-      }
-
-      .review-metric-value {
-        font-size: 16px;
-        color: #e5ecff;
-      }
-
-      .review-list {
-        margin-top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .review-item {
-        padding: 8px 10px;
-        border-radius: 10px;
-        background: rgba(15, 21, 39, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 13px;
-      }
-
-      .review-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 8px;
-        margin-bottom: 4px;
-      }
-
-      .review-author {
-        font-weight: 500;
-        color: #e5ecff;
-      }
-
-      .review-meta {
-        font-size: 11px;
-        color: #8b94c0;
-      }
-
-      .review-stars {
-        font-size: 12px;
-        color: #fde68a;
-        margin-right: 6px;
-      }
-
-      .review-theme-tag {
-        display: inline-block;
-        margin-top: 4px;
-        padding: 2px 8px;
-        border-radius: 999px;
-        font-size: 11px;
-        background: rgba(56, 189, 248, 0.14);
-        color: #7dd3fc;
-      }
-
-      /* Page sections (tabs) */
-      .page-section {
-        display: none;
-      }
-
-      .page-section.active {
-        display: block;
-      }
-
-      /* Love footer */
-      .love-footer {
-        margin-top: 40px;
-        padding: 22px 0;
-        text-align: center;
-        font-size: 15px;
-        letter-spacing: 0.5px;
-        color: #b4cdff;
-        font-weight: 500;
-        opacity: 0.95;
-        text-shadow:
-          0 0 6px rgba(137, 180, 255, 0.6),
-          0 0 14px rgba(80, 130, 255, 0.4),
-          0 0 26px rgba(40, 90, 255, 0.35);
-      }
-
-      /* Admin-only backend status */
-      .admin-status {
-        display: none;
-        padding: 10px;
-        background: #111827;
-        border: 1px solid #4b5563;
-        border-radius: 6px;
-        margin: 72px 20px 0 20px;
-        font-weight: 500;
-        color: #d6def8;
-        font-size: 13px;
-      }
-
-      .admin-status.ok {
-        color: #bbf7d0;
-        border-color: #16a34a;
-      }
-
-      .admin-status.error {
-        color: #fecaca;
-        border-color: #dc2626;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      /* Global subtle floating dots background */
-      .global-dots {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-
-        background-image:
-          radial-gradient(
-            2px 2px at 12% 18%,
-            rgba(180, 210, 255, 0.35),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 78% 28%,
-            rgba(160, 200, 255, 0.28),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 22% 76%,
-            rgba(150, 195, 255, 0.25),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 62% 82%,
-            rgba(140, 190, 255, 0.2),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 40% 40%,
-            rgba(180, 220, 255, 0.18),
-            transparent
-          );
-
-        background-repeat: no-repeat;
-        background-size: 140% 140%;
-        animation: floatDots 18s ease-in-out infinite alternate;
-        opacity: 0.55;
-      }
-
-      @keyframes floatDots {
-        0% {
-          transform: translate3d(0, 0, 0);
-        }
-        50% {
-          transform: translate3d(0, -12px, 0);
-        }
-        100% {
-          transform: translate3d(0, 0, 0);
-        }
-      }
-
-      @media (max-width: 900px) {
-        .layout {
-          flex-direction: column;
-        }
-
-        .sidebar {
-          width: 100%;
-          display: flex;
-          overflow-x: auto;
-          padding: 10px 12px;
-          border-right: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .nav-section {
-          display: flex;
-          gap: 6px;
-          margin-right: 16px;
-          margin-bottom: 0;
-        }
-
-        .sidebar-title,
-        .sidebar-footer {
-          display: none;
-        }
-
-        .nav-item {
-          white-space: nowrap;
-        }
-
-        .main {
-          padding: 18px 16px 32px;
-        }
-
-        .grid-3 {
-          grid-template-columns: 1fr;
-        }
-
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-
-        .admin-status {
-          margin: 72px 16px 0 16px;
-        }
-      }
-
-      /* Integrations */
-      .integration-logo-img {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
-        border-radius: 12px;
-        background: #ffffff;
-        padding: 4px;
-        box-shadow: 0 0 10px rgba(15, 23, 42, 0.7);
-      }
-
-      .integration-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-        margin-top: 4px;
-      }
-
-      .integration-card {
-        border-radius: 14px;
-        padding: 14px 14px 12px;
-        background: radial-gradient(circle at top left, #171d36, #050817);
-        border: 1px solid rgba(124, 92, 255, 0.4);
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.78);
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        transition:
-          transform 0.16s ease,
-          box-shadow 0.16s ease,
-          border-color 0.16s ease;
-      }
-
-      .integration-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(124, 92, 255, 0.85);
-        box-shadow: 0 24px 52px rgba(0, 0, 0, 0.9);
-      }
-
-      .integration-header {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .integration-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #e5ecff;
-      }
-
-      .integration-tagline {
-        font-size: 12px;
-        color: #9ca7d6;
-      }
-
-      .integration-meta {
-        font-size: 12px;
-        color: #c2cff6;
-        margin-top: 4px;
-      }
-
-      .integration-footer {
-        margin-top: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-      }
-
-      .integration-status-pill {
-        font-size: 11px;
-        padding: 3px 10px;
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(148, 163, 255, 0.5);
-        color: #c7d2ff;
-      }
-
-      .integration-btn {
-        border-radius: 999px;
-        border: 1px solid rgba(124, 92, 255, 0.7);
-        background: radial-gradient(circle at top left, #1c2442, #050817);
-        color: #c7d7ff;
-        font-size: 12px;
-        padding: 6px 14px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        cursor: pointer;
-        opacity: 0.95;
-        box-shadow:
-          0 0 10px rgba(137, 180, 255, 0.45),
-          0 0 22px rgba(80, 130, 255, 0.35);
-      }
-
-      .integration-btn:disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
-      }
-
-      @media (max-width: 900px) {
-        .integration-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      /* ---- Core UI layout ---- */
-      .sidebar {
-        width: 240px;
-        position: sticky;
-        top: 56px;
-        height: calc(100vh - 56px);
-        padding: 16px 14px;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-        background: rgba(6, 10, 22, 0.72);
-        backdrop-filter: blur(12px);
-        overflow-y: auto;
-      }
-
       .main {
-        flex: 1;
-        padding: 24px 24px 40px;
-        max-width: 1180px;
-        margin: 0 auto;
+        padding: 80px 16px 32px;
       }
-
-      .page-title {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
+      .welcome h1 {
+        font-size: 24px;
       }
-
-      .page-title h1 {
-        margin: 0;
-        font-size: 26px;
-        letter-spacing: -0.02em;
-      }
-
-      .page-title span {
-        color: #9ca7d6;
-        font-size: 13px;
-      }
-
-      /* ---- Cards ---- */
-      .card {
-        background: radial-gradient(circle at top left, #171d36, #050817);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
-      }
-
-      .card h2 {
-        margin: 0;
-        font-size: 12px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #9ca7d6;
-      }
-
-      .value {
-        margin-top: 10px;
-        font-size: 34px;
-        font-weight: 650;
-        color: #e8eeff;
-      }
-
-      .subtext {
-        margin-top: 6px;
-        font-size: 13px;
-        color: #9ca7d6;
-      }
-
-      /* ---- Grids ---- */
-      .grid-2 {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-        margin-top: 16px;
-      }
-
-      /* Your grid-4 is inline-styled in HTML, but this helps other uses */
-      .grid-4 {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
-        margin-top: 12px;
-      }
-
-      /* ---- Ask Aervo styles ---- */
-      .chat-card textarea {
-        width: 100%;
-        min-height: 74px;
-        margin-top: 10px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(124, 92, 255, 0.35);
-        background: rgba(5, 8, 23, 0.65);
-        color: #e8eeff;
-        outline: none;
-        resize: vertical;
-      }
-
-      #askBtn {
-        margin-top: 10px;
-        padding: 8px 14px;
-        border-radius: 999px;
-        border: 1px solid rgba(124, 92, 255, 0.7);
-        background: rgba(15, 21, 39, 0.75);
-        color: #dfe7ff;
-        cursor: pointer;
-      }
-
-      #askBtn:hover {
-        background: rgba(15, 21, 39, 0.95);
-        box-shadow: 0 0 14px rgba(80, 130, 255, 0.18);
-      }
-
-      .chat-output {
-        margin-top: 10px;
-        white-space: pre-line;
-        color: #cfe0ff;
-        font-size: 13px;
-        opacity: 0.95;
-      }
-
-      /* ---- Table clean-up (matches your columns) ---- */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        overflow: hidden;
-        border-radius: 12px;
-      }
-
-      thead th {
-        text-align: left;
-        font-size: 12px;
-        color: #9ca7d6;
-        font-weight: 600;
-        padding: 10px 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      tbody td {
-        padding: 10px 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        color: #e5ecff;
-        font-size: 13px;
-      }
-
-      tbody tr:hover td {
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      /* Responsive */
-      @media (max-width: 1100px) {
-        .grid-4 {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 900px) {
-        .main {
-          padding: 18px 16px 32px;
-        }
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="global-dots"></div>
-
-    <!-- TOP NAV -->
-    <header class="nav">
-      <div class="nav-left">
-        <div class="nav-brand">AERVO</div>
-        <div class="nav-sub" id="companyLabel">Loading company…</div>
-      </div>
-
-      <div class="nav-center">
-        <img src="logo.png" class="nav-logo" alt="Aervo Logo" />
-      </div>
-
-      <div class="nav-right">
-        <button id="logoutBtn">Logout</button>
-      </div>
-    </header>
-
-    <!-- ADMIN-ONLY BACKEND STATUS -->
-    <div id="backendStatus" class="admin-status hidden">Checking backend…</div>
-
-    <div class="layout">
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="nav-section">
-          <div class="sidebar-title">Overview</div>
-          <div class="nav-item active" data-section="overview">
-            <span class="icon">📊</span>
-            <span>Overview</span>
-          </div>
-        </div>
-
-        <div class="nav-section">
-          <div class="sidebar-title">Deep dive</div>
-
-          <div class="nav-item" data-section="products">
-            <span class="icon">📦</span>
-            <span>Products</span>
-          </div>
-
-          <div class="nav-item" data-section="trends">
-            <span class="icon">📈</span>
-            <span>Trends</span>
-          </div>
-
-          <div class="nav-item" data-section="customers">
-            <span class="icon">👥</span>
-            <span>Customers</span>
-          </div>
-
-          <div class="nav-item" data-section="compare">
-            <span class="icon">⚖️</span>
-            <span>Compare periods</span>
-          </div>
-
-          <div class="nav-item" data-section="integrations">
-            <span class="icon">🧩</span>
-            <span>Integrations</span>
-          </div>
-
-          <div class="nav-item" data-section="notifications">
-            <span class="icon">🔔</span>
-            <span>Notifications</span>
-          </div>
-        </div>
-
-        <div class="sidebar-footer">
-          Early Aervo demo · Not real production data.
-        </div>
-      </aside>
-
-      <!-- MAIN CONTENT -->
-      <main class="main">
-        <!-- ONBOARDING BANNER (shows only right after signup) -->
-        <div id="onboardingBanner" class="onboarding-banner">
-          <div class="onboarding-top">
-            <div class="onboarding-title">
-              <strong>Welcome to Aervo</strong>
-              <span
-                >Finish 2 quick steps to get the most out of your
-                dashboard.</span
-              >
-            </div>
-
-            <div class="onboarding-progress">
-              Progress: <span id="onboardingProgress">0/2</span>
-            </div>
-
-            <button id="dismissOnboardingBtn" class="onboard-dismiss">
-              Dismiss
-            </button>
-          </div>
-
-          <div class="onboarding-actions">
-            <button class="onboard-btn" data-action="ask">💬 Ask Aervo</button>
-            <button class="onboard-btn" data-action="connect">
-              🧩 Connect a tool
-            </button>
-            <button class="onboard-btn" data-action="invite">
-              👥 Invite a teammate
-            </button>
-            <button class="onboard-btn" data-action="skip">⏭ Skip</button>
-          </div>
-        </div>
-
-        <!-- OVERVIEW SECTION -->
-        <section id="section-overview" class="page-section active">
-          <div class="page-title">
-            <h1 id="welcomeTitle">Welcome back</h1>
-            <span id="dateLabel"></span>
-          </div>
-
-          <div
-            class="page-title-actions"
-            style="
-              display: flex;
-              gap: 12px;
-              align-items: center;
-              margin-top: 8px;
-            "
-          >
-            <div id="locationPickerContainer" style="margin-right: auto"></div>
-            <div
-              id="shopStatusSmall"
-              style="font-size: 13px; color: #9ca7d6"
-            ></div>
-          </div>
-
-          <div
-            class="grid-4"
-            style="
-              display: grid;
-              grid-template-columns: repeat(4, minmax(0, 1fr));
-              gap: 16px;
-              margin-top: 12px;
-            "
-          >
-            <div class="card">
-              <h2>Total units on hand</h2>
-              <div class="value" id="totalUnits">—</div>
-              <div class="subtext">Total units available</div>
-            </div>
-            <div class="card">
-              <h2>Variants tracked</h2>
-              <div class="value" id="totalItems">—</div>
-              <div class="subtext">Total variants in inventory</div>
-            </div>
-            <div class="card">
-              <h2>Low stock</h2>
-              <div class="value" id="lowStockCount">—</div>
-              <div class="subtext">Threshold: ≤ 10 units</div>
-            </div>
-            <div class="card">
-              <h2>Out of stock</h2>
-              <div class="value" id="outOfStockCount">—</div>
-              <div class="subtext">Variants with 0 available</div>
-            </div>
-          </div>
-
-          <div class="grid-2" style="margin-top: 12px">
-            <div class="card">
-              <h2>Sales Snapshot (Today)</h2>
-              <div
-                style="
-                  display: flex;
-                  gap: 12px;
-                  align-items: flex-start;
-                  margin-top: 10px;
-                "
-              >
-                <div style="flex: 1">
-                  <div class="review-item" style="padding: 10px">
-                    <div class="review-header">
-                      <div class="review-author">Orders today</div>
-                      <div class="review-meta" id="ordersToday">—</div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="review-item"
-                    style="margin-top: 8px; padding: 10px"
-                  >
-                    <div class="review-header">
-                      <div class="review-author">Items sold today</div>
-                      <div class="review-meta" id="itemsSoldToday">—</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style="flex: 1">
-                  <div class="review-item" style="padding: 10px">
-                    <div class="review-header">
-                      <div class="review-author">Gross sales today</div>
-                      <div class="review-meta" id="grossSalesToday">—</div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="review-item"
-                    style="margin-top: 8px; padding: 10px"
-                  >
-                    <div class="review-header">
-                      <div class="review-author">Top product today</div>
-                      <div class="review-meta" id="topProductToday">—</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="subtext"
-                id="salesSummaryText"
-                style="margin-top: 10px"
-              >
-                —
-              </div>
-            </div>
-
-            <div class="card list-card">
-              <h2>Recent Sales</h2>
-              <div
-                id="recentSalesList"
-                class="review-list"
-                style="margin-top: 10px"
-              >
-                <div class="subtext">Loading recent sales…</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" id="actionCenter" style="margin-top: 16px">
-            <h2>Action Center</h2>
-            <div
-              style="
-                margin-top: 10px;
-                display: flex;
-                gap: 8px;
-                align-items: center;
-                flex-wrap: wrap;
-              "
-            >
-              <div id="actionTabs">
-                <button class="onboard-btn" data-tab="restock">
-                  Restock now
-                </button>
-                <button class="onboard-btn" data-tab="fixskus">Fix SKUs</button>
-                <button class="onboard-btn" data-tab="all">All variants</button>
-              </div>
-              <div
-                style="margin-left: auto; color: #9ca7d6; font-size: 12px"
-                id="actionCenterMeta"
-              ></div>
-            </div>
-            <div id="actionTableContainer" style="margin-top: 12px">
-              <table id="actionTable">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Variant</th>
-                    <th>SKU</th>
-                    <th>Available</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="card chat-card">
-              <h2>Ask Aervo</h2>
-              <p class="subtext">
-                This is a placeholder for your future AervoGPT. For now it gives
-                a sample answer based on your demo data.
-              </p>
-
-              <textarea
-                id="questionInput"
-                placeholder="Example: How did we do today compared to yesterday?"
-              ></textarea>
-
-              <button id="askBtn">Ask</button>
-              <div class="chat-output" id="chatOutput"></div>
-            </div>
-
-            <div class="card list-card">
-              <h2>Getting started</h2>
-              <ul id="todoList"></ul>
-              <div class="subtext" style="margin-top: 10px">
-                Finish 2 items to clear onboarding.
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- PRODUCTS SECTION -->
-        <section id="section-products" class="page-section">
-          <div class="page-title">
-            <h1>Products</h1>
-            <span id="productsSubtitle">Top movers and low-stock alerts.</span>
-          </div>
-
-          <div class="grid-2">
-            <div class="card">
-              <h2>Variants (searchable)</h2>
-              <div
-                style="
-                  display: flex;
-                  gap: 8px;
-                  align-items: center;
-                  margin-top: 8px;
-                  flex-wrap: wrap;
-                "
-              >
-                <input
-                  id="productsSearch"
-                  placeholder="Search product, variant, or SKU"
-                  style="
-                    flex: 1;
-                    padding: 8px;
-                    border-radius: 8px;
-                    border: 1px solid #2b3350;
-                    background: #050817;
-                    color: #e5ecff;
-                  "
-                />
-                <label style="font-size: 13px; color: #9ca7d6"
-                  ><input type="checkbox" id="filterLow" /> Low stock</label
-                >
-                <label style="font-size: 13px; color: #9ca7d6"
-                  ><input type="checkbox" id="filterOut" /> Out of stock</label
-                >
-                <label style="font-size: 13px; color: #9ca7d6"
-                  ><input type="checkbox" id="filterMissing" /> Missing
-                  SKU</label
-                >
-              </div>
-              <table id="productsTable" style="margin-top: 10px">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Variant</th>
-                    <th>SKU</th>
-                    <th>Available</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <div class="card list-card">
-              <h2>Inventory notes</h2>
-              <ul id="inventoryNotes"></ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- TRENDS SECTION -->
-        <section id="section-trends" class="page-section">
-          <div class="page-title">
-            <h1>Trends</h1>
-            <span id="trendsSubtitle">Simple view of recent performance.</span>
-          </div>
-
-          <div class="grid-2">
-            <div class="card">
-              <h2>Revenue by day</h2>
-              <p class="subtext" id="trendSummary"></p>
-              <div class="chart">
-                <div class="chart-bars" id="chartBars"></div>
-                <div class="chart-labels" id="chartLabels"></div>
-              </div>
-            </div>
-
-            <div class="card list-card">
-              <h2>Pattern highlights</h2>
-              <ul id="trendHighlights"></ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- CUSTOMERS SECTION -->
-        <section id="section-customers" class="page-section">
-          <div class="page-title">
-            <h1>Customers</h1>
-            <span id="customersSubtitle">Who’s driving your sales.</span>
-          </div>
-
-          <div class="grid-2">
-            <div class="card">
-              <h2>Customer segments</h2>
-              <table id="customersTable">
-                <thead>
-                  <tr>
-                    <th>Segment</th>
-                    <th>Share of sales</th>
-                    <th>Avg. ticket</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <div class="card list-card">
-              <h2>Customer insights</h2>
-              <ul id="customerNotes"></ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- COMPARE SECTION -->
-        <section id="section-compare" class="page-section">
-          <div class="page-title">
-            <h1>Compare periods</h1>
-            <span id="compareSubtitle">See how key metrics moved.</span>
-          </div>
-
-          <div class="card">
-            <h2>Week over week</h2>
-            <p class="subtext" id="compareSummary"></p>
-            <div class="compare-grid">
-              <div class="compare-box">
-                <div class="compare-label">This week</div>
-                <div class="compare-value" id="compareThisWeek">$0</div>
-                <div class="compare-delta" id="compareThisDelta">–</div>
-              </div>
-              <div class="compare-box">
-                <div class="compare-label">Last week</div>
-                <div class="compare-value" id="compareLastWeek">$0</div>
-                <div class="subtext" id="compareLastNotes">–</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- INTEGRATIONS SECTION -->
-        <section id="section-integrations" class="page-section">
-          <div class="page-title">
-            <h1>Integrations</h1>
-            <span>Connect the tools that power your business.</span>
-          </div>
-
-          <div class="card">
-            <h2>Available soon</h2>
-            <p class="subtext">
-              These integrations are part of the Aervo demo. In production, each
-              will connect securely using OAuth so your real data flows into
-              your dashboard.
-            </p>
-
-            <div class="integration-grid">
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="https://cdn.worldvectorlogo.com/logos/shopify.svg"
-                    class="integration-logo-img"
-                    alt="Shopify logo"
-                  />
-                  <div>
-                    <div class="integration-name">Shopify</div>
-                    <div class="integration-tagline">
-                      Online store, orders & products
-                    </div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Sync orders, refunds, products, and discounts for real-time
-                  insight into revenue and inventory.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">Not connected</span>
-                  <button
-                    id="shopify-connect-btn"
-                    class="integration-btn"
-                    data-auth-url="/auth/shopify"
-                  >
-                    Connect with Shopify
-                  </button>
-                </div>
-              </div>
-
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="https://cdn.worldvectorlogo.com/logos/stripe-4.svg"
-                    class="integration-logo-img"
-                    alt="Stripe logo"
-                  />
-                  <div>
-                    <div class="integration-name">Stripe</div>
-                    <div class="integration-tagline">
-                      Payments & subscriptions
-                    </div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Pull payments, subscriptions, and payout data to combine
-                  financial insights with customer behavior.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">Coming soon</span>
-                  <button class="integration-btn" disabled>Connect</button>
-                </div>
-              </div>
-
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="https://cdn.worldvectorlogo.com/logos/google-g-2015.svg"
-                    class="integration-logo-img"
-                    alt="Google logo"
-                  />
-                  <div>
-                    <div class="integration-name">Google Reviews</div>
-                    <div class="integration-tagline">Reputation & feedback</div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Bring in customer feedback so Aervo can analyze sentiment,
-                  theme shifts, and rating trends.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">Coming soon</span>
-                  <button class="integration-btn" disabled>Connect</button>
-                </div>
-              </div>
-
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="square-logo.png"
-                    class="integration-logo-img"
-                    alt="Square logo"
-                  />
-                  <div>
-                    <div class="integration-name">Square</div>
-                    <div class="integration-tagline">POS & in-person sales</div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Combine your in-store POS data with your online data to get
-                  one unified picture of performance.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">Planned</span>
-                  <button class="integration-btn" disabled>Connect</button>
-                </div>
-              </div>
-
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="https://cdn.worldvectorlogo.com/logos/quickbooks-2.svg"
-                    class="integration-logo-img"
-                    alt="QuickBooks logo"
-                  />
-                  <div>
-                    <div class="integration-name">QuickBooks</div>
-                    <div class="integration-tagline">Accounting</div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Map revenue and costs into a unified view of margin, profit,
-                  and cash flow trends over time.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">Planned</span>
-                  <button class="integration-btn" disabled>Connect</button>
-                </div>
-              </div>
-
-              <div class="integration-card">
-                <div class="integration-header">
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/126/126472.png"
-                    class="integration-logo-img"
-                    alt="Custom API icon"
-                  />
-                  <div>
-                    <div class="integration-name">Custom API</div>
-                    <div class="integration-tagline">
-                      Internal tools & exports
-                    </div>
-                  </div>
-                </div>
-                <div class="integration-meta">
-                  Bring in CSV exports or connect proprietary systems using
-                  Aervo’s forthcoming API builder.
-                </div>
-                <div class="integration-footer">
-                  <span class="integration-status-pill">By request</span>
-                  <button class="integration-btn" disabled>Talk to us</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- NOTIFICATIONS SECTION -->
-        <section id="section-notifications" class="page-section">
-          <div class="page-title">
-            <h1>Notifications</h1>
-            <span>What Aervo wants you to pay attention to.</span>
-          </div>
-
-          <div id="notificationsList"></div>
-        </section>
-
-        <!-- LOVE FOOTER -->
-        <div id="loveFooter" class="love-footer"></div>
-      </main>
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">AERVO</div>
+    <div class="nav-right">
+      <button id="logoutBtn">Log out</button>
     </div>
+  </nav>
 
-    <script>
-      (function () {
-        // Protect route: require login
-        // Protect route: require login (accept old/new keys)
-        let rawUser = localStorage.getItem("aervoUser");
+  <main class="main">
+    <div id="content">
+      <div class="loading">Loading your dashboard...</div>
+    </div>
+  </main>
 
-        // fallback if other pages saved the user under a different key
-        if (!rawUser) rawUser = localStorage.getItem("aervo_user");
+  <script>
+    const BACKEND_URL = 'https://aervo-backend.onrender.com';
 
-        // if we found the old key, migrate it so everything is consistent
-        if (rawUser && !localStorage.getItem("aervoUser")) {
-          localStorage.setItem("aervoUser", rawUser);
-        }
+    // Check authentication
+    const token = localStorage.getItem('aervo_token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
 
-        if (!rawUser) {
-          window.location.href = "login.html";
-          return;
-        }
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('aervo_token');
+      localStorage.removeItem('aervo_user');
+      window.location.href = 'login.html';
+    });
 
-        let user;
-        try {
-          user = JSON.parse(rawUser);
-        } catch (e) {
-          // corrupted storage, force clean login
-          localStorage.removeItem("aervoUser");
-          localStorage.removeItem("aervo_user");
-          window.location.href = "login.html";
-          return;
-        }
-
-        const email = (user.email || "").toLowerCase();
-        const companyFromUser = user.companyName || "Your business";
-        const roleFromUser = user.role || "Owner";
-
-        const isAdmin = email === "aervoadmin@aervoapp.com";
-        const backendStatusBox = document.getElementById("backendStatus");
-
-        async function checkBackendStatus() {
-          if (!backendStatusBox) return;
-
-          try {
-            const response = await fetch(
-              "https://aervo-backend.onrender.com/api/status",
-            );
-            const data = await response.json();
-            backendStatusBox.textContent = `Backend: ${String(
-              data.status || "",
-            ).toUpperCase()} — Env: ${data.environment || ""}`;
-            backendStatusBox.classList.remove("error");
-            backendStatusBox.classList.add("ok");
-          } catch (err) {
-            backendStatusBox.textContent = "Backend: OFFLINE";
-            backendStatusBox.classList.remove("ok");
-            backendStatusBox.classList.add("error");
+    // Fetch user data
+    async function loadDashboard() {
+      const contentDiv = document.getElementById('content');
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/user/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-        }
-
-        // Only admins see backend status
-        if (isAdmin && backendStatusBox) {
-          backendStatusBox.classList.remove("hidden");
-          checkBackendStatus();
-          setInterval(checkBackendStatus, 5000);
-        }
-
-        // ---------------- Onboarding banner logic ----------------
-        const onboardingCard = document.getElementById("onboardingBanner");
-        const progressEl = document.getElementById("onboardingProgress");
-        const dismissBtn = document.getElementById("dismissOnboardingBtn");
-
-        const JUST_SIGNED_UP_KEY = (email) => `aervo_just_signed_up:${email}`;
-        const DONE_KEY = (email) => `aervo_onboarding_done:${email}`;
-        const ACTIONS_KEY = (email) => `aervo_onboarding_actions:${email}`;
-
-        function getActions() {
-          try {
-            return new Set(
-              JSON.parse(localStorage.getItem(ACTIONS_KEY(email)) || "[]"),
-            );
-          } catch {
-            return new Set();
-          }
-        }
-
-        function saveActions(set) {
-          localStorage.setItem(
-            ACTIONS_KEY(email),
-            JSON.stringify(Array.from(set)),
-          );
-        }
-
-        function updateProgressUI(actions) {
-          const completed = Math.min(actions.size, 2);
-          if (progressEl) progressEl.textContent = `${completed}/2`;
-
-          document.querySelectorAll(".onboard-btn").forEach((btn) => {
-            const a = btn.getAttribute("data-action");
-            if (a && actions.has(a) && a !== "skip") btn.classList.add("done");
-          });
-
-          if (completed >= 2) {
-            localStorage.setItem(DONE_KEY(email), "true");
-            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-            if (onboardingCard) onboardingCard.style.display = "none";
-          }
-        }
-
-        function markAction(action) {
-          if (!action || action === "skip") return;
-          const actions = getActions();
-          actions.add(action);
-          saveActions(actions);
-          updateProgressUI(actions);
-          renderTodo();
-        }
-
-        function initOnboarding() {
-          if (!onboardingCard) return;
-
-          const shouldShowOnboarding =
-            localStorage.getItem(JUST_SIGNED_UP_KEY(email)) === "true" &&
-            localStorage.getItem(DONE_KEY(email)) !== "true";
-
-          if (!shouldShowOnboarding) {
-            onboardingCard.style.display = "none";
-            return;
-          }
-
-          const actions = getActions();
-          updateProgressUI(actions);
-
-          document.querySelectorAll(".onboard-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              const action = btn.getAttribute("data-action");
-
-              if (action === "ask") {
-                const q = document.getElementById("questionInput");
-                if (q) q.focus();
-                return;
-              }
-
-              if (action === "skip") {
-                const a = getActions();
-                a.add("connect"); // count as 1 step
-                saveActions(a);
-                updateProgressUI(a);
-                return;
-              }
-
-              markAction(action);
-              alert("Coming soon — this is a demo step for now.");
-            });
-          });
-
-          if (dismissBtn) {
-            dismissBtn.addEventListener("click", () => {
-              localStorage.setItem(DONE_KEY(email), "true");
-              localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-              onboardingCard.style.display = "none";
-            });
-          }
-        }
-
-        initOnboarding();
-        function renderTodo() {
-          const todo = document.getElementById("todoList");
-          if (!todo) return;
-
-          const actions = getActions();
-          const items = [
-            { key: "ask", label: "Ask Aervo a question" },
-            { key: "connect", label: "Connect a tool (demo)" },
-            { key: "invite", label: "Invite a teammate (demo)" },
-          ];
-
-          todo.innerHTML = "";
-          items.forEach((it) => {
-            const li = document.createElement("li");
-            const done = actions.has(it.key);
-            li.textContent = `${done ? "✅" : "⬜️"} ${it.label}`;
-            todo.appendChild(li);
-          });
-        }
-
-        // run once on load
-        renderTodo();
-
-        // ---------------- Demo per-user data ----------------
-        const demoData = {
-          "demo@aervo.com": {
-            companyName: "Luna Coffee Co.",
-            role: "Owner",
-            todayRevenue: "$1,240",
-            todayChange: "+12% vs yesterday",
-            weekRevenue: "$8,920",
-            weekChange: "+7% week over week",
-            topProduct: "Iced Vanilla Latte",
-            topProductDetail: "142 sold in the last 7 days",
-            insights: [
-              "Mornings (8–11am) drive 60% of daily revenue.",
-              "Iced drinks outperform hot drinks by 18% this week.",
-              "Thursday and Friday are your strongest days.",
-            ],
-            products: [
-              {
-                name: "Iced Vanilla Latte",
-                units: 142,
-                revenue: "$712",
-                status: "good",
-              },
-              { name: "Cold Brew", units: 98, revenue: "$490", status: "good" },
-              {
-                name: "Blueberry Muffin",
-                units: 64,
-                revenue: "$192",
-                status: "warn",
-              },
-              {
-                name: "Matcha Latte",
-                units: 37,
-                revenue: "$185",
-                status: "warn",
-              },
-              {
-                name: "Bagel w/ Cream Cheese",
-                units: 29,
-                revenue: "$116",
-                status: "bad",
-              },
-            ],
-            inventoryNotes: [
-              "Blueberry Muffin is trending up. Consider a larger batch for Thursday/Friday.",
-              "Bagel w/ Cream Cheese has slowed. You may be over-prepping.",
-              "Matcha Latte is gaining steady traction with younger customers.",
-            ],
-            trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-            trendValues: [980, 1120, 1040, 1320, 1480, 1210, 1275],
-            trendSummary:
-              "Revenue is strongest on Thu–Sat, with Friday as your peak day.",
-            trendHighlights: [
-              "Friday is your best day, driven largely by iced drinks and morning traffic.",
-              "Weekends hold steady but don’t exceed Friday volumes.",
-              "Early-week promos could help smooth out Monday/Tuesday dips.",
-            ],
-            compareThisWeek: "$8,920",
-            compareThisDelta: "+7% vs last week",
-            compareLastWeek: "$8,330",
-            compareLastNotes:
-              "Last week was affected by a slower Monday and Tuesday.",
-            compareSummary:
-              "You’re pacing ahead of last week, with stronger performance in the back half of the week.",
-            notifications: [
-              {
-                text: "Iced Vanilla Latte hit a new 7-day high in units sold.",
-                time: "2 hours ago",
-              },
-              {
-                text: "Blueberry Muffin is close to selling out for today.",
-                time: "4 hours ago",
-              },
-              {
-                text: "Bagel w/ Cream Cheese has underperformed for 3 weeks in a row.",
-                time: "Yesterday",
-              },
-            ],
-            customerSegments: [
-              { name: "Morning regulars", share: "38%", ticket: "$11.40" },
-              { name: "Afternoon students", share: "24%", ticket: "$8.60" },
-              { name: "Remote workers", share: "18%", ticket: "$13.20" },
-              { name: "Weekend families", share: "20%", ticket: "$15.80" },
-            ],
-            customerNotes: [
-              "Loyalty-style perks for morning regulars could lift frequency.",
-              "Students respond well to limited-time cold drink promos.",
-              "Remote workers drive higher average tickets when staying longer.",
-              "Weekend family bundles (drinks + pastry) could raise order size.",
-            ],
-          },
-          "owner@shopdemo.com": {
-            companyName: "Skyline Streetwear",
-            role: "Owner",
-            todayRevenue: "$2,730",
-            todayChange: "+5% vs yesterday",
-            weekRevenue: "$17,450",
-            weekChange: "+11% week over week",
-            topProduct: "Midnight Skyline Hoodie",
-            topProductDetail: "78 units sold this week",
-            insights: [
-              "Average order value is up 9% this week.",
-              "Hoodies and joggers are driving most of the lift.",
-              "Mobile orders account for 63% of sales.",
-            ],
-            products: [
-              {
-                name: "Midnight Skyline Hoodie",
-                units: 78,
-                revenue: "$5,460",
-                status: "good",
-              },
-              {
-                name: "City Lights Joggers",
-                units: 54,
-                revenue: "$2,160",
-                status: "good",
-              },
-              { name: "Neon Cap", units: 41, revenue: "$615", status: "warn" },
-              {
-                name: "Oversize Tee – Cloud",
-                units: 33,
-                revenue: "$660",
-                status: "warn",
-              },
-              {
-                name: "Arch Logo Beanie",
-                units: 18,
-                revenue: "$270",
-                status: "bad",
-              },
-            ],
-            inventoryNotes: [
-              "Midnight Skyline Hoodie is a clear hero. Consider limited-edition colorways.",
-              "Neon Cap sells steadily but infrequently in pairs.",
-              "Arch Logo Beanie is slow-moving. A small bundle promo could help clear inventory.",
-            ],
-            trendDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-            trendValues: [2100, 2350, 2210, 2600, 2950, 2800, 2440],
-            trendSummary:
-              "Sales peak on Friday and Saturday with strong mid-week performance.",
-            trendHighlights: [
-              "Friday remains your biggest revenue day, followed closely by Saturday.",
-              "Mid-week drops are small, suggesting consistent demand.",
-              "Drops align with weather changes; hoodies spike on cooler days.",
-            ],
-            compareThisWeek: "$17,450",
-            compareThisDelta: "+11% vs last week",
-            compareLastWeek: "$15,720",
-            compareLastNotes: "Last week included one slower promotional day.",
-            compareSummary:
-              "You’re significantly ahead of last week, driven by hoodie and jogger sales.",
-            notifications: [
-              {
-                text: "Midnight Skyline Hoodie is driving 31% of total revenue this week.",
-                time: "1 hour ago",
-              },
-              {
-                text: "Arch Logo Beanie appears overstocked based on the last 30 days.",
-                time: "Today",
-              },
-              {
-                text: "Cart size increases when Neon Cap is featured in the hero banner.",
-                time: "Yesterday",
-              },
-            ],
-            customerSegments: [
-              { name: "Urban creatives", share: "42%", ticket: "$86.20" },
-              { name: "College students", share: "28%", ticket: "$64.10" },
-              { name: "Online drops", share: "18%", ticket: "$112.40" },
-              { name: "Tourist traffic", share: "12%", ticket: "$73.50" },
-            ],
-            customerNotes: [
-              "Urban creatives respond strongly to limited drops and collabs.",
-              "Students are price-sensitive; bundles and tiered discounts perform well.",
-              "Online drop customers buy quickly when inventory looks scarce.",
-              "Tourist traffic spikes on weekends and holidays—great time for in-store events.",
-            ],
-          },
-        };
-
-        // Only use demo data when no Shopify shop is connected.
-        const connectedShop =
-          new URLSearchParams(window.location.search).get("shop_installed") ||
-          new URLSearchParams(window.location.search).get("shop") ||
-          localStorage.getItem("aervo_shop");
-        {
-          const data = demoData[email] || demoData["demo@aervo.com"];
-          const displayCompany = companyFromUser || data.companyName;
-          const displayRole = roleFromUser || data.role;
-
-          // Love footer
-          const loveFooter = document.getElementById("loveFooter");
-          if (loveFooter)
-            loveFooter.textContent = `✨ Aervo appreciates you, ${displayCompany} ❤️`;
-
-          // Header
-          const companyLabel = document.getElementById("companyLabel");
-          if (companyLabel) {
-            companyLabel.textContent = displayCompany + " · " + displayRole;
-          }
-
-          const welcomeTitle = document.getElementById("welcomeTitle");
-          if (welcomeTitle)
-            welcomeTitle.textContent = "Welcome back, " + displayCompany;
-
-          const dateLabel = document.getElementById("dateLabel");
-          if (dateLabel) {
-            const now = new Date();
-            dateLabel.textContent = now.toLocaleDateString(undefined, {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            });
-          }
-
-          // Overview
-          const todayRevenueEl = document.getElementById("todayRevenue");
-          const todayChangeEl = document.getElementById("todayChange");
-          const weekRevenueEl = document.getElementById("weekRevenue");
-          const weekChangeEl = document.getElementById("weekChange");
-          const topProductEl = document.getElementById("topProduct");
-          const topProductDetailEl =
-            document.getElementById("topProductDetail");
-
-          if (todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue;
-          if (todayChangeEl) todayChangeEl.textContent = data.todayChange;
-          if (weekRevenueEl) weekRevenueEl.textContent = data.weekRevenue;
-          if (weekChangeEl) weekChangeEl.textContent = data.weekChange;
-          if (topProductEl) topProductEl.textContent = data.topProduct;
-          if (topProductDetailEl)
-            topProductDetailEl.textContent = data.topProductDetail;
-
-          // Insights
-          const insightsList = document.getElementById("insightsList");
-          if (insightsList) {
-            insightsList.innerHTML = "";
-            (data.insights || []).forEach((text) => {
-              const li = document.createElement("li");
-              li.textContent = "• " + text;
-              insightsList.appendChild(li);
-            });
-          }
-
-          // Ask Aervo
-          const askBtn = document.getElementById("askBtn");
-          if (askBtn) {
-            askBtn.addEventListener("click", () => {
-              const q = document.getElementById("questionInput");
-              const out = document.getElementById("chatOutput");
-
-              const question = q ? q.value.trim() : "";
-              if (!out) return;
-
-              if (!question) {
-                out.textContent =
-                  "Ask Aervo something about your performance, like “What were my top 3 items this week?”";
-                return;
-              }
-
-              out.textContent =
-                "If this were connected to your real data, Aervo would answer something like:\n\n" +
-                "“Based on your latest numbers, you're trending " +
-                String(data.todayChange || "").toLowerCase() +
-                " and your top product is " +
-                data.topProduct +
-                ". This week’s revenue is " +
-                data.weekRevenue +
-                " and is " +
-                String(data.weekChange || "").toLowerCase() +
-                ".”";
-              // Mark "ask" as done when they actually click Ask (regardless of just-signed-up flag)
-              if (localStorage.getItem(DONE_KEY(email)) !== "true") {
-                markAction("ask"); // this already saves + updates progress + renderTodo
-              }
-            });
-          }
-
-          // Products table
-          const productsTableBody = document.querySelector(
-            "#productsTable tbody",
-          );
-          if (productsTableBody) {
-            productsTableBody.innerHTML = "";
-            (data.products || []).forEach((p) => {
-              const tr = document.createElement("tr");
-              const statusClass =
-                p.status === "good"
-                  ? "pill-good"
-                  : p.status === "warn"
-                    ? "pill-warn"
-                    : "pill-bad";
-              const statusText =
-                p.status === "good"
-                  ? "Healthy"
-                  : p.status === "warn"
-                    ? "Watch"
-                    : "At risk";
-
-              tr.innerHTML = `
-              <td>${p.name}</td>
-              <td>${p.units}</td>
-              <td>${p.revenue}</td>
-              <td><span class="pill ${statusClass}">${statusText}</span></td>
-            `;
-              productsTableBody.appendChild(tr);
-            });
-          }
-
-          const inventoryList = document.getElementById("inventoryNotes");
-          if (inventoryList) {
-            inventoryList.innerHTML = "";
-            (data.inventoryNotes || []).forEach((text) => {
-              const li = document.createElement("li");
-              li.textContent = "• " + text;
-              inventoryList.appendChild(li);
-            });
-          }
-
-          // Trends
-          const trendSummaryEl = document.getElementById("trendSummary");
-          if (trendSummaryEl)
-            trendSummaryEl.textContent = data.trendSummary || "";
-
-          const chartBars = document.getElementById("chartBars");
-          const chartLabels = document.getElementById("chartLabels");
-          if (chartBars && chartLabels) {
-            chartBars.innerHTML = "";
-            chartLabels.innerHTML = "";
-
-            const maxVal = Math.max(...(data.trendValues || [1]));
-            (data.trendValues || []).forEach((val, idx) => {
-              const heightPercent = (val / maxVal) * 100;
-
-              const bar = document.createElement("div");
-              bar.className = "chart-bar";
-              bar.style.height = heightPercent + "%";
-              bar.innerHTML = `<span>${Number(val).toLocaleString()}</span>`;
-              chartBars.appendChild(bar);
-
-              const label = document.createElement("div");
-              label.textContent = (data.trendDays || [])[idx] || "";
-              chartLabels.appendChild(label);
-            });
-          }
-
-          const trendHighlights = document.getElementById("trendHighlights");
-          if (trendHighlights) {
-            trendHighlights.innerHTML = "";
-            (data.trendHighlights || []).forEach((text) => {
-              const li = document.createElement("li");
-              li.textContent = "• " + text;
-              trendHighlights.appendChild(li);
-            });
-          }
-
-          // Customers
-          const customersTableBody = document.querySelector(
-            "#customersTable tbody",
-          );
-          if (customersTableBody) {
-            customersTableBody.innerHTML = "";
-            (data.customerSegments || []).forEach((seg) => {
-              const tr = document.createElement("tr");
-              tr.innerHTML = `
-              <td>${seg.name}</td>
-              <td>${seg.share}</td>
-              <td>${seg.ticket}</td>
-            `;
-              customersTableBody.appendChild(tr);
-            });
-          }
-
-          const customerNotesList = document.getElementById("customerNotes");
-          if (customerNotesList) {
-            customerNotesList.innerHTML = "";
-            (data.customerNotes || []).forEach((text) => {
-              const li = document.createElement("li");
-              li.textContent = "• " + text;
-              customerNotesList.appendChild(li);
-            });
-          }
-
-          // Compare
-          const compareThisWeekEl = document.getElementById("compareThisWeek");
-          const compareThisDeltaEl =
-            document.getElementById("compareThisDelta");
-          const compareLastWeekEl = document.getElementById("compareLastWeek");
-          const compareLastNotesEl =
-            document.getElementById("compareLastNotes");
-          const compareSummaryEl = document.getElementById("compareSummary");
-
-          if (compareThisWeekEl)
-            compareThisWeekEl.textContent = data.compareThisWeek || "$0";
-          if (compareThisDeltaEl)
-            compareThisDeltaEl.textContent = data.compareThisDelta || "–";
-          if (compareLastWeekEl)
-            compareLastWeekEl.textContent = data.compareLastWeek || "$0";
-          if (compareLastNotesEl)
-            compareLastNotesEl.textContent = data.compareLastNotes || "–";
-          if (compareSummaryEl)
-            compareSummaryEl.textContent = data.compareSummary || "";
-
-          // Notifications
-          const notificationsList =
-            document.getElementById("notificationsList");
-          if (notificationsList) {
-            notificationsList.innerHTML = "";
-            (data.notifications || []).forEach((n) => {
-              const div = document.createElement("div");
-              div.className = "notification";
-              div.innerHTML = `
-              <div>${n.text}</div>
-              <small>${n.time}</small>
-            `;
-              notificationsList.appendChild(div);
-            });
-          }
-        }
-
-        // Sidebar navigation
-        const navItems = document.querySelectorAll(".nav-item");
-        const sections = {
-          overview: document.getElementById("section-overview"),
-          products: document.getElementById("section-products"),
-          trends: document.getElementById("section-trends"),
-          customers: document.getElementById("section-customers"),
-          compare: document.getElementById("section-compare"),
-          integrations: document.getElementById("section-integrations"),
-          notifications: document.getElementById("section-notifications"),
-        };
-
-        navItems.forEach((item) => {
-          item.addEventListener("click", () => {
-            const sectionName = item.getAttribute("data-section");
-
-            navItems.forEach((n) => n.classList.remove("active"));
-            item.classList.add("active");
-
-            Object.values(sections).forEach((sec) => {
-              if (sec) sec.classList.remove("active");
-            });
-
-            const target = sections[sectionName];
-            if (target) target.classList.add("active");
-          });
         });
 
-        // Logout
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) {
-          logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("aervoUser");
-            localStorage.removeItem("aervo_token");
-            localStorage.removeItem("aervo_user");
-            localStorage.removeItem(JUST_SIGNED_UP_KEY(email));
-            window.location.href = "login.html";
-          });
-        }
-      })();
-    </script>
-    <script>
-      (function () {
-        // Consolidated Shopify + Inventory UI logic
-        const DEBUG = false;
-        const API_BASE = "https://api.aervoapp.com";
-
-        function log(...args) {
-          if (DEBUG) console.log(...args);
-        }
-
-        function getQueryParam(name) {
-          return new URLSearchParams(window.location.search).get(name);
-        }
-
-        function getConnectedShop() {
-          const s1 = getQueryParam("shop_installed");
-          const s2 = getQueryParam("shop");
-          if (s1) localStorage.setItem("aervo_shop", s1);
-          else if (s2) localStorage.setItem("aervo_shop", s2);
-          return localStorage.getItem("aervo_shop");
-        }
-
-        function getLocationKey(shop) {
-          return `aervo_location_id:${shop}`;
-        }
-
-        async function fetchJson(url) {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        }
-
-        async function fetchLocations(shop) {
-          return fetchJson(
-            `${API_BASE}/auth/shopify/locations?shop=${encodeURIComponent(
-              shop,
-            )}`,
-          );
-        }
-
-        async function fetchInsights(shop, location_id) {
-          return fetchJson(
-            `${API_BASE}/auth/shopify/insights?shop=${encodeURIComponent(
-              shop,
-            )}&location_id=${encodeURIComponent(location_id)}`,
-          );
-        }
-
-        async function fetchProducts(shop) {
-          return fetchJson(
-            `${API_BASE}/auth/shopify/products?shop=${encodeURIComponent(shop)}`,
-          );
-        }
-
-        // Fetch sales summary (read-only). Returns parsed JSON or null on error.
-        async function fetchSalesSummary(shop, locationId) {
-          try {
-            return await fetchJson(
-              `${API_BASE}/auth/shopify/sales-summary?shop=${encodeURIComponent(
-                shop,
-              )}&location_id=${encodeURIComponent(locationId || "")}`,
-            );
-          } catch (err) {
-            return null;
-          }
-        }
-
-        // Render a simple sales snapshot into the Overview cards. Handles missing data gracefully.
-        function renderSalesSnapshot(data) {
-          const ordersEl = document.getElementById("ordersToday");
-          const itemsEl = document.getElementById("itemsSoldToday");
-          const grossEl = document.getElementById("grossSalesToday");
-          const topEl = document.getElementById("topProductToday");
-          const summaryEl = document.getElementById("salesSummaryText");
-
-          const ordersCount =
-            (data &&
-              (data.orders_count ?? (data.orders && data.orders.length))) ||
-            0;
-          const itemsSold =
-            (data &&
-              (data.items_sold ?? (data.totals && data.totals.items_sold))) ||
-            0;
-          const gross =
-            (data &&
-              (data.gross_sales ?? (data.totals && data.totals.gross_sales))) ||
-            null;
-          const topProduct =
-            (data &&
-              (data.top_product?.name ||
-                data.top_product ||
-                (data.totals && data.totals.top_product))) ||
-            null;
-
-          if (ordersEl)
-            ordersEl.textContent = ordersCount ? String(ordersCount) : "—";
-          if (itemsEl)
-            itemsEl.textContent = itemsSold ? String(itemsSold) : "—";
-          if (grossEl)
-            grossEl.textContent = gross
-              ? typeof gross === "number"
-                ? gross.toLocaleString(undefined, {
-                    style: "currency",
-                    currency: "USD",
-                  })
-                : String(gross)
-              : "—";
-          if (topEl) topEl.textContent = topProduct || "—";
-
-          if (summaryEl) {
-            if (!data || (!ordersCount && !itemsSold && !gross)) {
-              summaryEl.textContent = "No sales yet today";
-            } else {
-              summaryEl.textContent = `Showing last 24 hours · ${ordersCount} orders`;
-            }
-          }
-        }
-
-        // Render the recent sales list (last 5-6 orders). Accepts null/empty data.
-        function renderRecentSales(data) {
-          const container = document.getElementById("recentSalesList");
-          if (!container) return;
-          container.innerHTML = "";
-
-          const orders = (data && data.orders) || [];
-          if (!orders || orders.length === 0) {
-            const empty = document.createElement("div");
-            empty.className = "subtext";
-            empty.textContent = "No sales yet today";
-            container.appendChild(empty);
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem('aervo_token');
+            localStorage.removeItem('aervo_user');
+            window.location.href = 'login.html';
             return;
           }
-
-          // take most recent 6 orders
-          orders.slice(0, 6).forEach((o) => {
-            const box = document.createElement("div");
-            box.className = "review-item";
-
-            const custName =
-              (o.customer &&
-                (o.customer.name ||
-                  `${o.customer.first_name || ""} ${
-                    o.customer.last_name || ""
-                  }`.trim())) ||
-              (o.email && o.email.split("@")[0]) ||
-              "Customer";
-
-            const orderNum = o.name || o.order_number || o.id || "—";
-            const addr = o.shipping_address || o.billing_address || {};
-            const city = addr.city || addr.province || addr.region || "";
-            const total =
-              o.total_price ||
-              o.total ||
-              o.order_total ||
-              o.subtotal_price ||
-              o.amount ||
-              "—";
-
-            const header = document.createElement("div");
-            header.className = "review-header";
-            header.innerHTML = `<div class="review-author">${escapeHtml(
-              custName,
-            )}</div><div class="review-meta">${escapeHtml(
-              String(orderNum),
-            )} · ${city ? escapeHtml(city) : "—"}</div>`;
-
-            const details = document.createElement("div");
-            details.style.marginTop = "6px";
-            details.innerHTML = `<div style="font-size:13px;color:#9ca7d6;margin-bottom:6px">Total: ${escapeHtml(
-              String(formatCurrencyIfLooksLikeNumber(total)),
-            )}</div>`;
-
-            const lines = document.createElement("div");
-            (o.line_items || o.items || []).forEach((li) => {
-              const title =
-                li.title || li.name || li.product_name || li.product || "Item";
-              const qty = li.quantity || li.qty || li.count || 1;
-              const row = document.createElement("div");
-              row.style.fontSize = "13px";
-              row.style.color = "#e5ecff";
-              row.textContent = `• ${title} × ${qty}`;
-              lines.appendChild(row);
-            });
-
-            box.appendChild(header);
-            if ((o.note || "").length) {
-              const note = document.createElement("div");
-              note.className = "review-meta";
-              note.textContent = o.note;
-              box.appendChild(note);
-            }
-            box.appendChild(details);
-            if (lines.children.length) box.appendChild(lines);
-            container.appendChild(box);
-          });
+          throw new Error('Failed to fetch user data');
         }
 
-        // Small helper: escape simple HTML to avoid accidental markup injection
-        function escapeHtml(s) {
-          return String(s || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to load user data');
         }
 
-        function formatCurrencyIfLooksLikeNumber(v) {
-          if (v == null) return "—";
-          const n = Number(String(v).replace(/[^0-9.-]+/g, ""));
-          if (!isFinite(n)) return v;
-          return n.toLocaleString(undefined, {
-            style: "currency",
-            currency: "USD",
-          });
-        }
-        // Expose for quick console testing (optional)
-        window.__aervoSales = { renderSalesSnapshot, renderRecentSales };
+        const user = data.user;
+        const shop = data.shop;
 
-        function dedupeAndMerge(itemsArrs) {
-          const map = new Map();
-          (itemsArrs.flat() || []).forEach((it) => {
-            const id =
-              it.inventory_item_id ||
-              it.id ||
-              `${it.product_id || ""}:${it.variant_id || ""}`;
-            if (!id) return;
-            const existing = map.get(id) || {};
-            map.set(
-              id,
-              Object.assign({}, existing, it, {
-                tags: (existing.tags || new Set()).add
-                  ? existing.tags || new Set()
-                  : new Set(),
-              }),
-            );
-          });
-          return Array.from(map.values());
-        }
+        // Render dashboard
+        contentDiv.innerHTML = `
+          <div class="welcome">
+            <h1>Welcome back, ${user.companyName}</h1>
+            <p>Here's your Aervo dashboard</p>
+          </div>
 
-        // Rendering helpers
-        function renderLocationPicker(locations, shop) {
-          const container = document.getElementById("locationPickerContainer");
-          if (!container) return;
-          container.innerHTML = "";
-          const label = document.createElement("label");
-          label.style.color = "#9ca7d6";
-          label.style.fontSize = "13px";
-          label.textContent = "Location: ";
-          const sel = document.createElement("select");
-          sel.id = "locationSelect";
-          sel.style.marginLeft = "8px";
-          sel.style.padding = "6px";
-          sel.style.borderRadius = "8px";
-          sel.style.background = "#050817";
-          sel.style.color = "#e5ecff";
+          <div class="grid">
+            <div class="card">
+              <h2>Account Info</h2>
+              <div class="label">Email</div>
+              <div style="color: #e5ecff; margin-top: 4px;">${user.email}</div>
+              
+              <div class="label" style="margin-top: 16px;">Role</div>
+              <div style="color: #e5ecff; margin-top: 4px;">${user.role}</div>
+              
+              <div class="label" style="margin-top: 16px;">Status</div>
+              <div style="color: ${user.emailVerified ? '#6ee7b7' : '#facc15'}; margin-top: 4px;">
+                ${user.emailVerified ? '✓ Verified' : '⚠ Email not verified'}
+              </div>
+            </div>
 
-          const key = getLocationKey(shop);
-          const saved = localStorage.getItem(key);
+            <div class="card">
+              <h2>Shopify Integration</h2>
+              ${shop ? `
+                <div style="color: #6ee7b7; margin-bottom: 8px;">✓ Connected</div>
+                <div class="shop-badge">${shop.shopOrigin}</div>
+                <div class="label" style="margin-top: 12px;">Connected on</div>
+                <div style="color: #e5ecff; margin-top: 4px; font-size: 13px;">
+                  ${new Date(shop.installedAt).toLocaleDateString()}
+                </div>
+              ` : `
+                <div class="connect-box">
+                  <h3>Connect Your Shopify Store</h3>
+                  <p>Connect your Shopify store to start seeing your sales data, inventory insights, and AI-powered recommendations.</p>
+                  <button class="btn-primary" onclick="connectShopify()">
+                    Connect Shopify
+                  </button>
+                </div>
+              `}
+            </div>
 
-          (locations || []).forEach((loc) => {
-            const opt = document.createElement("option");
-            opt.value = loc.id || loc.location_id || loc.location?.id;
-            opt.textContent = loc.name || loc.location?.name || opt.value;
-            sel.appendChild(opt);
-          });
+            <div class="card">
+              <h2>Quick Stats</h2>
+              ${shop ? `
+                <div class="stat">$0</div>
+                <div class="label">Total Revenue (Coming Soon)</div>
+                
+                <div class="stat" style="margin-top: 20px;">0</div>
+                <div class="label">Orders Today (Coming Soon)</div>
+              ` : `
+                <p style="color: #9ca7d6; font-size: 14px;">Connect your Shopify store to see your stats</p>
+              `}
+            </div>
+          </div>
 
-          if (saved) sel.value = saved;
-          else if (sel.options.length) sel.selectedIndex = 0;
+          ${!user.emailVerified ? `
+            <div class="error">
+              <strong>⚠ Email verification required</strong><br>
+              Please check your email and verify your account to unlock all features.
+            </div>
+          ` : ''}
+        `;
 
-          sel.addEventListener("change", (e) => {
-            const v = sel.value;
-            localStorage.setItem(key, v);
-            initForShop(shop); // re-init for new location
-          });
+      } catch (error) {
+        console.error('Dashboard load error:', error);
+        contentDiv.innerHTML = `
+          <div class="error">
+            <strong>Error loading dashboard</strong><br>
+            ${error.message || 'Something went wrong. Please try refreshing the page.'}
+          </div>
+          <div class="card">
+            <button class="btn-primary" onclick="location.reload()">Refresh Page</button>
+          </div>
+        `;
+      }
+    }
 
-          label.appendChild(sel);
-          container.appendChild(label);
-        }
+    function connectShopify() {
+      const shop = prompt('Enter your Shopify store domain (e.g., your-store.myshopify.com):');
+      if (!shop) return;
+      
+      const normalized = shop.trim().toLowerCase();
+      if (!normalized.includes('.myshopify.com')) {
+        alert('Please enter a valid Shopify domain ending in .myshopify.com');
+        return;
+      }
+      
+      // Redirect to Shopify OAuth
+      window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
+    }
 
-        function renderOverview(insights, locationName) {
-          const totals = (insights && insights.totals) || {};
-          document.getElementById("totalUnits").textContent =
-            totals.total_units ?? "—";
-          document.getElementById("totalItems").textContent =
-            totals.total_items ?? "—";
-          document.getElementById("lowStockCount").textContent =
-            (insights && (insights.low_stock || []).length) || 0;
-          document.getElementById("outOfStockCount").textContent =
-            (insights && (insights.out_of_stock || []).length) || 0;
-          const meta = document.getElementById("actionCenterMeta");
-          if (meta)
-            meta.textContent = locationName ? `Location: ${locationName}` : "";
-        }
-
-        function buildItemsFromInsights(insights) {
-          if (!insights) return [];
-          if (insights.items && insights.items.length) return insights.items;
-          const arr = [];
-          (insights.low_stock || []).forEach((i) => arr.push(i));
-          (insights.out_of_stock || []).forEach((i) => arr.push(i));
-          (insights.missing_sku || []).forEach((i) => arr.push(i));
-          // dedupe by inventory_item_id
-          const map = new Map();
-          arr.forEach((it) => {
-            const id =
-              it.inventory_item_id ||
-              it.id ||
-              `${it.product_id || ""}:${it.variant_id || ""}`;
-            if (!id) return;
-            if (!map.has(id)) map.set(id, it);
-          });
-          return Array.from(map.values());
-        }
-
-        function statusForAvailable(n) {
-          if (n === 0) return { text: "At risk", cls: "pill-bad" };
-          if (n > 0 && n <= 10) return { text: "Watch", cls: "pill-warn" };
-          return { text: "Healthy", cls: "pill-good" };
-        }
-
-        function renderActionCenter(items, tab) {
-          const tbody = document.querySelector("#actionTable tbody");
-          if (!tbody) return;
-          tbody.innerHTML = "";
-          // Sort: out_of_stock first, then low_stock (ascending available), then missing_sku, then others
-          const out = (items || []).filter(
-            (i) =>
-              i.available === 0 ||
-              i.available == 0 ||
-              (i.tags && i.tags.includes && i.tags.includes("out_of_stock")) ||
-              (i.status && i.status === "out_of_stock"),
-          );
-          const low = (items || []).filter(
-            (i) => i.available > 0 && i.available <= 10,
-          );
-          const missing = (items || []).filter(
-            (i) => i.sku == null || i.sku === "" || i.missing_sku,
-          );
-          const others = (items || []).filter(
-            (i) => !out.includes(i) && !low.includes(i) && !missing.includes(i),
-          );
-
-          let rows = [];
-          if (tab === "restock") rows = [...out, ...low];
-          else if (tab === "fixskus") rows = [...missing];
-          else rows = [...out, ...low, ...missing, ...others];
-
-          rows.forEach((it) => {
-            const tr = document.createElement("tr");
-            const product = it.product_title || it.title || it.product || "";
-            const variant = it.variant_title || it.variant || "";
-            const sku = it.sku || it.sku_id || it.sku_value || "";
-            const avail =
-              it.available != null
-                ? it.available
-                : it.quantity != null
-                  ? it.quantity
-                  : 0;
-            const st = statusForAvailable(Number(avail));
-            tr.innerHTML = `<td>${product}</td><td>${variant}</td><td>${
-              sku || "—"
-            }</td><td>${avail}</td><td><span class="pill ${st.cls}">${
-              st.text
-            }</span></td>`;
-            tbody.appendChild(tr);
-          });
-        }
-
-        function renderProductsTab(items) {
-          const tbody = document.querySelector("#productsTable tbody");
-          if (!tbody) return;
-          function buildRow(it) {
-            const product = it.product_title || it.title || it.product || "";
-            const variant = it.variant_title || it.variant || "";
-            const sku = it.sku || "";
-            const avail =
-              it.available != null
-                ? it.available
-                : it.quantity != null
-                  ? it.quantity
-                  : 0;
-            const st = statusForAvailable(Number(avail));
-            return `<tr><td>${product}</td><td>${variant}</td><td>${
-              sku || "—"
-            }</td><td>${avail}</td><td><span class="pill ${st.cls}">${
-              st.text
-            }</span></td></tr>`;
-          }
-          tbody.innerHTML = (items || []).map(buildRow).join("");
-
-          // search and filters
-          const search = document.getElementById("productsSearch");
-          const fLow = document.getElementById("filterLow");
-          const fOut = document.getElementById("filterOut");
-          const fMissing = document.getElementById("filterMissing");
-
-          function applyFilters() {
-            const q = ((search && search.value) || "").toLowerCase();
-            const low = fLow && fLow.checked;
-            const out = fOut && fOut.checked;
-            const missing = fMissing && fMissing.checked;
-            const rows = (items || []).filter((it) => {
-              const product = (
-                it.product_title ||
-                it.title ||
-                it.product ||
-                ""
-              ).toLowerCase();
-              const variant = (
-                it.variant_title ||
-                it.variant ||
-                ""
-              ).toLowerCase();
-              const sku = (it.sku || "").toLowerCase();
-              const avail = Number(it.available || it.quantity || 0);
-              if (
-                q &&
-                !(product.includes(q) || variant.includes(q) || sku.includes(q))
-              )
-                return false;
-              if (out && !(avail === 0)) return false;
-              if (low && !(avail > 0 && avail <= 10)) return false;
-              if (missing && !(sku === "")) return false; // if missing checked, show those with empty sku
-              return true;
-            });
-            tbody.innerHTML = rows
-              .map((it) => {
-                const product =
-                  it.product_title || it.title || it.product || "";
-                const variant = it.variant_title || it.variant || "";
-                const sku = it.sku || "";
-                const avail =
-                  it.available != null
-                    ? it.available
-                    : it.quantity != null
-                      ? it.quantity
-                      : 0;
-                const st = statusForAvailable(Number(avail));
-                return `<tr><td>${product}</td><td>${variant}</td><td>${
-                  sku || "—"
-                }</td><td>${avail}</td><td><span class="pill ${st.cls}">${
-                  st.text
-                }</span></td></tr>`;
-              })
-              .join("");
-          }
-
-          if (search) search.addEventListener("input", applyFilters);
-          if (fLow) fLow.addEventListener("change", applyFilters);
-          if (fOut) fOut.addEventListener("change", applyFilters);
-          if (fMissing) fMissing.addEventListener("change", applyFilters);
-        }
-
-        function renderTrends(items) {
-          // Inventory distribution buckets: 0,1-10,11-50,51-200,200+
-          const buckets = [0, 0, 0, 0, 0];
-          (items || []).forEach((it) => {
-            const avail = Number(it.available || it.quantity || 0);
-            if (avail === 0) buckets[0]++;
-            else if (avail <= 10) buckets[1]++;
-            else if (avail <= 50) buckets[2]++;
-            else if (avail <= 200) buckets[3]++;
-            else buckets[4]++;
-          });
-          const labels = ["0", "1-10", "11-50", "51-200", "200+"];
-          const barContainer = document.getElementById("chartBars");
-          const labelContainer = document.getElementById("chartLabels");
-          if (!barContainer || !labelContainer) return;
-          barContainer.innerHTML = "";
-          labelContainer.innerHTML = "";
-          const max = Math.max(...buckets, 1);
-          buckets.forEach((v, idx) => {
-            const h = (v / max) * 100;
-            const bar = document.createElement("div");
-            bar.className = "chart-bar";
-            bar.style.height = h + "%";
-            bar.innerHTML = `<span>${v}</span>`;
-            barContainer.appendChild(bar);
-            const lbl = document.createElement("div");
-            lbl.textContent = labels[idx];
-            labelContainer.appendChild(lbl);
-          });
-        }
-
-        function renderCatalogHealth(insights) {
-          const totals = (insights && insights.totals) || {};
-          const missing =
-            totals.missing_sku_count ||
-            (insights && (insights.missing_sku || []).length) ||
-            0;
-          const totalItems = totals.total_items || 0;
-          const low = (insights && (insights.low_stock || []).length) || 0;
-          const out = (insights && (insights.out_of_stock || []).length) || 0;
-
-          const section = document.getElementById("section-customers");
-          if (!section) return;
-          section.querySelector(".page-title h1").textContent =
-            "Catalog Health";
-          section.querySelector(".page-title span").textContent =
-            "SKU completeness and stock health.";
-          section.querySelector(".grid-2 .card")?.remove?.();
-
-          // Build content
-          const html = `
-                  <div class="card">
-                    <h2>Summary</h2>
-                    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px">
-                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Missing SKUs</div><div style="font-size:18px">${missing}</div></div>
-                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">SKU completeness</div><div style="font-size:18px">${
-                        totalItems
-                          ? Math.round(
-                              ((totalItems - missing) / totalItems) * 100,
-                            )
-                          : 0
-                      }%</div></div>
-                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Low stock</div><div style="font-size:18px">${low}</div></div>
-                      <div class="review-item"><div style="font-size:12px;color:#9ca7d6">Out of stock</div><div style="font-size:18px">${out}</div></div>
-                    </div>
-                  </div>
-                  <div class="card list-card" style="margin-top:12px"><h2>Insights</h2><ul id="catalogInsights"></ul></div>
-                `;
-          section.querySelector(".grid-2").innerHTML = html;
-
-          const insightsList = document.getElementById("catalogInsights");
-          if (insightsList) {
-            const items = [];
-            if (out > 0) items.push(`You have ${out} variants out of stock.`);
-            if (low > 0) items.push(`${low} variants are low stock (<=10).`);
-            if (missing > 0)
-              items.push(
-                `${missing} variants are missing SKU. Add SKUs to improve tracking.`,
-              );
-            if (totalItems > 0 && missing / totalItems > 0.2)
-              items.push(
-                "More than 20% of variants are missing SKUs — prioritize fixes.",
-              );
-            if (items.length < 5)
-              items.push(
-                "Consider bundling slow SKUs or running promotions to clear aged stock.",
-              );
-            insightsList.innerHTML = items
-              .slice(0, 5)
-              .map((t) => `<li>• ${t}</li>`)
-              .join("");
-          }
-        }
-
-        function renderCompare(insights, locationName) {
-          const section = document.getElementById("section-compare");
-          if (!section) return;
-          section.querySelector(".page-title span").textContent =
-            "Coming soon: weekly inventory movement snapshots.";
-          const el = section.querySelector(".card");
-          if (el) {
-            el.innerHTML = `<h2>Coming soon: weekly inventory movement snapshots.</h2><div style="margin-top:8px;color:#9ca7d6">Location: ${
-              locationName || "—"
-            } · Total units: ${
-              insights && insights.totals ? insights.totals.total_units : 0
-            }</div>`;
-          }
-        }
-
-        function renderNotifications(insights, items) {
-          const container = document.getElementById("notificationsList");
-          if (!container) return;
-          container.innerHTML = "";
-          const out = (insights && insights.out_of_stock) || [];
-          const low = (insights && insights.low_stock) || [];
-          const missing = (insights && (insights.missing_sku || [])) || [];
-          if (out.length)
-            container.appendChild(
-              Object.assign(document.createElement("div"), {
-                className: "notification",
-                innerHTML: `Out of stock variants: <strong>${out.length}</strong>`,
-              }),
-            );
-          if (low.length)
-            container.appendChild(
-              Object.assign(document.createElement("div"), {
-                className: "notification",
-                innerHTML: `Low stock variants: <strong>${low.length}</strong>`,
-              }),
-            );
-          if (missing.length)
-            container.appendChild(
-              Object.assign(document.createElement("div"), {
-                className: "notification",
-                innerHTML: `Missing SKUs: <strong>${missing.length}</strong>`,
-              }),
-            );
-
-          // top 5 urgent variants
-          const merged = items || [];
-          merged.sort((a, b) => {
-            const aa = Number(a.available || a.quantity || 0);
-            const bb = Number(b.available || b.quantity || 0);
-            if (aa === 0 && bb !== 0) return -1;
-            if (bb === 0 && aa !== 0) return 1;
-            return aa - bb;
-          });
-          const list = document.createElement("div");
-          list.style.marginTop = "8px";
-          list.innerHTML =
-            `<h3 style="margin:6px 0 6px 0">Most urgent variants</h3>` +
-            merged
-              .slice(0, 5)
-              .map(
-                (it) =>
-                  `<div class="notification">${
-                    it.product_title || it.title || ""
-                  } ${
-                    it.variant_title ? `(${it.variant_title})` : ""
-                  } — Available: ${
-                    it.available != null ? it.available : it.quantity || 0
-                  }</div>`,
-              )
-              .join("");
-          container.appendChild(list);
-        }
-
-        // Integrations connect button behavior with validation
-        function initConnectButton() {
-          const btn = document.getElementById("shopify-connect-btn");
-          if (!btn) return;
-          btn.addEventListener("click", () => {
-            const stored = localStorage.getItem("aervo_shop");
-            if (stored) {
-              window.location.href = `${API_BASE}/auth/shopify?shop=${encodeURIComponent(
-                stored,
-              )}`;
-              return;
-            }
-            const input = window.prompt(
-              "Paste your Shopify domain (e.g. mystore.myshopify.com)",
-            );
-            if (!input) return alert("No shop provided.");
-            const s = input.trim();
-            if (!s.includes(".myshopify.com"))
-              return alert("Please enter a valid .myshopify.com domain.");
-            localStorage.setItem("aervo_shop", s);
-            window.location.href = `${API_BASE}/auth/shopify?shop=${encodeURIComponent(
-              s,
-            )}`;
-          });
-        }
-
-        // Main init
-        async function initForShop(shop) {
-          if (!shop) return;
-          try {
-            const locData = await fetchLocations(shop);
-            const locations = Array.isArray(locData)
-              ? locData
-              : locData.locations || [];
-            const chosen =
-              locations.find((l) => l.active || l.is_active || l.enabled) ||
-              locations[0];
-            const key = getLocationKey(shop);
-            const saved =
-              localStorage.getItem(key) ||
-              (chosen &&
-                (chosen.id || chosen.location_id || chosen.location?.id));
-            renderLocationPicker(locations, shop);
-            const locationId = saved;
-            const locationName =
-              (
-                locations.find(
-                  (l) =>
-                    (l.id || l.location_id || l.location?.id) == locationId,
-                ) ||
-                chosen ||
-                {}
-              ).name || "";
-            const insights = locationId
-              ? await fetchInsights(shop, locationId)
-              : null;
-            const productsResp = await fetchProducts(shop).catch(() => null);
-            const items = buildItemsFromInsights(insights);
-            renderOverview(insights, locationName);
-            renderActionCenter(items, "restock");
-            renderProductsTab(items);
-            renderTrends(items);
-            renderCatalogHealth(insights);
-            renderCompare(insights, locationName);
-            renderNotifications(insights, items);
-            // update small shop status
-            const shopStatus = document.getElementById("shopStatusSmall");
-            if (shopStatus)
-              shopStatus.textContent = `${shop} · ${locationName || "—"}`;
-
-            // Fetch and render sales summary (only when shop connected). This runs after inventory UI loads.
-            (async () => {
-              try {
-                const sales = await fetchSalesSummary(shop, locationId);
-                // Renderers are defensive; they handle null/empty data.
-                renderSalesSnapshot(sales);
-                renderRecentSales(sales);
-              } catch (err) {
-                renderSalesSnapshot(null);
-                renderRecentSales(null);
-              }
-            })();
-          } catch (err) {
-            console.error("Shop UI init error", err);
-            const bs = document.getElementById("backendStatus");
-            if (bs) {
-              bs.classList.remove("ok");
-              bs.classList.add("error");
-              bs.textContent = "Failed loading shop data";
-            }
-          }
-        }
-
-        // Kickoff
-        (function () {
-          initConnectButton();
-          const shop = getConnectedShop();
-          // If OAuth redirect present, ensure connected flag processed
-          const shopParam = getQueryParam("shop");
-          const connected = getQueryParam("connected");
-          if (shopParam && connected === "1") {
-            localStorage.setItem("aervo_shop", shopParam);
-          }
-          const finalShop = localStorage.getItem("aervo_shop");
-          if (finalShop) initForShop(finalShop);
-        })();
-      })();
-    </script>
-  </body>
+    // Load dashboard on page load
+    loadDashboard();
+  </script>
+</body>
 </html>
