@@ -1,345 +1,1156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aervo – Dashboard</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: #e5e7eb;
-      min-height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
 
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      background: rgba(5, 8, 23, 0.96);
-      backdrop-filter: blur(14px);
-      z-index: 20;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    .nav-brand {
-      font-weight: 600;
-      letter-spacing: 4px;
-      font-size: 14px;
-      color: #8fbfff;
-    }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
 
-    .nav-right button {
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid #3a4a7c;
-      background: transparent;
-      color: #dfe7ff;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .nav-right button:hover {
-      background: #1a2237;
-      border-color: #4a5a8c;
-    }
-
-    .main {
-      padding: 96px 32px 48px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .welcome {
-      margin-bottom: 32px;
-    }
-
-    .welcome h1 {
-      font-size: 32px;
-      margin: 0 0 8px;
-      color: #f9fafb;
-    }
-
-    .welcome p {
-      margin: 0;
-      font-size: 15px;
-      color: #9ca7d6;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      background: radial-gradient(circle at top left, #1e293b, #0f172a);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    }
-
-    .card h2 {
-      margin: 0 0 16px;
-      font-size: 18px;
-      color: #e5ecff;
-    }
-
-    .stat {
-      font-size: 36px;
-      font-weight: 600;
-      color: #60a5fa;
-      margin: 8px 0;
-    }
-
-    .label {
-      font-size: 13px;
-      color: #9ca7d6;
-      margin-top: 4px;
-    }
-
-    .connect-box {
-      text-align: center;
-      padding: 40px 24px;
-    }
-
-    .connect-box h3 {
-      margin: 0 0 12px;
-      font-size: 20px;
-      color: #e5ecff;
-    }
-
-    .connect-box p {
-      margin: 0 0 20px;
-      color: #9ca7d6;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .btn-primary {
-      display: inline-block;
-      padding: 12px 24px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #3b82f6, #60a5fa);
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
-    }
-
-    .loading {
-      text-align: center;
-      padding: 60px 20px;
-      color: #9ca7d6;
-    }
-
-    .error {
-      background: rgba(248, 113, 113, 0.1);
-      border: 1px solid rgba(248, 113, 113, 0.3);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-      color: #fecaca;
-    }
-
-    .shop-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 999px;
-      background: rgba(34, 197, 94, 0.15);
-      color: #6ee7b7;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 768px) {
+      /* Navigation */
       .nav {
-        padding: 0 16px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        background: rgba(5, 8, 23, 0.96);
+        backdrop-filter: blur(14px);
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
-      .main {
-        padding: 80px 16px 32px;
+
+      .nav-brand {
+        font-weight: 600;
+        letter-spacing: 4px;
+        font-size: 14px;
+        color: #8fbfff;
       }
+
+      .nav-center {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+      }
+
+      .nav-tab {
+        padding: 8px 16px;
+        border-radius: 8px;
+        color: #9ca7d6;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+      }
+
+      .nav-tab:hover {
+        background: rgba(143, 191, 255, 0.08);
+        color: #e5ecff;
+      }
+
+      .nav-tab.active {
+        background: rgba(143, 191, 255, 0.15);
+        border-color: rgba(143, 191, 255, 0.3);
+        color: #e5ecff;
+      }
+
+      .nav-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .shop-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(34, 197, 94, 0.15);
+        color: #6ee7b7;
+        font-size: 11px;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+      }
+
+      .btn-logout {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid #3a4a7c;
+        background: transparent;
+        color: #dfe7ff;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-logout:hover {
+        background: #1a2237;
+        border-color: #4a5a8c;
+      }
+
+      /* Layout */
+      .container {
+        padding: 88px 32px 48px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      /* Welcome Section */
+      .welcome {
+        margin-bottom: 32px;
+      }
+
       .welcome h1 {
-        font-size: 24px;
+        font-size: 32px;
+        margin: 0 0 8px;
+        color: #f9fafb;
       }
-    }
-  </style>
-</head>
-<body>
-  <nav class="nav">
-    <div class="nav-brand">AERVO</div>
-    <div class="nav-right">
-      <button id="logoutBtn">Log out</button>
+
+      .welcome p {
+        margin: 0;
+        font-size: 15px;
+        color: #9ca7d6;
+      }
+
+      /* AI Insights Banner */
+      .ai-banner {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.2);
+      }
+
+      .ai-banner-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .ai-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+
+      .ai-banner h2 {
+        font-size: 18px;
+        color: white;
+        margin: 0;
+      }
+
+      .insight-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .insight-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .insight-priority {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-right: 8px;
+      }
+
+      .priority-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+      }
+
+      .priority-medium {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fde047;
+      }
+
+      .priority-low {
+        background: rgba(34, 197, 94, 0.2);
+        color: #86efac;
+      }
+
+      /* Grid Layouts */
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      /* Cards */
+      .card {
+        background: radial-gradient(circle at top left, #1e293b, #0f172a);
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .card h3 {
+        font-size: 14px;
+        color: #9ca7d6;
+        margin: 0 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-large {
+        font-size: 42px;
+        font-weight: 700;
+        color: #60a5fa;
+        margin: 8px 0;
+        line-height: 1;
+      }
+
+      .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-top: 8px;
+      }
+
+      .stat-change.positive {
+        background: rgba(34, 197, 94, 0.15);
+        color: #6ee7b7;
+      }
+
+      .stat-change.negative {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
+
+      .stat-label {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      /* Chart placeholder */
+      .chart-container {
+        height: 200px;
+        background: radial-gradient(circle at top, #192238, #050817);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-size: 13px;
+      }
+
+      /* Action Items */
+      .action-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .action-item {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .action-item:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .action-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      .action-content {
+        flex: 1;
+      }
+
+      .action-title {
+        font-size: 14px;
+        color: #e5ecff;
+        margin-bottom: 2px;
+      }
+
+      .action-desc {
+        font-size: 12px;
+        color: #64748b;
+      }
+
+      /* Chat Interface */
+      .chat-container {
+        background: radial-gradient(circle at top left, #1e293b, #0f172a);
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 20px;
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 16px;
+        padding-right: 8px;
+      }
+
+      .chat-message {
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .chat-message.user {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+
+      .chat-message.ai {
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+      }
+
+      .chat-input-wrapper {
+        display: flex;
+        gap: 10px;
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(15, 23, 42, 0.6);
+        color: #e5ecff;
+        font-size: 14px;
+      }
+
+      .chat-input:focus {
+        outline: none;
+        border-color: #60a5fa;
+      }
+
+      .btn-send {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Table */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .data-table th {
+        text-align: left;
+        padding: 12px;
+        font-size: 12px;
+        color: #9ca7d6;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        font-weight: 600;
+      }
+
+      .data-table td {
+        padding: 12px;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      }
+
+      .data-table tr:hover {
+        background: rgba(59, 130, 246, 0.05);
+      }
+
+      /* Loading State */
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca7d6;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(148, 163, 184, 0.2);
+        border-top-color: #60a5fa;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Error State */
+      .error-banner {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        color: #fca5a5;
+        font-size: 14px;
+      }
+
+      /* Connect Shopify CTA */
+      .connect-cta {
+        text-align: center;
+        padding: 60px 24px;
+      }
+
+      .connect-cta h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+        color: #e5ecff;
+      }
+
+      .connect-cta p {
+        color: #9ca7d6;
+        font-size: 15px;
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+
+      .btn-primary {
+        display: inline-block;
+        padding: 14px 32px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        transition: all 0.2s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav {
+          padding: 0 16px;
+        }
+        .nav-center {
+          display: none;
+        }
+        .container {
+          padding: 80px 16px 32px;
+        }
+        .welcome h1 {
+          font-size: 24px;
+        }
+        .grid-4,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-brand">AERVO</div>
+      <div class="nav-center">
+        <div class="nav-tab active" data-view="overview">Overview</div>
+        <div class="nav-tab" data-view="analytics">Analytics</div>
+        <div class="nav-tab" data-view="inventory">Inventory</div>
+        <div class="nav-tab" data-view="customers">Customers</div>
+      </div>
+      <div class="nav-right">
+        <div class="shop-badge" id="shopBadge" style="display: none">
+          <span>●</span>
+          <span id="shopName">Loading...</span>
+        </div>
+        <button class="btn-logout" id="logoutBtn">Log out</button>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div id="content">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading your Aervo dashboard...</div>
+        </div>
+      </div>
     </div>
-  </nav>
 
-  <main class="main">
-    <div id="content">
-      <div class="loading">Loading your dashboard...</div>
-    </div>
-  </main>
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
 
-  <script>
-    const BACKEND_URL = 'https://aervo-backend.onrender.com';
+      if (!token) {
+        window.location.href = "login.html";
+      }
 
-    // Check authentication
-    const token = localStorage.getItem('aervo_token');
-    if (!token) {
-      window.location.href = 'login.html';
-    }
+      let currentView = "overview";
+      let userData = null;
+      let shopData = null;
 
-    // Logout handler
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('aervo_token');
-      localStorage.removeItem('aervo_user');
-      window.location.href = 'login.html';
-    });
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervo_token");
+        localStorage.removeItem("aervo_user");
+        window.location.href = "login.html";
+      });
 
-    // Fetch user data
-    async function loadDashboard() {
-      const contentDiv = document.getElementById('content');
-      
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/user/me`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+      // Tab Navigation
+      document.querySelectorAll(".nav-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          currentView = tab.dataset.view;
+          document
+            .querySelectorAll(".nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          renderView(currentView);
         });
+      });
 
-        if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem('aervo_token');
-            localStorage.removeItem('aervo_user');
-            window.location.href = 'login.html';
-            return;
+      // Fetch user data
+      async function loadUserData() {
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              localStorage.removeItem("aervo_token");
+              window.location.href = "login.html";
+              return;
+            }
+            throw new Error("Failed to fetch user data");
           }
-          throw new Error('Failed to fetch user data');
-        }
 
-        const data = await response.json();
-        
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to load user data');
-        }
+          const data = await response.json();
 
-        const user = data.user;
-        const shop = data.shop;
+          if (!data.success) {
+            throw new Error(data.message || "Failed to load user data");
+          }
 
-        // Render dashboard
-        contentDiv.innerHTML = `
-          <div class="welcome">
-            <h1>Welcome back, ${user.companyName}</h1>
-            <p>Here's your Aervo dashboard</p>
+          userData = data.user;
+          shopData = data.shop;
+
+          // Update shop badge
+          if (shopData) {
+            document.getElementById("shopBadge").style.display = "flex";
+            document.getElementById("shopName").textContent =
+              shopData.shopOrigin.replace(".myshopify.com", "");
+          }
+
+          renderView("overview");
+        } catch (error) {
+          console.error("Dashboard load error:", error);
+          document.getElementById("content").innerHTML = `
+          <div class="error-banner">
+            <strong>⚠ Error loading dashboard</strong><br>
+            ${error.message || "Something went wrong. Please try refreshing the page."}
           </div>
-
-          <div class="grid">
-            <div class="card">
-              <h2>Account Info</h2>
-              <div class="label">Email</div>
-              <div style="color: #e5ecff; margin-top: 4px;">${user.email}</div>
-              
-              <div class="label" style="margin-top: 16px;">Role</div>
-              <div style="color: #e5ecff; margin-top: 4px;">${user.role}</div>
-              
-              <div class="label" style="margin-top: 16px;">Status</div>
-              <div style="color: ${user.emailVerified ? '#6ee7b7' : '#facc15'}; margin-top: 4px;">
-                ${user.emailVerified ? '✓ Verified' : '⚠ Email not verified'}
-              </div>
-            </div>
-
-            <div class="card">
-              <h2>Shopify Integration</h2>
-              ${shop ? `
-                <div style="color: #6ee7b7; margin-bottom: 8px;">✓ Connected</div>
-                <div class="shop-badge">${shop.shopOrigin}</div>
-                <div class="label" style="margin-top: 12px;">Connected on</div>
-                <div style="color: #e5ecff; margin-top: 4px; font-size: 13px;">
-                  ${new Date(shop.installedAt).toLocaleDateString()}
-                </div>
-              ` : `
-                <div class="connect-box">
-                  <h3>Connect Your Shopify Store</h3>
-                  <p>Connect your Shopify store to start seeing your sales data, inventory insights, and AI-powered recommendations.</p>
-                  <button class="btn-primary" onclick="connectShopify()">
-                    Connect Shopify
-                  </button>
-                </div>
-              `}
-            </div>
-
-            <div class="card">
-              <h2>Quick Stats</h2>
-              ${shop ? `
-                <div class="stat">$0</div>
-                <div class="label">Total Revenue (Coming Soon)</div>
-                
-                <div class="stat" style="margin-top: 20px;">0</div>
-                <div class="label">Orders Today (Coming Soon)</div>
-              ` : `
-                <p style="color: #9ca7d6; font-size: 14px;">Connect your Shopify store to see your stats</p>
-              `}
-            </div>
-          </div>
-
-          ${!user.emailVerified ? `
-            <div class="error">
-              <strong>⚠ Email verification required</strong><br>
-              Please check your email and verify your account to unlock all features.
-            </div>
-          ` : ''}
-        `;
-
-      } catch (error) {
-        console.error('Dashboard load error:', error);
-        contentDiv.innerHTML = `
-          <div class="error">
-            <strong>Error loading dashboard</strong><br>
-            ${error.message || 'Something went wrong. Please try refreshing the page.'}
-          </div>
-          <div class="card">
+          <div class="card" style="text-align: center; padding: 40px;">
             <button class="btn-primary" onclick="location.reload()">Refresh Page</button>
           </div>
         `;
+        }
       }
-    }
 
-    function connectShopify() {
-      const shop = prompt('Enter your Shopify store domain (e.g., your-store.myshopify.com):');
-      if (!shop) return;
-      
-      const normalized = shop.trim().toLowerCase();
-      if (!normalized.includes('.myshopify.com')) {
-        alert('Please enter a valid Shopify domain ending in .myshopify.com');
-        return;
+      function renderView(view) {
+        const content = document.getElementById("content");
+
+        if (!shopData && view !== "overview") {
+          content.innerHTML = renderConnectShopify();
+          return;
+        }
+
+        switch (view) {
+          case "overview":
+            content.innerHTML = renderOverview();
+            break;
+          case "analytics":
+            content.innerHTML = renderAnalytics();
+            break;
+          case "inventory":
+            content.innerHTML = renderInventory();
+            break;
+          case "customers":
+            content.innerHTML = renderCustomers();
+            break;
+        }
       }
-      
-      // Redirect to Shopify OAuth
-      window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
-    }
 
-    // Load dashboard on page load
-    loadDashboard();
-  </script>
-</body>
+      function renderOverview() {
+        if (!shopData) {
+          return renderConnectShopify();
+        }
+
+        return `
+        <div class="welcome">
+          <h1>Welcome back, ${userData.companyName}</h1>
+          <p>Here's what's happening with your store today</p>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="ai-banner">
+          <div class="ai-banner-header">
+            <div class="ai-icon">🤖</div>
+            <h2>AI Insights & Recommendations</h2>
+          </div>
+          <div class="insight-item">
+            <span class="insight-priority priority-high">HIGH PRIORITY</span>
+            <strong>15 products are out of stock</strong> — Restock these items to avoid lost sales. Top priority: Blue Coffee Mug (avg 12 sales/week).
+          </div>
+          <div class="insight-item">
+            <span class="insight-priority priority-medium">OPPORTUNITY</span>
+            <strong>Weekend sales are 34% higher</strong> — Consider running promotions Thursday-Friday to capture early weekend shoppers.
+          </div>
+          <div class="insight-item">
+            <span class="insight-priority priority-low">INSIGHT</span>
+            <strong>Repeat customers spend 2.3x more</strong> — Launch a loyalty program to increase customer lifetime value.
+          </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid-4">
+          <div class="card">
+            <h3>Revenue (30 days)</h3>
+            <div class="stat-large">$12,450</div>
+            <div class="stat-change positive">
+              <span>↑</span>
+              <span>18.2% vs last month</span>
+            </div>
+            <div class="stat-label">Target: $15,000</div>
+          </div>
+
+          <div class="card">
+            <h3>Orders Today</h3>
+            <div class="stat-large">23</div>
+            <div class="stat-change positive">
+              <span>↑</span>
+              <span>12% vs yesterday</span>
+            </div>
+            <div class="stat-label">Avg: 19 orders/day</div>
+          </div>
+
+          <div class="card">
+            <h3>Conversion Rate</h3>
+            <div class="stat-large">3.8%</div>
+            <div class="stat-change negative">
+              <span>↓</span>
+              <span>0.4% vs last week</span>
+            </div>
+            <div class="stat-label">Industry avg: 2.5%</div>
+          </div>
+
+          <div class="card">
+            <h3>Low Stock Items</h3>
+            <div class="stat-large">8</div>
+            <div class="stat-change negative">
+              <span>⚠</span>
+              <span>Action needed</span>
+            </div>
+            <div class="stat-label">15 out of stock</div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-2">
+          <div class="card">
+            <h3>Sales Trend (7 days)</h3>
+            <div class="chart-container">
+              📊 Revenue chart (integration in progress)
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Top Products</h3>
+            <div class="chart-container">
+              📦 Product performance chart (integration in progress)
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Center & Chat -->
+        <div class="grid-2">
+          <div class="card">
+            <h3>Action Center</h3>
+            <ul class="action-list">
+              <li class="action-item">
+                <div class="action-icon">📦</div>
+                <div class="action-content">
+                  <div class="action-title">Restock 15 out-of-stock items</div>
+                  <div class="action-desc">Preventing $800/week in lost revenue</div>
+                </div>
+              </li>
+              <li class="action-item">
+                <div class="action-icon">💰</div>
+                <div class="action-content">
+                  <div class="action-title">Review 8 low-stock products</div>
+                  <div class="action-desc">Set reorder points to avoid stockouts</div>
+                </div>
+              </li>
+              <li class="action-item">
+                <div class="action-icon">📧</div>
+                <div class="action-content">
+                  <div class="action-title">Follow up with 12 abandoned carts</div>
+                  <div class="action-desc">Potential $450 in recoverable revenue</div>
+                </div>
+              </li>
+              <li class="action-item">
+                <div class="action-icon">⭐</div>
+                <div class="action-content">
+                  <div class="action-title">Request reviews from recent buyers</div>
+                  <div class="action-desc">23 satisfied customers this week</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Ask Aervo Anything</h3>
+            <div class="chat-container">
+              <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">
+                  👋 Hi! I'm your AI co-pilot. Ask me about your sales, inventory, customers, or anything else about your store.
+                </div>
+              </div>
+              <div class="chat-input-wrapper">
+                <input 
+                  type="text" 
+                  class="chat-input" 
+                  id="chatInput" 
+                  placeholder="e.g., What were my top products this week?"
+                />
+                <button class="btn-send" onclick="sendMessage()">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      }
+
+      function renderAnalytics() {
+        return `
+        <div class="welcome">
+          <h1>Sales Analytics</h1>
+          <p>Deep dive into your revenue, orders, and performance trends</p>
+        </div>
+
+        <div class="grid-4">
+          <div class="card">
+            <h3>Total Revenue</h3>
+            <div class="stat-large">$45,280</div>
+            <div class="stat-change positive">↑ 24% vs last month</div>
+          </div>
+          <div class="card">
+            <h3>Average Order Value</h3>
+            <div class="stat-large">$87.50</div>
+            <div class="stat-change positive">↑ $5.20</div>
+          </div>
+          <div class="card">
+            <h3>Total Orders</h3>
+            <div class="stat-large">518</div>
+            <div class="stat-change positive">↑ 12%</div>
+          </div>
+          <div class="card">
+            <h3>Return Rate</h3>
+            <div class="stat-large">2.4%</div>
+            <div class="stat-change positive">↓ 0.3%</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3>Revenue by Day</h3>
+          <div class="chart-container" style="height: 300px;">
+            📈 Time series chart (Shopify data integration in progress)
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3>Recent Orders</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#1234</td>
+                <td>John Smith</td>
+                <td>Today, 2:15 PM</td>
+                <td>3</td>
+                <td>$125.00</td>
+                <td><span class="stat-change positive" style="margin: 0;">Paid</span></td>
+              </tr>
+              <tr>
+                <td>#1233</td>
+                <td>Sarah Johnson</td>
+                <td>Today, 1:45 PM</td>
+                <td>1</td>
+                <td>$45.00</td>
+                <td><span class="stat-change positive" style="margin: 0;">Paid</span></td>
+              </tr>
+              <tr>
+                <td>#1232</td>
+                <td>Mike Davis</td>
+                <td>Today, 11:30 AM</td>
+                <td>5</td>
+                <td>$215.00</td>
+                <td><span class="stat-change positive" style="margin: 0;">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="text-align: center; margin-top: 16px; color: #64748b; font-size: 13px;">
+            Real Shopify orders will appear here once API integration is complete
+          </p>
+        </div>
+      `;
+      }
+
+      function renderInventory() {
+        return `
+        <div class="welcome">
+          <h1>Inventory Health</h1>
+          <p>Monitor stock levels and get smart reorder recommendations</p>
+        </div>
+
+        <div class="grid-4">
+          <div class="card">
+            <h3>Total Products</h3>
+            <div class="stat-large">247</div>
+            <div class="stat-label">156 variants</div>
+          </div>
+          <div class="card">
+            <h3>Out of Stock</h3>
+            <div class="stat-large" style="color: #ef4444;">15</div>
+            <div class="stat-change negative">⚠ Needs attention</div>
+          </div>
+          <div class="card">
+            <h3>Low Stock</h3>
+            <div class="stat-large" style="color: #f59e0b;">8</div>
+            <div class="stat-label">Below reorder point</div>
+          </div>
+          <div class="card">
+            <h3>Inventory Value</h3>
+            <div class="stat-large">$38.5K</div>
+            <div class="stat-label">At cost</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3>Products Needing Attention</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Stock</th>
+                <th>Avg Sales/Week</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Blue Coffee Mug</td>
+                <td>MUG-BLU-001</td>
+                <td style="color: #ef4444;">0</td>
+                <td>12</td>
+                <td><span class="insight-priority priority-high">Out of Stock</span></td>
+                <td>Reorder 50 units</td>
+              </tr>
+              <tr>
+                <td>Ceramic Teapot</td>
+                <td>POT-CER-003</td>
+                <td style="color: #f59e0b;">5</td>
+                <td>8</td>
+                <td><span class="insight-priority priority-medium">Low Stock</span></td>
+                <td>Reorder 25 units</td>
+              </tr>
+              <tr>
+                <td>French Press</td>
+                <td>FRP-BLK-002</td>
+                <td style="color: #ef4444;">0</td>
+                <td>15</td>
+                <td><span class="insight-priority priority-high">Out of Stock</span></td>
+                <td>Reorder 60 units</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="text-align: center; margin-top: 16px; color: #64748b; font-size: 13px;">
+            Real Shopify inventory will sync here once API integration is complete
+          </p>
+        </div>
+      `;
+      }
+
+      function renderCustomers() {
+        return `
+        <div class="welcome">
+          <h1>Customer Intelligence</h1>
+          <p>Understand your customers and increase lifetime value</p>
+        </div>
+
+        <div class="grid-4">
+          <div class="card">
+            <h3>Total Customers</h3>
+            <div class="stat-large">1,234</div>
+            <div class="stat-change positive">↑ 45 this month</div>
+          </div>
+          <div class="card">
+            <h3>Repeat Customers</h3>
+            <div class="stat-large">28%</div>
+            <div class="stat-label">Industry avg: 22%</div>
+          </div>
+          <div class="card">
+            <h3>Avg Lifetime Value</h3>
+            <div class="stat-large">$320</div>
+            <div class="stat-change positive">↑ $28</div>
+          </div>
+          <div class="card">
+            <h3>Retention Rate</h3>
+            <div class="stat-large">65%</div>
+            <div class="stat-change positive">↑ 3%</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3>Customer Segments</h3>
+          <div class="chart-container" style="height: 300px;">
+            👥 Customer segment analysis (integration in progress)
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3>Top Customers</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Orders</th>
+                <th>Total Spent</th>
+                <th>Last Order</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Emily Chen</td>
+                <td>emily@example.com</td>
+                <td>12</td>
+                <td>$1,240</td>
+                <td>2 days ago</td>
+              </tr>
+              <tr>
+                <td>David Park</td>
+                <td>david@example.com</td>
+                <td>8</td>
+                <td>$890</td>
+                <td>5 days ago</td>
+              </tr>
+              <tr>
+                <td>Lisa Wong</td>
+                <td>lisa@example.com</td>
+                <td>15</td>
+                <td>$1,580</td>
+                <td>1 week ago</td>
+              </tr>
+            </tbody>
+          </table>
+          <p style="text-align: center; margin-top: 16px; color: #64748b; font-size: 13px;">
+            Real customer data will appear here once API integration is complete
+          </p>
+        </div>
+      `;
+      }
+
+      function renderConnectShopify() {
+        return `
+        <div class="card connect-cta">
+          <h2>Connect Your Shopify Store</h2>
+          <p>
+            Aervo needs access to your Shopify data to provide AI-powered insights,<br>
+            sales analytics, inventory tracking, and smart recommendations.
+          </p>
+          <button class="btn-primary" onclick="connectShopify()">
+            🛍️ Connect Shopify Store
+          </button>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3 style="margin-bottom: 16px; color: #e5ecff;">What You'll Get:</h3>
+          <ul class="action-list">
+            <li class="action-item">
+              <div class="action-icon">🤖</div>
+              <div class="action-content">
+                <div class="action-title">AI-Powered Insights</div>
+                <div class="action-desc">Smart recommendations to grow your business</div>
+              </div>
+            </li>
+            <li class="action-item">
+              <div class="action-icon">📊</div>
+              <div class="action-content">
+                <div class="action-title">Real-Time Analytics</div>
+                <div class="action-desc">Track sales, revenue, and performance</div>
+              </div>
+            </li>
+            <li class="action-item">
+              <div class="action-icon">📦</div>
+              <div class="action-content">
+                <div class="action-title">Inventory Management</div>
+                <div class="action-desc">Never run out of your best-sellers</div>
+              </div>
+            </li>
+            <li class="action-item">
+              <div class="action-icon">👥</div>
+              <div class="action-content">
+                <div class="action-title">Customer Intelligence</div>
+                <div class="action-desc">Understand and grow your customer base</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      `;
+      }
+
+      function connectShopify() {
+        const shop = prompt(
+          "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
+        );
+        if (!shop) return;
+
+        const normalized = shop.trim().toLowerCase();
+        if (!normalized.includes(".myshopify.com")) {
+          alert("Please enter a valid Shopify domain ending in .myshopify.com");
+          return;
+        }
+
+        window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const messages = document.getElementById("chatMessages");
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-message user";
+        userMsg.textContent = message;
+        messages.appendChild(userMsg);
+
+        // Clear input
+        input.value = "";
+
+        // Simulate AI response
+        setTimeout(() => {
+          const aiMsg = document.createElement("div");
+          aiMsg.className = "chat-message ai";
+          aiMsg.textContent =
+            "AI chat integration coming soon! This will connect to Claude API for intelligent responses about your store data.";
+          messages.appendChild(aiMsg);
+          messages.scrollTop = messages.scrollHeight;
+        }, 500);
+
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      // Enter key to send
+      document.addEventListener("DOMContentLoaded", () => {
+        const chatInput = document.getElementById("chatInput");
+        if (chatInput) {
+          chatInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+          });
+        }
+      });
+
+      // Load dashboard
+      loadUserData();
+    </script>
+  </body>
 </html>
