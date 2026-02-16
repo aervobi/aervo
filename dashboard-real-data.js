@@ -2,8 +2,7 @@
 
 // ============= REAL SHOPIFY DATA FETCHING =============
 
-const BACKEND_URL = 'https://aervo-backend.onrender.com';
-const token = localStorage.getItem('aervo_token');
+// Note: BACKEND_URL and token are already defined in dashboard.html
 
 let realShopifyData = {
   overview: null,
