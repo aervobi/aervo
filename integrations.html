@@ -13,36 +13,35 @@
       }
       body {
         font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        background: #020617;
-        color: #e5e7eb;
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
+        color: #1a202c;
       }
+
       .nav {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        height: 64px;
+        height: 70px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 32px;
-        background: rgba(5, 8, 23, 0.96);
-        backdrop-filter: blur(14px);
+        padding: 0 40px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
         z-index: 100;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
       }
       .nav-brand {
-        font-weight: 600;
-        letter-spacing: 4px;
-        font-size: 14px;
-        color: #8fbfff;
-        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-size: 18px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       .nav-right {
         display: flex;
@@ -50,232 +49,354 @@
         align-items: center;
       }
       .btn {
-        padding: 8px 16px;
-        border-radius: 999px;
-        border: 1px solid #3a4a7c;
-        background: transparent;
-        color: #dfe7ff;
-        font-size: 12px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
         text-decoration: none;
         display: inline-block;
       }
-      .btn:hover {
-        background: #1a2237;
-        border-color: #4a5a8c;
+      .btn-secondary {
+        background: #f7fafc;
+        color: #4a5568;
       }
-      .btn-primary {
-        background: linear-gradient(135deg, #3b82f6, #60a5fa);
-        border: none;
-        color: white;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-      }
-      .btn-primary:hover {
+      .btn-secondary:hover {
+        background: #edf2f7;
         transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-      }
-      .container {
-        padding: 88px 32px 48px;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .header {
-        margin-bottom: 40px;
-      }
-      .header h1 {
-        font-size: 32px;
-        margin-bottom: 8px;
-      }
-      .header p {
-        color: #9ca7d6;
-        font-size: 15px;
       }
 
-      .section {
-        margin-bottom: 48px;
+      .container {
+        padding: 110px 40px 60px;
+        max-width: 1400px;
+        margin: 0 auto;
       }
-      .section h2 {
-        font-size: 20px;
-        margin-bottom: 20px;
-        color: #e5ecff;
+
+      .header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+      .header h1 {
+        font-size: 48px;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 12px;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-title::before {
+        content: "";
+        width: 4px;
+        height: 16px;
+        background: white;
+        border-radius: 2px;
       }
 
       .integrations-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 24px;
+        margin-bottom: 50px;
       }
 
       .integration-card {
-        background: radial-gradient(circle at top left, #1e293b, #0f172a);
-        border-radius: 16px;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        padding: 24px;
-        transition: all 0.3s ease;
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
+        overflow: hidden;
+      }
+      .integration-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: opacity 0.3s;
       }
       .integration-card:hover {
-        border-color: rgba(96, 165, 250, 0.5);
-        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
       }
-      .integration-card.connected {
-        border-color: rgba(34, 197, 94, 0.5);
+      .integration-card:hover::before {
+        opacity: 1;
+      }
+      .integration-card.connected::before {
+        opacity: 1;
       }
 
       .integration-header {
         display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 16px;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 24px;
       }
       .integration-icon {
-        width: 48px;
-        height: 48px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #f7fafc, #edf2f7);
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        overflow: hidden;
+        font-size: 32px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       }
       .integration-icon img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        padding: 8px;
+        padding: 12px;
       }
+
       .integration-info {
         flex: 1;
       }
       .integration-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: #e5ecff;
-        margin-bottom: 4px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 6px;
       }
       .integration-desc {
-        font-size: 13px;
-        color: #9ca7d6;
+        font-size: 15px;
+        color: #718096;
+        line-height: 1.5;
       }
 
       .integration-status {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 11px;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
         font-weight: 600;
+        margin-bottom: 20px;
       }
       .status-connected {
-        background: rgba(34, 197, 94, 0.15);
-        color: #6ee7b7;
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        color: white;
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
       }
       .status-available {
-        background: rgba(148, 163, 184, 0.15);
-        color: #cbd5e1;
+        background: #edf2f7;
+        color: #718096;
       }
 
       .connected-stores {
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid rgba(148, 163, 184, 0.1);
+        border-top: 2px solid #f7fafc;
+        padding-top: 20px;
       }
       .store-item {
+        background: #f7fafc;
+        padding: 16px 20px;
+        border-radius: 12px;
+        margin-bottom: 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 12px;
-        background: rgba(15, 23, 42, 0.5);
-        border-radius: 8px;
-        margin-bottom: 8px;
+        transition: background 0.2s;
+      }
+      .store-item:hover {
+        background: #edf2f7;
+      }
+      .store-info {
+        flex: 1;
       }
       .store-name {
-        font-size: 13px;
-        color: #e5ecff;
+        font-size: 15px;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
       }
       .store-origin {
-        font-size: 11px;
-        color: #64748b;
+        font-size: 13px;
+        color: #718096;
       }
       .store-actions {
         display: flex;
-        gap: 8px;
+        gap: 10px;
       }
+
       .btn-small {
-        padding: 4px 10px;
-        font-size: 11px;
-        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 13px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+      }
+      .btn-use {
+        background: #edf2f7;
+        color: #4a5568;
+      }
+      .btn-use:hover {
+        background: #e2e8f0;
       }
       .btn-danger {
-        background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: #fca5a5;
+        background: #fff5f5;
+        color: #e53e3e;
+        border: 1px solid #feb2b2;
       }
       .btn-danger:hover {
-        background: rgba(239, 68, 68, 0.2);
+        background: #fed7d7;
+      }
+
+      .btn-connect {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 16px;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        transition: all 0.2s;
+      }
+      .btn-connect:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-add-store {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 2px dashed #cbd5e0;
+        background: transparent;
+        color: #667eea;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: all 0.2s;
+      }
+      .btn-add-store:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.05);
       }
 
       .empty-state {
         text-align: center;
-        padding: 60px 20px;
+        padding: 80px 20px;
       }
       .empty-state-icon {
-        font-size: 48px;
-        margin-bottom: 16px;
-        opacity: 0.3;
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.4;
       }
       .empty-state p {
-        color: #64748b;
-        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 16px;
       }
 
       .loading {
         text-align: center;
-        padding: 40px;
+        padding: 60px;
       }
       .spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid rgba(148, 163, 184, 0.2);
-        border-top-color: #60a5fa;
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-top-color: white;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
-        margin: 0 auto 16px;
+        margin: 0 auto 20px;
       }
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
       }
+      .loading-text {
+        color: white;
+        font-size: 16px;
+      }
 
       @media (max-width: 768px) {
         .nav {
-          padding: 0 16px;
+          padding: 0 20px;
+          height: 60px;
+        }
+        .nav-brand {
+          font-size: 16px;
         }
         .container {
-          padding: 80px 16px 32px;
+          padding: 90px 20px 40px;
         }
         .header h1 {
-          font-size: 24px;
+          font-size: 36px;
+        }
+        .header p {
+          font-size: 16px;
         }
         .integrations-grid {
           grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .integration-card {
+          padding: 24px;
+        }
+        .integration-header {
+          gap: 16px;
+        }
+        .integration-icon {
+          width: 56px;
+          height: 56px;
+        }
+        .store-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .store-actions {
+          width: 100%;
+          justify-content: stretch;
+        }
+        .btn-small {
+          flex: 1;
         }
       }
     </style>
   </head>
   <body>
     <nav class="nav">
-      <div class="nav-brand" onclick="window.location.href = 'dashboard.html'">
-        AERVO
-      </div>
+      <div class="nav-brand">AERVO</div>
       <div class="nav-right">
-        <a href="dashboard.html" class="btn">← Back to Dashboard</a>
-        <button class="btn" id="logoutBtn">Log out</button>
+        <a href="dashboard.html" class="btn btn-secondary">← Dashboard</a>
       </div>
     </nav>
 
@@ -288,7 +409,7 @@
       <div id="content">
         <div class="loading">
           <div class="spinner"></div>
-          <div>Loading integrations...</div>
+          <div class="loading-text">Loading your integrations...</div>
         </div>
       </div>
     </div>
@@ -301,11 +422,6 @@
 
       let availableIntegrations = [];
       let connectedStores = [];
-
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("aervo_token");
-        window.location.href = "login.html";
-      });
 
       async function loadIntegrations() {
         try {
@@ -348,21 +464,19 @@
 
         if (connected.length > 0) {
           html += `
-            <div class="section">
-              <h2>Connected (${connected.length})</h2>
-              <div class="integrations-grid">
-                ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
-              </div>
+            <div class="section-title">Connected (${connected.length})</div>
+            <div class="integrations-grid">
+              ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
             </div>`;
         }
 
-        html += `
-          <div class="section">
-            <h2>Available Integrations (${available.length})</h2>
+        if (available.length > 0) {
+          html += `
+            <div class="section-title">Available Integrations</div>
             <div class="integrations-grid">
               ${available.map((i) => renderIntegrationCard(i, false)).join("")}
-            </div>
-          </div>`;
+            </div>`;
+        }
 
         document.getElementById("content").innerHTML = html;
       }
@@ -389,7 +503,7 @@
             </div>
             
             <div class="integration-status ${isConnected ? "status-connected" : "status-available"}">
-              ${isConnected ? "● Connected" : "Available"}
+              ${isConnected ? "✓ Connected" : "Not Connected"}
             </div>
             
             ${isConnected ? renderConnectedStores(stores, integration.name) : renderConnectButton(integration.name)}
@@ -403,23 +517,23 @@
               .map(
                 (store) => `
               <div class="store-item">
-                <div>
+                <div class="store-info">
                   <div class="store-name">${store.store_name}</div>
                   <div class="store-origin">${store.store_origin || ""}</div>
                 </div>
                 <div class="store-actions">
-                  <button class="btn btn-small" onclick="setActiveStore(${store.id})">
-                    ${store.is_active ? "✓ Active" : "Use"}
+                  <button class="btn-small ${store.is_active ? "btn-active" : "btn-use"}" onclick="setActiveStore(${store.id})" ${store.is_active ? "disabled" : ""}>
+                    ${store.is_active ? "✓ Active" : "Use This"}
                   </button>
-                  <button class="btn btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
-                    Disconnect
+                  <button class="btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
+                    Remove
                   </button>
                 </div>
               </div>
             `,
               )
               .join("")}
-            <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="connectIntegration('${integrationName}')">
+            <button class="btn-add-store" onclick="connectIntegration('${integrationName}')">
               + Add Another ${integrationName === "shopify" ? "Store" : "Location"}
             </button>
           </div>`;
@@ -427,8 +541,8 @@
 
       function renderConnectButton(integrationName) {
         return `
-          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="connectIntegration('${integrationName}')">
-            Connect ${integrationName === "shopify" ? "Shopify Store" : integrationName === "square" ? "Square POS" : "Account"}
+          <button class="btn-connect" onclick="connectIntegration('${integrationName}')">
+            Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : "Account"}
           </button>`;
       }
 
@@ -481,7 +595,7 @@
 
           if (res.ok) {
             alert(
-              "Active store updated! Dashboard will now show this store's data.",
+              "✓ Active store updated! Your dashboard will now show this store's data.",
             );
             loadIntegrations();
           } else {
@@ -493,7 +607,11 @@
       }
 
       async function disconnectStore(storeId, storeName) {
-        if (!confirm(`Are you sure you want to disconnect "${storeName}"?`))
+        if (
+          !confirm(
+            `Are you sure you want to disconnect "${storeName}"?\n\nThis will remove access to this store's data.`,
+          )
+        )
           return;
 
         try {
@@ -506,7 +624,7 @@
           );
 
           if (res.ok) {
-            alert("Store disconnected successfully");
+            alert("✓ Store disconnected successfully");
             loadIntegrations();
           } else {
             alert("Failed to disconnect store");
