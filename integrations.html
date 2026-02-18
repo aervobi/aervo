@@ -392,235 +392,232 @@
     </div>
 
     <script>
-            const BACKEND_URL = "https://aervo-backend.onrender.com";
-            const token = localStorage.getItem("aervo_token");
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
 
-            if (!token) window.location.href = "login.html";
+      if (!token) window.location.href = "login.html";
 
-            let availableIntegrations = [];
-            let connectedStores = [];
+      let availableIntegrations = [];
+      let connectedStores = [];
 
-            async function loadIntegrations() {
-              try {
-                const [integrationsRes, storesRes] = await Promise.all([
-                  fetch(`${BACKEND_URL}/api/integrations`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  }),
-                  fetch(`${BACKEND_URL}/api/integrations/connected`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  }),
-                ]);
-
-                const integrationsData = await integrationsRes.json();
-                const storesData = await storesRes.json();
-
-                if (integrationsData.success)
-                  availableIntegrations = integrationsData.integrations;
-                if (storesData.success) connectedStores = storesData.stores;
-
-                renderIntegrations();
-              } catch (err) {
-                console.error("Load error:", err);
-                document.getElementById("content").innerHTML = `
-                  <div class="empty-state">
-                    <div class="empty-state-icon">⚠️</div>
-                    <p>Failed to load integrations. Please refresh the page.</p>
-                  </div>`;
-              }
-            }
-
-            function renderIntegrations() {
-              const connected = availableIntegrations.filter((i) =>
-                connectedStores.some((s) => s.integration_name === i.name),
-              );
-              const available = availableIntegrations.filter(
-                (i) => !connectedStores.some((s) => s.integration_name === i.name),
-              );
-
-              let html = "";
-
-              if (connected.length > 0) {
-                html += `
-                  <div class="section">
-                    <div class="section-title">Connected (${connected.length})</div>
-                    <div class="integrations-grid">
-                      ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
-                    </div>
-                  </div>`;
-              }
-
-              if (available.length > 0) {
-                html += `
-                  <div class="section">
-                    <div class="section-title">Available Integrations</div>
-                    <div class="integrations-grid">
-                      ${available.map((i) => renderIntegrationCard(i, false)).join("")}
-                    </div>
-                  </div>`;
-              }
-
-              document.getElementById("content").innerHTML = html;
-            }
-
-            function renderIntegrationCard(integration, isConnected) {
-              const stores = connectedStores.filter(
-                (s) => s.integration_name === integration.name,
-              );
-
-              return `
-                <div class="integration-card ${isConnected ? "connected" : ""}">
-                  <div class="integration-header">
-                    <div class="integration-icon">
-                      ${
-                        integration.icon_url
-                          ? `<img src="${integration.icon_url}" alt="${integration.display_name}">`
-                          : getIntegrationEmoji(integration.name)
-                      }
-                    </div>
-                    <div class="integration-info">
-                      <div class="integration-name">${integration.display_name}</div>
-                      <div class="integration-desc">${integration.description}</div>
-                    </div>
-                  </div>
-
-                  <div class="integration-status ${isConnected ? "status-connected" : "status-available"}">
-                    ${isConnected ? "● Connected" : "Available"}
-                  </div>
-
-                  ${isConnected ? renderConnectedStores(stores, integration.name) : renderConnectButton(integration.name)}
-                </div>`;
-            }
-
-            function renderConnectedStores(stores, integrationName) {
-              return `
-                <div class="connected-stores">
-                  ${stores
-                    .map(
-                      (store) => `
-                    <div class="store-item">
-                      <div class="store-info">
-                        <div class="store-name">${store.store_name}</div>
-                        <div class="store-origin">${store.store_origin || ""}</div>
-                      </div>
-                      <div class="store-actions">
-                        <button class="btn-small ${store.is_active ? "btn-active" : "btn-use"}" onclick="setActiveStore(${store.id})" ${store.is_active ? "disabled" : ""}>
-                          ${store.is_active ? "✓ Active" : "Use This"}
-                        </button>
-                        <button class="btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  `,
-                    )
-                    .join("")}
-                  <button class="btn-add-store" onclick="connectIntegration('${integrationName}')">
-                    + Add Another ${integrationName === "shopify" ? "Store" : "Location"}
-                  </button>
-                </div>`;
-            }
-
-            function renderConnectButton(integrationName) {
-              return `
-                <button class="btn-connect" onclick="connectIntegration('${integrationName}')">
-                  Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : "Account"}
-                </button>`;
-            }
-
-            function getIntegrationEmoji(name) {
-              const emojis = {
-                shopify: "🛍️",
-                square: "💳",
-                stripe: "💰",
-                quickbooks: "📊",
-              };
-              return emojis[name] || "🔌";
-            }
-
-           function getUserIdFromToken(req) {
+      async function loadIntegrations() {
         try {
-          // Try to get token from Authorization header first
-          let authHeader = req.headers["authorization"];
-          let token = authHeader && authHeader.split(" ")[1];
+          const [integrationsRes, storesRes] = await Promise.all([
+            fetch(`${BACKEND_URL}/api/integrations`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${BACKEND_URL}/api/integrations/connected`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
 
-          // If not in header, check query params (for OAuth flow)
-          if (!token) {
-            token = req.query.token;
-          }
+          const integrationsData = await integrationsRes.json();
+          const storesData = await storesRes.json();
 
-          if (!token) return null;
-          const decoded = jwt.verify(token, JWT_SECRET);
-          return decoded.userId || null;
-        } catch {
-          return null;
+          if (integrationsData.success)
+            availableIntegrations = integrationsData.integrations;
+          if (storesData.success) connectedStores = storesData.stores;
+
+          renderIntegrations();
+        } catch (err) {
+          console.error("Load error:", err);
+          document.getElementById("content").innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⚠️</div>
+              <p>Failed to load integrations. Please refresh the page.</p>
+            </div>`;
         }
       }
-                window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
-              } else if (name === "square") {
-                alert(
-                  "Square integration coming soon! We're building the OAuth flow.",
-                );
-              } else {
-                alert(`${name} integration coming soon!`);
-              }
-            }
 
-            async function setActiveStore(storeId) {
-              try {
-                const res = await fetch(
-                  `${BACKEND_URL}/api/integrations/set-active`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({ storeId }),
-                  },
-                );
+      function renderIntegrations() {
+        const connected = availableIntegrations.filter((i) =>
+          connectedStores.some((s) => s.integration_name === i.name),
+        );
+        const available = availableIntegrations.filter(
+          (i) => !connectedStores.some((s) => s.integration_name === i.name),
+        );
 
-                if (res.ok) {
-                  alert(
-                    "✓ Active store updated! Your dashboard will now show this store's data.",
-                  );
-                  loadIntegrations();
-                } else {
-                  alert("Failed to update active store");
+        let html = "";
+
+        if (connected.length > 0) {
+          html += `
+            <div class="section">
+              <div class="section-title">Connected (${connected.length})</div>
+              <div class="integrations-grid">
+                ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
+              </div>
+            </div>`;
+        }
+
+        if (available.length > 0) {
+          html += `
+            <div class="section">
+              <div class="section-title">Available Integrations</div>
+              <div class="integrations-grid">
+                ${available.map((i) => renderIntegrationCard(i, false)).join("")}
+              </div>
+            </div>`;
+        }
+
+        document.getElementById("content").innerHTML = html;
+      }
+
+      function renderIntegrationCard(integration, isConnected) {
+        const stores = connectedStores.filter(
+          (s) => s.integration_name === integration.name,
+        );
+
+        return `
+          <div class="integration-card ${isConnected ? "connected" : ""}">
+            <div class="integration-header">
+              <div class="integration-icon">
+                ${
+                  integration.icon_url
+                    ? `<img src="${integration.icon_url}" alt="${integration.display_name}">`
+                    : getIntegrationEmoji(integration.name)
                 }
-              } catch (err) {
-                alert("Error updating store");
-              }
-            }
+              </div>
+              <div class="integration-info">
+                <div class="integration-name">${integration.display_name}</div>
+                <div class="integration-desc">${integration.description}</div>
+              </div>
+            </div>
+            
+            <div class="integration-status ${isConnected ? "status-connected" : "status-available"}">
+              ${isConnected ? "● Connected" : "Available"}
+            </div>
+            
+            ${isConnected ? renderConnectedStores(stores, integration.name) : renderConnectButton(integration.name)}
+          </div>`;
+      }
 
-            async function disconnectStore(storeId, storeName) {
-              if (
-                !confirm(
-                  `Are you sure you want to disconnect "${storeName}"?\n\nThis will remove access to this store's data.`,
-                )
+      function renderConnectedStores(stores, integrationName) {
+        return `
+          <div class="connected-stores">
+            ${stores
+              .map(
+                (store) => `
+              <div class="store-item">
+                <div class="store-info">
+                  <div class="store-name">${store.store_name}</div>
+                  <div class="store-origin">${store.store_origin || ""}</div>
+                </div>
+                <div class="store-actions">
+                  <button class="btn-small ${store.is_active ? "btn-active" : "btn-use"}" onclick="setActiveStore(${store.id})" ${store.is_active ? "disabled" : ""}>
+                    ${store.is_active ? "✓ Active" : "Use This"}
+                  </button>
+                  <button class="btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
+                    Remove
+                  </button>
+                </div>
+              </div>
+            `,
               )
-                return;
+              .join("")}
+            <button class="btn-add-store" onclick="connectIntegration('${integrationName}')">
+              + Add Another ${integrationName === "shopify" ? "Store" : "Location"}
+            </button>
+          </div>`;
+      }
 
-              try {
-                const res = await fetch(
-                  `${BACKEND_URL}/api/integrations/disconnect/${storeId}`,
-                  {
-                    method: "DELETE",
-                    headers: { Authorization: `Bearer ${token}` },
-                  },
-                );
+      function renderConnectButton(integrationName) {
+        return `
+          <button class="btn-connect" onclick="connectIntegration('${integrationName}')">
+            Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : "Account"}
+          </button>`;
+      }
 
-                if (res.ok) {
-                  alert("✓ Store disconnected successfully");
-                  loadIntegrations();
-                } else {
-                  alert("Failed to disconnect store");
-                }
-              } catch (err) {
-                alert("Error disconnecting store");
-              }
-            }
+      function getIntegrationEmoji(name) {
+        const emojis = {
+          shopify: "🛍️",
+          square: "💳",
+          stripe: "💰",
+          quickbooks: "📊",
+        };
+        return emojis[name] || "🔌";
+      }
 
+      function connectIntegration(name) {
+        if (name === "shopify") {
+          const shop = prompt(
+            "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
+          );
+          if (!shop) return;
+          const normalized = shop.trim().toLowerCase();
+          if (!normalized.includes(".myshopify.com")) {
+            alert(
+              "Please enter a valid Shopify domain ending in .myshopify.com",
+            );
+            return;
+          }
+          // Pass the auth token in the URL so backend can identify the user
+          const token = localStorage.getItem("aervo_token");
+          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
+        } else if (name === "square") {
+          alert(
+            "Square integration coming soon! We're building the OAuth flow.",
+          );
+        } else {
+          alert(`${name} integration coming soon!`);
+        }
+      }
+
+      async function setActiveStore(storeId) {
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/integrations/set-active`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ storeId }),
+            },
+          );
+
+          if (res.ok) {
+            alert(
+              "✓ Active store updated! Your dashboard will now show this store's data.",
+            );
             loadIntegrations();
+          } else {
+            alert("Failed to update active store");
+          }
+        } catch (err) {
+          alert("Error updating store");
+        }
+      }
+
+      async function disconnectStore(storeId, storeName) {
+        if (
+          !confirm(
+            `Are you sure you want to disconnect "${storeName}"?\n\nThis will remove access to this store's data.`,
+          )
+        )
+          return;
+
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/integrations/disconnect/${storeId}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+
+          if (res.ok) {
+            alert("✓ Store disconnected successfully");
+            loadIntegrations();
+          } else {
+            alert("Failed to disconnect store");
+          }
+        } catch (err) {
+          alert("Error disconnecting store");
+        }
+      }
+
+      loadIntegrations();
     </script>
   </body>
 </html>
