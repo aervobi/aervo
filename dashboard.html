@@ -669,10 +669,17 @@
               <h3>Ask Aervo Anything</h3>
               <div class="chat-container">
                 <div class="chat-messages" id="chatMessages">
-                  <div class="chat-message ai">👋 Hi! I'm your AI co-pilot. Ask me about your sales, inventory, customers, or anything else about your store.</div>
+                  <div class="chat-message ai">
+                    👋 Hi! I'm <strong>Aervo</strong>, your AI business co-pilot. I have full access to your store's real data — ask me anything!<br><br>
+                    Try asking:<br>
+                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">What are my top 5 products in the last 180 days?</span><br>
+                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Should I run a sale? If so, what discount would increase sales?</span><br>
+                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Which products are at risk of running out of stock?</span><br>
+                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">How is my revenue trending month over month?</span>
+                  </div>
                 </div>
                 <div class="chat-input-wrapper">
-                  <input type="text" class="chat-input" id="chatInput" placeholder="e.g. What were my top products this week?" />
+                  <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything about your store..." />
                   <button class="btn-send" onclick="sendMessage()">Send</button>
                 </div>
               </div>
@@ -960,24 +967,71 @@
       }
 
       // ============= CHAT =============
-      function sendMessage() {
+      let isAIThinking = false;
+
+      async function sendMessage() {
+        if (isAIThinking) return;
         const input = document.getElementById("chatInput");
         const messages = document.getElementById("chatMessages");
         const message = input.value.trim();
         if (!message) return;
+
         const userMsg = document.createElement("div");
         userMsg.className = "chat-message user";
         userMsg.textContent = message;
         messages.appendChild(userMsg);
         input.value = "";
-        setTimeout(() => {
-          const aiMsg = document.createElement("div");
-          aiMsg.className = "chat-message ai";
-          aiMsg.textContent =
-            "AI chat coming soon! This will connect to Claude API for intelligent responses about your store data.";
-          messages.appendChild(aiMsg);
-          messages.scrollTop = messages.scrollHeight;
-        }, 500);
+        messages.scrollTop = messages.scrollHeight;
+
+        isAIThinking = true;
+        const typingEl = document.createElement("div");
+        typingEl.className = "chat-message ai";
+        typingEl.id = "typingIndicator";
+        typingEl.innerHTML =
+          "<em style=\'color:#64748b\'>Aervo is thinking...</em>";
+        messages.appendChild(typingEl);
+        messages.scrollTop = messages.scrollHeight;
+        input.disabled = true;
+        document.querySelector(".btn-send").disabled = true;
+
+        try {
+          const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              message,
+              shopOrigin: shopData ? shopData.shopOrigin : null,
+            }),
+          });
+          const data = await response.json();
+          document.getElementById("typingIndicator")?.remove();
+          if (data.success) {
+            const aiMsg = document.createElement("div");
+            aiMsg.className = "chat-message ai";
+            aiMsg.innerHTML = data.reply
+              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+              .replace(/\n\n/g, "<br><br>")
+              .replace(/\n/g, "<br>");
+            messages.appendChild(aiMsg);
+          } else {
+            throw new Error(data.message || "Failed to get response");
+          }
+        } catch (err) {
+          document.getElementById("typingIndicator")?.remove();
+          const errMsg = document.createElement("div");
+          errMsg.className = "chat-message ai";
+          errMsg.textContent =
+            "Sorry, I had trouble responding. Please try again.";
+          messages.appendChild(errMsg);
+        }
+
+        isAIThinking = false;
+        input.disabled = false;
+        document.querySelector(".btn-send").disabled = false;
+        input.focus();
         messages.scrollTop = messages.scrollHeight;
       }
 
@@ -988,6 +1042,16 @@
             if (e.key === "Enter") sendMessage();
           });
       });
+
+      // ============= SUGGESTION HELPER =============
+      function askSuggestion(el) {
+        const input = document.getElementById("chatInput");
+        if (input) {
+          input.value = el.textContent;
+          input.focus();
+          sendMessage();
+        }
+      }
 
       // ============= BOOT =============
       loadUserData();
