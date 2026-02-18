@@ -552,6 +552,22 @@
           }
           // Pass the auth token in the URL so backend can identify the user
           const token = localStorage.getItem("aervo_token");
+
+          console.log(
+            "🔍 Token from localStorage:",
+            token ? `${token.substring(0, 20)}...` : "NULL",
+          ); // ADD THIS
+          console.log(
+            "🔍 Redirecting to:",
+            `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`,
+          ); // ADD THIS
+
+          if (!token) {
+            alert("You're not logged in! Redirecting to login page...");
+            window.location.href = "login.html";
+            return;
+          }
+
           window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
         } else if (name === "square") {
           alert(
