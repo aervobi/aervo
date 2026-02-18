@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Integrations – Aervo</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        background: rgba(5, 8, 23, 0.96);
+        backdrop-filter: blur(14px);
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .nav-brand {
+        font-weight: 600;
+        letter-spacing: 4px;
+        font-size: 14px;
+        color: #8fbfff;
+        cursor: pointer;
+      }
+      .nav-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid #3a4a7c;
+        background: transparent;
+        color: #dfe7ff;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        background: #1a2237;
+        border-color: #4a5a8c;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        border: none;
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+      }
+      .container {
+        padding: 88px 32px 48px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .header {
+        margin-bottom: 40px;
+      }
+      .header h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .header p {
+        color: #9ca7d6;
+        font-size: 15px;
+      }
+
+      .section {
+        margin-bottom: 48px;
+      }
+      .section h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #e5ecff;
+      }
+
+      .integrations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+
+      .integration-card {
+        background: radial-gradient(circle at top left, #1e293b, #0f172a);
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      .integration-card:hover {
+        border-color: rgba(96, 165, 250, 0.5);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+      }
+      .integration-card.connected {
+        border-color: rgba(34, 197, 94, 0.5);
+      }
+
+      .integration-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .integration-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        overflow: hidden;
+      }
+      .integration-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 8px;
+      }
+      .integration-info {
+        flex: 1;
+      }
+      .integration-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e5ecff;
+        margin-bottom: 4px;
+      }
+      .integration-desc {
+        font-size: 13px;
+        color: #9ca7d6;
+      }
+
+      .integration-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .status-connected {
+        background: rgba(34, 197, 94, 0.15);
+        color: #6ee7b7;
+      }
+      .status-available {
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
+      }
+
+      .connected-stores {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+      }
+      .store-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: rgba(15, 23, 42, 0.5);
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .store-name {
+        font-size: 13px;
+        color: #e5ecff;
+      }
+      .store-origin {
+        font-size: 11px;
+        color: #64748b;
+      }
+      .store-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-small {
+        padding: 4px 10px;
+        font-size: 11px;
+        border-radius: 6px;
+      }
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+      }
+      .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+      }
+      .empty-state p {
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(148, 163, 184, 0.2);
+        border-top-color: #60a5fa;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav {
+          padding: 0 16px;
+        }
+        .container {
+          padding: 80px 16px 32px;
+        }
+        .header h1 {
+          font-size: 24px;
+        }
+        .integrations-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-brand" onclick="window.location.href = 'dashboard.html'">
+        AERVO
+      </div>
+      <div class="nav-right">
+        <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+        <button class="btn" id="logoutBtn">Log out</button>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="header">
+        <h1>Integrations</h1>
+        <p>Connect your business platforms to unlock powerful insights</p>
+      </div>
+
+      <div id="content">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading integrations...</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
+
+      if (!token) window.location.href = "login.html";
+
+      let availableIntegrations = [];
+      let connectedStores = [];
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervo_token");
+        window.location.href = "login.html";
+      });
+
+      async function loadIntegrations() {
+        try {
+          const [integrationsRes, storesRes] = await Promise.all([
+            fetch(`${BACKEND_URL}/api/integrations`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(`${BACKEND_URL}/api/integrations/connected`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
+          const integrationsData = await integrationsRes.json();
+          const storesData = await storesRes.json();
+
+          if (integrationsData.success)
+            availableIntegrations = integrationsData.integrations;
+          if (storesData.success) connectedStores = storesData.stores;
+
+          renderIntegrations();
+        } catch (err) {
+          console.error("Load error:", err);
+          document.getElementById("content").innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">⚠️</div>
+              <p>Failed to load integrations. Please refresh the page.</p>
+            </div>`;
+        }
+      }
+
+      function renderIntegrations() {
+        const connected = availableIntegrations.filter((i) =>
+          connectedStores.some((s) => s.integration_name === i.name),
+        );
+        const available = availableIntegrations.filter(
+          (i) => !connectedStores.some((s) => s.integration_name === i.name),
+        );
+
+        let html = "";
+
+        if (connected.length > 0) {
+          html += `
+            <div class="section">
+              <h2>Connected (${connected.length})</h2>
+              <div class="integrations-grid">
+                ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
+              </div>
+            </div>`;
+        }
+
+        html += `
+          <div class="section">
+            <h2>Available Integrations (${available.length})</h2>
+            <div class="integrations-grid">
+              ${available.map((i) => renderIntegrationCard(i, false)).join("")}
+            </div>
+          </div>`;
+
+        document.getElementById("content").innerHTML = html;
+      }
+
+      function renderIntegrationCard(integration, isConnected) {
+        const stores = connectedStores.filter(
+          (s) => s.integration_name === integration.name,
+        );
+
+        return `
+          <div class="integration-card ${isConnected ? "connected" : ""}">
+            <div class="integration-header">
+              <div class="integration-icon">
+                ${
+                  integration.icon_url
+                    ? `<img src="${integration.icon_url}" alt="${integration.display_name}">`
+                    : getIntegrationEmoji(integration.name)
+                }
+              </div>
+              <div class="integration-info">
+                <div class="integration-name">${integration.display_name}</div>
+                <div class="integration-desc">${integration.description}</div>
+              </div>
+            </div>
+            
+            <div class="integration-status ${isConnected ? "status-connected" : "status-available"}">
+              ${isConnected ? "● Connected" : "Available"}
+            </div>
+            
+            ${isConnected ? renderConnectedStores(stores, integration.name) : renderConnectButton(integration.name)}
+          </div>`;
+      }
+
+      function renderConnectedStores(stores, integrationName) {
+        return `
+          <div class="connected-stores">
+            ${stores
+              .map(
+                (store) => `
+              <div class="store-item">
+                <div>
+                  <div class="store-name">${store.store_name}</div>
+                  <div class="store-origin">${store.store_origin || ""}</div>
+                </div>
+                <div class="store-actions">
+                  <button class="btn btn-small" onclick="setActiveStore(${store.id})">
+                    ${store.is_active ? "✓ Active" : "Use"}
+                  </button>
+                  <button class="btn btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
+                    Disconnect
+                  </button>
+                </div>
+              </div>
+            `,
+              )
+              .join("")}
+            <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="connectIntegration('${integrationName}')">
+              + Add Another ${integrationName === "shopify" ? "Store" : "Location"}
+            </button>
+          </div>`;
+      }
+
+      function renderConnectButton(integrationName) {
+        return `
+          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="connectIntegration('${integrationName}')">
+            Connect ${integrationName === "shopify" ? "Shopify Store" : integrationName === "square" ? "Square POS" : "Account"}
+          </button>`;
+      }
+
+      function getIntegrationEmoji(name) {
+        const emojis = {
+          shopify: "🛍️",
+          square: "💳",
+          stripe: "💰",
+          quickbooks: "📊",
+        };
+        return emojis[name] || "🔌";
+      }
+
+      function connectIntegration(name) {
+        if (name === "shopify") {
+          const shop = prompt(
+            "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
+          );
+          if (!shop) return;
+          const normalized = shop.trim().toLowerCase();
+          if (!normalized.includes(".myshopify.com")) {
+            alert(
+              "Please enter a valid Shopify domain ending in .myshopify.com",
+            );
+            return;
+          }
+          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
+        } else if (name === "square") {
+          alert(
+            "Square integration coming soon! We're building the OAuth flow.",
+          );
+        } else {
+          alert(`${name} integration coming soon!`);
+        }
+      }
+
+      async function setActiveStore(storeId) {
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/integrations/set-active`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ storeId }),
+            },
+          );
+
+          if (res.ok) {
+            alert(
+              "Active store updated! Dashboard will now show this store's data.",
+            );
+            loadIntegrations();
+          } else {
+            alert("Failed to update active store");
+          }
+        } catch (err) {
+          alert("Error updating store");
+        }
+      }
+
+      async function disconnectStore(storeId, storeName) {
+        if (!confirm(`Are you sure you want to disconnect "${storeName}"?`))
+          return;
+
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/integrations/disconnect/${storeId}`,
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+
+          if (res.ok) {
+            alert("Store disconnected successfully");
+            loadIntegrations();
+          } else {
+            alert("Failed to disconnect store");
+          }
+        } catch (err) {
+          alert("Error disconnecting store");
+        }
+      }
+
+      loadIntegrations();
+    </script>
+  </body>
+</html>
