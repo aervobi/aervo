@@ -351,6 +351,10 @@
       .data-table tr:hover {
         background: rgba(59, 130, 246, 0.05);
       }
+      .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
       .loading {
         text-align: center;
         padding: 60px 20px;
@@ -412,22 +416,166 @@
         transform: translateY(-2px);
         box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
       }
+      /* Mobile Menu */
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: #e5ecff;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px;
+      }
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(5, 8, 23, 0.98);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 99;
+        padding: 16px;
+      }
+      .mobile-menu.active {
+        display: block;
+      }
+      .mobile-nav-tab {
+        display: block;
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        color: #9ca7d6;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        text-align: left;
+      }
+      .mobile-nav-tab.active {
+        background: rgba(143, 191, 255, 0.15);
+        border-color: rgba(143, 191, 255, 0.3);
+        color: #e5ecff;
+      }
+
       @media (max-width: 768px) {
         .nav {
           padding: 0 16px;
+          height: 56px;
+        }
+        .nav-brand {
+          font-size: 12px;
+          letter-spacing: 3px;
         }
         .nav-center {
           display: none;
         }
+        .mobile-menu-btn {
+          display: block;
+        }
         .container {
-          padding: 80px 16px 32px;
+          padding: 72px 12px 24px;
         }
         .welcome h1 {
-          font-size: 24px;
+          font-size: 22px;
+        }
+        .welcome p {
+          font-size: 14px;
         }
         .grid-4,
         .grid-2 {
           grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .stat-large {
+          font-size: 32px;
+        }
+        .ai-banner {
+          padding: 16px;
+          margin-bottom: 20px;
+        }
+        .ai-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+        }
+        .ai-banner h2 {
+          font-size: 16px;
+        }
+        .insight-item {
+          padding: 12px;
+          font-size: 13px;
+        }
+        .shop-badge {
+          font-size: 10px;
+          padding: 4px 8px;
+        }
+        .btn-logout {
+          padding: 6px 12px;
+          font-size: 11px;
+        }
+        .data-table {
+          font-size: 12px;
+        }
+        .data-table th,
+        .data-table td {
+          padding: 8px 6px;
+        }
+        .chat-container {
+          height: 320px;
+        }
+        .action-item {
+          padding: 12px;
+        }
+        .action-title {
+          font-size: 13px;
+        }
+        .action-desc {
+          font-size: 11px;
+        }
+        canvas {
+          max-height: 220px !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .nav {
+          height: 52px;
+        }
+        .nav-brand {
+          font-size: 11px;
+        }
+        .container {
+          padding: 68px 8px 20px;
+        }
+        .welcome h1 {
+          font-size: 20px;
+        }
+        .stat-large {
+          font-size: 28px;
+        }
+        .grid-4 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+        .card h3 {
+          font-size: 11px;
+        }
+        .stat-change {
+          font-size: 11px;
+          padding: 3px 6px;
+        }
+        .data-table {
+          display: block;
+          overflow-x: auto;
+        }
+        canvas {
+          max-height: 180px !important;
         }
       }
     </style>
@@ -446,9 +594,18 @@
           <span>●</span>
           <span id="shopName">Loading...</span>
         </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
         <button class="btn-logout" id="logoutBtn">Log out</button>
       </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-nav-tab active" data-view="overview">📊 Overview</div>
+      <div class="mobile-nav-tab" data-view="analytics">📈 Analytics</div>
+      <div class="mobile-nav-tab" data-view="inventory">📦 Inventory</div>
+      <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
+    </div>
 
     <div class="container">
       <div id="content">
@@ -481,6 +638,14 @@
         window.location.href = "login.html";
       });
 
+      // ============= MOBILE MENU TOGGLE =============
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileMenu.classList.toggle("active");
+      });
+
       // ============= TAB NAVIGATION =============
       document.querySelectorAll(".nav-tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -489,6 +654,22 @@
             .querySelectorAll(".nav-tab")
             .forEach((t) => t.classList.remove("active"));
           tab.classList.add("active");
+          renderView(currentView);
+        });
+      });
+
+      // Mobile tab navigation
+      document.querySelectorAll(".mobile-nav-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          currentView = tab.dataset.view;
+          document
+            .querySelectorAll(".mobile-nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          mobileMenu.classList.remove("active"); // Close menu after selection
           renderView(currentView);
         });
       });
@@ -1041,7 +1222,7 @@
             ${
               attention.length === 0
                 ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All products are well stocked!</p>`
-                : `<table class="data-table">
+                : `<div class="table-wrapper"><table class="data-table">
                   <thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Price</th><th>Status</th></tr></thead>
                   <tbody>${attention
                     .map(
@@ -1056,7 +1237,7 @@
                     )
                     .join("")}
                   </tbody>
-                </table>`
+                </table></div>`
             }
           </div>`;
       }
@@ -1064,55 +1245,386 @@
       // ============= RENDER CUSTOMERS =============
       function renderCustomers() {
         const c = realData.customers;
+        const orders = realData.orders || [];
+
         if (!c)
           return `<div class="loading"><div class="spinner"></div><div>Loading customers...</div></div>`;
-        return `
+
+        // === ADVANCED CUSTOMER SEGMENTATION ===
+        const today = new Date();
+        const thirtyDaysAgo = new Date(
+          today.getTime() - 30 * 24 * 60 * 60 * 1000,
+        );
+        const sixtyDaysAgo = new Date(
+          today.getTime() - 60 * 24 * 60 * 60 * 1000,
+        );
+
+        // Segment customers by value
+        const avgLTV = parseFloat(c.avgLifetimeValue);
+        const vipCustomers = c.topCustomers.filter(
+          (cu) => parseFloat(cu.totalSpent) > avgLTV * 2,
+        );
+        const regularCustomers = c.topCustomers.filter(
+          (cu) =>
+            parseFloat(cu.totalSpent) >= avgLTV &&
+            parseFloat(cu.totalSpent) <= avgLTV * 2,
+        );
+        const newCustomers = c.topCustomers.filter(
+          (cu) => cu.ordersCount === 1,
+        );
+
+        // Calculate at-risk customers (haven't ordered in 60+ days)
+        const customerLastOrder = {};
+        orders.forEach((order) => {
+          if (order.customer && order.customer.id) {
+            const orderId = order.customer.id;
+            const orderDate = new Date(order.created_at);
+            if (
+              !customerLastOrder[orderId] ||
+              orderDate > customerLastOrder[orderId]
+            ) {
+              customerLastOrder[orderId] = orderDate;
+            }
+          }
+        });
+
+        const atRiskCount = Object.values(customerLastOrder).filter(
+          (date) => date < sixtyDaysAgo,
+        ).length;
+
+        // New customers in last 30 days
+        const recentCustomerIds = new Set();
+        orders.forEach((order) => {
+          if (
+            order.customer &&
+            order.customer.id &&
+            new Date(order.created_at) > thirtyDaysAgo
+          ) {
+            recentCustomerIds.add(order.customer.id);
+          }
+        });
+
+        // Calculate purchase frequency
+        const ordersByCustomer = {};
+        orders.forEach((order) => {
+          if (order.customer && order.customer.id) {
+            const cid = order.customer.id;
+            if (!ordersByCustomer[cid]) ordersByCustomer[cid] = [];
+            ordersByCustomer[cid].push(new Date(order.created_at));
+          }
+        });
+
+        let totalDaysBetween = 0;
+        let pairCount = 0;
+        Object.values(ordersByCustomer).forEach((dates) => {
+          if (dates.length > 1) {
+            dates.sort((a, b) => a - b);
+            for (let i = 1; i < dates.length; i++) {
+              const daysBetween =
+                (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
+              totalDaysBetween += daysBetween;
+              pairCount++;
+            }
+          }
+        });
+
+        const avgDaysBetweenOrders =
+          pairCount > 0 ? Math.round(totalDaysBetween / pairCount) : 0;
+
+        const html = `
           <div class="welcome">
             <h1>Customer Intelligence</h1>
-            <p>Understand your customers and increase lifetime value</p>
+            <p>Deep insights into your customer base and growth opportunities</p>
           </div>
+          
           <div class="grid-4">
             <div class="card">
               <h3>Total Customers</h3>
               <div class="stat-large">${c.total}</div>
+              <div class="stat-label">${recentCustomerIds.size} new this month</div>
             </div>
             <div class="card">
-              <h3>Repeat Customers</h3>
+              <h3>Repeat Rate</h3>
               <div class="stat-large">${c.repeatRate}%</div>
-              <div class="stat-label">${c.repeatCustomers} customers</div>
+              <div class="stat-label">${c.repeatCustomers} repeat customers</div>
             </div>
             <div class="card">
               <h3>Avg Lifetime Value</h3>
               <div class="stat-large">$${c.avgLifetimeValue}</div>
+              <div class="stat-label">Per customer</div>
             </div>
             <div class="card">
-              <h3>Top Spenders</h3>
-              <div class="stat-large">${c.topCustomers.length}</div>
-              <div class="stat-label">High-value customers</div>
+              <h3>Purchase Frequency</h3>
+              <div class="stat-large">${avgDaysBetweenOrders}</div>
+              <div class="stat-label">Days between orders</div>
             </div>
           </div>
-          <div class="card">
-            <h3>Top Customers</h3>
-            ${
-              c.topCustomers.length === 0
-                ? `<p style="color:#64748b;padding:20px;text-align:center">No customer data yet</p>`
-                : `<table class="data-table">
-                  <thead><tr><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spent</th></tr></thead>
-                  <tbody>${c.topCustomers
-                    .map(
-                      (cu) => `
-                    <tr>
-                      <td>${cu.name}</td>
-                      <td>${cu.email || "N/A"}</td>
-                      <td>${cu.ordersCount}</td>
-                      <td>$${cu.totalSpent}</td>
-                    </tr>`,
-                    )
-                    .join("")}
-                  </tbody>
-                </table>`
-            }
+          
+          <div class="grid-4" style="margin-bottom:24px">
+            <div class="card" style="border-left:3px solid #fbbf24">
+              <h3>VIP Customers</h3>
+              <div class="stat-large" style="color:#fbbf24">${vipCustomers.length}</div>
+              <div class="stat-label">Spent ${avgLTV > 0 ? "2x" : ""} above average</div>
+            </div>
+            <div class="card" style="border-left:3px solid #60a5fa">
+              <h3>Regular Customers</h3>
+              <div class="stat-large">${regularCustomers.length}</div>
+              <div class="stat-label">Core customer base</div>
+            </div>
+            <div class="card" style="border-left:3px solid #34d399">
+              <h3>New Customers</h3>
+              <div class="stat-large">${newCustomers.length}</div>
+              <div class="stat-label">First-time buyers</div>
+            </div>
+            <div class="card" style="border-left:3px solid #ef4444">
+              <h3>At-Risk Customers</h3>
+              <div class="stat-large">${atRiskCount}</div>
+              <div class="stat-label">No order in 60+ days</div>
+            </div>
+          </div>
+          
+          <div class="grid-2" style="margin-bottom:24px">
+            <div class="card">
+              <h3>Customer Value Distribution</h3>
+              <canvas id="customerValueChart" style="max-height:280px"></canvas>
+            </div>
+            <div class="card">
+              <h3>Customer Growth (Last 30 Days)</h3>
+              <canvas id="customerGrowthChart" style="max-height:280px"></canvas>
+            </div>
+          </div>
+          
+          <div class="grid-2">
+            <div class="card">
+              <h3>🏆 VIP Customers (Top Spenders)</h3>
+              ${
+                vipCustomers.length === 0
+                  ? `<p style="color:#64748b;padding:20px;text-align:center">No VIP customers yet</p>`
+                  : `<div class="table-wrapper"><table class="data-table">
+                    <thead><tr><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Status</th></tr></thead>
+                    <tbody>${vipCustomers
+                      .slice(0, 10)
+                      .map(
+                        (cu) => `
+                      <tr>
+                        <td>${cu.name}</td>
+                        <td>${cu.email || "N/A"}</td>
+                        <td>${cu.ordersCount}</td>
+                        <td style="color:#fbbf24;font-weight:600">$${cu.totalSpent}</td>
+                        <td><span class="insight-priority priority-medium">VIP</span></td>
+                      </tr>`,
+                      )
+                      .join("")}
+                    </tbody>
+                  </table></div>`
+              }
+            </div>
+            
+            <div class="card">
+              <h3>⚠️ At-Risk Customers</h3>
+              <p style="color:#9ca7d6;font-size:13px;margin-bottom:16px">Haven't ordered in 60+ days — time to re-engage!</p>
+              ${
+                atRiskCount === 0
+                  ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All customers are actively ordering!</p>`
+                  : `<div class="action-list">
+                    <div class="action-item">
+                      <div class="action-icon">📧</div>
+                      <div class="action-content">
+                        <div class="action-title">Send Win-Back Email</div>
+                        <div class="action-desc">Offer ${atRiskCount} customers a 15% discount to return</div>
+                      </div>
+                    </div>
+                    <div class="action-item">
+                      <div class="action-icon">🎁</div>
+                      <div class="action-content">
+                        <div class="action-title">Personalized Offers</div>
+                        <div class="action-desc">Show them products similar to past purchases</div>
+                      </div>
+                    </div>
+                    <div class="action-item">
+                      <div class="action-icon">💬</div>
+                      <div class="action-content">
+                        <div class="action-title">Feedback Survey</div>
+                        <div class="action-desc">Ask why they haven't returned</div>
+                      </div>
+                    </div>
+                  </div>`
+              }
+            </div>
           </div>`;
+
+        // Render charts
+        setTimeout(() => renderCustomerCharts(c.topCustomers, orders), 100);
+        return html;
+      }
+
+      // ============= CUSTOMER CHARTS =============
+      function renderCustomerCharts(customers, orders) {
+        if (!customers || customers.length === 0) return;
+
+        // === CUSTOMER VALUE DISTRIBUTION (Pie Chart) ===
+        const avgLTV =
+          customers.reduce((s, c) => s + parseFloat(c.totalSpent), 0) /
+          customers.length;
+        const vip = customers.filter(
+          (c) => parseFloat(c.totalSpent) > avgLTV * 2,
+        ).length;
+        const regular = customers.filter(
+          (c) =>
+            parseFloat(c.totalSpent) >= avgLTV &&
+            parseFloat(c.totalSpent) <= avgLTV * 2,
+        ).length;
+        const occasional = customers.filter(
+          (c) => parseFloat(c.totalSpent) < avgLTV,
+        ).length;
+
+        const valueCtx = document.getElementById("customerValueChart");
+        if (valueCtx) {
+          new Chart(valueCtx, {
+            type: "doughnut",
+            data: {
+              labels: [
+                "VIP Customers",
+                "Regular Customers",
+                "Occasional Buyers",
+              ],
+              datasets: [
+                {
+                  data: [vip, regular, occasional],
+                  backgroundColor: ["#fbbf24", "#60a5fa", "#9ca7d6"],
+                  borderColor: "#0f172a",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
+                },
+                tooltip: {
+                  backgroundColor: "rgba(15, 23, 42, 0.95)",
+                  titleColor: "#e5ecff",
+                  bodyColor: "#9ca7d6",
+                  borderColor: "rgba(148, 163, 184, 0.2)",
+                  borderWidth: 1,
+                  padding: 12,
+                  callbacks: {
+                    label: (ctx) => `${ctx.label}: ${ctx.parsed} customers`,
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        // === CUSTOMER GROWTH CHART (Last 30 days) ===
+        const dailyCustomers = {};
+        const today = new Date();
+
+        for (let i = 29; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          dailyCustomers[key] = { new: 0, returning: 0 };
+        }
+
+        const seenCustomers = new Set();
+        orders
+          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+          .forEach((order) => {
+            if (order.customer && order.customer.id) {
+              const dateKey = order.created_at.split("T")[0];
+              const customerId = order.customer.id;
+
+              if (dailyCustomers.hasOwnProperty(dateKey)) {
+                if (seenCustomers.has(customerId)) {
+                  dailyCustomers[dateKey].returning++;
+                } else {
+                  dailyCustomers[dateKey].new++;
+                  seenCustomers.add(customerId);
+                }
+              }
+            }
+          });
+
+        const growthLabels = Object.keys(dailyCustomers).map((d) => {
+          const date = new Date(d);
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+        });
+
+        const newCustomerData = Object.values(dailyCustomers).map((d) => d.new);
+        const returningCustomerData = Object.values(dailyCustomers).map(
+          (d) => d.returning,
+        );
+
+        const growthCtx = document.getElementById("customerGrowthChart");
+        if (growthCtx) {
+          new Chart(growthCtx, {
+            type: "bar",
+            data: {
+              labels: growthLabels,
+              datasets: [
+                {
+                  label: "New Customers",
+                  data: newCustomerData,
+                  backgroundColor: "rgba(52, 211, 153, 0.8)",
+                  borderColor: "#34d399",
+                  borderWidth: 1,
+                },
+                {
+                  label: "Returning Customers",
+                  data: returningCustomerData,
+                  backgroundColor: "rgba(96, 165, 250, 0.8)",
+                  borderColor: "#60a5fa",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
+                },
+                tooltip: {
+                  backgroundColor: "rgba(15, 23, 42, 0.95)",
+                  titleColor: "#e5ecff",
+                  bodyColor: "#9ca7d6",
+                  borderColor: "rgba(148, 163, 184, 0.2)",
+                  borderWidth: 1,
+                  padding: 12,
+                },
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  grid: { display: false },
+                  ticks: {
+                    color: "#9ca7d6",
+                    maxRotation: 45,
+                    minRotation: 45,
+                    font: { size: 10 },
+                  },
+                },
+                y: {
+                  stacked: true,
+                  beginAtZero: true,
+                  grid: { color: "rgba(148, 163, 184, 0.1)" },
+                  ticks: { color: "#9ca7d6", precision: 0 },
+                },
+              },
+            },
+          });
+        }
       }
 
       // ============= CONNECT SHOPIFY =============
@@ -1139,7 +1651,7 @@
       function renderOrdersTable(orders) {
         if (!orders || orders.length === 0)
           return `<p style="color:#64748b;padding:20px;text-align:center">No orders yet</p>`;
-        return `<table class="data-table">
+        return `<div class="table-wrapper"><table class="data-table">
           <thead><tr><th>Order #</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
           <tbody>${orders
             .map(
@@ -1155,7 +1667,7 @@
             )
             .join("")}
           </tbody>
-        </table>`;
+        </table></div>`;
       }
 
       // ============= HELPER: ACTION ITEMS =============
