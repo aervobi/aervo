@@ -550,17 +550,8 @@
             );
             return;
           }
-          // Pass the auth token in the URL so backend can identify the user
-          const token = localStorage.getItem("aervo_token");
 
-          console.log(
-            "🔍 Token from localStorage:",
-            token ? `${token.substring(0, 20)}...` : "NULL",
-          ); // ADD THIS
-          console.log(
-            "🔍 Redirecting to:",
-            `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`,
-          ); // ADD THIS
+          const token = localStorage.getItem("aervo_token");
 
           if (!token) {
             alert("You're not logged in! Redirecting to login page...");
@@ -568,7 +559,25 @@
             return;
           }
 
-          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
+          // Create a hidden form to POST the data
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = `${BACKEND_URL}/auth/shopify/initiate`;
+
+          const shopInput = document.createElement("input");
+          shopInput.type = "hidden";
+          shopInput.name = "shop";
+          shopInput.value = normalized;
+
+          const tokenInput = document.createElement("input");
+          tokenInput.type = "hidden";
+          tokenInput.name = "token";
+          tokenInput.value = token;
+
+          form.appendChild(shopInput);
+          form.appendChild(tokenInput);
+          document.body.appendChild(form);
+          form.submit();
         } else if (name === "square") {
           alert(
             "Square integration coming soon! We're building the OAuth flow.",
@@ -577,7 +586,6 @@
           alert(`${name} integration coming soon!`);
         }
       }
-
       async function setActiveStore(storeId) {
         try {
           const res = await fetch(
