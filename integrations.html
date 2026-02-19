@@ -537,7 +537,7 @@
         return emojis[name] || "🔌";
       }
 
-      function connectIntegration(name) {
+      async function connectIntegration(name) {
         if (name === "shopify") {
           const shop = prompt(
             "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
@@ -559,35 +559,36 @@
             return;
           }
 
-          console.log("🔍 Creating form...");
-          console.log("Backend URL:", BACKEND_URL);
-          console.log("Shop:", normalized);
-          console.log("Token:", token.substring(0, 20) + "...");
+          console.log("🔍 Sending POST request...");
+          console.log("URL:", `${BACKEND_URL}/auth/shopify/initiate`);
 
-          // Create a hidden form to POST the data
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = `${BACKEND_URL}/auth/shopify/initiate`;
+          try {
+            const response = await fetch(
+              `${BACKEND_URL}/auth/shopify/initiate`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                  shop: normalized,
+                  token: token,
+                }),
+                redirect: "manual", // Don't follow redirects automatically
+              },
+            );
 
-          console.log("Form action:", form.action);
-          console.log("Form method:", form.method);
+            // Get the redirect URL from the response
+            const redirectUrl =
+              response.headers.get("Location") || response.url;
+            console.log("Redirecting to:", redirectUrl);
 
-          const shopInput = document.createElement("input");
-          shopInput.type = "hidden";
-          shopInput.name = "shop";
-          shopInput.value = normalized;
-
-          const tokenInput = document.createElement("input");
-          tokenInput.type = "hidden";
-          tokenInput.name = "token";
-          tokenInput.value = token;
-
-          form.appendChild(shopInput);
-          form.appendChild(tokenInput);
-          document.body.appendChild(form);
-
-          console.log("🚀 Submitting form...");
-          form.submit();
+            // Follow the redirect
+            window.location.href = redirectUrl;
+          } catch (err) {
+            console.error("Error:", err);
+            alert("Failed to connect. Please try again.");
+          }
         } else if (name === "square") {
           alert(
             "Square integration coming soon! We're building the OAuth flow.",
