@@ -562,7 +562,7 @@
           // Create a hidden form to POST the data
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = `${BACKEND_URL}/auth/shopify/initiate`;
+          form.action = `${BACKEND_URL}/auth/shopify/initiate`; // ← MUST be /initiate
 
           const shopInput = document.createElement("input");
           shopInput.type = "hidden";
