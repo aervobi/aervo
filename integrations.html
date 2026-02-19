@@ -543,6 +543,7 @@
             "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
           );
           if (!shop) return;
+
           const normalized = shop.trim().toLowerCase();
           if (!normalized.includes(".myshopify.com")) {
             alert(
@@ -552,9 +553,8 @@
           }
 
           const token = localStorage.getItem("aervo_token");
-
           if (!token) {
-            alert("You're not logged in! Redirecting to login page...");
+            alert("You're not logged in!");
             window.location.href = "login.html";
             return;
           }
@@ -562,9 +562,7 @@
           // Simple redirect with token in URL
           window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
         } else if (name === "square") {
-          alert(
-            "Square integration coming soon! We're building the OAuth flow.",
-          );
+          alert("Square integration coming soon!");
         } else {
           alert(`${name} integration coming soon!`);
         }
