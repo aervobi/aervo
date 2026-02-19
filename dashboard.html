@@ -1748,16 +1748,19 @@
       }
 
       // ============= CONNECT SHOPIFY FUNCTION =============
+
       function connectShopify() {
         const shop = prompt(
           "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
         );
         if (!shop) return;
+
         const normalized = shop.trim().toLowerCase();
         if (!normalized.includes(".myshopify.com")) {
           alert("Please enter a valid Shopify domain ending in .myshopify.com");
           return;
         }
+
         window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
       }
 
