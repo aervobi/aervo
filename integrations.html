@@ -559,68 +559,43 @@
             return;
           }
 
-          console.log("🔍 Sending POST request...");
-          console.log("URL:", `${BACKEND_URL}/auth/shopify/initiate`);
+          console.log("🚀 Sending POST with XMLHttpRequest...");
 
-          try {
-            const response = await fetch(
-              `${BACKEND_URL}/auth/shopify/initiate`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                  shop: normalized,
-                  token: token,
-                }),
-                redirect: "manual", // Don't follow redirects automatically
-              },
-            );
+          // Use XMLHttpRequest for full control
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", `${BACKEND_URL}/auth/shopify/initiate`, true);
+          xhr.setRequestHeader(
+            "Content-Type",
+            "application/x-www-form-urlencoded",
+          );
 
-            // Get the redirect URL from the response
-            const redirectUrl =
-              response.headers.get("Location") || response.url;
-            console.log("Redirecting to:", redirectUrl);
+          xhr.onload = function () {
+            console.log("Response status:", xhr.status);
+            console.log("Response URL:", xhr.responseURL);
 
-            // Follow the redirect
-            window.location.href = redirectUrl;
-          } catch (err) {
-            console.error("Error:", err);
-            alert("Failed to connect. Please try again.");
-          }
+            // Follow the redirect manually
+            if (xhr.status === 302 || xhr.status === 301) {
+              const redirectUrl = xhr.getResponseHeader("Location");
+              console.log("Redirecting to:", redirectUrl);
+              window.location.href = redirectUrl;
+            } else if (
+              xhr.responseURL &&
+              xhr.responseURL !== `${BACKEND_URL}/auth/shopify/initiate`
+            ) {
+              // Browser auto-followed redirect
+              window.location.href = xhr.responseURL;
+            }
+          };
+
+          xhr.send(
+            `shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`,
+          );
         } else if (name === "square") {
           alert(
             "Square integration coming soon! We're building the OAuth flow.",
           );
         } else {
           alert(`${name} integration coming soon!`);
-        }
-      }
-      async function setActiveStore(storeId) {
-        try {
-          const res = await fetch(
-            `${BACKEND_URL}/api/integrations/set-active`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ storeId }),
-            },
-          );
-
-          if (res.ok) {
-            alert(
-              "✓ Active store updated! Your dashboard will now show this store's data.",
-            );
-            loadIntegrations();
-          } else {
-            alert("Failed to update active store");
-          }
-        } catch (err) {
-          alert("Error updating store");
         }
       }
 
