@@ -559,10 +559,18 @@
             return;
           }
 
+          console.log("🔍 Creating form...");
+          console.log("Backend URL:", BACKEND_URL);
+          console.log("Shop:", normalized);
+          console.log("Token:", token.substring(0, 20) + "...");
+
           // Create a hidden form to POST the data
           const form = document.createElement("form");
           form.method = "POST";
-          form.action = `${BACKEND_URL}/auth/shopify/initiate`; // ← MUST be /initiate
+          form.action = `${BACKEND_URL}/auth/shopify/initiate`;
+
+          console.log("Form action:", form.action);
+          console.log("Form method:", form.method);
 
           const shopInput = document.createElement("input");
           shopInput.type = "hidden";
@@ -577,6 +585,8 @@
           form.appendChild(shopInput);
           form.appendChild(tokenInput);
           document.body.appendChild(form);
+
+          console.log("🚀 Submitting form...");
           form.submit();
         } else if (name === "square") {
           alert(
