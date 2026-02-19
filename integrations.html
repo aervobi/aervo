@@ -537,7 +537,7 @@
         return emojis[name] || "🔌";
       }
 
-      async function connectIntegration(name) {
+      function connectIntegration(name) {
         if (name === "shopify") {
           const shop = prompt(
             "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
@@ -559,7 +559,7 @@
             return;
           }
 
-          // Just redirect with token in URL as last resort
+          // Simple redirect with token in URL
           window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
         } else if (name === "square") {
           alert(
@@ -567,6 +567,33 @@
           );
         } else {
           alert(`${name} integration coming soon!`);
+        }
+      }
+
+      async function setActiveStore(storeId) {
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/integrations/set-active`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ storeId }),
+            },
+          );
+
+          if (res.ok) {
+            alert(
+              "✓ Active store updated! Your dashboard will now show this store's data.",
+            );
+            loadIntegrations();
+          } else {
+            alert("Failed to update active store");
+          }
+        } catch (err) {
+          alert("Error updating store");
         }
       }
 
