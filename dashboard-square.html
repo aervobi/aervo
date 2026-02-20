@@ -1,0 +1,1729 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Square Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        background: rgba(5, 8, 23, 0.96);
+        backdrop-filter: blur(14px);
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .nav-brand {
+        font-weight: 600;
+        letter-spacing: 4px;
+        font-size: 14px;
+        color: #8fbfff;
+      }
+      .nav-center {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+      }
+      .nav-tab {
+        padding: 8px 16px;
+        border-radius: 8px;
+        color: #9ca7d6;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+      }
+      .nav-tab:hover {
+        background: rgba(143, 191, 255, 0.08);
+        color: #e5ecff;
+      }
+      .nav-tab.active {
+        background: rgba(143, 191, 255, 0.15);
+        border-color: rgba(143, 191, 255, 0.3);
+        color: #e5ecff;
+      }
+      .nav-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .shop-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(52, 211, 153, 0.15);
+        color: #6ee7b7;
+        font-size: 11px;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+      }
+      .integration-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #9ca7d6;
+        font-size: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .integration-badge:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #e5ecff;
+      }
+      .btn-logout {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid #3a4a7c;
+        background: transparent;
+        color: #dfe7ff;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-logout:hover {
+        background: #1a2237;
+        border-color: #4a5a8c;
+      }
+      .container {
+        padding: 88px 32px 48px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      .welcome {
+        margin-bottom: 32px;
+      }
+      .welcome h1 {
+        font-size: 32px;
+        margin: 0 0 8px;
+        color: #f9fafb;
+      }
+      .welcome p {
+        margin: 0;
+        font-size: 15px;
+        color: #9ca7d6;
+      }
+
+      /* Square-specific green accent instead of blue */
+      .ai-banner {
+        background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 32px;
+        border: 1px solid rgba(5, 150, 105, 0.3);
+        box-shadow: 0 10px 40px rgba(5, 150, 105, 0.2);
+      }
+      .ai-banner-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .ai-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .ai-banner h2 {
+        font-size: 18px;
+        color: white;
+        margin: 0;
+      }
+      .insight-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .insight-item:last-child {
+        margin-bottom: 0;
+      }
+      .insight-priority {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-right: 8px;
+      }
+      .priority-high {
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+      }
+      .priority-medium {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fde047;
+      }
+      .priority-low {
+        background: rgba(34, 197, 94, 0.2);
+        color: #86efac;
+      }
+
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: radial-gradient(circle at top left, #1e293b, #0f172a);
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+      .card h3 {
+        font-size: 14px;
+        color: #9ca7d6;
+        margin: 0 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-large {
+        font-size: 42px;
+        font-weight: 700;
+        color: #34d399;
+        margin: 8px 0;
+        line-height: 1;
+      }
+      .stat-large.blue {
+        color: #60a5fa;
+      }
+      .stat-large.yellow {
+        color: #fbbf24;
+      }
+      .stat-large.red {
+        color: #ef4444;
+      }
+      .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin-top: 8px;
+      }
+      .stat-change.positive {
+        background: rgba(34, 197, 94, 0.15);
+        color: #6ee7b7;
+      }
+      .stat-change.negative {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
+      .stat-label {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 4px;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .data-table th {
+        text-align: left;
+        padding: 12px;
+        font-size: 12px;
+        color: #9ca7d6;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        font-weight: 600;
+      }
+      .data-table td {
+        padding: 12px;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      }
+      .data-table tr:hover {
+        background: rgba(52, 211, 153, 0.05);
+      }
+      .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca7d6;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(148, 163, 184, 0.2);
+        border-top-color: #34d399;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .badge-green {
+        background: rgba(52, 211, 153, 0.15);
+        color: #6ee7b7;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+      }
+      .badge-yellow {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fde047;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+      }
+      .badge-red {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .badge-blue {
+        background: rgba(96, 165, 250, 0.15);
+        color: #93c5fd;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+      }
+
+      .star {
+        color: #fbbf24;
+      }
+      .star.empty {
+        color: #374151;
+      }
+
+      .review-card {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+      .review-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #e5ecff;
+      }
+      .review-date {
+        font-size: 11px;
+        color: #64748b;
+      }
+      .review-text {
+        font-size: 13px;
+        color: #9ca7d6;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .review-ai {
+        background: rgba(52, 211, 153, 0.08);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #6ee7b7;
+      }
+      .review-ai strong {
+        color: #34d399;
+      }
+
+      .chat-container {
+        border-radius: 16px;
+        padding: 20px;
+        height: 380px;
+        display: flex;
+        flex-direction: column;
+      }
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 16px;
+        padding-right: 8px;
+      }
+      .chat-message {
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .chat-message.user {
+        background: rgba(52, 211, 153, 0.2);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+      }
+      .chat-message.ai {
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+      }
+      .chat-input-wrapper {
+        display: flex;
+        gap: 10px;
+      }
+      .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(15, 23, 42, 0.6);
+        color: #e5ecff;
+        font-size: 14px;
+      }
+      .chat-input:focus {
+        outline: none;
+        border-color: #34d399;
+      }
+      .btn-send {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #059669, #34d399);
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary {
+        display: inline-block;
+        padding: 14px 32px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #059669, #34d399);
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(5, 150, 105, 0.4);
+        transition: all 0.2s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 40px rgba(5, 150, 105, 0.6);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .section-header h3 {
+        font-size: 16px;
+        color: #e5ecff;
+        margin: 0;
+      }
+
+      .location-selector {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .location-btn {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: transparent;
+        color: #9ca7d6;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .location-btn.active {
+        background: rgba(52, 211, 153, 0.15);
+        border-color: rgba(52, 211, 153, 0.4);
+        color: #34d399;
+      }
+
+      /* Mobile */
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: #e5ecff;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px;
+      }
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(5, 8, 23, 0.98);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 99;
+        padding: 16px;
+      }
+      .mobile-menu.active {
+        display: block;
+      }
+      .mobile-nav-tab {
+        display: block;
+        width: 100%;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        color: #9ca7d6;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        text-align: left;
+      }
+      .mobile-nav-tab.active {
+        background: rgba(52, 211, 153, 0.15);
+        border-color: rgba(52, 211, 153, 0.3);
+        color: #34d399;
+      }
+
+      @media (max-width: 768px) {
+        .nav {
+          padding: 0 16px;
+          height: 56px;
+        }
+        .nav-center {
+          display: none;
+        }
+        .mobile-menu-btn {
+          display: block;
+        }
+        .container {
+          padding: 72px 12px 24px;
+        }
+        .welcome h1 {
+          font-size: 22px;
+        }
+        .grid-4,
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .stat-large {
+          font-size: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-brand">AERVO</div>
+      <div class="nav-center">
+        <div class="nav-tab active" data-view="overview">Overview</div>
+        <div class="nav-tab" data-view="orders">Orders</div>
+        <div class="nav-tab" data-view="customers">Customers</div>
+        <div class="nav-tab" data-view="appointments">Appointments</div>
+        <div class="nav-tab" data-view="reviews">Google Reviews</div>
+      </div>
+      <div class="nav-right">
+        <div class="shop-badge" id="shopBadge" style="display: none">
+          <span>●</span><span id="shopName">Loading...</span>
+        </div>
+        <a
+          href="integrations.html"
+          class="integration-badge"
+          style="text-decoration: none"
+          >⚙️ Integrations</a
+        >
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        <button class="btn-logout" id="logoutBtn">Log out</button>
+      </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-nav-tab active" data-view="overview">📊 Overview</div>
+      <div class="mobile-nav-tab" data-view="orders">🧾 Orders</div>
+      <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
+      <div class="mobile-nav-tab" data-view="appointments">📅 Appointments</div>
+      <div class="mobile-nav-tab" data-view="reviews">⭐ Google Reviews</div>
+    </div>
+
+    <div class="container">
+      <div id="content">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading your Square dashboard...</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
+      if (!token) window.location.href = "login.html";
+
+      let currentView = "overview";
+      let userData = null;
+      let merchantId = null;
+      let squareData = {
+        locations: [],
+        orders: [],
+        customers: [],
+        appointments: [],
+        catalog: [],
+        overview: null,
+      };
+      let selectedLocation = null;
+
+      // ── Logout ───────────────────────────────────────────────────────────────
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervo_token");
+        localStorage.removeItem("aervo_user");
+        window.location.href = "login.html";
+      });
+
+      // ── Mobile menu ──────────────────────────────────────────────────────────
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      mobileMenuBtn.addEventListener("click", () =>
+        mobileMenu.classList.toggle("active"),
+      );
+
+      // ── Tab navigation ───────────────────────────────────────────────────────
+      document.querySelectorAll(".nav-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          currentView = tab.dataset.view;
+          document
+            .querySelectorAll(".nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          renderView(currentView);
+        });
+      });
+
+      document.querySelectorAll(".mobile-nav-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          currentView = tab.dataset.view;
+          document
+            .querySelectorAll(".mobile-nav-tab, .nav-tab")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          mobileMenu.classList.remove("active");
+          renderView(currentView);
+        });
+      });
+
+      // ── Boot ─────────────────────────────────────────────────────────────────
+      async function init() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            window.location.href = "login.html";
+            return;
+          }
+          const data = await res.json();
+          userData = data.user;
+          merchantId = String(userData.id);
+
+          // Check Square connection status
+          const statusRes = await fetch(
+            `${BACKEND_URL}/integrations/square/status?merchantId=${merchantId}`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          const status = await statusRes.json();
+
+          if (!status.connected) {
+            renderNotConnected();
+            return;
+          }
+
+          // Show location badge
+          document.getElementById("shopBadge").style.display = "flex";
+          document.getElementById("shopName").textContent = "Square ●";
+
+          await loadSquareData();
+          renderView("overview");
+        } catch (err) {
+          console.error("Init error:", err);
+          document.getElementById("content").innerHTML =
+            `<div style="text-align:center;padding:60px;color:#fca5a5">Failed to load dashboard. Please refresh.</div>`;
+        }
+      }
+
+      // ── Load Square data from backend ────────────────────────────────────────
+      async function loadSquareData() {
+        try {
+          const h = { Authorization: `Bearer ${token}` };
+
+          const [locRes, ordRes, cusRes, apptRes] = await Promise.all([
+            fetch(
+              `${BACKEND_URL}/api/square/locations?merchantId=${merchantId}`,
+              { headers: h },
+            ),
+            fetch(`${BACKEND_URL}/api/square/orders?merchantId=${merchantId}`, {
+              headers: h,
+            }),
+            fetch(
+              `${BACKEND_URL}/api/square/customers?merchantId=${merchantId}`,
+              { headers: h },
+            ),
+            fetch(
+              `${BACKEND_URL}/api/square/appointments?merchantId=${merchantId}`,
+              { headers: h },
+            ),
+          ]);
+
+          const [loc, ord, cus, appt] = await Promise.all([
+            locRes.json(),
+            ordRes.json(),
+            cusRes.json(),
+            apptRes.json(),
+          ]);
+
+          squareData.locations = loc.success ? loc.locations : [];
+          squareData.orders = ord.success ? ord.orders : [];
+          squareData.customers = cus.success ? cus.customers : [];
+          squareData.appointments = appt.success ? appt.appointments : [];
+
+          if (squareData.locations.length > 0) {
+            selectedLocation = squareData.locations[0].square_location_id;
+          }
+
+          // Compute overview stats
+          computeOverview();
+        } catch (err) {
+          console.error("Square data load error:", err);
+        }
+      }
+
+      function computeOverview() {
+        const orders = squareData.orders;
+        const totalRevenue =
+          orders.reduce((s, o) => s + (o.total_amount || 0), 0) / 100;
+        const totalOrders = orders.length;
+        const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+        const today = new Date().toISOString().split("T")[0];
+        const todayOrders = orders.filter(
+          (o) => o.created_at && o.created_at.startsWith(today),
+        );
+        const todayRevenue =
+          todayOrders.reduce((s, o) => s + (o.total_amount || 0), 0) / 100;
+
+        const noShows = squareData.appointments.filter((a) => a.no_show).length;
+        const totalAppts = squareData.appointments.length;
+
+        squareData.overview = {
+          totalRevenue,
+          totalOrders,
+          avgOrderValue,
+          todayOrders: todayOrders.length,
+          todayRevenue,
+          totalCustomers: squareData.customers.length,
+          noShows,
+          totalAppts,
+          noShowRate:
+            totalAppts > 0 ? ((noShows / totalAppts) * 100).toFixed(1) : "0",
+        };
+      }
+
+      // ── Render router ────────────────────────────────────────────────────────
+      function renderView(view) {
+        const content = document.getElementById("content");
+        switch (view) {
+          case "overview":
+            content.innerHTML = renderOverview();
+            initOverviewCharts();
+            break;
+          case "orders":
+            content.innerHTML = renderOrders();
+            break;
+          case "customers":
+            content.innerHTML = renderCustomers();
+            initCustomerCharts();
+            break;
+          case "appointments":
+            content.innerHTML = renderAppointments();
+            initApptCharts();
+            break;
+          case "reviews":
+            content.innerHTML = renderReviews();
+            break;
+        }
+      }
+
+      // ── Overview ─────────────────────────────────────────────────────────────
+      function renderOverview() {
+        const d = squareData.overview;
+        if (!d)
+          return `<div class="loading"><div class="spinner"></div><div>Computing insights...</div></div>`;
+
+        return `
+          <div class="welcome">
+            <h1>Welcome back, ${userData?.companyName || "there"} 👋</h1>
+            <p>Here's your Square business performance at a glance</p>
+          </div>
+
+          ${renderLocationSelector()}
+
+          <div class="ai-banner">
+            <div class="ai-banner-header">
+              <div class="ai-icon">🤖</div>
+              <h2>AI Insights for Your Business</h2>
+            </div>
+            ${generateSquareInsights(d)
+              .map(
+                (i) => `
+              <div class="insight-item">
+                <span class="insight-priority priority-${i.priority}">${i.label}</span>
+                <strong>${i.title}</strong> — ${i.desc}
+              </div>`,
+              )
+              .join("")}
+          </div>
+
+          <div class="grid-4">
+            <div class="card">
+              <h3>Total Revenue</h3>
+              <div class="stat-large">$${d.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div class="stat-label">All time</div>
+            </div>
+            <div class="card">
+              <h3>Today's Revenue</h3>
+              <div class="stat-large">$${d.todayRevenue.toFixed(2)}</div>
+              <div class="stat-label">${d.todayOrders} orders today</div>
+            </div>
+            <div class="card">
+              <h3>Avg Order Value</h3>
+              <div class="stat-large blue">$${d.avgOrderValue.toFixed(2)}</div>
+              <div class="stat-label">Per transaction</div>
+            </div>
+            <div class="card">
+              <h3>No-Show Rate</h3>
+              <div class="stat-large ${parseFloat(d.noShowRate) > 10 ? "red" : "yellow"}">${d.noShowRate}%</div>
+              <div class="stat-label">${d.noShows} of ${d.totalAppts} appointments</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Revenue Trend (Last 30 Days)</h3>
+              <canvas id="revChart" style="max-height:240px"></canvas>
+            </div>
+            <div class="card">
+              <h3>Peak Hours</h3>
+              <canvas id="peakChart" style="max-height:240px"></canvas>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Top Menu / Catalog Items</h3>
+              ${renderTopItems()}
+            </div>
+            <div class="card">
+              <h3>Ask Aervo Anything</h3>
+              ${renderChat()}
+            </div>
+          </div>`;
+      }
+
+      function renderLocationSelector() {
+        if (squareData.locations.length <= 1) return "";
+        return `
+          <div class="location-selector">
+            ${squareData.locations
+              .map(
+                (loc) => `
+              <button class="location-btn ${selectedLocation === loc.square_location_id ? "active" : ""}"
+                onclick="selectLocation('${loc.square_location_id}')">
+                📍 ${loc.name}
+              </button>`,
+              )
+              .join("")}
+          </div>`;
+      }
+
+      function selectLocation(locationId) {
+        selectedLocation = locationId;
+        renderView(currentView);
+      }
+
+      function generateSquareInsights(d) {
+        const insights = [];
+        if (parseFloat(d.noShowRate) > 15) {
+          insights.push({
+            priority: "high",
+            label: "HIGH PRIORITY",
+            title: `${d.noShowRate}% no-show rate is hurting revenue`,
+            desc: "Send automated reminder texts 24h and 2h before appointments to reduce no-shows by up to 40%.",
+          });
+        }
+        if (d.todayOrders === 0) {
+          insights.push({
+            priority: "medium",
+            label: "OPPORTUNITY",
+            title: "No orders yet today",
+            desc: "Consider a flash promotion or push notification to drive traffic during slow periods.",
+          });
+        } else {
+          insights.push({
+            priority: "low",
+            label: "INSIGHT",
+            title: `${d.todayOrders} orders processed today`,
+            desc: `$${d.todayRevenue.toFixed(2)} in revenue so far. Keep it up!`,
+          });
+        }
+        insights.push({
+          priority: "low",
+          label: "INSIGHT",
+          title: "Check your Google Reviews",
+          desc: "Responding to reviews within 24h increases customer trust and repeat visits.",
+        });
+        return insights.slice(0, 3);
+      }
+
+      function initOverviewCharts() {
+        setTimeout(() => {
+          renderRevenueChart();
+          renderPeakHoursChart();
+        }, 100);
+      }
+
+      function renderRevenueChart() {
+        const ctx = document.getElementById("revChart");
+        if (!ctx) return;
+        const dailyRev = {};
+        for (let i = 29; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          dailyRev[d.toISOString().split("T")[0]] = 0;
+        }
+        squareData.orders.forEach((o) => {
+          const key = o.created_at?.split("T")[0];
+          if (key && dailyRev.hasOwnProperty(key))
+            dailyRev[key] += (o.total_amount || 0) / 100;
+        });
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: Object.keys(dailyRev).map((d) =>
+              new Date(d).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              }),
+            ),
+            datasets: [
+              {
+                data: Object.values(dailyRev),
+                borderColor: "#34d399",
+                backgroundColor: "rgba(52,211,153,0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: { label: (ctx) => `$${ctx.parsed.y.toFixed(2)}` },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(148,163,184,0.1)" },
+                ticks: { color: "#9ca7d6", callback: (v) => "$" + v },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#9ca7d6", maxRotation: 45 },
+              },
+            },
+          },
+        });
+      }
+
+      function renderPeakHoursChart() {
+        const ctx = document.getElementById("peakChart");
+        if (!ctx) return;
+        const hours = Array(24).fill(0);
+        squareData.orders.forEach((o) => {
+          if (o.created_at) {
+            const h = new Date(o.created_at).getHours();
+            hours[h]++;
+          }
+        });
+        const labels = hours.map((_, i) => {
+          const h = i % 12 || 12;
+          return `${h}${i < 12 ? "am" : "pm"}`;
+        });
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                data: hours,
+                backgroundColor: hours.map((v) =>
+                  v === Math.max(...hours)
+                    ? "rgba(52,211,153,0.9)"
+                    : "rgba(52,211,153,0.3)",
+                ),
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(148,163,184,0.1)" },
+                ticks: { color: "#9ca7d6" },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#9ca7d6", font: { size: 10 } },
+              },
+            },
+          },
+        });
+      }
+
+      function renderTopItems() {
+        const itemSales = {};
+        squareData.orders.forEach((o) => {
+          // We store line items in the raw_data — using catalog from our DB
+          if (o.item_name) {
+            if (!itemSales[o.item_name])
+              itemSales[o.item_name] = { qty: 0, rev: 0 };
+            itemSales[o.item_name].qty += o.quantity || 1;
+            itemSales[o.item_name].rev += (o.gross_amount || 0) / 100;
+          }
+        });
+        const top = Object.entries(itemSales)
+          .sort((a, b) => b[1].rev - a[1].rev)
+          .slice(0, 8);
+        if (top.length === 0)
+          return `<p style="color:#64748b;text-align:center;padding:20px">No item data yet — sync will populate this</p>`;
+        return `<table class="data-table">
+          <thead><tr><th>Item</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
+          <tbody>${top
+            .map(
+              ([name, s]) => `
+            <tr><td>${name}</td><td>${s.qty}</td><td style="color:#34d399">$${s.rev.toFixed(2)}</td></tr>
+          `,
+            )
+            .join("")}</tbody>
+        </table>`;
+      }
+
+      // ── Orders ───────────────────────────────────────────────────────────────
+      function renderOrders() {
+        const orders = squareData.orders;
+        const totalRev =
+          orders.reduce((s, o) => s + (o.total_amount || 0), 0) / 100;
+        const completed = orders.filter((o) => o.state === "COMPLETED").length;
+        const canceled = orders.filter((o) => o.state === "CANCELED").length;
+
+        return `
+          <div class="welcome">
+            <h1>Orders & Transactions</h1>
+            <p>All Square POS transactions across your locations</p>
+          </div>
+          ${renderLocationSelector()}
+          <div class="grid-4">
+            <div class="card">
+              <h3>Total Orders</h3>
+              <div class="stat-large">${orders.length}</div>
+            </div>
+            <div class="card">
+              <h3>Total Revenue</h3>
+              <div class="stat-large">$${totalRev.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            </div>
+            <div class="card">
+              <h3>Completed</h3>
+              <div class="stat-large">${completed}</div>
+              <div class="stat-label">${orders.length > 0 ? ((completed / orders.length) * 100).toFixed(1) : 0}% completion rate</div>
+            </div>
+            <div class="card">
+              <h3>Canceled</h3>
+              <div class="stat-large red">${canceled}</div>
+              <div class="stat-label">${orders.length > 0 ? ((canceled / orders.length) * 100).toFixed(1) : 0}% cancellation rate</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-header">
+              <h3>Recent Transactions</h3>
+            </div>
+            ${
+              orders.length === 0
+                ? `<p style="color:#64748b;text-align:center;padding:40px">No orders synced yet. Complete the initial sync to see transactions.</p>`
+                : `<div class="table-wrapper"><table class="data-table">
+                <thead><tr><th>Order ID</th><th>Location</th><th>Customer</th><th>Amount</th><th>Source</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody>${orders
+                  .slice(0, 50)
+                  .map(
+                    (o) => `
+                  <tr>
+                    <td style="font-family:monospace;font-size:11px">${o.square_order_id?.slice(-8) || "—"}</td>
+                    <td>${o.square_location_id?.slice(-6) || "—"}</td>
+                    <td>${o.square_customer_id ? "●" : "Guest"}</td>
+                    <td style="color:#34d399;font-weight:600">$${((o.total_amount || 0) / 100).toFixed(2)}</td>
+                    <td>${o.source_name || "POS"}</td>
+                    <td>${o.created_at ? new Date(o.created_at).toLocaleDateString() : "—"}</td>
+                    <td><span class="badge ${o.state === "COMPLETED" ? "badge-green" : "badge-red"}">${o.state || "—"}</span></td>
+                  </tr>`,
+                  )
+                  .join("")}
+                </tbody>
+              </table></div>`
+            }
+          </div>`;
+      }
+
+      // ── Customers ────────────────────────────────────────────────────────────
+      function renderCustomers() {
+        const customers = squareData.customers;
+        const withEmail = customers.filter((c) => c.email_address).length;
+        const withPhone = customers.filter((c) => c.phone_number).length;
+
+        return `
+          <div class="welcome">
+            <h1>Customer Directory</h1>
+            <p>Your Square customer base and visit intelligence</p>
+          </div>
+          <div class="grid-4">
+            <div class="card">
+              <h3>Total Customers</h3>
+              <div class="stat-large">${customers.length}</div>
+            </div>
+            <div class="card">
+              <h3>Have Email</h3>
+              <div class="stat-large">${withEmail}</div>
+              <div class="stat-label">${customers.length > 0 ? ((withEmail / customers.length) * 100).toFixed(0) : 0}% reachable by email</div>
+            </div>
+            <div class="card">
+              <h3>Have Phone</h3>
+              <div class="stat-large blue">${withPhone}</div>
+              <div class="stat-label">${customers.length > 0 ? ((withPhone / customers.length) * 100).toFixed(0) : 0}% reachable by SMS</div>
+            </div>
+            <div class="card">
+              <h3>AI Segments</h3>
+              <div class="stat-large yellow">${customers.filter((c) => c.aervo_segment).length}</div>
+              <div class="stat-label">Customers segmented</div>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-bottom:24px">
+            <div class="card">
+              <h3>Customer Segments</h3>
+              <canvas id="segmentChart" style="max-height:260px"></canvas>
+            </div>
+            <div class="card">
+              <h3>Re-engagement Opportunities</h3>
+              <div style="padding:8px 0">
+                <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px;margin-bottom:10px">
+                  <div style="color:#fca5a5;font-weight:600;margin-bottom:4px">⚠ At-Risk Customers</div>
+                  <div style="color:#9ca7d6;font-size:13px">Customers who haven't visited in 60+ days. Send a "We miss you" offer with 15% off their next visit.</div>
+                </div>
+                <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:14px;margin-bottom:10px">
+                  <div style="color:#fde047;font-weight:600;margin-bottom:4px">💛 Loyal Customers</div>
+                  <div style="color:#9ca7d6;font-size:13px">Your top repeat visitors. Reward them with a loyalty perk to increase visit frequency.</div>
+                </div>
+                <div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:14px">
+                  <div style="color:#6ee7b7;font-weight:600;margin-bottom:4px">✨ New Customers</div>
+                  <div style="color:#9ca7d6;font-size:13px">First-time visitors. Follow up with a thank-you message and invite them back within 30 days.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Customer List</h3>
+            ${
+              customers.length === 0
+                ? `<p style="color:#64748b;text-align:center;padding:40px">No customers synced yet.</p>`
+                : `<div class="table-wrapper"><table class="data-table">
+                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Source</th><th>Segment</th><th>Since</th></tr></thead>
+                <tbody>${customers
+                  .slice(0, 50)
+                  .map(
+                    (c) => `
+                  <tr>
+                    <td>${[c.given_name, c.family_name].filter(Boolean).join(" ") || "Guest"}</td>
+                    <td>${c.email_address || "—"}</td>
+                    <td>${c.phone_number || "—"}</td>
+                    <td>${c.creation_source || "—"}</td>
+                    <td>${c.aervo_segment ? `<span class="badge badge-green">${c.aervo_segment}</span>` : "—"}</td>
+                    <td>${c.created_at ? new Date(c.created_at).toLocaleDateString() : "—"}</td>
+                  </tr>`,
+                  )
+                  .join("")}
+                </tbody>
+              </table></div>`
+            }
+          </div>`;
+      }
+
+      function initCustomerCharts() {
+        setTimeout(() => {
+          const ctx = document.getElementById("segmentChart");
+          if (!ctx) return;
+          const loyal = squareData.customers.filter(
+            (c) => c.aervo_segment === "loyal",
+          ).length;
+          const atRisk = squareData.customers.filter(
+            (c) => c.aervo_segment === "at_risk",
+          ).length;
+          const newC = squareData.customers.filter(
+            (c) => c.aervo_segment === "new",
+          ).length;
+          const lapsed = squareData.customers.filter(
+            (c) => c.aervo_segment === "lapsed",
+          ).length;
+          const unsegmented =
+            squareData.customers.length - loyal - atRisk - newC - lapsed;
+          new Chart(ctx, {
+            type: "doughnut",
+            data: {
+              labels: ["Loyal", "At Risk", "New", "Lapsed", "Unsegmented"],
+              datasets: [
+                {
+                  data: [loyal, atRisk, newC, lapsed, unsegmented],
+                  backgroundColor: [
+                    "#34d399",
+                    "#ef4444",
+                    "#60a5fa",
+                    "#f59e0b",
+                    "#475569",
+                  ],
+                  borderColor: "#0f172a",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: "#9ca7d6", padding: 12 },
+                },
+                tooltip: {
+                  callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}` },
+                },
+              },
+            },
+          });
+        }, 100);
+      }
+
+      // ── Appointments ─────────────────────────────────────────────────────────
+      function renderAppointments() {
+        const appts = squareData.appointments;
+        const upcoming = appts.filter(
+          (a) => new Date(a.start_at) > new Date(),
+        ).length;
+        const completed = appts.filter(
+          (a) => a.status === "COMPLETED" || a.status === "ACCEPTED",
+        ).length;
+        const cancelled = appts.filter((a) => a.status === "CANCELLED").length;
+        const noShows = appts.filter((a) => a.no_show).length;
+
+        return `
+          <div class="welcome">
+            <h1>Appointments</h1>
+            <p>Booking performance, no-show tracking, and staff insights</p>
+          </div>
+          <div class="grid-4">
+            <div class="card">
+              <h3>Total Bookings</h3>
+              <div class="stat-large">${appts.length}</div>
+            </div>
+            <div class="card">
+              <h3>Upcoming</h3>
+              <div class="stat-large blue">${upcoming}</div>
+              <div class="stat-label">Scheduled ahead</div>
+            </div>
+            <div class="card">
+              <h3>No-Shows</h3>
+              <div class="stat-large ${noShows > 0 ? "red" : ""}">${noShows}</div>
+              <div class="stat-label">${appts.length > 0 ? ((noShows / appts.length) * 100).toFixed(1) : 0}% no-show rate</div>
+            </div>
+            <div class="card">
+              <h3>Cancellations</h3>
+              <div class="stat-large yellow">${cancelled}</div>
+              <div class="stat-label">${appts.length > 0 ? ((cancelled / appts.length) * 100).toFixed(1) : 0}% cancellation rate</div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:24px">
+            <div class="card">
+              <h3>Bookings by Status</h3>
+              <canvas id="apptStatusChart" style="max-height:260px"></canvas>
+            </div>
+            <div class="card">
+              <h3>No-Show AI Recommendations</h3>
+              <div style="padding:8px 0">
+                <div class="insight-item" style="background:rgba(15,23,42,0.5);border-color:rgba(148,163,184,0.15)">
+                  <span class="insight-priority priority-high">TIP 1</span>
+                  <strong>Send SMS reminders</strong> — Automated texts 24h and 2h before reduce no-shows by up to 40%.
+                </div>
+                <div class="insight-item" style="background:rgba(15,23,42,0.5);border-color:rgba(148,163,184,0.15)">
+                  <span class="insight-priority priority-medium">TIP 2</span>
+                  <strong>Require deposits</strong> — A small deposit for new customers dramatically reduces no-shows.
+                </div>
+                <div class="insight-item" style="background:rgba(15,23,42,0.5);border-color:rgba(148,163,184,0.15)">
+                  <span class="insight-priority priority-low">TIP 3</span>
+                  <strong>Easy rescheduling</strong> — Make it simple for customers to reschedule instead of just not showing up.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Recent Appointments</h3>
+            ${
+              appts.length === 0
+                ? `<p style="color:#64748b;text-align:center;padding:40px">No appointments synced yet. Make sure Square Appointments is enabled for your account.</p>`
+                : `<div class="table-wrapper"><table class="data-table">
+                <thead><tr><th>Date & Time</th><th>Customer</th><th>Staff</th><th>Duration</th><th>Status</th></tr></thead>
+                <tbody>${appts
+                  .slice(0, 50)
+                  .map(
+                    (a) => `
+                  <tr>
+                    <td>${a.start_at ? new Date(a.start_at).toLocaleString() : "—"}</td>
+                    <td>${a.square_customer_id ? "●●●" : "Walk-in"}</td>
+                    <td>${a.team_member_id ? a.team_member_id.slice(-6) : "—"}</td>
+                    <td>${a.duration_minutes ? a.duration_minutes + " min" : "—"}</td>
+                    <td>
+                      ${
+                        a.no_show
+                          ? `<span class="badge badge-red">No Show</span>`
+                          : a.status === "CANCELLED"
+                            ? `<span class="badge badge-yellow">Cancelled</span>`
+                            : `<span class="badge badge-green">${a.status || "Booked"}</span>`
+                      }
+                    </td>
+                  </tr>`,
+                  )
+                  .join("")}
+                </tbody>
+              </table></div>`
+            }
+          </div>`;
+      }
+
+      function initApptCharts() {
+        setTimeout(() => {
+          const ctx = document.getElementById("apptStatusChart");
+          if (!ctx) return;
+          const appts = squareData.appointments;
+          const accepted = appts.filter(
+            (a) => a.status === "ACCEPTED" || a.status === "COMPLETED",
+          ).length;
+          const cancelled = appts.filter(
+            (a) => a.status === "CANCELLED",
+          ).length;
+          const noShows = appts.filter((a) => a.no_show).length;
+          const other = appts.length - accepted - cancelled - noShows;
+          new Chart(ctx, {
+            type: "doughnut",
+            data: {
+              labels: ["Completed", "Cancelled", "No Show", "Other"],
+              datasets: [
+                {
+                  data: [accepted, cancelled, noShows, other],
+                  backgroundColor: ["#34d399", "#f59e0b", "#ef4444", "#475569"],
+                  borderColor: "#0f172a",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: "#9ca7d6", padding: 12 },
+                },
+              },
+            },
+          });
+        }, 100);
+      }
+
+      // ── Google Reviews ───────────────────────────────────────────────────────
+      function renderReviews() {
+        return `
+          <div class="welcome">
+            <h1>Google Reviews</h1>
+            <p>AI-powered analysis of your Google Business reviews</p>
+          </div>
+
+          <div id="reviewsContent">
+            <div class="card" style="margin-bottom:24px">
+              <div style="text-align:center;padding:40px 20px">
+                <div style="font-size:48px;margin-bottom:16px">⭐</div>
+                <h2 style="color:#e5ecff;margin-bottom:12px">Connect Your Google Business Profile</h2>
+                <p style="color:#9ca7d6;font-size:15px;margin-bottom:24px;line-height:1.6;max-width:500px;margin-left:auto;margin-right:auto">
+                  Connect your Google Business Profile to let Aervo analyze your reviews, 
+                  identify common themes, and give you AI-powered advice to improve your rating.
+                </p>
+                <button class="btn-primary" onclick="connectGoogleReviews()">
+                  <img src="https://www.google.com/favicon.ico" style="width:16px;height:16px;vertical-align:middle;margin-right:8px">
+                  Connect Google Business
+                </button>
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <div class="card">
+                <h3>What You'll Get</h3>
+                <div style="margin-top:12px">
+                  ${[
+                    "⭐ Overall rating trends over time",
+                    "😊 Sentiment analysis on every review",
+                    "🔍 Common complaint & praise themes",
+                    "🤖 AI response suggestions",
+                    "📈 Rating improvement recommendations",
+                    "🔔 Alerts for new negative reviews",
+                  ]
+                    .map(
+                      (item) => `
+                    <div style="padding:10px 0;border-bottom:1px solid rgba(148,163,184,0.1);color:#9ca7d6;font-size:13px">${item}</div>
+                  `,
+                    )
+                    .join("")}
+                </div>
+              </div>
+              <div class="card">
+                <h3>Sample AI Analysis</h3>
+                <div class="review-card">
+                  <div class="review-header">
+                    <div class="review-name">Sarah M.</div>
+                    <div class="review-date">2 days ago</div>
+                  </div>
+                  <div style="margin-bottom:8px">${"⭐".repeat(4)}${"☆"}</div>
+                  <div class="review-text">"Great service but the wait time was a bit long during lunch rush."</div>
+                  <div class="review-ai">
+                    <strong>🤖 Aervo suggests:</strong> Acknowledge the wait time issue and mention you've added staff during peak hours. This converts a 4-star to a potential 5-star repeat customer.
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <h3>How It Works</h3>
+                <div style="margin-top:12px">
+                  ${[
+                    ["1", "Connect", "Link your Google Business Profile"],
+                    ["2", "Analyze", "Aervo reads and categorizes all reviews"],
+                    [
+                      "3",
+                      "Insights",
+                      "Get AI recommendations to improve ratings",
+                    ],
+                    ["4", "Respond", "Use AI-suggested responses to reviews"],
+                  ]
+                    .map(
+                      ([num, title, desc]) => `
+                    <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(148,163,184,0.1)">
+                      <div style="width:28px;height:28px;border-radius:50%;background:rgba(52,211,153,0.2);color:#34d399;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${num}</div>
+                      <div>
+                        <div style="color:#e5ecff;font-size:13px;font-weight:600">${title}</div>
+                        <div style="color:#64748b;font-size:12px">${desc}</div>
+                      </div>
+                    </div>`,
+                    )
+                    .join("")}
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      function connectGoogleReviews() {
+        const placeId = prompt(
+          "Enter your Google Place ID (find it at: https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder)",
+        );
+        if (!placeId) return;
+        fetchGoogleReviews(placeId);
+      }
+
+      async function fetchGoogleReviews(placeId) {
+        document.getElementById("reviewsContent").innerHTML =
+          `<div class="loading"><div class="spinner"></div><div>Fetching your Google Reviews...</div></div>`;
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/api/square/google-reviews?placeId=${encodeURIComponent(placeId)}&merchantId=${merchantId}`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          const data = await res.json();
+          if (data.success) renderReviewsData(data);
+          else throw new Error(data.message || "Failed to fetch reviews");
+        } catch (err) {
+          document.getElementById("reviewsContent").innerHTML =
+            `<div style="text-align:center;padding:40px;color:#fca5a5">
+              Failed to load reviews: ${err.message}<br><br>
+              <button class="btn-primary" onclick="renderView('reviews')">Try Again</button>
+            </div>`;
+        }
+      }
+
+      function renderReviewsData(data) {
+        const { rating, totalReviews, reviews, aiAnalysis } = data;
+        document.getElementById("reviewsContent").innerHTML = `
+          <div class="grid-4" style="margin-bottom:24px">
+            <div class="card" style="text-align:center">
+              <h3>Overall Rating</h3>
+              <div class="stat-large yellow">${rating}</div>
+              <div style="font-size:24px;margin:4px 0">${"⭐".repeat(Math.round(rating))}</div>
+              <div class="stat-label">${totalReviews} reviews</div>
+            </div>
+            <div class="card">
+              <h3>Sentiment Breakdown</h3>
+              <canvas id="sentimentChart" style="max-height:120px"></canvas>
+            </div>
+            <div class="card">
+              <h3>Common Themes</h3>
+              ${
+                (aiAnalysis?.themes || [])
+                  .map(
+                    (t) => `
+                <div style="padding:6px 0;border-bottom:1px solid rgba(148,163,184,0.1);font-size:13px;color:#9ca7d6">${t}</div>
+              `,
+                  )
+                  .join("") || "<p style='color:#64748b'>Analyzing...</p>"
+              }
+            </div>
+            <div class="card">
+              <h3>AI Recommendation</h3>
+              <p style="color:#9ca7d6;font-size:13px;line-height:1.6">${aiAnalysis?.topRecommendation || "Analyzing your reviews..."}</p>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Recent Reviews with AI Responses</h3>
+            ${(reviews || [])
+              .slice(0, 10)
+              .map(
+                (r) => `
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-name">${r.authorName}</div>
+                  <div class="review-date">${r.relativeTime}</div>
+                </div>
+                <div style="margin-bottom:8px">${"⭐".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+                <div class="review-text">"${r.text}"</div>
+                ${r.aiResponse ? `<div class="review-ai"><strong>🤖 Suggested response:</strong> ${r.aiResponse}</div>` : ""}
+              </div>
+            `,
+              )
+              .join("")}
+          </div>`;
+        setTimeout(() => {
+          const ctx = document.getElementById("sentimentChart");
+          if (ctx && aiAnalysis) {
+            new Chart(ctx, {
+              type: "doughnut",
+              data: {
+                labels: ["Positive", "Neutral", "Negative"],
+                datasets: [
+                  {
+                    data: [
+                      aiAnalysis.positive || 0,
+                      aiAnalysis.neutral || 0,
+                      aiAnalysis.negative || 0,
+                    ],
+                    backgroundColor: ["#34d399", "#60a5fa", "#ef4444"],
+                    borderColor: "#0f172a",
+                    borderWidth: 2,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+              },
+            });
+          }
+        }, 100);
+      }
+
+      // ── Not connected ────────────────────────────────────────────────────────
+      function renderNotConnected() {
+        document.getElementById("content").innerHTML = `
+          <div class="card" style="text-align:center;padding:60px 24px;max-width:600px;margin:40px auto">
+            <img src="square-logo.png" style="width:80px;margin-bottom:24px" onerror="this.style.display='none'">
+            <h2 style="color:#e5ecff;margin-bottom:12px">Connect Your Square Account</h2>
+            <p style="color:#9ca7d6;font-size:15px;margin-bottom:28px;line-height:1.6">
+              Aervo needs access to your Square account to provide AI-powered insights for your business.
+            </p>
+            <a href="${BACKEND_URL}/integrations/square/connect?merchantId=${merchantId}" class="btn-primary">
+              Connect Square Account
+            </a>
+          </div>`;
+      }
+
+      // ── Chat ─────────────────────────────────────────────────────────────────
+      function renderChat() {
+        return `
+          <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-message ai">
+                👋 Hi! I'm <strong>Aervo</strong>, your AI business co-pilot for your Square store.<br><br>
+                Try asking:<br>
+                • <span style="color:#6ee7b7;cursor:pointer" onclick="askSuggestion(this)">What were my busiest hours this week?</span><br>
+                • <span style="color:#6ee7b7;cursor:pointer" onclick="askSuggestion(this)">How can I reduce no-shows for appointments?</span><br>
+                • <span style="color:#6ee7b7;cursor:pointer" onclick="askSuggestion(this)">Which menu items should I promote?</span>
+              </div>
+            </div>
+            <div class="chat-input-wrapper">
+              <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything about your business..." />
+              <button class="btn-send" onclick="sendMessage()">Send</button>
+            </div>
+          </div>`;
+      }
+
+      let isAIThinking = false;
+      async function sendMessage() {
+        if (isAIThinking) return;
+        const input = document.getElementById("chatInput");
+        const messages = document.getElementById("chatMessages");
+        const message = input?.value?.trim();
+        if (!message || !messages) return;
+
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-message user";
+        userMsg.textContent = message;
+        messages.appendChild(userMsg);
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+
+        isAIThinking = true;
+        const typingEl = document.createElement("div");
+        typingEl.className = "chat-message ai";
+        typingEl.id = "typingIndicator";
+        typingEl.innerHTML =
+          "<em style='color:#64748b'>Aervo is thinking...</em>";
+        messages.appendChild(typingEl);
+        messages.scrollTop = messages.scrollHeight;
+        input.disabled = true;
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/square/ai-chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ message, merchantId }),
+          });
+          const data = await res.json();
+          document.getElementById("typingIndicator")?.remove();
+          const aiMsg = document.createElement("div");
+          aiMsg.className = "chat-message ai";
+          aiMsg.innerHTML = (data.reply || "Sorry, I couldn't respond.")
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\n/g, "<br>");
+          messages.appendChild(aiMsg);
+        } catch (err) {
+          document.getElementById("typingIndicator")?.remove();
+          const errMsg = document.createElement("div");
+          errMsg.className = "chat-message ai";
+          errMsg.textContent =
+            "Sorry, I had trouble responding. Please try again.";
+          messages.appendChild(errMsg);
+        }
+        isAIThinking = false;
+        input.disabled = false;
+        input.focus();
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function askSuggestion(el) {
+        const input = document.getElementById("chatInput");
+        if (input) {
+          input.value = el.textContent;
+          sendMessage();
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document
+          .getElementById("chatInput")
+          ?.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+          });
+      });
+
+      // ── Boot ─────────────────────────────────────────────────────────────────
+      init();
+    </script>
+  </body>
+</html>
