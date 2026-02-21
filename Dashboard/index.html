@@ -200,6 +200,12 @@
     </div>
 
     <script>
+      // Handle redirect from 404
+      const redirect = sessionStorage.getItem("redirect");
+      if (redirect) {
+        sessionStorage.removeItem("redirect");
+        window.location.href = redirect;
+      }
       const BACKEND_URL = "https://aervo-backend.onrender.com";
       const token = localStorage.getItem("aervo_token");
       if (!token) window.location.href = "/login";
