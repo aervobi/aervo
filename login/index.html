@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,7 +9,11 @@
     <style>
       body {
         margin: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
           sans-serif;
         background: #050817;
         color: #d6def8;
@@ -114,7 +118,8 @@
         font-size: 15px;
         letter-spacing: 0.5px;
         cursor: pointer;
-        box-shadow: 0 0 12px rgba(137, 180, 255, 0.4),
+        box-shadow:
+          0 0 12px rgba(137, 180, 255, 0.4),
           0 0 26px rgba(80, 130, 255, 0.3);
         transition: all 0.2s ease;
       }
@@ -122,7 +127,8 @@
       button:hover {
         background: #222c48;
         transform: translateY(-1px);
-        box-shadow: 0 0 16px rgba(137, 180, 255, 0.8),
+        box-shadow:
+          0 0 16px rgba(137, 180, 255, 0.8),
           0 0 40px rgba(80, 130, 255, 0.6);
       }
 
@@ -193,7 +199,7 @@
     ></div>
     <header class="nav">
       <div class="nav-left">
-        <a href="index.html" class="nav-brand">AERVO</a>
+        <a href="/login" class="nav-brand">AERVO</a>
       </div>
       <nav class="nav-links">
         <a href="index.html#product">Product</a>
@@ -235,11 +241,7 @@
 
           <div class="error" id="error"></div>
 
-          <div class="helper">
-            Demo accounts:<br />
-            <code>demo@aervo.com / demo123</code><br />
-            <code>owner@shopdemo.com / demo123</code>
-          </div>
+          <div class="helper"></div>
         </form>
       </div>
     </main>
@@ -306,7 +308,7 @@
               banner.style.display = "none";
               banner.innerHTML = "";
             },
-            type === "error" ? 9000 : 3500
+            type === "error" ? 9000 : 3500,
           );
         }
 
@@ -339,7 +341,7 @@
                 data.message ||
                   "Aervo Shield is on. Too many attempts from this device.",
                 data.hint ||
-                  "Wait a minute and try again. If you're stuck, use “Forgot password.”"
+                  "Wait a minute and try again. If you're stuck, use “Forgot password.”",
               );
               return;
             }
