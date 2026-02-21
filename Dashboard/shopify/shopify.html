@@ -596,10 +596,7 @@
         <div class="shop-badge" id="shopBadge" style="display: none">
           <span>●</span><span id="shopName">Square</span>
         </div>
-        <a
-          href="integrations.html"
-          style="text-decoration: none"
-          class="btn-logout"
+        <a href="/integrations" style="text-decoration: none" class="btn-logout"
           >⚙️ Integrations</a
         >
         <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
@@ -651,7 +648,7 @@
     <script>
       const BACKEND_URL = "https://aervo-backend.onrender.com";
       const token = localStorage.getItem("aervo_token");
-      if (!token) window.location.href = "login.html";
+      if (!token) window.location.href = "/login";
 
       let currentView = "overview";
       let userData = null;
@@ -668,7 +665,7 @@
       document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.removeItem("aervo_token");
         localStorage.removeItem("aervo_user");
-        window.location.href = "login.html";
+        window.location.href = "/login";
       });
 
       const mobileMenuBtn = document.getElementById("mobileMenuBtn");
@@ -706,7 +703,7 @@
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!res.ok) {
-            window.location.href = "login.html";
+            window.location.href = "/login";
             return;
           }
           const data = await res.json();

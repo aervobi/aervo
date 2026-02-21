@@ -19,7 +19,7 @@ npm install express node-fetch@2 body-parser sqlite3 dotenv
 node server.js
 ```
 
-3. Open `http://localhost:3000/dashboard.html` and click "Connect with Shopify". The demo flow will ask for your shop domain and redirect through Shopify's OAuth flow.
+3. Open `http://localhost:3000//dashboard` and click "Connect with Shopify". The demo flow will ask for your shop domain and redirect through Shopify's OAuth flow.
 
 Notes:
 

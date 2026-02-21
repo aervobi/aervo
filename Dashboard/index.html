@@ -170,7 +170,7 @@
       <h2>Choose your dashboard</h2>
       <p>You have multiple integrations connected.</p>
       <div class="picker-cards">
-        <a href="dashboard-shopify.html" class="picker-card shopify">
+        <a href="/dashboard/shopify" class="picker-card shopify">
           <div class="picker-icon">🛍️</div>
           <div class="picker-name">Shopify</div>
           <div class="picker-desc">
@@ -196,13 +196,13 @@
         connect your Shopify store or Square account and unlock AI-powered
         insights.
       </p>
-      <a href="integrations.html" class="btn-primary">⚙️ Set Up Integrations</a>
+      <a href="/integrations" class="btn-primary">⚙️ Set Up Integrations</a>
     </div>
 
     <script>
       const BACKEND_URL = "https://aervo-backend.onrender.com";
       const token = localStorage.getItem("aervo_token");
-      if (!token) window.location.href = "login.html";
+      if (!token) window.location.href = "/login";
 
       async function route() {
         try {
@@ -211,7 +211,7 @@
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!userRes.ok) {
-            window.location.href = "login.html";
+            window.location.href = "/login";
             return;
           }
           const { user } = await userRes.json();
@@ -244,7 +244,7 @@
           } else if (hasSquare) {
             window.location.href = "/dashboard/square";
           } else if (hasShopify) {
-            window.location.href = "dashboard-shopify.html";
+            window.location.href = "/dashboard/shopify";
           } else {
             // Neither
             document.getElementById("loadingState").style.display = "none";
@@ -254,7 +254,7 @@
         } catch (err) {
           console.error("Routing error:", err);
           // Fallback to Shopify dashboard (existing behavior)
-          window.location.href = "dashboard-shopify.html";
+          window.location.href = "/dashboard/shopify";
         }
       }
 

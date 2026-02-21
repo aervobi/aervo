@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,7 +9,11 @@
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
           sans-serif;
         background: radial-gradient(circle at top, #020617, #020213);
         color: #e5ecff;
@@ -28,7 +32,8 @@
         background: radial-gradient(circle at top left, #111827, #020617);
         border-radius: 24px;
         border: 1px solid rgba(148, 163, 255, 0.25);
-        box-shadow: 0 24px 80px rgba(15, 23, 42, 1),
+        box-shadow:
+          0 24px 80px rgba(15, 23, 42, 1),
           0 0 60px rgba(37, 99, 235, 0.45);
         padding: 32px 30px 26px;
         text-align: left;
@@ -108,7 +113,8 @@
         font-size: 14px;
         text-decoration: none;
         cursor: pointer;
-        box-shadow: 0 0 18px rgba(129, 140, 248, 0.8),
+        box-shadow:
+          0 0 18px rgba(129, 140, 248, 0.8),
           0 0 46px rgba(37, 99, 235, 0.7);
       }
 
@@ -174,7 +180,7 @@
         </div>
 
         <div class="cta-row">
-          <a href="dashboard.html" class="primary-btn" id="goDashboardBtn">
+          <a href="/dashboard" class="primary-btn" id="goDashboardBtn">
             Go to your dashboard
           </a>
           <a href="index.html" class="secondary-link">Back to aervoapp.com</a>
@@ -196,7 +202,7 @@
       const justSignedUp = jsu === "true" || jsu === "1";
 
       if (!rawUser) {
-        window.location.href = "login.html";
+        window.location.href = "/login";
       } else {
         let user = {};
         try {

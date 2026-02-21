@@ -213,7 +213,7 @@ app.get('/auth/shopify/callback', async (req, res) => {
     }
 
     console.log(`Connected shop ${shop}. Token stored in SQLite.`);
-    res.redirect('/dashboard.html?shop=' + encodeURIComponent(shop) + '&connected=1');
+    res.redirect('//dashboard?shop=' + encodeURIComponent(shop) + '&connected=1');
   } catch (err) {
     console.error('Error exchanging token', err);
     res.status(500).send('OAuth exchange failed');

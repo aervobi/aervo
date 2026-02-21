@@ -232,7 +232,7 @@
 
           <!-- NEW: forgot password link -->
           <div class="forgot-row">
-            <a href="forgot-password.html" class="forgot-link">
+            <a href="/forgot-password" class="forgot-link">
               Forgot your password?
             </a>
           </div>
@@ -361,7 +361,7 @@
             localStorage.setItem("aervo_user", JSON.stringify(data.user));
 
             setTimeout(() => {
-              window.location.href = "dashboard.html";
+              window.location.href = "/dashboard";
             }, 600);
           } catch (err) {
             console.error(err);

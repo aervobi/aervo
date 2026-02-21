@@ -395,7 +395,7 @@
       const BACKEND_URL = "https://aervo-backend.onrender.com";
       const token = localStorage.getItem("aervo_token");
 
-      if (!token) window.location.href = "login.html";
+      if (!token) window.location.href = "/login";
 
       let availableIntegrations = [];
       let connectedStores = [];
@@ -555,7 +555,7 @@
           const token = localStorage.getItem("aervo_token");
           if (!token) {
             alert("You're not logged in!");
-            window.location.href = "login.html";
+            window.location.href = "/login";
             return;
           }
 
