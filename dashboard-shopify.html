@@ -590,6 +590,23 @@
         <div class="nav-tab" data-view="customers">Customers</div>
       </div>
       <div class="nav-right">
+        <a
+          href="dashboard-square.html"
+          id="integrationSwitcher"
+          style="
+            display: none;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: #34d399;
+            font-size: 12px;
+            font-weight: 600;
+          "
+        >
+          ⬛ Switch to Square
+        </a>
         <div class="shop-badge" id="shopBadge" style="display: none">
           <span>●</span>
           <span id="shopName">Loading...</span>
@@ -702,6 +719,16 @@
 
           userData = data.user;
           shopData = data.shop;
+          // Check if Square is also connected
+          const squareStatus = await fetch(
+            `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          const squareData = await squareStatus.json();
+          if (squareData.connected) {
+            document.getElementById("integrationSwitcher").style.display =
+              "inline-flex";
+          }
 
           if (shopData) {
             document.getElementById("shopBadge").style.display = "flex";

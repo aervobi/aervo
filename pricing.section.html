@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aervo – Pricing</title>
+    <meta
+      name="description"
+      content="Simple, transparent pricing for every stage of your business. Start free, upgrade when you're ready."
+    />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      :root {
+        --bg: #02030a;
+        --card: rgba(255, 255, 255, 0.04);
+        --border: rgba(255, 255, 255, 0.1);
+        --borderSoft: rgba(255, 255, 255, 0.07);
+        --text: #f7f7ff;
+        --muted: rgba(215, 220, 240, 0.7);
+        --a1: #29c8ff;
+        --a2: #7c5cff;
+        --a3: #23e6a8;
+        --max: 1120px;
+        --r-lg: 18px;
+        --r-xl: 28px;
+        --r-pill: 999px;
+        --shadow: 0 24px 90px rgba(0, 0, 0, 0.75);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "SF Pro Text",
+          "Inter",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* Background aurora */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            900px 520px at 20% 20%,
+            rgba(41, 200, 255, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 520px at 75% 25%,
+            rgba(124, 92, 255, 0.16),
+            transparent 62%
+          ),
+          radial-gradient(
+            820px 620px at 60% 85%,
+            rgba(35, 230, 168, 0.1),
+            transparent 60%
+          );
+        filter: blur(8px);
+        opacity: 0.9;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 54px 54px;
+        opacity: 0.08;
+      }
+
+      /* Canvas */
+      .site-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.85;
+      }
+
+      /* Header */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        backdrop-filter: blur(22px);
+        -webkit-backdrop-filter: blur(22px);
+        background: linear-gradient(
+          to bottom,
+          rgba(2, 3, 10, 0.92),
+          rgba(2, 3, 10, 0.62),
+          rgba(2, 3, 10, 0.22)
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      header::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--a1),
+          var(--a2),
+          var(--a3),
+          var(--a2),
+          var(--a1)
+        );
+        background-size: 220% 100%;
+        opacity: 0.55;
+        animation: headerGlow 7s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes headerGlow {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 220% 50%;
+        }
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 20px;
+        max-width: var(--max);
+        margin: 0 auto;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand img {
+        height: 28px;
+        filter: drop-shadow(0 0 14px rgba(124, 92, 255, 0.35));
+      }
+      .brand .name {
+        font-size: 1rem;
+        font-weight: 950;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+      .btn {
+        border-radius: var(--r-pill);
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+        white-space: nowrap;
+      }
+      .btn-primary {
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        box-shadow:
+          0 0 18px rgba(41, 200, 255, 0.28),
+          0 0 32px rgba(124, 92, 255, 0.18);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 0 26px rgba(41, 200, 255, 0.5),
+          0 0 44px rgba(124, 92, 255, 0.32);
+      }
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: var(--text);
+      }
+      .btn-ghost:hover {
+        transform: translateY(-2px);
+      }
+      .nav-links {
+        display: flex;
+        gap: 8px;
+      }
+      .nav-links a {
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(235, 238, 255, 0.7);
+        transition:
+          color 0.18s,
+          background 0.18s;
+        border: 1px solid transparent;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .nav-links a.active {
+        color: var(--text);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Page wrapper */
+      .page {
+        position: relative;
+        z-index: 1;
+        padding: 120px 20px 100px;
+        max-width: var(--max);
+        margin: 0 auto;
+      }
+
+      /* Hero text */
+      .pricing-hero {
+        text-align: center;
+        margin-bottom: 56px;
+      }
+      .pricing-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: var(--r-pill);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.34);
+        backdrop-filter: blur(10px);
+        padding: 6px 14px;
+        margin-bottom: 18px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(215, 220, 240, 0.8);
+      }
+      .pricing-hero h1 {
+        font-size: clamp(2.4rem, 5vw, 3.8rem);
+        font-weight: 950;
+        letter-spacing: -0.03em;
+        line-height: 1.06;
+        margin-bottom: 14px;
+      }
+      .pricing-hero h1 span {
+        background: linear-gradient(120deg, var(--a1), var(--a2));
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .pricing-hero p {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 52ch;
+        margin: 0 auto;
+      }
+
+      /* Toggle */
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin: 32px auto 48px;
+      }
+      .toggle-label {
+        font-size: 0.92rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .toggle-label.active {
+        color: var(--text);
+      }
+      .toggle-track {
+        position: relative;
+        width: 52px;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .toggle-track.on {
+        background: linear-gradient(
+          90deg,
+          rgba(41, 200, 255, 0.4),
+          rgba(124, 92, 255, 0.4)
+        );
+      }
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--text);
+        transition: transform 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+      .toggle-track.on .toggle-thumb {
+        transform: translateX(24px);
+      }
+      .save-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(35, 230, 168, 0.15);
+        border: 1px solid rgba(35, 230, 168, 0.3);
+        color: #23e6a8;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: var(--r-pill);
+      }
+
+      /* Pricing grid */
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        align-items: start;
+      }
+
+      /* Tier card */
+      .tier {
+        position: relative;
+        border-radius: var(--r-xl);
+        border: 1px solid var(--borderSoft);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.03)
+        );
+        padding: 28px 24px 32px;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        overflow: hidden;
+      }
+      .tier::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            circle at 30% 20%,
+            rgba(41, 200, 255, 0.06),
+            transparent 55%
+          ),
+          radial-gradient(
+            circle at 70% 80%,
+            rgba(124, 92, 255, 0.06),
+            transparent 55%
+          );
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .tier:hover::before {
+        opacity: 1;
+      }
+      .tier:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      }
+
+      /* PRO — featured */
+      .tier.featured {
+        border-color: rgba(41, 200, 255, 0.35);
+        background: linear-gradient(
+          180deg,
+          rgba(41, 200, 255, 0.08),
+          rgba(124, 92, 255, 0.06),
+          rgba(255, 255, 255, 0.03)
+        );
+        box-shadow:
+          0 0 0 1px rgba(41, 200, 255, 0.2),
+          0 20px 60px rgba(41, 200, 255, 0.12);
+      }
+      .tier.featured::before {
+        opacity: 0.8;
+      }
+      .tier.featured:hover {
+        transform: translateY(-8px);
+        box-shadow:
+          0 0 0 1px rgba(41, 200, 255, 0.3),
+          0 36px 100px rgba(41, 200, 255, 0.2);
+      }
+
+      /* Popular badge */
+      .popular-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: var(--r-pill);
+        margin-bottom: 16px;
+      }
+
+      .tier-name {
+        font-size: 1.1rem;
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        margin-bottom: 6px;
+      }
+      .tier-desc {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 20px;
+        min-height: 38px;
+      }
+
+      /* Price */
+      .tier-price {
+        margin-bottom: 24px;
+      }
+      .price-amount {
+        font-size: 2.8rem;
+        font-weight: 950;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        display: flex;
+        align-items: flex-start;
+        gap: 2px;
+      }
+      .price-amount .dollar {
+        font-size: 1.4rem;
+        margin-top: 6px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .price-amount .num {
+        background: linear-gradient(
+          120deg,
+          var(--text),
+          rgba(215, 220, 240, 0.85)
+        );
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .price-period {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .price-annual {
+        font-size: 0.8rem;
+        color: #23e6a8;
+        margin-top: 2px;
+        min-height: 18px;
+      }
+
+      /* CTA */
+      .tier-cta {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 13px;
+        border-radius: 14px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        margin-bottom: 28px;
+        cursor: pointer;
+        border: none;
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .tier-cta.primary-cta {
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        box-shadow:
+          0 0 20px rgba(41, 200, 255, 0.25),
+          0 0 36px rgba(124, 92, 255, 0.18);
+      }
+      .tier-cta.primary-cta:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 0 28px rgba(41, 200, 255, 0.45),
+          0 0 50px rgba(124, 92, 255, 0.3);
+      }
+      .tier-cta.ghost-cta {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--text);
+      }
+      .tier-cta.ghost-cta:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .tier-cta.trial-cta {
+        background: linear-gradient(
+          90deg,
+          rgba(41, 200, 255, 0.15),
+          rgba(124, 92, 255, 0.15)
+        );
+        border: 1px solid rgba(41, 200, 255, 0.3);
+        color: var(--a1);
+      }
+      .tier-cta.trial-cta:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(
+          90deg,
+          rgba(41, 200, 255, 0.22),
+          rgba(124, 92, 255, 0.22)
+        );
+      }
+
+      /* Features list */
+      .tier-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-bottom: 20px;
+      }
+      .features-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .feature-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.88rem;
+        color: rgba(215, 220, 240, 0.82);
+        line-height: 1.5;
+      }
+      .feature-list li .check {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        margin-top: 1px;
+      }
+      .check-yes {
+        background: rgba(35, 230, 168, 0.15);
+        color: #23e6a8;
+        border: 1px solid rgba(35, 230, 168, 0.3);
+      }
+      .check-no {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(215, 220, 240, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .feature-list li.muted {
+        color: rgba(215, 220, 240, 0.4);
+      }
+
+      /* FAQ / comparison note */
+      .pricing-note {
+        text-align: center;
+        margin-top: 48px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .pricing-note a {
+        color: var(--a1);
+        text-decoration: underline;
+      }
+
+      /* Annual savings callout */
+      .annual-callout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: rgba(35, 230, 168, 0.08);
+        border: 1px solid rgba(35, 230, 168, 0.2);
+        border-radius: 16px;
+        padding: 14px 24px;
+        margin: 0 auto 40px;
+        max-width: 520px;
+        font-size: 0.9rem;
+        color: rgba(215, 220, 240, 0.85);
+      }
+      .annual-callout strong {
+        color: #23e6a8;
+      }
+      .annual-callout {
+        display: none;
+      }
+      .annual-callout.visible {
+        display: flex;
+      }
+
+      /* FAQ */
+      .faq {
+        margin-top: 80px;
+      }
+      .faq-title {
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .faq-sub {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-bottom: 40px;
+      }
+      .faq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .faq-item {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.025)
+        );
+        border: 1px solid var(--borderSoft);
+        border-radius: 18px;
+        padding: 22px;
+      }
+      .faq-q {
+        font-size: 0.95rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+      .faq-a {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* Footer */
+      footer {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-top: 80px;
+        padding: 32px 20px;
+      }
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        max-width: var(--max);
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+      .footer-links a:hover {
+        color: var(--a1);
+      }
+
+      /* Responsive */
+      @media (max-width: 980px) {
+        .pricing-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+        .faq-grid {
+          grid-template-columns: 1fr;
+        }
+        .footer-inner {
+          flex-direction: column;
+          text-align: center;
+        }
+        .footer-links {
+          justify-content: center;
+        }
+      }
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas class="site-canvas" id="siteCanvas" aria-hidden="true"></canvas>
+
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <img src="logo.png" alt="Aervo" />
+          <div class="name">AERVO</div>
+        </a>
+        <nav class="nav-links">
+          <a href="index.html#services">Capabilities</a>
+          <a href="index.html#about">About</a>
+          <a href="pricing.html" class="active">Pricing</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+        <div style="display: flex; gap: 10px">
+          <a href="login.html" class="btn btn-ghost">Log in</a>
+          <a href="signup.html" class="btn btn-primary">Get started</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="page">
+      <!-- Hero -->
+      <div class="pricing-hero">
+        <div class="pricing-kicker">✦ Pricing</div>
+        <h1>Plans that grow <span>with you</span></h1>
+        <p>
+          Start free. Upgrade when your business is ready. No hidden fees, no
+          surprise bills.
+        </p>
+      </div>
+
+      <!-- Toggle -->
+      <div class="toggle-wrap">
+        <span class="toggle-label active" id="monthlyLabel">Monthly</span>
+        <div
+          class="toggle-track"
+          id="billingToggle"
+          role="switch"
+          aria-checked="false"
+        >
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label" id="annualLabel">Annual</span>
+        <span class="save-badge">✦ 2 months free</span>
+      </div>
+
+      <!-- Annual callout -->
+      <div class="annual-callout" id="annualCallout">
+        🎉 You're saving up to <strong>$198/year</strong> with annual billing —
+        that's 2 months completely free!
+      </div>
+
+      <!-- Pricing cards -->
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="tier">
+          <div class="tier-name">Starter</div>
+          <div class="tier-desc">Try Aervo free. No credit card required.</div>
+          <div class="tier-price">
+            <div class="price-amount"><span class="num">Free</span></div>
+            <div class="price-period">Forever free</div>
+            <div class="price-annual">&nbsp;</div>
+          </div>
+          <a href="signup.html" class="tier-cta ghost-cta">Get started free</a>
+          <div class="tier-divider"></div>
+          <div class="features-label">What's included</div>
+          <ul class="feature-list">
+            <li>
+              <span class="check check-yes">✓</span>1 integration (Shopify or
+              Square)
+            </li>
+            <li><span class="check check-yes">✓</span>Basic dashboard</li>
+            <li><span class="check check-yes">✓</span>7 days data history</li>
+            <li>
+              <span class="check check-yes">✓</span>3 Ask Aervo messages/month
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Google Reviews
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Customer segments
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Revenue forecasting
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Win-back campaigns
+            </li>
+          </ul>
+        </div>
+
+        <!-- Essential -->
+        <div class="tier">
+          <div class="tier-name">Essential</div>
+          <div class="tier-desc">
+            For small businesses getting serious about their data.
+          </div>
+          <div class="tier-price">
+            <div class="price-amount">
+              <span class="dollar">$</span>
+              <span class="num" id="essentialPrice">19</span>
+            </div>
+            <div class="price-period" id="essentialPeriod">per month</div>
+            <div class="price-annual" id="essentialAnnual">&nbsp;</div>
+          </div>
+          <a href="signup.html?plan=essential" class="tier-cta ghost-cta"
+            >Start Essential</a
+          >
+          <div class="tier-divider"></div>
+          <div class="features-label">Everything in Starter, plus</div>
+          <ul class="feature-list">
+            <li><span class="check check-yes">✓</span>1 integration</li>
+            <li>
+              <span class="check check-yes">✓</span>Full dashboard — all tabs
+            </li>
+            <li><span class="check check-yes">✓</span>90 days data history</li>
+            <li><span class="check check-yes">✓</span>Unlimited Ask Aervo</li>
+            <li>
+              <span class="check check-yes">✓</span>Google Reviews (50 reviews)
+            </li>
+            <li>
+              <span class="check check-yes">✓</span>Basic customer segmentation
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Revenue forecasting
+            </li>
+            <li class="muted">
+              <span class="check check-no">–</span>Win-back campaigns
+            </li>
+          </ul>
+        </div>
+
+        <!-- Pro — Featured -->
+        <div class="tier featured">
+          <div class="popular-badge">⚡ Most Popular</div>
+          <div class="tier-name">Pro</div>
+          <div class="tier-desc">
+            The full Aervo experience for growing businesses.
+          </div>
+          <div class="tier-price">
+            <div class="price-amount">
+              <span class="dollar">$</span>
+              <span class="num" id="proPrice">49</span>
+            </div>
+            <div class="price-period" id="proPeriod">per month</div>
+            <div class="price-annual" id="proAnnual">&nbsp;</div>
+          </div>
+          <a
+            href="signup.html?plan=pro&trial=true"
+            class="tier-cta trial-cta"
+            id="proCta"
+            >Start 14-day free trial</a
+          >
+          <div class="tier-divider"></div>
+          <div class="features-label">Everything in Essential, plus</div>
+          <ul class="feature-list">
+            <li>
+              <span class="check check-yes">✓</span>Both integrations (Shopify +
+              Square)
+            </li>
+            <li><span class="check check-yes">✓</span>Unified customer view</li>
+            <li><span class="check check-yes">✓</span>2 years data history</li>
+            <li>
+              <span class="check check-yes">✓</span>Google Reviews unlimited
+            </li>
+            <li>
+              <span class="check check-yes">✓</span>AI Revenue Forecasting
+            </li>
+            <li>
+              <span class="check check-yes">✓</span>Win-back campaign generator
+            </li>
+            <li><span class="check check-yes">✓</span>AI Marketing Copy</li>
+            <li>
+              <span class="check check-yes">✓</span>Staff performance scores
+            </li>
+          </ul>
+        </div>
+
+        <!-- Business -->
+        <div class="tier">
+          <div class="tier-name">Business</div>
+          <div class="tier-desc">
+            For multi-location businesses that need more power.
+          </div>
+          <div class="tier-price">
+            <div class="price-amount">
+              <span class="dollar">$</span>
+              <span class="num" id="businessPrice">99</span>
+            </div>
+            <div class="price-period" id="businessPeriod">per month</div>
+            <div class="price-annual" id="businessAnnual">&nbsp;</div>
+          </div>
+          <a href="signup.html?plan=business" class="tier-cta ghost-cta"
+            >Start Business</a
+          >
+          <div class="tier-divider"></div>
+          <div class="features-label">Everything in Pro, plus</div>
+          <ul class="feature-list">
+            <li><span class="check check-yes">✓</span>Up to 5 locations</li>
+            <li>
+              <span class="check check-yes">✓</span>Unlimited data history
+            </li>
+            <li><span class="check check-yes">✓</span>White-label reports</li>
+            <li>
+              <span class="check check-yes">✓</span>Competitor benchmarking
+            </li>
+            <li><span class="check check-yes">✓</span>Priority support</li>
+            <li><span class="check check-yes">✓</span>Dedicated onboarding</li>
+            <li><span class="check check-yes">✓</span>Advanced analytics</li>
+            <li>
+              <span class="check check-yes">✓</span>Custom integrations (coming
+              soon)
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pricing-note">
+        All plans include SSL-encrypted connections, read-only data access, and
+        GDPR-compliant storage.<br />
+        Questions? <a href="index.html#contact">Talk to us</a> — we're happy to
+        help you pick the right plan.
+      </div>
+
+      <!-- FAQ -->
+      <div class="faq">
+        <div class="faq-title">Common questions</div>
+        <div class="faq-sub">
+          Everything you need to know before getting started.
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <div class="faq-q">Can I switch plans anytime?</div>
+            <div class="faq-a">
+              Yes — upgrade or downgrade at any time. If you upgrade, you'll be
+              charged the prorated difference. If you downgrade, your new rate
+              kicks in at the next billing cycle.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">What does the 14-day Pro trial include?</div>
+            <div class="faq-a">
+              Full access to every Pro feature — both integrations, revenue
+              forecasting, win-back campaigns, AI marketing copy, and more. No
+              credit card required to start.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Is my store data safe?</div>
+            <div class="faq-a">
+              Absolutely. Aervo uses read-only connections, meaning we can never
+              modify your store data. All data is encrypted in transit and at
+              rest.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">Do I need both Shopify and Square for Pro?</div>
+            <div class="faq-a">
+              No — Pro supports both integrations but you're not required to use
+              both. Many Pro merchants use just one platform and upgrade for the
+              advanced AI features and longer data history.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">What happens to my data if I cancel?</div>
+            <div class="faq-a">
+              You'll retain access until the end of your billing period. After
+              that, your account is downgraded to Starter. We never delete your
+              historical data — you can reactivate anytime.
+            </div>
+          </div>
+          <div class="faq-item">
+            <div class="faq-q">How does annual billing work?</div>
+            <div class="faq-a">
+              Annual plans are billed once per year at the discounted rate —
+              equivalent to getting 2 months free. You can cancel before your
+              renewal date for a prorated refund.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-inner">
+        <div>© <span id="year"></span> Aervo. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="index.html#services">Capabilities</a>
+          <a href="index.html#about">About</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Billing toggle
+      const toggle = document.getElementById("billingToggle");
+      const monthlyLabel = document.getElementById("monthlyLabel");
+      const annualLabel = document.getElementById("annualLabel");
+      const annualCallout = document.getElementById("annualCallout");
+      let isAnnual = false;
+
+      const plans = {
+        essential: { monthly: 19, annual: 190, perMonth: 15.83 },
+        pro: { monthly: 49, annual: 490, perMonth: 40.83 },
+        business: { monthly: 99, annual: 990, perMonth: 82.5 },
+      };
+
+      function updatePricing() {
+        Object.entries(plans).forEach(([key, p]) => {
+          const priceEl = document.getElementById(`${key}Price`);
+          const periodEl = document.getElementById(`${key}Period`);
+          const annualEl = document.getElementById(`${key}Annual`);
+
+          if (isAnnual) {
+            priceEl.textContent = p.perMonth.toFixed(2);
+            periodEl.textContent = "per month, billed annually";
+            annualEl.textContent = `$${p.annual}/yr — save $${p.monthly * 12 - p.annual}`;
+          } else {
+            priceEl.textContent = p.monthly;
+            periodEl.textContent = "per month";
+            annualEl.textContent = "";
+          }
+        });
+
+        // Pro CTA
+        const proCta = document.getElementById("proCta");
+        proCta.textContent = isAnnual
+          ? "Start 14-day free trial — Annual"
+          : "Start 14-day free trial";
+
+        // Labels
+        monthlyLabel.classList.toggle("active", !isAnnual);
+        annualLabel.classList.toggle("active", isAnnual);
+        toggle.classList.toggle("on", isAnnual);
+        toggle.setAttribute("aria-checked", isAnnual);
+
+        // Callout
+        annualCallout.classList.toggle("visible", isAnnual);
+      }
+
+      toggle.addEventListener("click", () => {
+        isAnnual = !isAnnual;
+        updatePricing();
+      });
+
+      // Ambient particles
+      const canvas = document.getElementById("siteCanvas");
+      const ctx = canvas.getContext("2d");
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion:reduce)",
+      ).matches;
+      let particles = [];
+
+      function resize() {
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = window.innerHeight * devicePixelRatio;
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      }
+
+      function makeP() {
+        return {
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          r: 0.8 + Math.random() * 1.8,
+          a: 0.05 + Math.random() * 0.14,
+          vx: -0.1 + Math.random() * 0.2,
+          vy: -0.08 + Math.random() * 0.18,
+        };
+      }
+
+      function init() {
+        particles = Array.from({ length: reduced ? 0 : 100 }, makeP);
+      }
+
+      function draw() {
+        const w = window.innerWidth,
+          h = window.innerHeight;
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+          if (p.y < -10) p.y = h + 10;
+          if (p.y > h + 10) p.y = -10;
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+          g.addColorStop(0, `rgba(180,230,255,${p.a})`);
+          g.addColorStop(0.55, `rgba(124,92,255,${p.a * 0.3})`);
+          g.addColorStop(1, "rgba(180,230,255,0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", () => {
+        resize();
+        init();
+      });
+      resize();
+      init();
+      draw();
+    </script>
+  </body>
+</html>
