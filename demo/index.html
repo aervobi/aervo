@@ -999,8 +999,105 @@
           grid-template-columns: 1fr;
         }
       }
-      @media (max-width: 560px) {
+      @media (max-width: 640px) {
+        .demo-banner {
+          padding: 8px 12px;
+        }
+        .demo-banner-text {
+          font-size: 0.75rem;
+        }
+        .demo-banner-text span.demo-badge {
+          display: none;
+        }
+        .header-inner {
+          padding: 10px 14px;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .brand-name {
+          font-size: 0.85rem;
+        }
+        .switcher {
+          width: 100%;
+          order: 3;
+        }
+        .switcher-btn {
+          flex: 1;
+          font-size: 0.75rem;
+          padding: 6px 8px;
+          justify-content: center;
+        }
+        .header-right {
+          display: none;
+        }
+        .app {
+          padding: 150px 14px 40px;
+        }
+        .store-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .store-name {
+          font-size: 1.1rem;
+        }
         .stats-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .stat-value {
+          font-size: 1.5rem;
+        }
+        .stat-card {
+          padding: 14px;
+        }
+        .two-col,
+        .three-col {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          padding: 16px;
+        }
+        .staff-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .hour-grid {
+          grid-template-columns: repeat(6, 1fr);
+        }
+        .chat-messages {
+          min-height: 140px;
+          max-height: 180px;
+        }
+        .suggested-qs {
+          gap: 4px;
+        }
+        .suggested-q {
+          font-size: 0.7rem;
+          padding: 4px 8px;
+        }
+        .data-table th,
+        .data-table td {
+          font-size: 0.78rem;
+        }
+        .appt-time {
+          width: 44px;
+          font-size: 0.75rem;
+        }
+        .appt-service {
+          font-size: 0.82rem;
+        }
+        .rating-big {
+          font-size: 1.8rem;
+        }
+        .panel-title {
+          font-size: 0.85rem;
+        }
+      }
+      @media (max-width: 400px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .staff-grid {
           grid-template-columns: 1fr;
         }
       }
