@@ -1146,6 +1146,47 @@
       resize();
       init();
       draw();
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+
+      async function startCheckout(planId) {
+        const token = localStorage.getItem("aervo_token");
+
+        // If not logged in, send to signup first
+        if (!token) {
+          window.location.href = `/signup?plan=${planId}`;
+          return;
+        }
+
+        try {
+          // Get user info
+          const userRes = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const { user } = await userRes.json();
+
+          // Create Stripe checkout session
+          const res = await fetch(`${BACKEND_URL}/stripe/create-checkout`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              planId,
+              userId: String(user.id),
+              email: user.email,
+            }),
+          });
+
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url; // redirect to Stripe
+          }
+        } catch (err) {
+          console.error("Checkout error:", err);
+          alert("Something went wrong. Please try again.");
+        }
+      }
     </script>
   </body>
 </html>
