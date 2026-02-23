@@ -674,68 +674,352 @@
           </div>
         </div>
 
-        <!-- Step 3 — Store URL -->
+        <!-- Step 3 — Connect Integration -->
         <div class="step-panel" id="step3">
           <div class="step-kicker">Step 3 of 3</div>
-          <div class="step-title">
-            Almost there! <span>Connect your store</span>
-          </div>
-          <div class="step-sub" id="step3Sub">
-            Enter your store details so Aervo knows where to pull your data
-            from.
+          <div class="step-title">Connect your <span>integration</span></div>
+          <div class="step-sub">
+            Aervo uses read-only access — we can never modify your store data.
+            Encrypted and secure.
           </div>
 
-          <div id="shopifyFields">
-            <div class="field">
-              <label>Shopify store URL</label>
-              <input
-                type="text"
-                id="shopifyUrl"
-                placeholder="yourstore.myshopify.com"
-              />
+          <!-- Shopify connect -->
+          <div id="shopifyConnect">
+            <div
+              style="
+                background: rgba(150, 191, 72, 0.07);
+                border: 1px solid rgba(150, 191, 72, 0.2);
+                border-radius: 18px;
+                padding: 24px;
+                margin-bottom: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 14px;
+                    background: rgba(150, 191, 72, 0.15);
+                    border: 1px solid rgba(150, 191, 72, 0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                  "
+                >
+                  🛍️
+                </div>
+                <div>
+                  <div style="font-size: 1rem; font-weight: 800">Shopify</div>
+                  <div style="font-size: 0.8rem; color: var(--muted)">
+                    Online store & e-commerce platform
+                  </div>
+                </div>
+                <div
+                  id="shopifyStatus"
+                  style="
+                    margin-left: auto;
+                    display: none;
+                    background: rgba(35, 230, 168, 0.12);
+                    border: 1px solid rgba(35, 230, 168, 0.3);
+                    color: #23e6a8;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    padding: 4px 12px;
+                    border-radius: 999px;
+                  "
+                >
+                  ✓ Connected
+                </div>
+              </div>
+              <div
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  margin-bottom: 16px;
+                  line-height: 1.6;
+                "
+              >
+                You'll be redirected to Shopify to authorize Aervo. This grants
+                read-only access to your orders, products, and customers.
+              </div>
+              <button
+                onclick="connectShopify()"
+                id="shopifyConnectBtn"
+                style="
+                  width: 100%;
+                  padding: 13px;
+                  border-radius: 12px;
+                  border: none;
+                  cursor: pointer;
+                  background: linear-gradient(90deg, #96bf48, #5a8a1f);
+                  color: #fff;
+                  font-size: 0.95rem;
+                  font-weight: 800;
+                  transition:
+                    transform 0.15s,
+                    box-shadow 0.15s;
+                  box-shadow: 0 0 20px rgba(150, 191, 72, 0.3);
+                "
+                onmouseover="this.style.transform = 'translateY(-2px)'"
+                onmouseout="this.style.transform = ''"
+              >
+                Connect Shopify →
+              </button>
             </div>
           </div>
 
-          <div id="squareFields" style="display: none">
-            <div class="field">
-              <label>Business location (city)</label>
-              <input
-                type="text"
-                id="squareLocation"
-                placeholder="e.g. Austin, TX"
-              />
+          <!-- Square connect -->
+          <div id="squareConnect" style="display: none">
+            <div
+              style="
+                background: rgba(35, 230, 168, 0.06);
+                border: 1px solid rgba(35, 230, 168, 0.2);
+                border-radius: 18px;
+                padding: 24px;
+                margin-bottom: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 14px;
+                    background: rgba(35, 230, 168, 0.1);
+                    border: 1px solid rgba(35, 230, 168, 0.25);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                  "
+                >
+                  ⬛
+                </div>
+                <div>
+                  <div style="font-size: 1rem; font-weight: 800">Square</div>
+                  <div style="font-size: 0.8rem; color: var(--muted)">
+                    POS, appointments & in-person sales
+                  </div>
+                </div>
+                <div
+                  id="squareStatus"
+                  style="
+                    margin-left: auto;
+                    display: none;
+                    background: rgba(35, 230, 168, 0.12);
+                    border: 1px solid rgba(35, 230, 168, 0.3);
+                    color: #23e6a8;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    padding: 4px 12px;
+                    border-radius: 999px;
+                  "
+                >
+                  ✓ Connected
+                </div>
+              </div>
+              <div
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  margin-bottom: 16px;
+                  line-height: 1.6;
+                "
+              >
+                You'll be redirected to Square to authorize Aervo. This grants
+                read-only access to your sales, appointments, and customer data.
+              </div>
+              <button
+                onclick="connectSquare()"
+                id="squareConnectBtn"
+                style="
+                  width: 100%;
+                  padding: 13px;
+                  border-radius: 12px;
+                  border: none;
+                  cursor: pointer;
+                  background: linear-gradient(90deg, #23e6a8, #1aad80);
+                  color: #050816;
+                  font-size: 0.95rem;
+                  font-weight: 800;
+                  transition:
+                    transform 0.15s,
+                    box-shadow 0.15s;
+                  box-shadow: 0 0 20px rgba(35, 230, 168, 0.3);
+                "
+                onmouseover="this.style.transform = 'translateY(-2px)'"
+                onmouseout="this.style.transform = ''"
+              >
+                Connect Square →
+              </button>
             </div>
           </div>
 
-          <div id="bothFields" style="display: none">
-            <div class="field">
-              <label>Shopify store URL</label>
-              <input
-                type="text"
-                id="shopifyUrlBoth"
-                placeholder="yourstore.myshopify.com"
-              />
+          <!-- Both connect -->
+          <div id="bothConnect" style="display: none">
+            <div
+              style="
+                background: rgba(150, 191, 72, 0.07);
+                border: 1px solid rgba(150, 191, 72, 0.2);
+                border-radius: 18px;
+                padding: 24px;
+                margin-bottom: 12px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 12px;
+                "
+              >
+                <div style="font-size: 24px">🛍️</div>
+                <div style="flex: 1">
+                  <div style="font-size: 0.95rem; font-weight: 800">
+                    Shopify
+                  </div>
+                  <div style="font-size: 0.78rem; color: var(--muted)">
+                    Online store & e-commerce
+                  </div>
+                </div>
+                <div
+                  id="shopifyStatusBoth"
+                  style="
+                    display: none;
+                    background: rgba(35, 230, 168, 0.12);
+                    border: 1px solid rgba(35, 230, 168, 0.3);
+                    color: #23e6a8;
+                    font-size: 0.72rem;
+                    font-weight: 800;
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                  "
+                >
+                  ✓ Connected
+                </div>
+              </div>
+              <button
+                onclick="connectShopify()"
+                id="shopifyConnectBtnBoth"
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border-radius: 12px;
+                  border: none;
+                  cursor: pointer;
+                  background: linear-gradient(90deg, #96bf48, #5a8a1f);
+                  color: #fff;
+                  font-size: 0.9rem;
+                  font-weight: 800;
+                "
+              >
+                Connect Shopify →
+              </button>
             </div>
-            <div class="field">
-              <label>Square business location</label>
-              <input
-                type="text"
-                id="squareLocationBoth"
-                placeholder="e.g. Austin, TX"
-              />
+            <div
+              style="
+                background: rgba(35, 230, 168, 0.06);
+                border: 1px solid rgba(35, 230, 168, 0.2);
+                border-radius: 18px;
+                padding: 24px;
+                margin-bottom: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 12px;
+                "
+              >
+                <div style="font-size: 24px">⬛</div>
+                <div style="flex: 1">
+                  <div style="font-size: 0.95rem; font-weight: 800">Square</div>
+                  <div style="font-size: 0.78rem; color: var(--muted)">
+                    POS & appointments
+                  </div>
+                </div>
+                <div
+                  id="squareStatusBoth"
+                  style="
+                    display: none;
+                    background: rgba(35, 230, 168, 0.12);
+                    border: 1px solid rgba(35, 230, 168, 0.3);
+                    color: #23e6a8;
+                    font-size: 0.72rem;
+                    font-weight: 800;
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                  "
+                >
+                  ✓ Connected
+                </div>
+              </div>
+              <button
+                onclick="connectSquare()"
+                id="squareConnectBtnBoth"
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border-radius: 12px;
+                  border: none;
+                  cursor: pointer;
+                  background: linear-gradient(90deg, #23e6a8, #1aad80);
+                  color: #050816;
+                  font-size: 0.9rem;
+                  font-weight: 800;
+                "
+              >
+                Connect Square →
+              </button>
             </div>
+          </div>
+
+          <!-- Skip option -->
+          <div style="text-align: center; margin-bottom: 16px">
+            <span style="font-size: 0.8rem; color: var(--muted)"
+              >Not ready yet?
+            </span>
+            <span
+              onclick="completeOnboarding(true)"
+              style="
+                font-size: 0.8rem;
+                color: var(--a1);
+                cursor: pointer;
+                font-weight: 700;
+              "
+              >Skip for now →</span
+            >
           </div>
 
           <button
             class="btn-next"
-            onclick="completeOnboarding()"
+            onclick="completeOnboarding(false)"
             id="finishBtn"
           >
             Launch my dashboard ⚡
           </button>
           <button class="btn-back" onclick="goToStep(2)">← Back</button>
           <div class="error-msg" id="error3">
-            Please fill in your store details.
+            Please connect at least one integration or skip to continue.
           </div>
         </div>
 
@@ -877,18 +1161,48 @@
         }
         document.getElementById("error2").style.display = "none";
 
-        // Show correct fields
-        document.getElementById("shopifyFields").style.display =
+        // Show correct connect panels
+        document.getElementById("shopifyConnect").style.display =
           selectedPlatform === "shopify" ? "block" : "none";
-        document.getElementById("squareFields").style.display =
+        document.getElementById("squareConnect").style.display =
           selectedPlatform === "square" ? "block" : "none";
-        document.getElementById("bothFields").style.display =
+        document.getElementById("bothConnect").style.display =
           selectedPlatform === "both" ? "block" : "none";
 
         goToStep(3);
       }
 
-      async function completeOnboarding() {
+      function connectShopify() {
+        // Save onboarding state so we can resume after OAuth
+        localStorage.setItem(
+          "aervo_onboarding",
+          JSON.stringify({
+            businessName: document.getElementById("businessName").value.trim(),
+            role: document.getElementById("userRole").value,
+            businessType: selectedType,
+            platform: selectedPlatform,
+          }),
+        );
+        // Redirect to Shopify OAuth
+        window.location.href = `${BACKEND_URL}/auth/shopify?token=${token}`;
+      }
+
+      function connectSquare() {
+        // Save onboarding state
+        localStorage.setItem(
+          "aervo_onboarding",
+          JSON.stringify({
+            businessName: document.getElementById("businessName").value.trim(),
+            role: document.getElementById("userRole").value,
+            businessType: selectedType,
+            platform: selectedPlatform,
+          }),
+        );
+        // Redirect to Square OAuth
+        window.location.href = `${BACKEND_URL}/integrations/square/connect?token=${token}`;
+      }
+
+      async function completeOnboarding(skip = false) {
         const btn = document.getElementById("finishBtn");
         btn.disabled = true;
         btn.textContent = "Setting up…";
@@ -897,17 +1211,6 @@
           .getElementById("businessName")
           .value.trim();
         const role = document.getElementById("userRole").value;
-        let storeUrl = "";
-        let location = "";
-
-        if (selectedPlatform === "shopify")
-          storeUrl = document.getElementById("shopifyUrl").value.trim();
-        if (selectedPlatform === "square")
-          location = document.getElementById("squareLocation").value.trim();
-        if (selectedPlatform === "both") {
-          storeUrl = document.getElementById("shopifyUrlBoth").value.trim();
-          location = document.getElementById("squareLocationBoth").value.trim();
-        }
 
         try {
           const res = await fetch(`${BACKEND_URL}/api/onboarding`, {
@@ -921,20 +1224,18 @@
               business_type: selectedType,
               role: role,
               platform: selectedPlatform,
-              shopify_url: storeUrl,
-              location: location,
+              skipped_integration: skip,
             }),
           });
 
           const data = await res.json();
 
           if (data.success) {
-            // Update stored user
             const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
             user.company_name = businessName;
             localStorage.setItem("aervo_user", JSON.stringify(user));
+            localStorage.removeItem("aervo_onboarding");
 
-            // Show summary
             const platformMap = {
               shopify: "Shopify",
               square: "Square",
@@ -942,9 +1243,8 @@
             };
             document.getElementById("summaryText").innerHTML = `
         <strong style="color:var(--text)">${businessName}</strong> · ${selectedType}<br>
-        Platform: ${platformMap[selectedPlatform]}<br>
-        ${storeUrl ? "Store: " + storeUrl + "<br>" : ""}
-        ${location ? "Location: " + location : ""}
+        Platform: ${platformMap[selectedPlatform] || "Not connected yet"}<br>
+        ${skip ? '<span style="color:#ffc107">⚠ Integration not connected yet — you can connect from your dashboard</span>' : "✓ Integration connected"}
       `;
 
             if (urlName)
