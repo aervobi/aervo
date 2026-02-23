@@ -391,7 +391,7 @@
           localStorage.setItem("aervo_user", JSON.stringify(data.user));
           localStorage.setItem("aervo_just_signed_up", "1");
 
-          window.location.href = "welcome.html";
+          window.location.href = "/onboarding";
         } catch (err) {
           console.error(err);
           const msg = "Error connecting to server. Please try again.";
