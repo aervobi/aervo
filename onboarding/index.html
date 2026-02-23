@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aervo – Welcome</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <style>
+      :root {
+        --bg: #02030a;
+        --text: #f7f7ff;
+        --muted: rgba(215, 220, 240, 0.65);
+        --a1: #29c8ff;
+        --a2: #7c5cff;
+        --a3: #23e6a8;
+        --r: 18px;
+        --r-pill: 999px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "SF Pro Text",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      /* Aurora */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            900px 600px at 15% 15%,
+            rgba(41, 200, 255, 0.13),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 500px at 80% 20%,
+            rgba(124, 92, 255, 0.15),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 600px at 50% 90%,
+            rgba(35, 230, 168, 0.09),
+            transparent 60%
+          );
+        filter: blur(10px);
+      }
+
+      /* Grid texture */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0.06;
+      }
+
+      /* Layout */
+      .page {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+
+      /* Logo */
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 48px;
+        animation: fadeDown 0.5s ease both;
+      }
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 0 24px rgba(41, 200, 255, 0.35);
+      }
+      .logo-name {
+        font-size: 1rem;
+        font-weight: 950;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      /* Card */
+      .card {
+        width: 100%;
+        max-width: 520px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.03)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 28px;
+        padding: 40px;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        animation: fadeUp 0.5s ease 0.1s both;
+      }
+
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Steps */
+      .steps {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 36px;
+      }
+      .step-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 800;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        color: var(--muted);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+      .step-dot.active {
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+        border-color: transparent;
+        color: #050816;
+        box-shadow: 0 0 16px rgba(41, 200, 255, 0.4);
+      }
+      .step-dot.done {
+        background: rgba(35, 230, 168, 0.15);
+        border-color: rgba(35, 230, 168, 0.4);
+        color: var(--a3);
+      }
+      .step-line {
+        flex: 1;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.08);
+        transition: background 0.3s ease;
+      }
+      .step-line.done {
+        background: rgba(35, 230, 168, 0.3);
+      }
+
+      /* Step panels */
+      .step-panel {
+        display: none;
+      }
+      .step-panel.active {
+        display: block;
+        animation: fadeUp 0.3s ease both;
+      }
+
+      .step-kicker {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--a1);
+        margin-bottom: 8px;
+      }
+      .step-title {
+        font-size: 1.6rem;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        margin-bottom: 8px;
+      }
+      .step-title span {
+        background: linear-gradient(120deg, var(--a1), var(--a2));
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .step-sub {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+
+      /* Form fields */
+      .field {
+        margin-bottom: 18px;
+      }
+      .field label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: rgba(215, 220, 240, 0.8);
+        margin-bottom: 7px;
+        letter-spacing: 0.04em;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 0.95rem;
+        font-family: inherit;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        -webkit-appearance: none;
+      }
+      .field input:focus,
+      .field select:focus {
+        border-color: rgba(41, 200, 255, 0.5);
+        box-shadow: 0 0 0 3px rgba(41, 200, 255, 0.1);
+      }
+      .field input::placeholder {
+        color: rgba(215, 220, 240, 0.3);
+      }
+      .field select option {
+        background: #0d1124;
+        color: var(--text);
+      }
+
+      /* Platform cards */
+      .platform-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .platform-card {
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 20px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.03);
+        text-align: center;
+      }
+      .platform-card:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        transform: translateY(-2px);
+      }
+      .platform-card.selected {
+        border-color: var(--a1);
+        background: rgba(41, 200, 255, 0.08);
+        box-shadow: 0 0 20px rgba(41, 200, 255, 0.15);
+      }
+      .platform-card.selected.square-card {
+        border-color: var(--a3);
+        background: rgba(35, 230, 168, 0.08);
+        box-shadow: 0 0 20px rgba(35, 230, 168, 0.15);
+      }
+      .platform-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .platform-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .platform-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .platform-check {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        margin: 8px auto 0;
+      }
+      .platform-card.selected .platform-check {
+        display: flex;
+      }
+      .platform-card.selected.square-card .platform-check {
+        background: linear-gradient(135deg, var(--a3), var(--a1));
+      }
+
+      /* Both option */
+      .both-option {
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .both-option:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .both-option.selected {
+        border-color: var(--a2);
+        background: rgba(124, 92, 255, 0.08);
+        box-shadow: 0 0 20px rgba(124, 92, 255, 0.15);
+      }
+      .both-icons {
+        font-size: 1.4rem;
+      }
+      .both-text {
+        flex: 1;
+      }
+      .both-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+      }
+      .both-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .both-badge {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        padding: 3px 8px;
+        border-radius: var(--r-pill);
+        text-transform: uppercase;
+      }
+
+      /* Business type */
+      .type-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .type-card {
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .type-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .type-card.selected {
+        border-color: var(--a1);
+        background: rgba(41, 200, 255, 0.07);
+      }
+      .type-icon {
+        font-size: 1.4rem;
+        flex-shrink: 0;
+      }
+      .type-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      /* Buttons */
+      .btn-next {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        font-size: 1rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 0 20px rgba(41, 200, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 32px rgba(41, 200, 255, 0.5);
+      }
+      .btn-next:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-back {
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.15s;
+      }
+      .btn-back:hover {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      /* Success */
+      .success-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--a3), var(--a1));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 20px;
+        box-shadow: 0 0 40px rgba(35, 230, 168, 0.4);
+        animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .error-msg {
+        font-size: 0.82rem;
+        color: #ff6464;
+        background: rgba(255, 100, 100, 0.08);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-top: 12px;
+        display: none;
+      }
+
+      @media (max-width: 560px) {
+        .card {
+          padding: 28px 20px;
+        }
+        .platform-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .type-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .step-title {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-mark">⚡</div>
+        <div class="logo-name">AERVO</div>
+      </div>
+
+      <!-- Card -->
+      <div class="card">
+        <!-- Progress steps -->
+        <div class="steps">
+          <div class="step-dot active" id="dot1">1</div>
+          <div class="step-line" id="line1"></div>
+          <div class="step-dot" id="dot2">2</div>
+          <div class="step-line" id="line2"></div>
+          <div class="step-dot" id="dot3">3</div>
+        </div>
+
+        <!-- Step 1 — Business info -->
+        <div class="step-panel active" id="step1">
+          <div class="step-kicker">Step 1 of 3</div>
+          <div class="step-title">Let's set up your <span>business</span></div>
+          <div class="step-sub">
+            Tell us a bit about your business so we can personalize your Aervo
+            dashboard.
+          </div>
+
+          <div class="field">
+            <label>Business name</label>
+            <input
+              type="text"
+              id="businessName"
+              placeholder="e.g. Haven & Co."
+            />
+          </div>
+          <div class="field">
+            <label>Your role</label>
+            <select id="userRole">
+              <option value="">Select your role…</option>
+              <option value="Owner">Owner</option>
+              <option value="Manager">Manager</option>
+              <option value="Operator">Operator</option>
+              <option value="Analyst">Analyst</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Business type</label>
+            <div class="type-grid">
+              <div
+                class="type-card"
+                onclick="selectType(this, 'Retail')"
+                data-type="Retail"
+              >
+                <div class="type-icon">🛍️</div>
+                <div class="type-name">Retail</div>
+              </div>
+              <div
+                class="type-card"
+                onclick="selectType(this, 'Restaurant')"
+                data-type="Restaurant"
+              >
+                <div class="type-icon">🍽️</div>
+                <div class="type-name">Restaurant</div>
+              </div>
+              <div
+                class="type-card"
+                onclick="selectType(this, 'Salon & Beauty')"
+                data-type="Salon & Beauty"
+              >
+                <div class="type-icon">✂️</div>
+                <div class="type-name">Salon & Beauty</div>
+              </div>
+              <div
+                class="type-card"
+                onclick="selectType(this, 'E-commerce')"
+                data-type="E-commerce"
+              >
+                <div class="type-icon">💻</div>
+                <div class="type-name">E-commerce</div>
+              </div>
+              <div
+                class="type-card"
+                onclick="selectType(this, 'Health & Wellness')"
+                data-type="Health & Wellness"
+              >
+                <div class="type-icon">🏃</div>
+                <div class="type-name">Health & Wellness</div>
+              </div>
+              <div
+                class="type-card"
+                onclick="selectType(this, 'Other')"
+                data-type="Other"
+              >
+                <div class="type-icon">✦</div>
+                <div class="type-name">Other</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-next" onclick="goToStep2()">Continue →</button>
+          <div class="error-msg" id="error1">
+            Please fill in your business name and select a type.
+          </div>
+        </div>
+
+        <!-- Step 2 — Platform -->
+        <div class="step-panel" id="step2">
+          <div class="step-kicker">Step 2 of 3</div>
+          <div class="step-title">Which platform do <span>you use?</span></div>
+          <div class="step-sub">
+            Aervo connects to your existing tools. Pick the platform your
+            business runs on.
+          </div>
+
+          <div class="platform-grid">
+            <div
+              class="platform-card"
+              onclick="selectPlatform(this, 'shopify')"
+              id="shopifyCard"
+            >
+              <div class="platform-icon">🛍️</div>
+              <div class="platform-name">Shopify</div>
+              <div class="platform-desc">Online store & e-commerce</div>
+              <div class="platform-check">✓</div>
+            </div>
+            <div
+              class="platform-card square-card"
+              onclick="selectPlatform(this, 'square')"
+              id="squareCard"
+            >
+              <div class="platform-icon">⬛</div>
+              <div class="platform-name">Square</div>
+              <div class="platform-desc">POS, appointments & in-person</div>
+              <div class="platform-check">✓</div>
+            </div>
+          </div>
+
+          <div
+            class="both-option"
+            onclick="selectPlatform(this, 'both')"
+            id="bothCard"
+          >
+            <div class="both-icons">🛍️⬛</div>
+            <div class="both-text">
+              <div class="both-name">Both platforms</div>
+              <div class="both-desc">Unified view across Shopify + Square</div>
+            </div>
+            <div class="both-badge">Pro</div>
+          </div>
+
+          <button class="btn-next" onclick="goToStep3()">Continue →</button>
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+          <div class="error-msg" id="error2">
+            Please select a platform to continue.
+          </div>
+        </div>
+
+        <!-- Step 3 — Store URL -->
+        <div class="step-panel" id="step3">
+          <div class="step-kicker">Step 3 of 3</div>
+          <div class="step-title">
+            Almost there! <span>Connect your store</span>
+          </div>
+          <div class="step-sub" id="step3Sub">
+            Enter your store details so Aervo knows where to pull your data
+            from.
+          </div>
+
+          <div id="shopifyFields">
+            <div class="field">
+              <label>Shopify store URL</label>
+              <input
+                type="text"
+                id="shopifyUrl"
+                placeholder="yourstore.myshopify.com"
+              />
+            </div>
+          </div>
+
+          <div id="squareFields" style="display: none">
+            <div class="field">
+              <label>Business location (city)</label>
+              <input
+                type="text"
+                id="squareLocation"
+                placeholder="e.g. Austin, TX"
+              />
+            </div>
+          </div>
+
+          <div id="bothFields" style="display: none">
+            <div class="field">
+              <label>Shopify store URL</label>
+              <input
+                type="text"
+                id="shopifyUrlBoth"
+                placeholder="yourstore.myshopify.com"
+              />
+            </div>
+            <div class="field">
+              <label>Square business location</label>
+              <input
+                type="text"
+                id="squareLocationBoth"
+                placeholder="e.g. Austin, TX"
+              />
+            </div>
+          </div>
+
+          <button
+            class="btn-next"
+            onclick="completeOnboarding()"
+            id="finishBtn"
+          >
+            Launch my dashboard ⚡
+          </button>
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+          <div class="error-msg" id="error3">
+            Please fill in your store details.
+          </div>
+        </div>
+
+        <!-- Step 4 — Success -->
+        <div class="step-panel" id="step4">
+          <div style="text-align: center; padding: 20px 0">
+            <div class="success-icon">⚡</div>
+            <div class="step-title" style="text-align: center">
+              You're all set, <span id="welcomeName">there</span>!
+            </div>
+            <div class="step-sub" style="text-align: center; margin-top: 8px">
+              Your Aervo dashboard is ready. We'll guide you through connecting
+              your first integration.
+            </div>
+            <div
+              style="
+                margin-top: 28px;
+                padding: 16px;
+                background: rgba(35, 230, 168, 0.07);
+                border: 1px solid rgba(35, 230, 168, 0.2);
+                border-radius: 14px;
+                text-align: left;
+              "
+            >
+              <div
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 800;
+                  color: var(--a3);
+                  margin-bottom: 8px;
+                "
+              >
+                ✓ Account created
+              </div>
+              <div
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  line-height: 1.6;
+                "
+                id="summaryText"
+              ></div>
+            </div>
+            <button
+              class="btn-next"
+              style="margin-top: 24px"
+              onclick="goToDashboard()"
+            >
+              Go to dashboard →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+
+      let selectedType = "";
+      let selectedPlatform = "";
+      let currentStep = 1;
+
+      // Get token from URL or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get("token");
+      const urlName = urlParams.get("name");
+
+      if (urlToken) {
+        localStorage.setItem("aervo_token", urlToken);
+      }
+
+      const token = localStorage.getItem("aervo_token");
+
+      // Pre-fill name if coming from Google
+      if (urlName) {
+        document.getElementById("welcomeName").textContent =
+          decodeURIComponent(urlName);
+      }
+
+      // Redirect if not logged in
+      if (!token) {
+        window.location.href = "/login";
+      }
+
+      function selectType(el, type) {
+        document
+          .querySelectorAll(".type-card")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedType = type;
+      }
+
+      function selectPlatform(el, platform) {
+        document
+          .querySelectorAll(".platform-card, .both-option")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedPlatform = platform;
+      }
+
+      function goToStep(n) {
+        document
+          .querySelectorAll(".step-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("step" + n).classList.add("active");
+        currentStep = n;
+        updateStepDots(n);
+      }
+
+      function updateStepDots(n) {
+        for (let i = 1; i <= 3; i++) {
+          const dot = document.getElementById("dot" + i);
+          dot.classList.remove("active", "done");
+          if (i < n) (dot.classList.add("done"), (dot.textContent = "✓"));
+          else if (i === n)
+            (dot.classList.add("active"), (dot.textContent = i));
+          else dot.textContent = i;
+        }
+        for (let i = 1; i <= 2; i++) {
+          const line = document.getElementById("line" + i);
+          line.classList.toggle("done", i < n);
+        }
+      }
+
+      function goToStep2() {
+        const name = document.getElementById("businessName").value.trim();
+        if (!name || !selectedType) {
+          document.getElementById("error1").style.display = "block";
+          return;
+        }
+        document.getElementById("error1").style.display = "none";
+        goToStep(2);
+      }
+
+      function goToStep3() {
+        if (!selectedPlatform) {
+          document.getElementById("error2").style.display = "block";
+          return;
+        }
+        document.getElementById("error2").style.display = "none";
+
+        // Show correct fields
+        document.getElementById("shopifyFields").style.display =
+          selectedPlatform === "shopify" ? "block" : "none";
+        document.getElementById("squareFields").style.display =
+          selectedPlatform === "square" ? "block" : "none";
+        document.getElementById("bothFields").style.display =
+          selectedPlatform === "both" ? "block" : "none";
+
+        goToStep(3);
+      }
+
+      async function completeOnboarding() {
+        const btn = document.getElementById("finishBtn");
+        btn.disabled = true;
+        btn.textContent = "Setting up…";
+
+        const businessName = document
+          .getElementById("businessName")
+          .value.trim();
+        const role = document.getElementById("userRole").value;
+        let storeUrl = "";
+        let location = "";
+
+        if (selectedPlatform === "shopify")
+          storeUrl = document.getElementById("shopifyUrl").value.trim();
+        if (selectedPlatform === "square")
+          location = document.getElementById("squareLocation").value.trim();
+        if (selectedPlatform === "both") {
+          storeUrl = document.getElementById("shopifyUrlBoth").value.trim();
+          location = document.getElementById("squareLocationBoth").value.trim();
+        }
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/onboarding`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              company_name: businessName,
+              business_type: selectedType,
+              role: role,
+              platform: selectedPlatform,
+              shopify_url: storeUrl,
+              location: location,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            // Update stored user
+            const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
+            user.company_name = businessName;
+            localStorage.setItem("aervo_user", JSON.stringify(user));
+
+            // Show summary
+            const platformMap = {
+              shopify: "Shopify",
+              square: "Square",
+              both: "Shopify + Square",
+            };
+            document.getElementById("summaryText").innerHTML = `
+        <strong style="color:var(--text)">${businessName}</strong> · ${selectedType}<br>
+        Platform: ${platformMap[selectedPlatform]}<br>
+        ${storeUrl ? "Store: " + storeUrl + "<br>" : ""}
+        ${location ? "Location: " + location : ""}
+      `;
+
+            if (urlName)
+              document.getElementById("welcomeName").textContent =
+                decodeURIComponent(urlName);
+
+            goToStep(4);
+            document.getElementById("dot3").classList.add("done");
+            document.getElementById("dot3").textContent = "✓";
+          } else {
+            throw new Error(data.message || "Something went wrong");
+          }
+        } catch (err) {
+          console.error(err);
+          document.getElementById("error3").textContent =
+            err.message || "Something went wrong. Please try again.";
+          document.getElementById("error3").style.display = "block";
+          btn.disabled = false;
+          btn.textContent = "Launch my dashboard ⚡";
+        }
+      }
+
+      function goToDashboard() {
+        window.location.href = "/dashboard";
+      }
+    </script>
+  </body>
+</html>
