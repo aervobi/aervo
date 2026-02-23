@@ -395,6 +395,15 @@
           }
         });
       });
+      async function signInWithGoogle() {
+  try {
+    const res = await fetch('https://aervo-backend.onrender.com/auth/google');
+    const data = await res.json();
+    window.location.href = data.url;
+  } catch (err) {
+    console.error('Google sign in error:', err);
+  }
+}
     </script>
   </body>
 </html>
