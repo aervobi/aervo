@@ -202,6 +202,8 @@
     <script>
       const BACKEND_URL = "https://aervo-backend.onrender.com";
       const token = localStorage.getItem("aervo_token");
+      console.log("Token:", token);
+      console.log("Shop:", localStorage.getItem("aervo_shop"));
       if (!token) window.location.href = "/login";
 
       async function route() {
