@@ -1,8 +1,10 @@
+/dashboard /dashboard/index.html 200
+/login /login/index.html 200
+/signup /signup/index.html 200
+/onboarding /onboarding/index.html 200
+/pricing /pricing/index.html 200
+/demo /demo/index.html 200
+/integrations /integrations/index.html 200
 /dashboard/* /dashboard/index.html 200
 /login/* /login/index.html 200
 /signup/* /signup/index.html 200
-/onboarding/* /onboarding/index.html 200
-/pricing/* /pricing/index.html 200
-/demo/* /demo/index.html 200
-/integrations/* /integrations/index.html 200
-/* /index.html 200
