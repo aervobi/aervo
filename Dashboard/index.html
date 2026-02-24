@@ -233,7 +233,7 @@
           const shopifyData = await shopifyRes.json();
           const squareData = await squareRes.json();
 
-          const hasShopify = !!shopifyData?.shop;
+          const hasShopify = !!localStorage.getItem("aervo_shop");
           const hasSquare = !!squareData?.connected;
 
           // Route based on what's connected
