@@ -269,7 +269,7 @@
     </main>
 
     <script>
-      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const BACKEND_URL = "https://api.aervoapp.com";
 
       document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("login-form");
@@ -397,7 +397,7 @@
       });
       async function signInWithGoogle() {
   try {
-    const res = await fetch('https://aervo-backend.onrender.com/auth/google');
+    const res = await fetch('https://api.aervoapp.com/auth/google');
     const data = await res.json();
     window.location.href = data.url;
   } catch (err) {
