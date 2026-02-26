@@ -1,0 +1,1822 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Account Settings</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+      :root {
+        --bg: #02030a;
+        --bg2: #070b17;
+        --card: rgba(255, 255, 255, 0.04);
+        --card2: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.1);
+        --borderSoft: rgba(255, 255, 255, 0.07);
+        --text: #f7f7ff;
+        --muted: rgba(215, 220, 240, 0.7);
+        --a1: #29c8ff;
+        --a2: #7c5cff;
+        --a3: #23e6a8;
+        --danger: #ff6b6b;
+        --warn: #f5c26b;
+        --r-lg: 18px;
+        --r-xl: 24px;
+        --r-pill: 999px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "SF Pro Text",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Background aurora */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(
+            900px 520px at 20% 20%,
+            rgba(41, 200, 255, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 520px at 75% 25%,
+            rgba(124, 92, 255, 0.12),
+            transparent 62%
+          ),
+          radial-gradient(
+            820px 620px at 60% 85%,
+            rgba(35, 230, 168, 0.08),
+            transparent 60%
+          );
+        filter: blur(8px);
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 54px 54px;
+        opacity: 0.08;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* ── HEADER ── */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        backdrop-filter: blur(22px);
+        background: linear-gradient(
+          to bottom,
+          rgba(2, 3, 10, 0.92),
+          rgba(2, 3, 10, 0.62),
+          rgba(2, 3, 10, 0.22)
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      header::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(41, 200, 255, 0.35),
+          rgba(124, 92, 255, 0.25),
+          transparent
+        );
+        opacity: 0.7;
+      }
+
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 950;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .brand img {
+        height: 28px;
+        filter: drop-shadow(0 0 12px rgba(124, 92, 255, 0.4));
+      }
+
+      .header-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-link {
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+
+      .nav-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .nav-link.active {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .btn {
+        border-radius: var(--r-pill);
+        padding: 10px 18px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        box-shadow: 0 0 18px rgba(41, 200, 255, 0.25);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 0 28px rgba(41, 200, 255, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+      }
+
+      .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-1px);
+      }
+
+      .btn-danger {
+        background: rgba(255, 107, 107, 0.1);
+        border-color: rgba(255, 107, 107, 0.3);
+        color: var(--danger);
+      }
+
+      .btn-danger:hover {
+        background: rgba(255, 107, 107, 0.18);
+        transform: translateY(-1px);
+      }
+
+      .btn-sm {
+        padding: 8px 14px;
+        font-size: 0.82rem;
+      }
+
+      /* ── LAYOUT ── */
+      .page {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 96px 24px 60px;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        position: sticky;
+        top: 96px;
+        border-radius: var(--r-xl);
+        border: 1px solid var(--borderSoft);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.02)
+        );
+        overflow: hidden;
+      }
+
+      .sidebar-user {
+        padding: 20px;
+        border-bottom: 1px solid var(--borderSoft);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.1rem;
+        color: #050816;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .sidebar-user-info {
+        min-width: 0;
+      }
+
+      .sidebar-name {
+        font-weight: 800;
+        font-size: 0.92rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-email {
+        font-size: 0.78rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar-nav {
+        padding: 10px;
+      }
+
+      .sidebar-section {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(215, 220, 240, 0.4);
+        padding: 12px 10px 6px;
+      }
+
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        width: 100%;
+        background: none;
+        text-align: left;
+      }
+
+      .sidebar-item:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .sidebar-item.active {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .sidebar-item.danger {
+        color: rgba(255, 107, 107, 0.75);
+      }
+
+      .sidebar-item.danger:hover {
+        color: var(--danger);
+        background: rgba(255, 107, 107, 0.08);
+      }
+
+      .sidebar-icon {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      /* ── MAIN CONTENT ── */
+      .main {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .section-panel {
+        display: none;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .section-panel.active {
+        display: flex;
+      }
+
+      .panel-header {
+        margin-bottom: 4px;
+      }
+
+      .panel-title {
+        font-size: 1.4rem;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+      }
+
+      .panel-sub {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      /* ── CARDS ── */
+      .card {
+        border-radius: var(--r-xl);
+        border: 1px solid var(--borderSoft);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.02)
+        );
+        padding: 24px;
+        transition: border-color 0.2s;
+      }
+
+      .card:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .card-title {
+        font-size: 1rem;
+        font-weight: 850;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-title-icon {
+        font-size: 1.1rem;
+      }
+
+      /* ── FORM ELEMENTS ── */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .form-grid.full {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+
+      .form-group.span-2 {
+        grid-column: span 2;
+      }
+
+      label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: rgba(215, 220, 240, 0.8);
+        letter-spacing: 0.02em;
+      }
+
+      input,
+      select,
+      textarea {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 11px 14px;
+        color: var(--text);
+        font-size: 0.92rem;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s;
+        width: 100%;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: rgba(41, 200, 255, 0.4);
+        box-shadow: 0 0 0 3px rgba(41, 200, 255, 0.1);
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      input::placeholder {
+        color: rgba(215, 220, 240, 0.35);
+      }
+
+      input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(215,220,240,0.5)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+
+      select option {
+        background: #0f1628;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .form-hint {
+        font-size: 0.78rem;
+        color: rgba(215, 220, 240, 0.45);
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 4px;
+      }
+
+      /* ── AVATAR UPLOAD ── */
+      .avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        margin-bottom: 20px;
+      }
+
+      .avatar-large {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--a1), var(--a2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.6rem;
+        color: #050816;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .avatar-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-info {
+        flex: 1;
+      }
+
+      .avatar-name {
+        font-weight: 850;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+
+      .avatar-hint {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      /* ── INTEGRATION CARDS ── */
+      .integration-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(0, 0, 0, 0.2);
+        transition: all 0.2s;
+      }
+
+      .integration-item + .integration-item {
+        margin-top: 12px;
+      }
+
+      .integration-item:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .integration-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+      }
+
+      .integration-icon.shopify {
+        background: rgba(96, 165, 250, 0.12);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+      }
+
+      .integration-icon.square {
+        background: rgba(52, 211, 153, 0.12);
+        border: 1px solid rgba(52, 211, 153, 0.2);
+      }
+
+      .integration-icon.google {
+        background: rgba(251, 191, 36, 0.1);
+        border: 1px solid rgba(251, 191, 36, 0.2);
+      }
+
+      .integration-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .integration-name {
+        font-weight: 800;
+        font-size: 0.95rem;
+        margin-bottom: 3px;
+      }
+
+      .integration-detail {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .integration-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: var(--r-pill);
+      }
+
+      .integration-status.connected {
+        background: rgba(35, 230, 168, 0.12);
+        border: 1px solid rgba(35, 230, 168, 0.25);
+        color: var(--a3);
+      }
+
+      .integration-status.disconnected {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--muted);
+      }
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ── PLAN CARD ── */
+      .plan-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 16px;
+        background: linear-gradient(
+          135deg,
+          rgba(41, 200, 255, 0.08),
+          rgba(124, 92, 255, 0.08)
+        );
+        border: 1px solid rgba(41, 200, 255, 0.2);
+      }
+
+      .plan-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(90deg, var(--a1), var(--a2));
+        color: #050816;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: var(--r-pill);
+        margin-bottom: 8px;
+      }
+
+      .plan-name {
+        font-size: 1.2rem;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+      }
+
+      .plan-detail {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ── TOGGLE ── */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .toggle-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .toggle-row:first-child {
+        padding-top: 0;
+      }
+
+      .toggle-info {
+        flex: 1;
+      }
+
+      .toggle-label {
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 2px;
+      }
+
+      .toggle-desc {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+      }
+
+      .toggle-track {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--r-pill);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(215, 220, 240, 0.6);
+        transition: all 0.2s;
+        pointer-events: none;
+      }
+
+      .toggle input:checked ~ .toggle-track {
+        background: linear-gradient(
+          90deg,
+          rgba(41, 200, 255, 0.4),
+          rgba(124, 92, 255, 0.4)
+        );
+        border-color: rgba(41, 200, 255, 0.3);
+      }
+
+      .toggle input:checked ~ .toggle-thumb {
+        transform: translateX(20px);
+        background: #f7f7ff;
+      }
+
+      /* ── DANGER ZONE ── */
+      .danger-card {
+        border-color: rgba(255, 107, 107, 0.2);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 107, 107, 0.04),
+          rgba(255, 107, 107, 0.02)
+        );
+      }
+
+      .danger-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid rgba(255, 107, 107, 0.1);
+      }
+
+      .danger-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .danger-item:first-child {
+        padding-top: 0;
+      }
+
+      .danger-label {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: rgba(255, 107, 107, 0.9);
+        margin-bottom: 2px;
+      }
+
+      .danger-desc {
+        font-size: 0.8rem;
+        color: rgba(215, 220, 240, 0.55);
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        backdrop-filter: blur(20px);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .toast.success {
+        background: rgba(35, 230, 168, 0.15);
+        border: 1px solid rgba(35, 230, 168, 0.3);
+        color: var(--a3);
+      }
+
+      .toast.error {
+        background: rgba(255, 107, 107, 0.15);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        color: var(--danger);
+      }
+
+      /* ── PASSWORD STRENGTH ── */
+      .strength-bar {
+        height: 4px;
+        border-radius: var(--r-pill);
+        background: rgba(255, 255, 255, 0.08);
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .strength-fill {
+        height: 100%;
+        border-radius: var(--r-pill);
+        transition: all 0.3s;
+        width: 0%;
+      }
+
+      .strength-text {
+        font-size: 0.75rem;
+        margin-top: 5px;
+        font-weight: 600;
+      }
+
+      /* ── MODAL ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+
+      .modal-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal {
+        background: #0a0f1e;
+        border: 1px solid rgba(255, 107, 107, 0.25);
+        border-radius: var(--r-xl);
+        padding: 28px;
+        max-width: 440px;
+        width: 100%;
+        transform: scale(0.95);
+        transition: transform 0.2s;
+      }
+
+      .modal-overlay.show .modal {
+        transform: scale(1);
+      }
+
+      .modal-title {
+        font-size: 1.15rem;
+        font-weight: 950;
+        margin-bottom: 8px;
+        color: var(--danger);
+      }
+
+      .modal-body {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        .page {
+          grid-template-columns: 1fr;
+          padding: 80px 16px 40px;
+        }
+
+        .sidebar {
+          position: static;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-group.span-2 {
+          grid-column: span 1;
+        }
+
+        .plan-card {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="/dashboard">
+          <img src="/assets/images/logo.png" alt="Aervo" />
+          AERVO
+        </a>
+        <nav class="header-nav">
+          <a href="/dashboard" class="nav-link">Dashboard</a>
+          <a href="/integrations" class="nav-link">Integrations</a>
+          <a href="/settings" class="nav-link active">Settings</a>
+        </nav>
+        <a href="/dashboard" class="btn btn-ghost btn-sm"
+          >← Back to Dashboard</a
+        >
+      </div>
+    </header>
+
+    <!-- Page -->
+    <div class="page">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-user">
+          <div class="avatar" id="sidebarAvatar">?</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-name" id="sidebarName">Loading...</div>
+            <div class="sidebar-email" id="sidebarEmail">—</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="sidebar-section">Account</div>
+          <button
+            class="sidebar-item active"
+            data-section="profile"
+            onclick="showSection('profile', this)"
+          >
+            <span class="sidebar-icon">👤</span> Profile
+          </button>
+          <button
+            class="sidebar-item"
+            data-section="security"
+            onclick="showSection('security', this)"
+          >
+            <span class="sidebar-icon">🔐</span> Security
+          </button>
+          <button
+            class="sidebar-item"
+            data-section="business"
+            onclick="showSection('business', this)"
+          >
+            <span class="sidebar-icon">🏢</span> Business Info
+          </button>
+
+          <div class="sidebar-section">App</div>
+          <button
+            class="sidebar-item"
+            data-section="integrations"
+            onclick="showSection('integrations', this)"
+          >
+            <span class="sidebar-icon">🔗</span> Integrations
+          </button>
+          <button
+            class="sidebar-item"
+            data-section="notifications"
+            onclick="showSection('notifications', this)"
+          >
+            <span class="sidebar-icon">🔔</span> Notifications
+          </button>
+          <button
+            class="sidebar-item"
+            data-section="billing"
+            onclick="showSection('billing', this)"
+          >
+            <span class="sidebar-icon">💳</span> Plan & Billing
+          </button>
+
+          <div class="sidebar-section">More</div>
+          <button
+            class="sidebar-item danger"
+            data-section="danger"
+            onclick="showSection('danger', this)"
+          >
+            <span class="sidebar-icon">⚠️</span> Danger Zone
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main">
+        <!-- ── PROFILE ── -->
+        <section class="section-panel active" id="section-profile">
+          <div class="panel-header">
+            <div class="panel-title">Profile</div>
+            <div class="panel-sub">
+              Manage your personal information and display name.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="avatar-section">
+              <div class="avatar-large" id="profileAvatar">?</div>
+              <div class="avatar-info">
+                <div class="avatar-name" id="profileAvatarName">Your Name</div>
+                <div class="avatar-hint">
+                  Profile photo is pulled from your Google account if you signed
+                  in with Google.
+                </div>
+                <button
+                  class="btn btn-ghost btn-sm"
+                  onclick="showToast('Photo upload coming soon!', 'success')"
+                >
+                  Upload photo
+                </button>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="firstName" placeholder="First name" />
+              </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="lastName" placeholder="Last name" />
+              </div>
+              <div class="form-group span-2">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  id="emailField"
+                  placeholder="your@email.com"
+                />
+                <div class="form-hint">
+                  Changing your email will require re-verification.
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 20px">
+              <button class="btn btn-ghost btn-sm" onclick="loadProfile()">
+                Cancel
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="saveProfile()">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SECURITY ── -->
+        <section class="section-panel" id="section-security">
+          <div class="panel-header">
+            <div class="panel-title">Security</div>
+            <div class="panel-sub">
+              Keep your account safe with a strong password.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">🔑</span> Change Password
+            </div>
+
+            <div class="form-grid full">
+              <div class="form-group" id="currentPasswordGroup">
+                <label>Current Password</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  placeholder="Your current password"
+                />
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  placeholder="Min. 8 characters"
+                  oninput="checkStrength(this.value)"
+                />
+                <div class="strength-bar">
+                  <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                <div
+                  class="strength-text"
+                  id="strengthText"
+                  style="color: var(--muted)"
+                ></div>
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="Repeat new password"
+                />
+              </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 20px">
+              <button class="btn btn-primary btn-sm" onclick="changePassword()">
+                Update password
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">🔒</span> Login Methods
+            </div>
+            <div class="integration-item">
+              <div class="integration-icon google">🔵</div>
+              <div class="integration-info">
+                <div class="integration-name">Google Sign-In</div>
+                <div class="integration-detail" id="googleLoginDetail">
+                  Connected
+                </div>
+              </div>
+              <div class="integration-status connected">
+                <div class="status-dot"></div>
+                Active
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── BUSINESS INFO ── -->
+        <section class="section-panel" id="section-business">
+          <div class="panel-header">
+            <div class="panel-title">Business Info</div>
+            <div class="panel-sub">
+              Help Aervo personalize your experience with business context.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="form-grid">
+              <div class="form-group span-2">
+                <label>Business Name</label>
+                <input
+                  type="text"
+                  id="businessName"
+                  placeholder="Your business name"
+                />
+              </div>
+              <div class="form-group">
+                <label>Business Type</label>
+                <select id="businessType">
+                  <option value="">Select type...</option>
+                  <option value="retail">Retail</option>
+                  <option value="restaurant">Restaurant / Food</option>
+                  <option value="service">Service Business</option>
+                  <option value="ecommerce">eCommerce</option>
+                  <option value="salon">Salon / Beauty</option>
+                  <option value="fitness">Fitness / Wellness</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Your Role</label>
+                <select id="userRole">
+                  <option value="">Select role...</option>
+                  <option value="owner">Owner</option>
+                  <option value="manager">Manager</option>
+                  <option value="analyst">Analyst</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group span-2">
+                <label>Business Location</label>
+                <input
+                  type="text"
+                  id="businessLocation"
+                  placeholder="City, State or Country"
+                />
+              </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 20px">
+              <button class="btn btn-ghost btn-sm" onclick="loadProfile()">
+                Cancel
+              </button>
+              <button
+                class="btn btn-primary btn-sm"
+                onclick="saveBusinessInfo()"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── INTEGRATIONS ── -->
+        <section class="section-panel" id="section-integrations">
+          <div class="panel-header">
+            <div class="panel-title">Integrations</div>
+            <div class="panel-sub">
+              Manage your connected platforms and data sources.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">🔗</span> Connected Platforms
+            </div>
+
+            <div class="integration-item">
+              <div class="integration-icon shopify">🛍️</div>
+              <div class="integration-info">
+                <div class="integration-name">Shopify</div>
+                <div class="integration-detail" id="shopifyDetail">
+                  Not connected
+                </div>
+              </div>
+              <div id="shopifyStatus" class="integration-status disconnected">
+                <div class="status-dot"></div>
+                Not connected
+              </div>
+              <button
+                class="btn btn-ghost btn-sm"
+                id="shopifyBtn"
+                onclick="handleShopify()"
+              >
+                Connect
+              </button>
+            </div>
+
+            <div class="integration-item">
+              <div class="integration-icon square">⬛</div>
+              <div class="integration-info">
+                <div class="integration-name">Square</div>
+                <div class="integration-detail" id="squareDetail">
+                  Not connected
+                </div>
+              </div>
+              <div id="squareStatus" class="integration-status disconnected">
+                <div class="status-dot"></div>
+                Not connected
+              </div>
+              <button
+                class="btn btn-ghost btn-sm"
+                id="squareBtn"
+                onclick="handleSquare()"
+              >
+                Connect
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── NOTIFICATIONS ── -->
+        <section class="section-panel" id="section-notifications">
+          <div class="panel-header">
+            <div class="panel-title">Notifications</div>
+            <div class="panel-sub">
+              Choose what alerts and updates you receive.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">📧</span> Email Notifications
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Weekly digest</div>
+                <div class="toggle-desc">
+                  A summary of your business performance every Monday.
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked id="notifWeekly" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Revenue alerts</div>
+                <div class="toggle-desc">
+                  Get notified when revenue drops significantly.
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked id="notifRevenue" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Inventory risk alerts</div>
+                <div class="toggle-desc">
+                  Alerts for low stock or trending-down items.
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked id="notifInventory" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">Product updates</div>
+                <div class="toggle-desc">
+                  New features and improvements to Aervo.
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="notifProduct" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="saveNotifications()"
+            >
+              Save preferences
+            </button>
+          </div>
+        </section>
+
+        <!-- ── BILLING ── -->
+        <section class="section-panel" id="section-billing">
+          <div class="panel-header">
+            <div class="panel-title">Plan & Billing</div>
+            <div class="panel-sub">
+              Manage your subscription and billing details.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">⚡</span> Current Plan
+            </div>
+            <div class="plan-card">
+              <div>
+                <div class="plan-badge">⚡ Active</div>
+                <div class="plan-name" id="planName">Starter</div>
+                <div class="plan-detail" id="planDetail">
+                  Free forever · 1 integration · 7 days history
+                </div>
+              </div>
+              <a href="/pricing" class="btn btn-primary btn-sm">Upgrade plan</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="card-title-icon">📄</span> Billing History
+            </div>
+            <div
+              style="
+                text-align: center;
+                padding: 32px;
+                color: var(--muted);
+                font-size: 0.9rem;
+              "
+            >
+              No invoices yet. Upgrade to a paid plan to see billing history.
+            </div>
+          </div>
+        </section>
+
+        <!-- ── DANGER ZONE ── -->
+        <section class="section-panel" id="section-danger">
+          <div class="panel-header">
+            <div class="panel-title" style="color: var(--danger)">
+              ⚠️ Danger Zone
+            </div>
+            <div class="panel-sub">
+              These actions are permanent and cannot be undone.
+            </div>
+          </div>
+
+          <div class="card danger-card">
+            <div class="danger-item">
+              <div>
+                <div class="danger-label">Export my data</div>
+                <div class="danger-desc">
+                  Download a copy of all your data including integrations and
+                  settings.
+                </div>
+              </div>
+              <button
+                class="btn btn-ghost btn-sm"
+                onclick="showToast('Data export coming soon!', 'success')"
+              >
+                Export
+              </button>
+            </div>
+
+            <div class="danger-item">
+              <div>
+                <div class="danger-label">Disconnect all integrations</div>
+                <div class="danger-desc">
+                  Remove all connected platforms. Your data will be cleared.
+                </div>
+              </div>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="showToast('All integrations disconnected.', 'success')"
+              >
+                Disconnect all
+              </button>
+            </div>
+
+            <div class="danger-item">
+              <div>
+                <div class="danger-label">Delete account</div>
+                <div class="danger-desc">
+                  Permanently delete your Aervo account and all associated data.
+                  This cannot be undone.
+                </div>
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="showDeleteModal()">
+                Delete account
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal">
+        <div class="modal-title">⚠️ Delete your account?</div>
+        <div class="modal-body">
+          This will permanently delete your Aervo account, all your
+          integrations, and all associated data.
+          <strong style="color: var(--text)"
+            >This action cannot be undone.</strong
+          >
+          <br /><br />
+          Type <strong style="color: var(--danger)">DELETE</strong> to confirm.
+          <input
+            type="text"
+            id="deleteConfirmInput"
+            placeholder="Type DELETE to confirm"
+            style="margin-top: 14px"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost btn-sm" onclick="hideDeleteModal()">
+            Cancel
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
+            Yes, delete my account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
+      if (!token) window.location.href = "/login";
+
+      // ── SECTION NAVIGATION ──
+      function showSection(name, btn) {
+        document
+          .querySelectorAll(".section-panel")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("section-" + name).classList.add("active");
+        btn.classList.add("active");
+      }
+
+      // ── TOAST ──
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        t.textContent = (type === "success" ? "✓ " : "✕ ") + msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove("show"), 3500);
+      }
+
+      // ── LOAD PROFILE ──
+      async function loadProfile() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            window.location.href = "/login";
+            return;
+          }
+          const { user } = await res.json();
+
+          // Sidebar
+          const initials = (user.name || "?")[0].toUpperCase();
+          document.getElementById("sidebarName").textContent =
+            user.name || "User";
+          document.getElementById("sidebarEmail").textContent =
+            user.email || "";
+
+          // Avatar
+          if (user.avatar_url) {
+            document.getElementById("sidebarAvatar").innerHTML =
+              `<img src="${user.avatar_url}" />`;
+            document.getElementById("profileAvatar").innerHTML =
+              `<img src="${user.avatar_url}" />`;
+          } else {
+            document.getElementById("sidebarAvatar").textContent = initials;
+            document.getElementById("profileAvatar").textContent = initials;
+          }
+
+          document.getElementById("profileAvatarName").textContent =
+            user.name || "Your Name";
+
+          // Profile fields
+          const parts = (user.name || "").split(" ");
+          document.getElementById("firstName").value = parts[0] || "";
+          document.getElementById("lastName").value =
+            parts.slice(1).join(" ") || "";
+          document.getElementById("emailField").value = user.email || "";
+
+          // Business fields
+          document.getElementById("businessName").value =
+            user.business_name || "";
+          document.getElementById("businessType").value =
+            user.business_type || "";
+          document.getElementById("userRole").value = user.role || "";
+          document.getElementById("businessLocation").value =
+            user.location || "";
+
+          // Google login detail
+          document.getElementById("googleLoginDetail").textContent =
+            user.email || "Connected";
+
+          // Check password (if google only, disable current password)
+          if (user.google_id && !user.has_password) {
+            const cpGroup = document.getElementById("currentPasswordGroup");
+            cpGroup.style.display = "none";
+          }
+
+          // Integrations
+          loadIntegrations(user);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      function loadIntegrations(user) {
+        const shop = localStorage.getItem("aervo_shop");
+        if (shop) {
+          document.getElementById("shopifyDetail").textContent = shop;
+          document.getElementById("shopifyStatus").innerHTML =
+            `<div class="status-dot"></div> Connected`;
+          document.getElementById("shopifyStatus").className =
+            "integration-status connected";
+          document.getElementById("shopifyBtn").textContent = "Disconnect";
+          document.getElementById("shopifyBtn").className =
+            "btn btn-danger btn-sm";
+        }
+      }
+
+      // ── SAVE PROFILE ──
+      async function saveProfile() {
+        const firstName = document.getElementById("firstName").value.trim();
+        const lastName = document.getElementById("lastName").value.trim();
+        const email = document.getElementById("emailField").value.trim();
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/update`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: `${firstName} ${lastName}`.trim(),
+              email,
+            }),
+          });
+          if (res.ok) {
+            showToast("Profile saved successfully!");
+            loadProfile();
+          } else {
+            showToast("Failed to save profile.", "error");
+          }
+        } catch (e) {
+          showToast("Network error. Please try again.", "error");
+        }
+      }
+
+      // ── SAVE BUSINESS INFO ──
+      async function saveBusinessInfo() {
+        const data = {
+          business_name: document.getElementById("businessName").value.trim(),
+          business_type: document.getElementById("businessType").value,
+          role: document.getElementById("userRole").value,
+          location: document.getElementById("businessLocation").value.trim(),
+        };
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/update`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          if (res.ok) {
+            showToast("Business info saved!");
+          } else {
+            showToast("Failed to save.", "error");
+          }
+        } catch (e) {
+          showToast("Network error. Please try again.", "error");
+        }
+      }
+
+      // ── CHANGE PASSWORD ──
+      async function changePassword() {
+        const current = document.getElementById("currentPassword").value;
+        const newPass = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+
+        if (newPass.length < 8) {
+          showToast("Password must be at least 8 characters.", "error");
+          return;
+        }
+        if (newPass !== confirm) {
+          showToast("Passwords don't match.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/change-password`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              current_password: current,
+              new_password: newPass,
+            }),
+          });
+          if (res.ok) {
+            showToast("Password updated successfully!");
+            document.getElementById("currentPassword").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("confirmPassword").value = "";
+            document.getElementById("strengthFill").style.width = "0%";
+            document.getElementById("strengthText").textContent = "";
+          } else {
+            const data = await res.json();
+            showToast(data.error || "Failed to update password.", "error");
+          }
+        } catch (e) {
+          showToast("Network error. Please try again.", "error");
+        }
+      }
+
+      // ── PASSWORD STRENGTH ──
+      function checkStrength(val) {
+        const fill = document.getElementById("strengthFill");
+        const text = document.getElementById("strengthText");
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (val.length >= 12) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        const levels = [
+          { pct: "0%", color: "transparent", label: "" },
+          { pct: "25%", color: "#ff6b6b", label: "Weak" },
+          { pct: "50%", color: "#f5c26b", label: "Fair" },
+          { pct: "75%", color: "#29c8ff", label: "Good" },
+          { pct: "100%", color: "#23e6a8", label: "Strong" },
+        ];
+        const l = levels[Math.min(score, 4)];
+        fill.style.width = l.pct;
+        fill.style.background = l.color;
+        text.textContent = l.label;
+        text.style.color = l.color;
+      }
+
+      // ── SAVE NOTIFICATIONS ──
+      function saveNotifications() {
+        showToast("Notification preferences saved!");
+      }
+
+      // ── INTEGRATIONS ──
+      function handleShopify() {
+        const shop = localStorage.getItem("aervo_shop");
+        if (shop) {
+          localStorage.removeItem("aervo_shop");
+          showToast("Shopify disconnected.");
+          loadProfile();
+        } else {
+          window.location.href = "/integrations";
+        }
+      }
+
+      function handleSquare() {
+        window.location.href = "/integrations";
+      }
+
+      // ── DELETE MODAL ──
+      function showDeleteModal() {
+        document.getElementById("deleteModal").classList.add("show");
+      }
+
+      function hideDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("show");
+        document.getElementById("deleteConfirmInput").value = "";
+      }
+
+      async function confirmDelete() {
+        const val = document.getElementById("deleteConfirmInput").value;
+        if (val !== "DELETE") {
+          showToast("Please type DELETE to confirm.", "error");
+          return;
+        }
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/delete`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            localStorage.clear();
+            window.location.href = "/?deleted=1";
+          } else {
+            showToast("Failed to delete account.", "error");
+          }
+        } catch (e) {
+          showToast("Network error.", "error");
+        }
+      }
+
+      // ── INIT ──
+      loadProfile();
+    </script>
+  </body>
+</html>
