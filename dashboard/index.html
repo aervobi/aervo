@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+        color: #e5e7eb;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .spinner-wrap {
+        text-align: center;
+      }
+      .spinner {
+        width: 44px;
+        height: 44px;
+        border: 3px solid rgba(148, 163, 184, 0.2);
+        border-top-color: #60a5fa;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .brand {
+        font-size: 13px;
+        letter-spacing: 4px;
+        color: #8fbfff;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      .status {
+        font-size: 14px;
+        color: #9ca7d6;
+      }
+
+      /* Integration picker — shown when user has both */
+      .picker {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 48px 24px;
+        text-align: center;
+      }
+      .picker h2 {
+        font-size: 24px;
+        color: #f9fafb;
+        margin-bottom: 4px;
+      }
+      .picker p {
+        color: #9ca7d6;
+        font-size: 15px;
+        margin-bottom: 12px;
+      }
+      .picker-cards {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .picker-card {
+        width: 220px;
+        padding: 28px 20px;
+        border-radius: 16px;
+        cursor: pointer;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: radial-gradient(circle at top left, #1e293b, #0f172a);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: block;
+      }
+      .picker-card:hover {
+        transform: translateY(-4px);
+      }
+      .picker-card.shopify:hover {
+        box-shadow: 0 16px 40px rgba(96, 165, 250, 0.3);
+        border-color: rgba(96, 165, 250, 0.4);
+      }
+      .picker-card.square:hover {
+        box-shadow: 0 16px 40px rgba(52, 211, 153, 0.3);
+        border-color: rgba(52, 211, 153, 0.4);
+      }
+      .picker-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .picker-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5ecff;
+        margin-bottom: 6px;
+      }
+      .picker-desc {
+        font-size: 12px;
+        color: #64748b;
+      }
+
+      /* No integrations */
+      .no-integrations {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 48px 24px;
+        text-align: center;
+        max-width: 500px;
+      }
+      .no-integrations h2 {
+        font-size: 24px;
+        color: #f9fafb;
+      }
+      .no-integrations p {
+        color: #9ca7d6;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .btn-primary {
+        display: inline-block;
+        padding: 14px 32px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        transition: all 0.2s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading state -->
+    <div class="spinner-wrap" id="loadingState">
+      <div class="brand">AERVO</div>
+      <div class="spinner"></div>
+      <div class="status">Loading your dashboard...</div>
+    </div>
+
+    <!-- Integration picker (both connected) -->
+    <div class="picker" id="pickerState">
+      <div class="brand">AERVO</div>
+      <h2>Choose your dashboard</h2>
+      <p>You have multiple integrations connected.</p>
+      <div class="picker-cards">
+        <a href="/dashboard/shopify" class="picker-card shopify">
+          <div class="picker-icon">🛍️</div>
+          <div class="picker-name">Shopify</div>
+          <div class="picker-desc">
+            Online store analytics, inventory &amp; customers
+          </div>
+        </a>
+        <a href="/dashboard/square" class="picker-card square">
+          <div class="picker-icon">⬛</div>
+          <div class="picker-name">Square</div>
+          <div class="picker-desc">
+            POS, appointments, reviews &amp; in-store insights
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- No integrations -->
+    <div class="no-integrations" id="noIntegrationsState">
+      <div class="brand">AERVO</div>
+      <h2>Welcome to Aervo! 👋</h2>
+      <p>
+        You haven't connected any integrations yet. Head to Integrations to
+        connect your Shopify store or Square account and unlock AI-powered
+        insights.
+      </p>
+      <a href="/integrations" class="btn-primary">⚙️ Set Up Integrations</a>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://aervo-backend.onrender.com";
+      const token = localStorage.getItem("aervo_token");
+      console.log("Token:", token);
+      console.log("Shop:", localStorage.getItem("aervo_shop"));
+      if (!token) window.location.href = "/login";
+
+      async function route() {
+        try {
+          // Get user
+          const userRes = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!userRes.ok) {
+            window.location.href = "/login";
+            return;
+          }
+          const { user } = await userRes.json();
+          const merchantId = String(user.id);
+
+          // Check both integrations in parallel
+          const [shopifyRes, squareRes] = await Promise.all([
+            fetch(`${BACKEND_URL}/api/user/me`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            fetch(
+              `${BACKEND_URL}/integrations/square/status?merchantId=${merchantId}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            ),
+          ]);
+
+          const shopifyData = await shopifyRes.json();
+          const squareData = await squareRes.json();
+
+          const hasShopify = !!localStorage.getItem("aervo_shop");
+          const hasSquare = !!squareData?.connected;
+
+          // Route based on what's connected
+          if (hasShopify && hasSquare) {
+            // Both — show picker
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("pickerState").style.display = "flex";
+          } else if (hasSquare) {
+            window.location.href = "/dashboard/square";
+          } else if (hasShopify) {
+            window.location.href = "/dashboard/shopify";
+          } else {
+            // Neither
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("noIntegrationsState").style.display =
+              "flex";
+          }
+        } catch (err) {
+          console.error("Routing error:", err);
+          // Fallback to Shopify dashboard (existing behavior)
+          window.location.href = "/dashboard/shopify";
+        }
+      }
+
+      route();
+    </script>
+  </body>
+</html>
