@@ -1567,6 +1567,20 @@
           }
           const { user } = await res.json();
 
+          // Load notification preferences
+try {
+  const notifRes = await fetch(`${BACKEND_URL}/api/user/notifications`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const notifData = await notifRes.json();
+  if (notifData.success) {
+    document.getElementById('notifWeekly').checked = notifData.preferences.weekly_digest;
+    document.getElementById('notifRevenue').checked = notifData.preferences.revenue_alerts;
+    document.getElementById('notifInventory').checked = notifData.preferences.inventory_alerts;
+    document.getElementById('notifProduct').checked = notifData.preferences.product_updates;
+  }
+} catch(e) { console.error('Notifications load error:', e); }
+
           // Sidebar
           const initials = (user.name || "?")[0].toUpperCase();
           document.getElementById("sidebarName").textContent =
@@ -1761,9 +1775,31 @@
       }
 
       // ── SAVE NOTIFICATIONS ──
-      function saveNotifications() {
-        showToast("Notification preferences saved!");
-      }
+      async function saveNotifications() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/user/notifications`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        weekly_digest: document.getElementById('notifWeekly').checked,
+        revenue_alerts: document.getElementById('notifRevenue').checked,
+        inventory_alerts: document.getElementById('notifInventory').checked,
+        product_updates: document.getElementById('notifProduct').checked,
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Notification preferences saved!');
+    } else {
+      showToast(data.error || 'Failed to save.', 'error');
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.', 'error');
+  }
+}
 
       // ── INTEGRATIONS ──
       function handleShopify() {
