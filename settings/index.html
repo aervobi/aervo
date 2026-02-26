@@ -1073,10 +1073,8 @@
                   Profile photo is pulled from your Google account if you signed
                   in with Google.
                 </div>
-                <button
-                  class="btn btn-ghost btn-sm"
-                  onclick="showToast('Photo upload coming soon!', 'success')"
-                >
+                <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)" />
+<button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatarFileInput').click()">Upload photo</button>
                   Upload photo
                 </button>
               </div>
@@ -1814,7 +1812,39 @@
           showToast("Network error.", "error");
         }
       }
+// ── UPLOAD AVATAR ──
+async function uploadAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
 
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Image must be under 5MB.', 'error');
+    return;
+  }
+
+  showToast('Uploading photo...', 'success');
+
+  const formData = new FormData();
+  formData.append('avatar', file);
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/user/avatar`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('sidebarAvatar').innerHTML = `<img src="${data.avatarUrl}" />`;
+      document.getElementById('profileAvatar').innerHTML = `<img src="${data.avatarUrl}" />`;
+      showToast('Photo updated!', 'success');
+    } else {
+      showToast(data.error || 'Upload failed.', 'error');
+    }
+  } catch(e) {
+    showToast('Upload failed. Please try again.', 'error');
+  }
+}
       // ── INIT ──
       loadProfile();
     </script>
