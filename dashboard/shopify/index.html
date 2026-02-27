@@ -39,10 +39,10 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
       .nav-brand {
-        font-weight: 600;
-        letter-spacing: 4px;
-        font-size: 14px;
-        color: #8fbfff;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        min-width: 200px;
       }
       .nav-center {
         display: flex;
@@ -582,7 +582,45 @@
   </head>
   <body>
     <nav class="nav">
-      <div class="nav-brand">AERVO</div>
+      <div class="nav-brand" style="display: flex; align-items: center; gap: 0">
+        <img
+          src="/assets/images/aervo-wordmark.png"
+          alt="Aervo"
+          style="height: 120px; width: auto; display: block"
+        />
+        <div
+          id="companyLogoContainer"
+          style="
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-left: 14px;
+            padding-left: 14px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+          "
+        >
+          <img
+            id="companyLogo"
+            src=""
+            alt=""
+            style="
+              height: 32px;
+              width: 32px;
+              border-radius: 6px;
+              object-fit: contain;
+            "
+          />
+          <span
+            id="companyLogoName"
+            style="
+              font-size: 14px;
+              color: #e5e7eb;
+              font-weight: 600;
+              letter-spacing: -0.2px;
+            "
+          ></span>
+        </div>
+      </div>
       <div class="nav-center">
         <div class="nav-tab active" data-view="overview">Overview</div>
         <div class="nav-tab" data-view="analytics">Analytics</div>
