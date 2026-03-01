@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports — Aervo</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #02030a;
+        --surface: #080d1a;
+        --surface2: #0d1426;
+        --border: rgba(255, 255, 255, 0.06);
+        --border2: rgba(255, 255, 255, 0.1);
+        --a1: #29c8ff;
+        --a2: #7c5cff;
+        --a3: #23e6a8;
+        --text: #f0f4ff;
+        --muted: #6b7a99;
+        --r: 14px;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "SF Pro Text",
+          sans-serif;
+        min-height: 100vh;
+      }
+
+      /* ── NAV ── */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        height: 52px;
+        background: rgba(2, 3, 10, 0.92);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        min-width: 180px;
+      }
+      .nav-brand img {
+        height: 28px;
+        width: auto;
+        display: block;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn-nav {
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border2);
+        background: rgba(255, 255, 255, 0.04);
+        color: #9aa8c8;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .btn-nav:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      /* ── LAYOUT ── */
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: calc(100vh - 52px);
+      }
+
+      /* ── SIDEBAR ── */
+      .sidebar {
+        border-right: 1px solid var(--border);
+        padding: 24px 16px;
+        background: var(--surface);
+        position: sticky;
+        top: 52px;
+        height: calc(100vh - 52px);
+        overflow-y: auto;
+      }
+
+      .sidebar-title {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        padding: 0 8px;
+        margin-bottom: 12px;
+      }
+
+      .report-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: none;
+        background: transparent;
+        color: #9aa8c8;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        margin-bottom: 2px;
+      }
+      .report-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+      .report-btn.active {
+        background: rgba(41, 200, 255, 0.1);
+        color: var(--a1);
+        border: 1px solid rgba(41, 200, 255, 0.2);
+      }
+      .report-btn .icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .date-section {
+        margin-top: 24px;
+      }
+      .date-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        padding: 0 8px;
+        margin-bottom: 12px;
+      }
+      .date-btn {
+        display: block;
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: #9aa8c8;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        margin-bottom: 2px;
+      }
+      .date-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+      .date-btn.active {
+        color: var(--a2);
+        font-weight: 600;
+      }
+
+      /* ── MAIN ── */
+      .main {
+        padding: 32px;
+        overflow-y: auto;
+      }
+
+      .main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+
+      .main-title {
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .main-subtitle {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .btn-generate {
+        padding: 10px 22px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--a2), var(--a1));
+        border: none;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+      }
+      .btn-generate:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 32px rgba(124, 92, 255, 0.45);
+      }
+      .btn-generate:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-pdf {
+        padding: 10px 20px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-left: 10px;
+      }
+      .btn-pdf:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* ── EMPTY STATE ── */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        text-align: center;
+        gap: 16px;
+      }
+      .empty-icon {
+        font-size: 56px;
+        opacity: 0.4;
+      }
+      .empty-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #9aa8c8;
+      }
+      .empty-sub {
+        font-size: 14px;
+        color: var(--muted);
+        max-width: 320px;
+        line-height: 1.6;
+      }
+
+      /* ── METRICS GRID ── */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .metric-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 18px 20px;
+      }
+      .metric-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .metric-value {
+        font-size: 26px;
+        font-weight: 700;
+      }
+      .metric-value.green {
+        color: var(--a3);
+      }
+      .metric-value.blue {
+        color: var(--a1);
+      }
+      .metric-value.purple {
+        color: var(--a2);
+      }
+      .metric-value.cyan {
+        color: #67e8f9;
+      }
+      .metric-value.red {
+        color: #f87171;
+      }
+      .metric-value.yellow {
+        color: #fbbf24;
+      }
+
+      /* ── CHART ── */
+      .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .chart-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #c8d4f0;
+      }
+      .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 160px;
+      }
+      .chart-bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        height: 100%;
+        justify-content: flex-end;
+      }
+      .chart-bar {
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+        background: linear-gradient(180deg, var(--a1), var(--a2));
+        min-height: 4px;
+        transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+      }
+      .chart-bar:hover::after {
+        content: attr(data-value);
+        position: absolute;
+        top: -28px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        font-size: 11px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+      .chart-label {
+        font-size: 10px;
+        color: var(--muted);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      /* ── AI INSIGHTS ── */
+      .ai-card {
+        background: linear-gradient(
+          135deg,
+          rgba(124, 92, 255, 0.08),
+          rgba(41, 200, 255, 0.05)
+        );
+        border: 1px solid rgba(124, 92, 255, 0.2);
+        border-radius: var(--r);
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .ai-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .ai-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(124, 92, 255, 0.15);
+        border: 1px solid rgba(124, 92, 255, 0.3);
+        font-size: 12px;
+        font-weight: 600;
+        color: #a78bfa;
+      }
+      .ai-text {
+        font-size: 14px;
+        line-height: 1.8;
+        color: #c8d4f0;
+      }
+
+      /* ── TABLE ── */
+      .table-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .table-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #c8d4f0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      tbody td {
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #c8d4f0;
+        border-bottom: 1px solid var(--border);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* ── LOADING ── */
+      .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        gap: 16px;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--a1);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loading-text {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* ── REPORT META ── */
+      .report-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .meta-tag {
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border2);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* ── PRINT ── */
+      @media print {
+        .nav,
+        .sidebar,
+        .btn-generate,
+        .btn-pdf,
+        .main-header .actions {
+          display: none !important;
+        }
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          padding: 0;
+        }
+        body {
+          background: #fff;
+          color: #000;
+        }
+        .metric-card,
+        .chart-card,
+        .ai-card,
+        .table-card {
+          border: 1px solid #ddd;
+          background: #fff;
+        }
+        .metric-value,
+        .ai-text,
+        tbody td {
+          color: #000;
+        }
+        .metric-label,
+        .chart-label,
+        .ai-badge {
+          color: #666;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: static;
+          height: auto;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 16px;
+        }
+        .report-btn {
+          width: auto;
+        }
+        .metrics-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .main {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="nav-brand">
+        <img src="/assets/images/aervo-wordmark.png" alt="Aervo" />
+      </div>
+      <div class="nav-right">
+        <a href="/dashboard/shopify" class="btn-nav">← Dashboard</a>
+        <a href="/settings" class="btn-nav">Settings</a>
+        <button class="btn-nav" id="logoutBtn">Log out</button>
+      </div>
+    </nav>
+
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-title">Report Type</div>
+
+        <button
+          class="report-btn active"
+          data-type="revenue"
+          onclick="selectReport('revenue', this)"
+        >
+          <span class="icon">📈</span> Revenue
+        </button>
+        <button
+          class="report-btn"
+          data-type="orders"
+          onclick="selectReport('orders', this)"
+        >
+          <span class="icon">🛒</span> Orders
+        </button>
+        <button
+          class="report-btn"
+          data-type="refunds"
+          onclick="selectReport('refunds', this)"
+        >
+          <span class="icon">🔄</span> Refunds
+        </button>
+        <button
+          class="report-btn"
+          data-type="inventory"
+          onclick="selectReport('inventory', this)"
+        >
+          <span class="icon">📦</span> Inventory
+        </button>
+        <button
+          class="report-btn"
+          data-type="customers"
+          onclick="selectReport('customers', this)"
+        >
+          <span class="icon">👥</span> Customers
+        </button>
+        <button
+          class="report-btn"
+          data-type="products"
+          onclick="selectReport('products', this)"
+        >
+          <span class="icon">🏆</span> Product Performance
+        </button>
+        <button
+          class="report-btn"
+          data-type="pnl"
+          onclick="selectReport('pnl', this)"
+        >
+          <span class="icon">💰</span> P&amp;L Summary
+        </button>
+
+        <div class="date-section">
+          <div class="date-label">Date Range</div>
+          <button
+            class="date-btn"
+            data-range="7d"
+            onclick="selectDate('7d', this)"
+          >
+            Last 7 days
+          </button>
+          <button
+            class="date-btn active"
+            data-range="30d"
+            onclick="selectDate('30d', this)"
+          >
+            Last 30 days
+          </button>
+          <button
+            class="date-btn"
+            data-range="90d"
+            onclick="selectDate('90d', this)"
+          >
+            Last 90 days
+          </button>
+          <button
+            class="date-btn"
+            data-range="1y"
+            onclick="selectDate('1y', this)"
+          >
+            Last 12 months
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main" id="mainContent">
+        <!-- Empty state -->
+        <div class="main-header">
+          <div>
+            <div class="main-title" id="reportTitle">Revenue Report</div>
+            <div class="main-subtitle" id="reportSubtitle">
+              Select a report type and click Generate
+            </div>
+          </div>
+          <div class="actions" style="display: flex; align-items: center">
+            <button
+              class="btn-generate"
+              id="generateBtn"
+              onclick="generateReport()"
+            >
+              ✦ Generate Report
+            </button>
+            <button
+              class="btn-pdf"
+              id="pdfBtn"
+              style="display: none"
+              onclick="downloadPDF()"
+            >
+              ⬇ Download PDF
+            </button>
+          </div>
+        </div>
+
+        <div id="reportContent">
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-title">No report generated yet</div>
+            <div class="empty-sub">
+              Select a report type from the sidebar and click Generate Report to
+              get started.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://api.aervoapp.com";
+      const token = localStorage.getItem("aervo_token");
+      let selectedReport = "revenue";
+      let selectedDate = "30d";
+      let shopOrigin = localStorage.getItem("shopify_shop") || "";
+      let currentReport = null;
+
+      if (!token) window.location.href = "/login";
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "/login";
+      });
+
+      // Load user data to get shop origin
+      async function loadUser() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success && data.shop) {
+            shopOrigin = data.shop.shopOrigin;
+            localStorage.setItem("shopify_shop", shopOrigin);
+          }
+        } catch (e) {
+          console.error("Load user error:", e);
+        }
+      }
+
+      function selectReport(type, el) {
+        selectedReport = type;
+        document
+          .querySelectorAll(".report-btn")
+          .forEach((b) => b.classList.remove("active"));
+        el.classList.add("active");
+        const titles = {
+          revenue: "Revenue Report",
+          orders: "Orders Report",
+          refunds: "Refund Report",
+          inventory: "Inventory Report",
+          customers: "Customer Report",
+          products: "Product Performance Report",
+          pnl: "Profit & Loss Summary",
+        };
+        document.getElementById("reportTitle").textContent = titles[type];
+        document.getElementById("reportSubtitle").textContent =
+          "Click Generate Report to create this report";
+      }
+
+      function selectDate(range, el) {
+        selectedDate = range;
+        document
+          .querySelectorAll(".date-btn")
+          .forEach((b) => b.classList.remove("active"));
+        el.classList.add("active");
+      }
+
+      async function generateReport() {
+        if (!shopOrigin) {
+          alert(
+            "No connected store found. Please connect your Shopify store first.",
+          );
+          return;
+        }
+
+        const btn = document.getElementById("generateBtn");
+        btn.disabled = true;
+        btn.textContent = "Generating...";
+        document.getElementById("pdfBtn").style.display = "none";
+
+        document.getElementById("reportContent").innerHTML = `
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div class="loading-text">Fetching your data and generating insights...</div>
+      </div>
+    `;
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/generate`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              reportType: selectedReport,
+              dateRange: selectedDate,
+              shopOrigin,
+            }),
+          });
+
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message);
+
+          currentReport = data.report;
+          renderReport(data.report);
+          document.getElementById("pdfBtn").style.display = "inline-block";
+        } catch (err) {
+          document.getElementById("reportContent").innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <div class="empty-title">Failed to generate report</div>
+          <div class="empty-sub">${err.message}</div>
+        </div>
+      `;
+        }
+
+        btn.disabled = false;
+        btn.textContent = "✦ Generate Report";
+      }
+
+      function renderReport(report) {
+        const dateLabels = {
+          "7d": "Last 7 Days",
+          "30d": "Last 30 Days",
+          "90d": "Last 90 Days",
+          "1y": "Last 12 Months",
+        };
+        const generatedAt = new Date(report.generatedAt).toLocaleString(
+          "en-US",
+          {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+          },
+        );
+
+        // Metrics
+        const metricsHtml = report.metrics
+          .map(
+            (m) => `
+      <div class="metric-card">
+        <div class="metric-label">${m.label}</div>
+        <div class="metric-value ${m.color}">${m.value}</div>
+      </div>
+    `,
+          )
+          .join("");
+
+        // Chart
+        const maxVal = Math.max(...report.chartData.map((d) => d.value), 1);
+        const barsHtml = report.chartData
+          .map(
+            (d) => `
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="height:${Math.max((d.value / maxVal) * 140, 4)}px" data-value="${d.value}"></div>
+        <div class="chart-label">${d.label}</div>
+      </div>
+    `,
+          )
+          .join("");
+
+        // Table
+        const theadHtml = report.tableHeaders
+          .map((h) => `<th>${h}</th>`)
+          .join("");
+        const tbodyHtml = report.tableRows
+          .map(
+            (row) => `
+      <tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>
+    `,
+          )
+          .join("");
+
+        document.getElementById("reportSubtitle").textContent =
+          `${dateLabels[report.dateRange]} · Generated ${generatedAt}`;
+
+        document.getElementById("reportContent").innerHTML = `
+      <div class="report-meta">
+        <span class="meta-tag">📅 ${dateLabels[report.dateRange]}</span>
+        <span class="meta-tag">🏪 ${report.shopOrigin}</span>
+        <span class="meta-tag">⏱ ${generatedAt}</span>
+      </div>
+
+      <div class="metrics-grid">${metricsHtml}</div>
+
+      ${
+        report.chartData.length > 0
+          ? `
+      <div class="chart-card">
+        <div class="chart-title">Visual Breakdown</div>
+        <div class="chart-bars">${barsHtml}</div>
+      </div>
+      `
+          : ""
+      }
+
+      ${
+        report.aiInsights
+          ? `
+      <div class="ai-card">
+        <div class="ai-header">
+          <div class="ai-badge">✦ AI Insights</div>
+        </div>
+        <div class="ai-text">${report.aiInsights}</div>
+      </div>
+      `
+          : ""
+      }
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Detailed Data</div>
+        </div>
+        <table>
+          <thead><tr>${theadHtml}</tr></thead>
+          <tbody>${tbodyHtml}</tbody>
+        </table>
+      </div>
+    `;
+      }
+
+      function downloadPDF() {
+        const title = document.getElementById("reportTitle").textContent;
+        document.title = `${title} — Aervo`;
+        window.print();
+      }
+
+      loadUser();
+    </script>
+  </body>
+</html>
