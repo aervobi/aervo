@@ -948,484 +948,493 @@
       </main>
     </div>
 
-    <script>
-      const BACKEND_URL = "https://api.aervoapp.com";
+   <script>
+    const BACKEND_URL = "https://api.aervoapp.com";
       const token = localStorage.getItem("aervo_token");
       let selectedReport = "revenue";
       let selectedDate = "30d";
       let shopOrigin = localStorage.getItem("shopify_shop") || "";
       let currentReport = null;
+      let currentUploadId = null;
 
       if (!token) window.location.href = "/login";
 
-      // Logout
       document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.clear();
         window.location.href = "/login";
       });
 
-      // ── TAB SWITCHING ──────────────────────────────────────────────
-function switchTab(tab) {
-  if (tab === 'store') {
-    document.getElementById('storeTab').style.display = 'block';
-    document.getElementById('csvTab').style.display = 'none';
-    document.getElementById('tabStore').classList.add('active');
-    document.getElementById('tabCsv').classList.remove('active');
-    // Show store sidebar items
-    document.querySelector('.sidebar-title').style.display = 'block';
-    document.querySelectorAll('.report-btn, .date-section').forEach(el => el.style.display = '');
-  } else {
-    document.getElementById('storeTab').style.display = 'none';
-    document.getElementById('csvTab').style.display = 'block';
-    document.getElementById('tabStore').classList.remove('active');
-    document.getElementById('tabCsv').classList.add('active');
-    // Hide store sidebar items
-    document.querySelector('.sidebar-title').style.display = 'none';
-    document.querySelectorAll('.report-btn').forEach(el => el.style.display = 'none');
-    document.querySelector('.date-section').style.display = 'none';
-    loadCsvUsage();
-    loadCsvHistory();
-  }
-}
-
-// ── CSV USAGE ──────────────────────────────────────────────────
-async function loadCsvUsage() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/reports/csv-usage`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById('usageText').textContent = `${data.used} of ${data.limit} used`;
-      document.getElementById('usageFill').style.width = `${(data.used / data.limit) * 100}%`;
-      if (data.used >= data.limit) {
-        document.getElementById('upgradeBanner').style.display = 'block';
-        document.getElementById('uploadZone').style.opacity = '0.4';
-        document.getElementById('uploadZone').style.pointerEvents = 'none';
+      // ── TAB SWITCHING ──────────────────────────────────────────
+      function switchTab(tab) {
+        if (tab === "store") {
+          document.getElementById("storeTab").style.display = "block";
+          document.getElementById("csvTab").style.display = "none";
+          document.getElementById("tabStore").classList.add("active");
+          document.getElementById("tabCsv").classList.remove("active");
+          document.querySelector(".sidebar-title").style.display = "block";
+          document.querySelectorAll(".report-btn, .date-section").forEach(el => el.style.display = "");
+        } else {
+          document.getElementById("storeTab").style.display = "none";
+          document.getElementById("csvTab").style.display = "block";
+          document.getElementById("tabStore").classList.remove("active");
+          document.getElementById("tabCsv").classList.add("active");
+          document.querySelector(".sidebar-title").style.display = "none";
+          document.querySelectorAll(".report-btn").forEach(el => el.style.display = "none");
+          document.querySelector(".date-section").style.display = "none";
+          loadCsvUsage();
+          loadCsvHistory();
+        }
       }
-    }
-  } catch(e) { console.error('Usage error:', e); }
-}
 
-// ── CSV HISTORY ────────────────────────────────────────────────
-async function loadCsvHistory() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/reports/csv-history`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success && data.uploads.length > 0) {
-      document.getElementById('csvHistory').innerHTML = `
-        <div style="font-size:14px;font-weight:600;color:#c8d4f0;margin-bottom:12px;">Previous Uploads</div>
-        ${data.uploads.map(u => `
-          <div class="history-item" onclick="loadPreviousUpload(${u.id})">
-            <div class="history-name">📄 ${u.filename}</div>
-            <div class="history-meta">${u.row_count} rows · ${new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+      // ── REPORT SELECTION ───────────────────────────────────────
+      function selectReport(type, el) {
+        selectedReport = type;
+        document.querySelectorAll(".report-btn").forEach(b => b.classList.remove("active"));
+        el.classList.add("active");
+
+        const titles = {
+          revenue: "Revenue Report",
+          orders: "Orders Report",
+          refunds: "Refund Report",
+          inventory: "Inventory Report",
+          customers: "Customer Report",
+          products: "Product Performance Report",
+          pnl: "Profit & Loss Summary"
+        };
+
+        const descriptions = {
+          revenue: "Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.",
+          orders: "A full breakdown of every order placed in your store — fulfillment status, payment status, and customer details. Helps you spot bottlenecks in your fulfillment pipeline and understand order patterns.",
+          refunds: "Shows your refund rate, total amount refunded, and which orders were refunded. A high refund rate can signal product quality or expectation issues — this report helps you catch that early.",
+          inventory: "A complete snapshot of your current stock levels across all products and variants. Highlights what's out of stock, what's running low, and the total estimated value of your inventory.",
+          customers: "Breaks down your customer base into new, returning, and one-time buyers. Shows your top spenders and average lifetime value — key metrics for understanding customer loyalty and acquisition.",
+          products: "Ranks every product by revenue and units sold so you know exactly what's driving your business and what's underperforming. Use this to make smarter decisions about inventory, promotions, and product mix.",
+          pnl: "A high-level profit and loss summary showing gross revenue, discounts given, refunds issued, and net revenue by month. Gives you a clear picture of your store's financial health over time."
+        };
+
+        const icons = {
+          revenue: "📈", orders: "🛒", refunds: "🔄",
+          inventory: "📦", customers: "👥", products: "🏆", pnl: "💰"
+        };
+
+        document.getElementById("reportTitle").textContent = titles[type];
+        document.getElementById("reportSubtitle").textContent = "Select a date range and click Generate Report";
+        document.getElementById("reportContent").innerHTML = `
+          <div class="description-card">
+            <div class="desc-icon">${icons[type]}</div>
+            <div class="desc-body">
+              <div class="desc-title">${titles[type]}</div>
+              <div class="desc-text">${descriptions[type]}</div>
+              <div class="desc-footer">
+                <span class="desc-tag">✦ AI Insights included</span>
+                <span class="desc-tag">📄 PDF export</span>
+                <span class="desc-tag">📅 Custom date range</span>
+              </div>
+            </div>
           </div>
-        `).join('')}
-      `;
-    }
-  } catch(e) { console.error('History error:', e); }
-}
+        `;
+        document.getElementById("pdfBtn").style.display = "none";
+        currentReport = null;
+      }
 
-// ── FILE HANDLING ──────────────────────────────────────────────
-function handleDrop(event) {
-  event.preventDefault();
-  document.getElementById('uploadZone').classList.remove('dragover');
-  const file = event.dataTransfer.files[0];
-  if (file) processFile(file);
-}
+      function selectDate(range, el) {
+        selectedDate = range;
+        document.querySelectorAll(".date-btn").forEach(b => b.classList.remove("active"));
+        el.classList.add("active");
+      }
 
-function handleFileSelect(input) {
-  const file = input.files[0];
-  if (file) processFile(file);
-}
+      // ── GENERATE REPORT ────────────────────────────────────────
+      async function generateReport() {
+        if (!shopOrigin) {
+          alert("No connected store found. Please connect your Shopify store first.");
+          return;
+        }
+        const btn = document.getElementById("generateBtn");
+        btn.disabled = true;
+        btn.textContent = "Generating...";
+        document.getElementById("pdfBtn").style.display = "none";
+        document.getElementById("reportContent").innerHTML = `
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div class="loading-text">Fetching your data and generating insights...</div>
+          </div>
+        `;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/generate`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ reportType: selectedReport, dateRange: selectedDate, shopOrigin })
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message);
+          currentReport = data.report;
+          renderReport(data.report);
+          document.getElementById("pdfBtn").style.display = "inline-block";
+        } catch (err) {
+          document.getElementById("reportContent").innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <div class="empty-title">Failed to generate report</div>
+              <div class="empty-sub">${err.message}</div>
+            </div>
+          `;
+        }
+        btn.disabled = false;
+        btn.textContent = "✦ Generate Report";
+      }
 
-async function processFile(file) {
-  const allowed = ['.csv', '.xlsx', '.xls'];
-  const ext = '.' + file.name.split('.').pop().toLowerCase();
-  if (!allowed.includes(ext)) {
-    alert('Please upload a CSV or Excel file.');
-    return;
-  }
-
-  document.getElementById('csvReportContent').innerHTML = `
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <div class="loading-text">Analyzing your data with AI...</div>
-    </div>
-  `;
-  document.getElementById('csvPdfBtn').style.display = 'none';
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/reports/upload-csv`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      if (data.upgradeRequired) {
-        document.getElementById('upgradeBanner').style.display = 'block';
-        document.getElementById('uploadZone').style.opacity = '0.4';
-        document.getElementById('uploadZone').style.pointerEvents = 'none';
-        document.getElementById('csvReportContent').innerHTML = '';
-      } else {
-        document.getElementById('csvReportContent').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-icon">⚠️</div>
-            <div class="empty-title">Upload failed</div>
-            <div class="empty-sub">${data.message}</div>
+      function renderReport(report) {
+        const dateLabels = { "7d": "Last 7 Days", "30d": "Last 30 Days", "90d": "Last 90 Days", "1y": "Last 12 Months" };
+        const generatedAt = new Date(report.generatedAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+        const metricsHtml = report.metrics.map(m => `
+          <div class="metric-card">
+            <div class="metric-label">${m.label}</div>
+            <div class="metric-value ${m.color}">${m.value}</div>
+          </div>
+        `).join("");
+        const maxVal = Math.max(...report.chartData.map(d => d.value), 1);
+        const barsHtml = report.chartData.map(d => `
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height:${Math.max((d.value / maxVal) * 140, 4)}px" data-value="${d.value}"></div>
+            <div class="chart-label">${d.label}</div>
+          </div>
+        `).join("");
+        const theadHtml = report.tableHeaders.map(h => `<th>${h}</th>`).join("");
+        const tbodyHtml = report.tableRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`).join("");
+        document.getElementById("reportSubtitle").textContent = `${dateLabels[report.dateRange]} · Generated ${generatedAt}`;
+        document.getElementById("reportContent").innerHTML = `
+          <div class="report-meta">
+            <span class="meta-tag">📅 ${dateLabels[report.dateRange]}</span>
+            <span class="meta-tag">🏪 ${report.shopOrigin}</span>
+            <span class="meta-tag">⏱ ${generatedAt}</span>
+          </div>
+          <div class="metrics-grid">${metricsHtml}</div>
+          ${report.chartData.length > 0 ? `
+          <div class="chart-card">
+            <div class="chart-title">Visual Breakdown</div>
+            <div class="chart-bars">${barsHtml}</div>
+          </div>` : ""}
+          ${report.aiInsights ? `
+          <div class="ai-card">
+            <div class="ai-header"><div class="ai-badge">✦ AI Insights</div></div>
+            <div class="ai-text">${report.aiInsights}</div>
+          </div>` : ""}
+          <div class="table-card">
+            <div class="table-header"><div class="table-title">Detailed Data</div></div>
+            <table>
+              <thead><tr>${theadHtml}</tr></thead>
+              <tbody>${tbodyHtml}</tbody>
+            </table>
           </div>
         `;
       }
-      return;
-    }
 
-    renderCsvReport(data.report, data.aiInsights, file.name);
-    loadCsvUsage();
-    loadCsvHistory();
-    document.getElementById('csvPdfBtn').style.display = 'inline-block';
+      // ── CSV USAGE ──────────────────────────────────────────────
+      async function loadCsvUsage() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/csv-usage`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success) {
+            document.getElementById("usageText").textContent = `${data.used} of ${data.limit} used`;
+            document.getElementById("usageFill").style.width = `${(data.used / data.limit) * 100}%`;
+            if (data.used >= data.limit) {
+              document.getElementById("upgradeBanner").style.display = "block";
+              document.getElementById("uploadZone").style.opacity = "0.4";
+              document.getElementById("uploadZone").style.pointerEvents = "none";
+            }
+          }
+        } catch(e) { console.error("Usage error:", e); }
+      }
 
-  } catch(err) {
-    document.getElementById('csvReportContent').innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">⚠️</div>
-        <div class="empty-title">Upload failed</div>
-        <div class="empty-sub">${err.message}</div>
-      </div>
-    `;
-  }
-}
+      // ── CSV HISTORY ────────────────────────────────────────────
+      async function loadCsvHistory() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/csv-history`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success && data.uploads.length > 0) {
+            document.getElementById("csvHistory").innerHTML = `
+              <div style="font-size:14px;font-weight:600;color:#c8d4f0;margin-bottom:12px;">Previous Uploads</div>
+              ${data.uploads.map(u => `
+                <div class="history-item" onclick="loadPreviousUpload(${u.id})">
+                  <div class="history-name">📄 ${u.filename}</div>
+                  <div class="history-meta">${u.row_count} rows · ${new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
+                </div>
+              `).join("")}
+            `;
+          }
+        } catch(e) { console.error("History error:", e); }
+      }
 
-async function loadPreviousUpload(id) {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/reports/csv/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success) {
-      renderCsvReport(data.upload.report_data, data.upload.ai_insights, data.upload.filename);
-      document.getElementById('csvPdfBtn').style.display = 'inline-block';
-    }
-  } catch(e) { console.error('Load upload error:', e); }
-}
+      // ── FILE HANDLING ──────────────────────────────────────────
+      function handleDrop(event) {
+        event.preventDefault();
+        document.getElementById("uploadZone").classList.remove("dragover");
+        const file = event.dataTransfer.files[0];
+        if (file) processFile(file);
+      }
 
-function renderCsvReport(report, aiInsights, filename) {
-  const metricsHtml = (report.metrics || []).map(m => `
-    <div class="metric-card">
-      <div class="metric-label">${m.label}</div>
-      <div class="metric-value ${m.color}">${m.value}</div>
-    </div>
-  `).join('');
+      function handleFileSelect(input) {
+        const file = input.files[0];
+        if (file) processFile(file);
+      }
 
-  const theadHtml = (report.headers || []).map(h => `<th>${h}</th>`).join('');
-  const tbodyHtml = (report.tableRows || []).map(row =>
-    `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
-  ).join('');
+      async function processFile(file) {
+        const allowed = [".csv", ".xlsx", ".xls"];
+        const ext = "." + file.name.split(".").pop().toLowerCase();
+        if (!allowed.includes(ext)) {
+          alert("Please upload a CSV or Excel file.");
+          return;
+        }
+        document.getElementById("csvReportContent").innerHTML = `
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing your data with AI...</div>
+          </div>
+        `;
+        document.getElementById("csvPdfBtn").style.display = "none";
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/upload-csv`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+          });
+          const data = await res.json();
+          if (!data.success) {
+            if (data.upgradeRequired) {
+              document.getElementById("upgradeBanner").style.display = "block";
+              document.getElementById("uploadZone").style.opacity = "0.4";
+              document.getElementById("uploadZone").style.pointerEvents = "none";
+              document.getElementById("csvReportContent").innerHTML = "";
+            } else {
+              document.getElementById("csvReportContent").innerHTML = `
+                <div class="empty-state">
+                  <div class="empty-icon">⚠️</div>
+                  <div class="empty-title">Upload failed</div>
+                  <div class="empty-sub">${data.message}</div>
+                </div>
+              `;
+            }
+            return;
+          }
+          renderCsvReport(data.report, data.aiInsights, file.name, data.uploadId);
+          loadCsvUsage();
+          loadCsvHistory();
+          document.getElementById("csvPdfBtn").style.display = "inline-block";
+        } catch(err) {
+          document.getElementById("csvReportContent").innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <div class="empty-title">Upload failed</div>
+              <div class="empty-sub">${err.message}</div>
+            </div>
+          `;
+        }
+      }
 
-  document.getElementById('csvReportContent').innerHTML = `
-    <div class="report-meta" style="margin-bottom:20px;">
-      <span class="meta-tag">📄 ${filename}</span>
-      <span class="meta-tag">📊 ${report.totalRows} rows</span>
-      <span class="meta-tag">🔍 ${report.detectedType || 'business'} data</span>
-    </div>
+      async function loadPreviousUpload(id) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/csv/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success) {
+            renderCsvReport(data.upload.report_data, data.upload.ai_insights, data.upload.filename, id);
+            document.getElementById("csvPdfBtn").style.display = "inline-block";
+          }
+        } catch(e) { console.error("Load upload error:", e); }
+      }
 
-    ${report.summary ? `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px;">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Data Summary</div>
-      <div style="font-size:14px;color:#c8d4f0;line-height:1.7;">${report.summary}</div>
-    </div>
-    ` : ''}
+      function renderCsvReport(report, aiInsights, filename, uploadId) {
+        currentUploadId = uploadId;
+        const metricsHtml = (report.metrics || []).map(m => `
+          <div class="metric-card">
+            <div class="metric-label">${m.label}</div>
+            <div class="metric-value ${m.color}">${m.value}</div>
+          </div>
+        `).join("");
 
-    ${metricsHtml ? `<div class="metrics-grid">${metricsHtml}</div>` : ''}
+        const chartData = report.chartData || [];
+        const maxVal = Math.max(...chartData.map(d => d.value), 1);
+        const barsHtml = chartData.map(d => `
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" style="height:${Math.max((d.value / maxVal) * 140, 4)}px" data-value="${d.value}"></div>
+            <div class="chart-label">${d.label}</div>
+          </div>
+        `).join("");
 
-    ${aiInsights ? `
-    <div class="ai-card">
-      <div class="ai-header">
-        <div class="ai-badge">✦ AI Insights</div>
-      </div>
-      <div class="ai-text">${aiInsights}</div>
-    </div>
-    ` : ''}
+        const theadHtml = (report.headers || []).map(h => `<th>${h}</th>`).join("");
+        const tbodyHtml = (report.tableRows || []).map(row =>
+          `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`
+        ).join("");
 
-    <div class="table-card">
-      <div class="table-header">
-        <div class="table-title">Your Data (first 100 rows)</div>
-      </div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead><tr>${theadHtml}</tr></thead>
-          <tbody>${tbodyHtml}</tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
+        document.getElementById("csvReportContent").innerHTML = `
+          <div class="report-meta" style="margin-bottom:20px;">
+            <span class="meta-tag">📄 ${filename}</span>
+            <span class="meta-tag">📊 ${report.totalRows} rows</span>
+            <span class="meta-tag">🔍 ${report.detectedType || "business"} data</span>
+          </div>
 
-      // Load user data to get shop origin
+          ${report.summary ? `
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px;">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Data Summary</div>
+            <div style="font-size:14px;color:#c8d4f0;line-height:1.7;">${report.summary}</div>
+          </div>` : ""}
+
+          ${metricsHtml ? `<div class="metrics-grid" style="margin-bottom:24px;">${metricsHtml}</div>` : ""}
+
+          ${chartData.length > 0 ? `
+          <div class="chart-card">
+            <div class="chart-title">${report.chartTitle || "Data Breakdown"}</div>
+            <div class="chart-bars">${barsHtml}</div>
+          </div>` : ""}
+
+          ${aiInsights ? `
+          <div class="ai-card">
+            <div class="ai-header"><div class="ai-badge">✦ AI Insights</div></div>
+            <div class="ai-text">${aiInsights}</div>
+          </div>` : ""}
+
+          <div class="chat-card" id="chatCard">
+            <div class="chat-header">
+              <div class="chat-title">✦ Ask Aervo about this data</div>
+              <div class="chat-limit" id="chatLimit">0 of 10 questions used</div>
+            </div>
+            <div class="chat-suggestions">
+              <span class="suggestion-chip" onclick="askSuggestion(this)">Who is my top customer?</span>
+              <span class="suggestion-chip" onclick="askSuggestion(this)">What is my best performing service?</span>
+              <span class="suggestion-chip" onclick="askSuggestion(this)">What day had the most revenue?</span>
+              <span class="suggestion-chip" onclick="askSuggestion(this)">Who is my top staff member?</span>
+              <span class="suggestion-chip" onclick="askSuggestion(this)">What is my average transaction value?</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-empty">Ask any question about your uploaded data ↑</div>
+            </div>
+            <div class="chat-input-wrap">
+              <input type="text" class="chat-input" id="chatInput" placeholder="e.g. Who are my top 3 customers by spend?" onkeydown="if(event.key==='Enter') sendQuestion()" />
+              <button class="chat-send" id="chatSend" onclick="sendQuestion()">Ask →</button>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header"><div class="table-title">Full Data (first 100 rows)</div></div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead><tr>${theadHtml}</tr></thead>
+                <tbody>${tbodyHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+        if (uploadId) loadChatHistory(uploadId);
+      }
+
+      // ── CSV CHAT ───────────────────────────────────────────────
+      function askSuggestion(el) {
+        document.getElementById("chatInput").value = el.textContent;
+        sendQuestion();
+      }
+
+      async function sendQuestion() {
+        const input = document.getElementById("chatInput");
+        const question = input.value.trim();
+        if (!question || !currentUploadId) return;
+
+        const sendBtn = document.getElementById("chatSend");
+        sendBtn.disabled = true;
+        input.value = "";
+
+        const messages = document.getElementById("chatMessages");
+        const emptyMsg = messages.querySelector(".chat-empty");
+        if (emptyMsg) emptyMsg.remove();
+
+        messages.innerHTML += `
+          <div class="message-wrap">
+            <div class="message-q">${question}</div>
+            <div class="message-a" id="thinking">
+              <div class="ai-label">✦ Aervo</div>
+              Thinking...
+            </div>
+          </div>
+        `;
+        messages.scrollTop = messages.scrollHeight;
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/csv/${currentUploadId}/ask`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+          });
+          const data = await res.json();
+          const thinking = document.getElementById("thinking");
+          if (thinking) {
+            thinking.innerHTML = `<div class="ai-label">✦ Aervo</div>${data.answer || data.message}`;
+            thinking.removeAttribute("id");
+          }
+          if (data.success) {
+            document.getElementById("chatLimit").textContent = `${data.used} of ${data.limit} questions used`;
+            if (data.used >= data.limit) {
+              sendBtn.disabled = true;
+              input.disabled = true;
+              input.placeholder = "Question limit reached for this upload";
+            }
+          }
+        } catch(err) {
+          const thinking = document.getElementById("thinking");
+          if (thinking) {
+            thinking.innerHTML = `<div class="ai-label">✦ Aervo</div>Sorry, something went wrong. Please try again.`;
+            thinking.removeAttribute("id");
+          }
+        }
+
+        sendBtn.disabled = false;
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      async function loadChatHistory(uploadId) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/reports/csv/${uploadId}/questions`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success && data.questions.length > 0) {
+            const messages = document.getElementById("chatMessages");
+            messages.innerHTML = "";
+            data.questions.forEach(q => {
+              messages.innerHTML += `
+                <div class="message-wrap">
+                  <div class="message-q">${q.question}</div>
+                  <div class="message-a">
+                    <div class="ai-label">✦ Aervo</div>
+                    ${q.answer}
+                  </div>
+                </div>
+              `;
+            });
+            messages.scrollTop = messages.scrollHeight;
+            document.getElementById("chatLimit").textContent = `${data.used} of ${data.limit} questions used`;
+          }
+        } catch(e) { console.error("Chat history error:", e); }
+      }
+
+      // ── LOAD USER ──────────────────────────────────────────────
       async function loadUser() {
         try {
           const res = await fetch(`${BACKEND_URL}/api/user/me`, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}` }
           });
           const data = await res.json();
           if (data.success && data.shop) {
             shopOrigin = data.shop.shopOrigin;
             localStorage.setItem("shopify_shop", shopOrigin);
           }
-        } catch (e) {
-          console.error("Load user error:", e);
-        }
-      }
-
-     function selectReport(type, el) {
-  selectedReport = type;
-  document.querySelectorAll(".report-btn").forEach((b) => b.classList.remove("active"));
-  el.classList.add("active");
-
-  const titles = {
-    revenue: "Revenue Report",
-    orders: "Orders Report",
-    refunds: "Refund Report",
-    inventory: "Inventory Report",
-    customers: "Customer Report",
-    products: "Product Performance Report",
-    pnl: "Profit & Loss Summary"
-  };
-
-  const descriptions = {
-    revenue: "Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.",
-    orders: "A full breakdown of every order placed in your store — fulfillment status, payment status, and customer details. Helps you spot bottlenecks in your fulfillment pipeline and understand order patterns.",
-    refunds: "Shows your refund rate, total amount refunded, and which orders were refunded. A high refund rate can signal product quality or expectation issues — this report helps you catch that early.",
-    inventory: "A complete snapshot of your current stock levels across all products and variants. Highlights what's out of stock, what's running low, and the total estimated value of your inventory.",
-    customers: "Breaks down your customer base into new, returning, and one-time buyers. Shows your top spenders and average lifetime value — key metrics for understanding customer loyalty and acquisition.",
-    products: "Ranks every product by revenue and units sold so you know exactly what's driving your business and what's underperforming. Use this to make smarter decisions about inventory, promotions, and product mix.",
-    pnl: "A high-level profit and loss summary showing gross revenue, discounts given, refunds issued, and net revenue by month. Gives you a clear picture of your store's financial health over time."
-  };
-
-  const icons = {
-    revenue: "📈",
-    orders: "🛒",
-    refunds: "🔄",
-    inventory: "📦",
-    customers: "👥",
-    products: "🏆",
-    pnl: "💰"
-  };
-
-  document.getElementById("reportTitle").textContent = titles[type];
-  document.getElementById("reportSubtitle").textContent = "Select a date range and click Generate Report";
-
-  document.getElementById("reportContent").innerHTML = `
-    <div class="description-card">
-      <div class="desc-icon">${icons[type]}</div>
-      <div class="desc-body">
-        <div class="desc-title">${titles[type]}</div>
-        <div class="desc-text">${descriptions[type]}</div>
-        <div class="desc-footer">
-          <span class="desc-tag">✦ AI Insights included</span>
-          <span class="desc-tag">📄 PDF export</span>
-          <span class="desc-tag">📅 Custom date range</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById("pdfBtn").style.display = "none";
-  currentReport = null;
-}
-
-        const descriptions = {
-          revenue:
-            "Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.",
-          orders:
-            "A full breakdown of every order placed in your store — fulfillment status, payment status, and customer details. Helps you spot bottlenecks in your fulfillment pipeline and understand order patterns.",
-          refunds:
-            "Shows your refund rate, total amount refunded, and which orders were refunded. A high refund rate can signal product quality or expectation issues — this report helps you catch that early.",
-          inventory:
-            "A complete snapshot of your current stock levels across all products and variants. Highlights what's out of stock, what's running low, and the total estimated value of your inventory.",
-          customers:
-            "Breaks down your customer base into new, returning, and one-time buyers. Shows your top spenders and average lifetime value — key metrics for understanding customer loyalty and acquisition.",
-          products:
-            "Ranks every product by revenue and units sold so you know exactly what's driving your business and what's underperforming. Use this to make smarter decisions about inventory, promotions, and product mix.",
-          pnl: "A high-level profit and loss summary showing gross revenue, discounts given, refunds issued, and net revenue by month. Gives you a clear picture of your store's financial health over time.",
-        };
-
-        document.getElementById("reportTitle").textContent = titles[type];
-        document.getElementById("reportSubtitle").textContent =
-          descriptions[type];
-        ("Click Generate Report to create this report");
-      
-
-      function selectDate(range, el) {
-        selectedDate = range;
-        document
-          .querySelectorAll(".date-btn")
-          .forEach((b) => b.classList.remove("active"));
-        el.classList.add("active");
-      }
-
-      async function generateReport() {
-        if (!shopOrigin) {
-          alert(
-            "No connected store found. Please connect your Shopify store first.",
-          );
-          return;
-        }
-
-        const btn = document.getElementById("generateBtn");
-        btn.disabled = true;
-        btn.textContent = "Generating...";
-        document.getElementById("pdfBtn").style.display = "none";
-
-        document.getElementById("reportContent").innerHTML = `
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <div class="loading-text">Fetching your data and generating insights...</div>
-      </div>
-    `;
-
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/reports/generate`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              reportType: selectedReport,
-              dateRange: selectedDate,
-              shopOrigin,
-            }),
-          });
-
-          const data = await res.json();
-          if (!data.success) throw new Error(data.message);
-
-          currentReport = data.report;
-          renderReport(data.report);
-          document.getElementById("pdfBtn").style.display = "inline-block";
-        } catch (err) {
-          document.getElementById("reportContent").innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">⚠️</div>
-          <div class="empty-title">Failed to generate report</div>
-          <div class="empty-sub">${err.message}</div>
-        </div>
-      `;
-        }
-
-        btn.disabled = false;
-        btn.textContent = "✦ Generate Report";
-      }
-
-      function renderReport(report) {
-        const dateLabels = {
-          "7d": "Last 7 Days",
-          "30d": "Last 30 Days",
-          "90d": "Last 90 Days",
-          "1y": "Last 12 Months",
-        };
-        const generatedAt = new Date(report.generatedAt).toLocaleString(
-          "en-US",
-          {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-          },
-        );
-
-        // Metrics
-        const metricsHtml = report.metrics
-          .map(
-            (m) => `
-      <div class="metric-card">
-        <div class="metric-label">${m.label}</div>
-        <div class="metric-value ${m.color}">${m.value}</div>
-      </div>
-    `,
-          )
-          .join("");
-
-        // Chart
-        const maxVal = Math.max(...report.chartData.map((d) => d.value), 1);
-        const barsHtml = report.chartData
-          .map(
-            (d) => `
-      <div class="chart-bar-wrap">
-        <div class="chart-bar" style="height:${Math.max((d.value / maxVal) * 140, 4)}px" data-value="${d.value}"></div>
-        <div class="chart-label">${d.label}</div>
-      </div>
-    `,
-          )
-          .join("");
-
-        // Table
-        const theadHtml = report.tableHeaders
-          .map((h) => `<th>${h}</th>`)
-          .join("");
-        const tbodyHtml = report.tableRows
-          .map(
-            (row) => `
-      <tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>
-    `,
-          )
-          .join("");
-
-        document.getElementById("reportSubtitle").textContent =
-          `${dateLabels[report.dateRange]} · Generated ${generatedAt}`;
-
-        document.getElementById("reportContent").innerHTML = `
-      <div class="report-meta">
-        <span class="meta-tag">📅 ${dateLabels[report.dateRange]}</span>
-        <span class="meta-tag">🏪 ${report.shopOrigin}</span>
-        <span class="meta-tag">⏱ ${generatedAt}</span>
-      </div>
-
-      <div class="metrics-grid">${metricsHtml}</div>
-
-      ${
-        report.chartData.length > 0
-          ? `
-      <div class="chart-card">
-        <div class="chart-title">Visual Breakdown</div>
-        <div class="chart-bars">${barsHtml}</div>
-      </div>
-      `
-          : ""
-      }
-
-      ${
-        report.aiInsights
-          ? `
-      <div class="ai-card">
-        <div class="ai-header">
-          <div class="ai-badge">✦ AI Insights</div>
-        </div>
-        <div class="ai-text">${report.aiInsights}</div>
-      </div>
-      `
-          : ""
-      }
-
-      <div class="table-card">
-        <div class="table-header">
-          <div class="table-title">Detailed Data</div>
-        </div>
-        <table>
-          <thead><tr>${theadHtml}</tr></thead>
-          <tbody>${tbodyHtml}</tbody>
-        </table>
-      </div>
-    `;
+        } catch(e) { console.error("Load user error:", e); }
       }
 
       function downloadPDF() {
@@ -1435,6 +1444,7 @@ function renderCsvReport(report, aiInsights, filename) {
       }
 
       loadUser();
+   </script> 
       
     </script>
   </body>
