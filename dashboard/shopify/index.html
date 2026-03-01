@@ -758,6 +758,23 @@
 
           userData = data.user;
           shopData = data.shop;
+
+          shopData = data.shop;
+
+          // Company logo in nav
+          if (userData.companyLogoUrl || userData.companyName) {
+            const container = document.getElementById("companyLogoContainer");
+            container.style.display = "flex";
+            if (userData.companyLogoUrl) {
+              document.getElementById("companyLogo").src =
+                userData.companyLogoUrl;
+              document.getElementById("companyLogo").style.display = "block";
+            } else {
+              document.getElementById("companyLogo").style.display = "none";
+            }
+            document.getElementById("companyLogoName").textContent =
+              userData.companyName || "";
+          }
           // Check if Square is also connected
           const squareStatus = await fetch(
             `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
