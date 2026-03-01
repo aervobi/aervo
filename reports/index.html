@@ -608,9 +608,9 @@
   <body>
     <!-- NAV -->
     <nav class="nav">
-      <div class="nav-brand">
-        <img src="/assets/images/aervo-wordmark.png" alt="Aervo" />
-      </div>
+      <a href="/dashboard/shopify" class="nav-brand" style="display:flex;align-items:center;text-decoration:none;">
+  <img src="/assets/images/logo.png" alt="Aervo" style="height:38px;width:auto;display:block;" />
+</a>
       <div class="nav-right">
         <a href="/dashboard/shopify" class="btn-nav">← Dashboard</a>
         <a href="/settings" class="btn-nav">Settings</a>
@@ -785,21 +785,62 @@
         }
       }
 
-      function selectReport(type, el) {
-        selectedReport = type;
-        document
-          .querySelectorAll(".report-btn")
-          .forEach((b) => b.classList.remove("active"));
-        el.classList.add("active");
-        const titles = {
-          revenue: "Revenue Report",
-          orders: "Orders Report",
-          refunds: "Refund Report",
-          inventory: "Inventory Report",
-          customers: "Customer Report",
-          products: "Product Performance Report",
-          pnl: "Profit & Loss Summary",
-        };
+     function selectReport(type, el) {
+  selectedReport = type;
+  document.querySelectorAll(".report-btn").forEach((b) => b.classList.remove("active"));
+  el.classList.add("active");
+
+  const titles = {
+    revenue: "Revenue Report",
+    orders: "Orders Report",
+    refunds: "Refund Report",
+    inventory: "Inventory Report",
+    customers: "Customer Report",
+    products: "Product Performance Report",
+    pnl: "Profit & Loss Summary"
+  };
+
+  const descriptions = {
+    revenue: "Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.",
+    orders: "A full breakdown of every order placed in your store — fulfillment status, payment status, and customer details. Helps you spot bottlenecks in your fulfillment pipeline and understand order patterns.",
+    refunds: "Shows your refund rate, total amount refunded, and which orders were refunded. A high refund rate can signal product quality or expectation issues — this report helps you catch that early.",
+    inventory: "A complete snapshot of your current stock levels across all products and variants. Highlights what's out of stock, what's running low, and the total estimated value of your inventory.",
+    customers: "Breaks down your customer base into new, returning, and one-time buyers. Shows your top spenders and average lifetime value — key metrics for understanding customer loyalty and acquisition.",
+    products: "Ranks every product by revenue and units sold so you know exactly what's driving your business and what's underperforming. Use this to make smarter decisions about inventory, promotions, and product mix.",
+    pnl: "A high-level profit and loss summary showing gross revenue, discounts given, refunds issued, and net revenue by month. Gives you a clear picture of your store's financial health over time."
+  };
+
+  const icons = {
+    revenue: "📈",
+    orders: "🛒",
+    refunds: "🔄",
+    inventory: "📦",
+    customers: "👥",
+    products: "🏆",
+    pnl: "💰"
+  };
+
+  document.getElementById("reportTitle").textContent = titles[type];
+  document.getElementById("reportSubtitle").textContent = "Select a date range and click Generate Report";
+
+  document.getElementById("reportContent").innerHTML = `
+    <div class="description-card">
+      <div class="desc-icon">${icons[type]}</div>
+      <div class="desc-body">
+        <div class="desc-title">${titles[type]}</div>
+        <div class="desc-text">${descriptions[type]}</div>
+        <div class="desc-footer">
+          <span class="desc-tag">✦ AI Insights included</span>
+          <span class="desc-tag">📄 PDF export</span>
+          <span class="desc-tag">📅 Custom date range</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("pdfBtn").style.display = "none";
+  currentReport = null;
+}
 
         const descriptions = {
           revenue:
@@ -821,7 +862,7 @@
         document.getElementById("reportSubtitle").textContent =
           descriptions[type];
         ("Click Generate Report to create this report");
-      }
+      
 
       function selectDate(range, el) {
         selectedDate = range;
