@@ -556,6 +556,53 @@
           padding: 16px;
         }
       }
+      .description-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  background: linear-gradient(135deg, rgba(124,92,255,0.08), rgba(41,200,255,0.04));
+  border: 1px solid rgba(124,92,255,0.2);
+  border-radius: 18px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.desc-icon {
+  font-size: 48px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(124,92,255,0.12);
+  border-radius: 16px;
+  border: 1px solid rgba(124,92,255,0.2);
+}
+.desc-body { flex: 1; }
+.desc-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.desc-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #9aa8c8;
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+.desc-footer { display: flex; gap: 10px; flex-wrap: wrap; }
+.desc-tag {
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  color: #9aa8c8;
+  font-weight: 500;
+}
     </style>
   </head>
   <body>
@@ -689,14 +736,19 @@
         </div>
 
         <div id="reportContent">
-          <div class="empty-state">
-            <div class="empty-icon">📊</div>
-            <div class="empty-title">No report generated yet</div>
-            <div class="empty-sub">
-              Select a report type from the sidebar and click Generate Report to
-              get started.
-            </div>
-          </div>
+  <div class="description-card" id="descriptionCard">
+    <div class="desc-icon" id="descIcon">📈</div>
+    <div class="desc-body">
+      <div class="desc-title" id="descTitle">Revenue Report</div>
+      <div class="desc-text" id="descText">Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.</div>
+      <div class="desc-footer">
+        <span class="desc-tag">✦ AI Insights included</span>
+        <span class="desc-tag">📄 PDF export</span>
+        <span class="desc-tag">📅 Custom date range</span>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </main>
     </div>
@@ -748,9 +800,27 @@
           products: "Product Performance Report",
           pnl: "Profit & Loss Summary",
         };
+
+        const descriptions = {
+          revenue:
+            "Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.",
+          orders:
+            "A full breakdown of every order placed in your store — fulfillment status, payment status, and customer details. Helps you spot bottlenecks in your fulfillment pipeline and understand order patterns.",
+          refunds:
+            "Shows your refund rate, total amount refunded, and which orders were refunded. A high refund rate can signal product quality or expectation issues — this report helps you catch that early.",
+          inventory:
+            "A complete snapshot of your current stock levels across all products and variants. Highlights what's out of stock, what's running low, and the total estimated value of your inventory.",
+          customers:
+            "Breaks down your customer base into new, returning, and one-time buyers. Shows your top spenders and average lifetime value — key metrics for understanding customer loyalty and acquisition.",
+          products:
+            "Ranks every product by revenue and units sold so you know exactly what's driving your business and what's underperforming. Use this to make smarter decisions about inventory, promotions, and product mix.",
+          pnl: "A high-level profit and loss summary showing gross revenue, discounts given, refunds issued, and net revenue by month. Gives you a clear picture of your store's financial health over time.",
+        };
+
         document.getElementById("reportTitle").textContent = titles[type];
         document.getElementById("reportSubtitle").textContent =
-          "Click Generate Report to create this report";
+          descriptions[type];
+        ("Click Generate Report to create this report");
       }
 
       function selectDate(range, el) {
