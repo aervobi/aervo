@@ -556,6 +556,120 @@
           padding: 16px;
         }
       }
+      .tab-switcher {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 4px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tab-btn.active {
+  background: rgba(41,200,255,0.12);
+  color: var(--a1);
+  font-weight: 600;
+}
+
+/* CSV Upload */
+.upload-zone {
+  border: 2px dashed rgba(124,92,255,0.3);
+  border-radius: 16px;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  background: rgba(124,92,255,0.04);
+  margin-bottom: 24px;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--a2);
+  background: rgba(124,92,255,0.08);
+}
+.upload-icon { font-size: 48px; margin-bottom: 16px; }
+.upload-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.upload-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.upload-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--a2), var(--a1));
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.usage-bar-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.usage-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.usage-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.usage-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--a2), var(--a1));
+  transition: width .4s;
+}
+.upgrade-banner {
+  background: linear-gradient(135deg, rgba(124,92,255,0.12), rgba(41,200,255,0.06));
+  border: 1px solid rgba(124,92,255,0.25);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.upgrade-banner h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.upgrade-banner p { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+.btn-upgrade {
+  padding: 9px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--a2), var(--a1));
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.history-item:hover { border-color: var(--border2); background: var(--surface2); }
+.history-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.history-meta { font-size: 12px; color: var(--muted); }
       .description-card {
   display: flex;
   gap: 24px;
@@ -621,6 +735,10 @@
     <div class="layout">
       <!-- SIDEBAR -->
       <aside class="sidebar">
+        <div class="tab-switcher">
+  <button class="tab-btn active" id="tabStore" onclick="switchTab('store')">My Store</button>
+  <button class="tab-btn" id="tabCsv" onclick="switchTab('csv')">Upload CSV</button>
+</div>
         <div class="sidebar-title">Report Type</div>
 
         <button
@@ -707,7 +825,84 @@
       </aside>
 
       <!-- MAIN -->
-      <main class="main" id="mainContent">
+      <!-- Store Reports Tab -->
+<div id="storeTab">
+  <div class="main-header">
+    <div>
+      <div class="main-title" id="reportTitle">Revenue Report</div>
+      <div class="main-subtitle" id="reportSubtitle">Select a report type and click Generate</div>
+    </div>
+    <div class="actions" style="display:flex;align-items:center;">
+      <button class="btn-generate" id="generateBtn" onclick="generateReport()">
+        ✦ Generate Report
+      </button>
+      <button class="btn-pdf" id="pdfBtn" style="display:none;" onclick="downloadPDF()">
+        ⬇ Download PDF
+      </button>
+    </div>
+  </div>
+  <div id="reportContent">
+    <div class="description-card">
+      <div class="desc-icon">📈</div>
+      <div class="desc-body">
+        <div class="desc-title">Revenue Report</div>
+        <div class="desc-text">Tracks your total revenue, order volume, and average order value over time. Includes a daily breakdown chart so you can spot your best and worst performing days, plus AI-powered insights on your revenue trends.</div>
+        <div class="desc-footer">
+          <span class="desc-tag">✦ AI Insights included</span>
+          <span class="desc-tag">📄 PDF export</span>
+          <span class="desc-tag">📅 Custom date range</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CSV Upload Tab -->
+<div id="csvTab" style="display:none;">
+  <div class="main-header">
+    <div>
+      <div class="main-title">Upload CSV or Excel</div>
+      <div class="main-subtitle">Upload a report from any platform — MangoPOS, Vagaro, Toast, Clover, and more</div>
+    </div>
+    <button class="btn-pdf" onclick="downloadPDF()" id="csvPdfBtn" style="display:none;">⬇ Download PDF</button>
+  </div>
+
+  <!-- Usage bar -->
+  <div class="usage-bar-wrap">
+    <div class="usage-label">
+      <span>Monthly uploads</span>
+      <span id="usageText">Loading...</span>
+    </div>
+    <div class="usage-bar">
+      <div class="usage-fill" id="usageFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Upgrade banner (hidden by default) -->
+  <div class="upgrade-banner" id="upgradeBanner" style="display:none;">
+    <h3>⚡ Upgrade to Pro</h3>
+    <p>You've used your free upload for this month. Upgrade to Pro for 10 uploads per month plus unlimited AI insights.</p>
+    <button class="btn-upgrade" onclick="window.location.href='/pricing'">Upgrade to Pro — $29/mo</button>
+  </div>
+
+  <!-- Drop zone -->
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFileInput').click()"
+    ondragover="event.preventDefault();this.classList.add('dragover')"
+    ondragleave="this.classList.remove('dragover')"
+    ondrop="handleDrop(event)">
+    <div class="upload-icon">📂</div>
+    <div class="upload-title">Drop your file here</div>
+    <div class="upload-sub">Supports CSV and Excel files from any POS or business platform<br />Max file size 10MB</div>
+    <button class="upload-btn" onclick="event.stopPropagation()">Choose File</button>
+    <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(this)" />
+  </div>
+
+  <!-- CSV report output -->
+  <div id="csvReportContent"></div>
+
+  <!-- Upload history -->
+  <div id="csvHistory"></div>
+</div>
         <!-- Empty state -->
         <div class="main-header">
           <div>
@@ -768,6 +963,210 @@
         localStorage.clear();
         window.location.href = "/login";
       });
+
+      // ── TAB SWITCHING ──────────────────────────────────────────────
+function switchTab(tab) {
+  if (tab === 'store') {
+    document.getElementById('storeTab').style.display = 'block';
+    document.getElementById('csvTab').style.display = 'none';
+    document.getElementById('tabStore').classList.add('active');
+    document.getElementById('tabCsv').classList.remove('active');
+    // Show store sidebar items
+    document.querySelector('.sidebar-title').style.display = 'block';
+    document.querySelectorAll('.report-btn, .date-section').forEach(el => el.style.display = '');
+  } else {
+    document.getElementById('storeTab').style.display = 'none';
+    document.getElementById('csvTab').style.display = 'block';
+    document.getElementById('tabStore').classList.remove('active');
+    document.getElementById('tabCsv').classList.add('active');
+    // Hide store sidebar items
+    document.querySelector('.sidebar-title').style.display = 'none';
+    document.querySelectorAll('.report-btn').forEach(el => el.style.display = 'none');
+    document.querySelector('.date-section').style.display = 'none';
+    loadCsvUsage();
+    loadCsvHistory();
+  }
+}
+
+// ── CSV USAGE ──────────────────────────────────────────────────
+async function loadCsvUsage() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports/csv-usage`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('usageText').textContent = `${data.used} of ${data.limit} used`;
+      document.getElementById('usageFill').style.width = `${(data.used / data.limit) * 100}%`;
+      if (data.used >= data.limit) {
+        document.getElementById('upgradeBanner').style.display = 'block';
+        document.getElementById('uploadZone').style.opacity = '0.4';
+        document.getElementById('uploadZone').style.pointerEvents = 'none';
+      }
+    }
+  } catch(e) { console.error('Usage error:', e); }
+}
+
+// ── CSV HISTORY ────────────────────────────────────────────────
+async function loadCsvHistory() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports/csv-history`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && data.uploads.length > 0) {
+      document.getElementById('csvHistory').innerHTML = `
+        <div style="font-size:14px;font-weight:600;color:#c8d4f0;margin-bottom:12px;">Previous Uploads</div>
+        ${data.uploads.map(u => `
+          <div class="history-item" onclick="loadPreviousUpload(${u.id})">
+            <div class="history-name">📄 ${u.filename}</div>
+            <div class="history-meta">${u.row_count} rows · ${new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+          </div>
+        `).join('')}
+      `;
+    }
+  } catch(e) { console.error('History error:', e); }
+}
+
+// ── FILE HANDLING ──────────────────────────────────────────────
+function handleDrop(event) {
+  event.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragover');
+  const file = event.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (file) processFile(file);
+}
+
+async function processFile(file) {
+  const allowed = ['.csv', '.xlsx', '.xls'];
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  if (!allowed.includes(ext)) {
+    alert('Please upload a CSV or Excel file.');
+    return;
+  }
+
+  document.getElementById('csvReportContent').innerHTML = `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div class="loading-text">Analyzing your data with AI...</div>
+    </div>
+  `;
+  document.getElementById('csvPdfBtn').style.display = 'none';
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports/upload-csv`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      if (data.upgradeRequired) {
+        document.getElementById('upgradeBanner').style.display = 'block';
+        document.getElementById('uploadZone').style.opacity = '0.4';
+        document.getElementById('uploadZone').style.pointerEvents = 'none';
+        document.getElementById('csvReportContent').innerHTML = '';
+      } else {
+        document.getElementById('csvReportContent').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">⚠️</div>
+            <div class="empty-title">Upload failed</div>
+            <div class="empty-sub">${data.message}</div>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    renderCsvReport(data.report, data.aiInsights, file.name);
+    loadCsvUsage();
+    loadCsvHistory();
+    document.getElementById('csvPdfBtn').style.display = 'inline-block';
+
+  } catch(err) {
+    document.getElementById('csvReportContent').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Upload failed</div>
+        <div class="empty-sub">${err.message}</div>
+      </div>
+    `;
+  }
+}
+
+async function loadPreviousUpload(id) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports/csv/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      renderCsvReport(data.upload.report_data, data.upload.ai_insights, data.upload.filename);
+      document.getElementById('csvPdfBtn').style.display = 'inline-block';
+    }
+  } catch(e) { console.error('Load upload error:', e); }
+}
+
+function renderCsvReport(report, aiInsights, filename) {
+  const metricsHtml = (report.metrics || []).map(m => `
+    <div class="metric-card">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value ${m.color}">${m.value}</div>
+    </div>
+  `).join('');
+
+  const theadHtml = (report.headers || []).map(h => `<th>${h}</th>`).join('');
+  const tbodyHtml = (report.tableRows || []).map(row =>
+    `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+  ).join('');
+
+  document.getElementById('csvReportContent').innerHTML = `
+    <div class="report-meta" style="margin-bottom:20px;">
+      <span class="meta-tag">📄 ${filename}</span>
+      <span class="meta-tag">📊 ${report.totalRows} rows</span>
+      <span class="meta-tag">🔍 ${report.detectedType || 'business'} data</span>
+    </div>
+
+    ${report.summary ? `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Data Summary</div>
+      <div style="font-size:14px;color:#c8d4f0;line-height:1.7;">${report.summary}</div>
+    </div>
+    ` : ''}
+
+    ${metricsHtml ? `<div class="metrics-grid">${metricsHtml}</div>` : ''}
+
+    ${aiInsights ? `
+    <div class="ai-card">
+      <div class="ai-header">
+        <div class="ai-badge">✦ AI Insights</div>
+      </div>
+      <div class="ai-text">${aiInsights}</div>
+    </div>
+    ` : ''}
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">Your Data (first 100 rows)</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr>${theadHtml}</tr></thead>
+          <tbody>${tbodyHtml}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
 
       // Load user data to get shop origin
       async function loadUser() {
@@ -1036,6 +1435,7 @@
       }
 
       loadUser();
+      
     </script>
   </body>
 </html>
