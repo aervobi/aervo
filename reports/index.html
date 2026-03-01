@@ -886,14 +886,14 @@
   </div>
 
   <!-- Drop zone -->
-  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('csvFileInput').click()"
+  <div class="upload-zone" id="uploadZone"
     ondragover="event.preventDefault();this.classList.add('dragover')"
     ondragleave="this.classList.remove('dragover')"
     ondrop="handleDrop(event)">
     <div class="upload-icon">📂</div>
     <div class="upload-title">Drop your file here</div>
     <div class="upload-sub">Supports CSV and Excel files from any POS or business platform<br />Max file size 10MB</div>
-    <button class="upload-btn" onclick="event.stopPropagation()">Choose File</button>
+<button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('csvFileInput').click()">Choose File</button>
     <input type="file" id="csvFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(this)" />
   </div>
 
