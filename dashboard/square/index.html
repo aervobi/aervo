@@ -728,54 +728,49 @@
       });
 
       async function init() {
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (!res.ok) {
-            window.location.href = "/login";
-            return;
-          }
-          const data = await res.json();
-          userData = data.user;
-          merchantId = String(userData.id);
-          userData = data.user;
-          merchantId = String(userData.id);
-          hasShopify = !!data.shop;
-          await loadSquareData();
-renderView("overview");
-          hasShopify = !!data.shop;
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      window.location.href = "/login";
+      return;
+    }
+    const data = await res.json();
+    userData = data.user;
+    merchantId = String(userData.id);
+    hasShopify = !!data.shop;
 
-          // Show switcher if both integrations connected
-          if (hasShopify) {
-            document.getElementById("integrationSwitcher").style.display =
-              "flex";
-            document.getElementById("mobileShopifySwitch").style.display =
-              "block";
-          }
+    // Show switcher if both integrations connected
+    if (hasShopify) {
+      document.getElementById("integrationSwitcher").style.display = "flex";
+      document.getElementById("mobileShopifySwitch").style.display = "block";
+    }
 
-          // Check Square connection
-          const statusRes = await fetch(
-            `${BACKEND_URL}/integrations/square/status?merchantId=${merchantId}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          const status = await statusRes.json();
+    // Check Square connection
+    const statusRes = await fetch(
+      `${BACKEND_URL}/integrations/square/status?merchantId=${merchantId}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    const status = await statusRes.json();
 
-          if (!status.connected) {
-            renderNotConnected();
-            return;
-          }
+    if (!status.connected) {
+      renderNotConnected();
+      return;
+    }
 
-          document.getElementById("shopBadge").style.display = "flex";
+    document.getElementById("shopBadge").style.display = "flex";
 
-          await loadSquareData();
-          renderView("overview");
-        } catch (err) {
-          console.error("Init error:", err);
-          document.getElementById("content").innerHTML =
-            `<div class="empty-state" style="color:#fca5a5">Failed to load dashboard. Please refresh.</div>`;
-        }
-      }
+    await loadSquareData();
+    renderView("overview");
+    loadHealthScore(); // after renderView so widget exists in DOM
+
+  } catch (err) {
+    console.error("Init error:", err);
+    document.getElementById("content").innerHTML =
+      `<div class="empty-state" style="color:#fca5a5">Failed to load dashboard. Please refresh.</div>`;
+  }
+}
 
       async function loadSquareData() {
         try {
