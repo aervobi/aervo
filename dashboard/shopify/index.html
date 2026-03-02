@@ -779,11 +779,13 @@
               "inline-flex";
           }
 
-          if (data.shop) {
+     if (data.shop) {
   shopOrigin = data.shop.shopOrigin;
   localStorage.setItem("shopify_shop", shopOrigin);
-  loadHealthScore(); // ADD THIS
 }
+
+renderView("overview");
+loadHealthScore(); // MOVE HERE - after renderView
 
           renderView("overview");
         } catch (error) {
