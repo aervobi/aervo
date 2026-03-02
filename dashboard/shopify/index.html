@@ -994,7 +994,9 @@
           </div>`;
 
         // Render quick 7-day chart
+       // Render quick 7-day chart
         setTimeout(() => renderOverviewChart(orders), 100);
+        setTimeout(() => loadHealthScore(), 200);
         return html;
       }
 
