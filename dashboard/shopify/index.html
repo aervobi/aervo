@@ -1997,7 +1997,23 @@ async function recalculateScore() {
   if (!btn) return;
   btn.textContent = '↻ Calculating...';
   btn.disabled = true;
-  await calculateHealthScore();
+  
+  // Force recalculate by skipping cache
+  try {
+    const origin = typeof shopOrigin !== 'undefined' ? shopOrigin : null;
+    const merchant = typeof merchantId !== 'undefined' ? merchantId : null;
+    
+    const body = origin ? { shopOrigin: origin, force: true } : { merchantId: merchant, force: true };
+    
+    const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.success) renderHealthScore(data.score, data.ai);
+  } catch(e) { console.error('Recalculate error:', e); }
+
   btn.textContent = '↻ Recalculate';
   btn.disabled = false;
 }
