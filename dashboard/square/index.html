@@ -1565,7 +1565,21 @@
 
       init();
 
-     // ── HEALTH SCORE ───────────────────────────────────────────────
+// ── HEALTH SCORE ───────────────────────────────────────────────
+async function loadHealthScore() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/health-score`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && data.score) {
+      renderHealthScore(data.score);
+    } else {
+      calculateHealthScore();
+    }
+  } catch(e) { console.error('Health score error:', e); }
+}
+
 async function calculateHealthScore() {
   if (!merchantId) return;
   try {
@@ -1573,19 +1587,6 @@ async function calculateHealthScore() {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ merchantId })
-    });
-    const data = await res.json();
-    if (data.success) renderHealthScore(data.score, data.ai);
-  } catch(e) { console.error('Calculate score error:', e); }
-}
-
-async function calculateHealthScore() {
-  if (!shopOrigin) return;
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ shopOrigin })
     });
     const data = await res.json();
     if (data.success) renderHealthScore(data.score, data.ai);
@@ -1665,7 +1666,7 @@ function renderHealthScore(score, ai) {
       </div>
     `).join('');
   }
-} 
+}
     </script>
   </body>
 </html>
