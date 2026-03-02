@@ -1,0 +1,2384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Intelligence Center</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050810;
+        --bg-card: #0c1120;
+        --bg-card2: #111827;
+        --bg-hover: #151e30;
+        --border: rgba(255, 255, 255, 0.07);
+        --border-bright: rgba(255, 255, 255, 0.13);
+        --blue: #3b82f6;
+        --blue-dim: rgba(59, 130, 246, 0.15);
+        --blue-glow: rgba(59, 130, 246, 0.25);
+        --violet: #8b5cf6;
+        --violet-dim: rgba(139, 92, 246, 0.15);
+        --green: #10b981;
+        --green-dim: rgba(16, 185, 129, 0.15);
+        --amber: #f59e0b;
+        --amber-dim: rgba(245, 158, 11, 0.15);
+        --red: #ef4444;
+        --red-dim: rgba(239, 68, 68, 0.15);
+        --text: #f1f5f9;
+        --text-2: #94a3b8;
+        --text-3: #475569;
+        --mono: "DM Mono", monospace;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* ── NAV ── */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        background: rgba(5, 8, 16, 0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .nav-brand img {
+        height: 32px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 4px;
+      }
+      .nav-link {
+        padding: 6px 14px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-2);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 1px solid transparent;
+      }
+      .nav-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .nav-link.active {
+        color: var(--text);
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.25);
+      }
+      .nav-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .nav-btn {
+        padding: 6px 14px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-2);
+        background: transparent;
+        border: 1px solid var(--border-bright);
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+        font-family: inherit;
+      }
+      .nav-btn:hover {
+        background: var(--bg-hover);
+        color: var(--text);
+      }
+
+      /* ── LAYOUT ── */
+      .page {
+        padding: 80px 32px 60px;
+        max-width: 1360px;
+        margin: 0 auto;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .hero-left h1 {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--text);
+        margin-bottom: 6px;
+      }
+      .hero-left h1 span {
+        color: var(--blue);
+      }
+      .hero-left p {
+        font-size: 14px;
+        color: var(--text-2);
+        max-width: 480px;
+        line-height: 1.6;
+      }
+      .hero-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* Data source pills */
+      .source-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 14px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid var(--border-bright);
+        background: var(--bg-card);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .source-pill.active-shopify {
+        background: rgba(96, 165, 250, 0.1);
+        border-color: rgba(96, 165, 250, 0.35);
+        color: #60a5fa;
+      }
+      .source-pill.active-square {
+        background: rgba(52, 211, 153, 0.1);
+        border-color: rgba(52, 211, 153, 0.35);
+        color: #34d399;
+      }
+      .source-pill.active-csv {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(139, 92, 246, 0.35);
+        color: #a78bfa;
+      }
+      .source-pill.active-manual {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.35);
+        color: #fbbf24;
+      }
+      .source-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ── INDUSTRY SELECTOR ── */
+      .industry-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+      }
+      .industry-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-3);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        white-space: nowrap;
+      }
+      .industry-chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .industry-chip {
+        padding: 5px 13px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-2);
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+      }
+      .industry-chip:hover {
+        border-color: var(--border-bright);
+        color: var(--text);
+      }
+      .industry-chip.active {
+        background: var(--blue-dim);
+        border-color: rgba(59, 130, 246, 0.4);
+        color: #93c5fd;
+      }
+
+      /* ── MAIN GRID ── */
+      .intel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: auto;
+        gap: 16px;
+      }
+      .col-span-2 {
+        grid-column: span 2;
+      }
+      .col-span-3 {
+        grid-column: span 3;
+      }
+
+      /* ── CARDS ── */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.08),
+          transparent
+        );
+      }
+      .card-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .card-label-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ── GOAL BUILDER ── */
+      .goal-builder {
+      }
+      .goal-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .goal-metric-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .goal-metric-sub {
+        font-size: 11px;
+        color: var(--text-3);
+        margin-top: 2px;
+      }
+      .goal-vs {
+        font-size: 11px;
+        color: var(--text-3);
+        text-align: center;
+      }
+      .goal-input-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .goal-input {
+        width: 120px;
+        padding: 7px 11px;
+        border-radius: 8px;
+        border: 1px solid var(--border-bright);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        font-weight: 500;
+        text-align: right;
+        outline: none;
+        transition: border 0.15s;
+      }
+      .goal-input:focus {
+        border-color: var(--blue);
+      }
+      .goal-input-label {
+        font-size: 10px;
+        color: var(--text-3);
+        margin-top: 4px;
+      }
+      .goal-progress-row {
+        margin-bottom: 16px;
+      }
+      .goal-progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 6px;
+      }
+      .goal-progress-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .goal-progress-pct {
+        font-size: 13px;
+        font-weight: 700;
+        font-family: var(--mono);
+      }
+      .goal-track {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .goal-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      /* ── BENCHMARK CARD ── */
+      .bench-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .bench-row:last-child {
+        border-bottom: none;
+      }
+      .bench-icon {
+        font-size: 18px;
+        width: 28px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .bench-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .bench-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .bench-sub {
+        font-size: 11px;
+        color: var(--text-3);
+        margin-top: 1px;
+      }
+      .bench-vals {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+      }
+      .bench-yours {
+        font-size: 14px;
+        font-weight: 700;
+        font-family: var(--mono);
+      }
+      .bench-industry {
+        font-size: 11px;
+        color: var(--text-3);
+      }
+      .bench-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 99px;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+      }
+      .bench-above {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+      }
+      .bench-below {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+      .bench-near {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+      }
+
+      /* ── SCORE RING ── */
+      .score-ring-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 0;
+      }
+      .score-ring-svg {
+        width: 160px;
+        height: 160px;
+      }
+      .score-ring-center {
+        text-align: center;
+        margin-top: -170px;
+        margin-bottom: 10px;
+        height: 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .score-ring-num {
+        font-size: 38px;
+        font-weight: 800;
+        font-family: var(--mono);
+        line-height: 1;
+      }
+      .score-ring-sub {
+        font-size: 11px;
+        color: var(--text-3);
+        margin-top: 3px;
+      }
+      .score-grade {
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 8px;
+        text-align: center;
+      }
+      .score-breakdown {
+        margin-top: 16px;
+      }
+      .score-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .score-bar-label {
+        font-size: 11px;
+        color: var(--text-3);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .score-bar-track {
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .score-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 1s;
+      }
+      .score-bar-val {
+        font-size: 11px;
+        font-family: var(--mono);
+        color: var(--text-2);
+        width: 28px;
+        text-align: right;
+      }
+
+      /* ── AI INSIGHTS PANEL ── */
+      .ai-insight-item {
+        padding: 13px 15px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .ai-insight-item:hover {
+        background: rgba(59, 130, 246, 0.05);
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+      .ai-insight-item:last-child {
+        margin-bottom: 0;
+      }
+      .ai-insight-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .ai-insight-badge {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 3px 7px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .badge-opportunity {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .badge-warning {
+        background: rgba(239, 68, 68, 0.12);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .badge-insight {
+        background: rgba(139, 92, 246, 0.12);
+        color: #a78bfa;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+      }
+      .badge-action {
+        background: rgba(59, 130, 246, 0.12);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+      }
+      .ai-insight-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .ai-insight-body {
+        font-size: 12px;
+        color: var(--text-2);
+        line-height: 1.6;
+      }
+
+      /* ── CSV UPLOAD ZONE ── */
+      .upload-zone {
+        border: 1.5px dashed rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(139, 92, 246, 0.04);
+      }
+      .upload-zone:hover,
+      .upload-zone.drag {
+        border-color: rgba(139, 92, 246, 0.6);
+        background: rgba(139, 92, 246, 0.08);
+      }
+      .upload-zone-icon {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+      .upload-zone-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .upload-zone-sub {
+        font-size: 12px;
+        color: var(--text-3);
+      }
+      .upload-file-input {
+        display: none;
+      }
+
+      /* ── MANUAL ENTRY ── */
+      .manual-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .manual-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--text-3);
+        margin-bottom: 5px;
+      }
+      .manual-field input {
+        width: 100%;
+        padding: 8px 11px;
+        border-radius: 8px;
+        border: 1px solid var(--border-bright);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        outline: none;
+        transition: border 0.15s;
+        font-weight: 500;
+      }
+      .manual-field input:focus {
+        border-color: var(--blue);
+      }
+
+      /* ── AI CHAT ── */
+      .intel-chat {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 300px;
+      }
+      .intel-chat-msgs {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 4px;
+        margin-bottom: 12px;
+        max-height: 320px;
+      }
+      .intel-chat-msgs::-webkit-scrollbar {
+        width: 3px;
+      }
+      .intel-chat-msgs::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 99px;
+      }
+      .chat-msg {
+        margin-bottom: 10px;
+      }
+      .chat-msg-user {
+        text-align: right;
+      }
+      .chat-msg-bubble {
+        display: inline-block;
+        padding: 9px 13px;
+        border-radius: 10px;
+        font-size: 13px;
+        line-height: 1.5;
+        max-width: 85%;
+      }
+      .chat-msg-user .chat-msg-bubble {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .chat-msg-ai .chat-msg-bubble {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        color: var(--text-2);
+      }
+      .chat-input-row {
+        display: flex;
+        gap: 8px;
+      }
+      .chat-input-box {
+        flex: 1;
+        padding: 9px 13px;
+        border-radius: 9px;
+        border: 1px solid var(--border-bright);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        outline: none;
+        transition: border 0.15s;
+      }
+      .chat-input-box:focus {
+        border-color: var(--blue);
+      }
+      .chat-send-btn {
+        padding: 9px 16px;
+        border-radius: 9px;
+        border: none;
+        background: var(--blue);
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .chat-send-btn:hover {
+        background: #2563eb;
+      }
+      .chat-suggestions {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .chat-sug {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        border: 1px solid var(--border-bright);
+        color: var(--text-2);
+        cursor: pointer;
+        transition: all 0.15s;
+        background: transparent;
+        font-family: inherit;
+      }
+      .chat-sug:hover {
+        border-color: rgba(59, 130, 246, 0.4);
+        color: #93c5fd;
+        background: var(--blue-dim);
+      }
+
+      /* ── BTNs ── */
+      .btn-primary {
+        padding: 9px 20px;
+        border-radius: 9px;
+        border: none;
+        background: var(--blue);
+        color: #fff;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-primary:hover {
+        background: #2563eb;
+      }
+      .btn-ghost {
+        padding: 8px 16px;
+        border-radius: 9px;
+        border: 1px solid var(--border-bright);
+        background: transparent;
+        color: var(--text-2);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-ghost:hover {
+        background: var(--bg-hover);
+        color: var(--text);
+      }
+
+      /* ── TREND SPARKLINE ── */
+      .sparkline-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .sparkline-label {
+        font-size: 12px;
+        color: var(--text-2);
+        width: 90px;
+        flex-shrink: 0;
+      }
+      .sparkline-svg {
+        flex: 1;
+        height: 28px;
+      }
+      .sparkline-val {
+        font-size: 13px;
+        font-weight: 700;
+        font-family: var(--mono);
+        width: 60px;
+        text-align: right;
+      }
+
+      /* ── SKELETON ── */
+      .skel {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.04) 25%,
+          rgba(255, 255, 255, 0.08) 50%,
+          rgba(255, 255, 255, 0.04) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: 6px;
+      }
+      @keyframes shimmer {
+        to {
+          background-position: -200% 0;
+        }
+      }
+
+      /* ── TOAST ── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 999;
+        background: var(--bg-card2);
+        border: 1px solid var(--border-bright);
+        border-radius: 10px;
+        padding: 12px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        transform: translateY(80px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* ── LOADING OVERLAY ── */
+      .page-loading {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      .page-loading-spinner {
+        width: 36px;
+        height: 36px;
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .page-loading p {
+        font-size: 14px;
+        color: var(--text-2);
+      }
+
+      @media (max-width: 900px) {
+        .intel-grid {
+          grid-template-columns: 1fr;
+        }
+        .col-span-2,
+        .col-span-3 {
+          grid-column: span 1;
+        }
+        .page {
+          padding: 80px 16px 40px;
+        }
+        .manual-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-loading" id="pageLoading">
+      <div class="page-loading-spinner"></div>
+      <p>Loading Intelligence Center...</p>
+    </div>
+
+    <!-- NAV -->
+    <nav class="nav">
+      <a href="/dashboard/shopify" class="nav-brand">
+        <img src="/assets/images/logo.png" alt="Aervo" />
+      </a>
+      <div class="nav-links">
+        <a href="/dashboard/shopify" class="nav-link">Overview</a>
+        <a href="/dashboard/shopify" class="nav-link">Analytics</a>
+        <span class="nav-link active">Intelligence</span>
+        <a href="/reports" class="nav-link">Reports</a>
+      </div>
+      <div class="nav-right">
+        <a href="/integrations" class="nav-btn">⚙️ Integrations</a>
+        <a href="/settings" class="nav-btn">👤 Settings</a>
+        <button class="nav-btn" id="logoutBtn">Log out</button>
+      </div>
+    </nav>
+
+    <div class="page" id="mainPage" style="display: none">
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-left">
+          <h1><span id="companyNameTitle">Your</span> Intelligence Center</h1>
+          <p>
+            Set goals, benchmark against your industry, and let AI surface what
+            matters most — all from your live store data.
+          </p>
+        </div>
+        <div class="hero-right">
+          <div
+            class="source-pill"
+            id="pillShopify"
+            onclick="activateSource('shopify')"
+            title="Connect Shopify data"
+          >
+            <span class="source-dot"></span> Shopify
+          </div>
+          <div
+            class="source-pill"
+            id="pillSquare"
+            onclick="activateSource('square')"
+            title="Connect Square data"
+          >
+            <span class="source-dot"></span> Square
+          </div>
+          <div
+            class="source-pill"
+            id="pillCsv"
+            onclick="triggerCsvUpload()"
+            title="Upload CSV"
+          >
+            <span class="source-dot"></span> CSV
+          </div>
+          <div
+            class="source-pill"
+            id="pillManual"
+            onclick="activateSource('manual')"
+            title="Enter manually"
+          >
+            <span class="source-dot"></span> Manual
+          </div>
+          <input
+            type="file"
+            id="csvFileInput"
+            class="upload-file-input"
+            accept=".csv"
+            onchange="handleCsvFile(event)"
+          />
+        </div>
+      </div>
+
+      <!-- INDUSTRY SELECTOR -->
+      <div class="industry-bar">
+        <span class="industry-label">Industry</span>
+        <div class="industry-chips">
+          <button
+            class="industry-chip active"
+            onclick="setIndustry('retail', this)"
+          >
+            🛍️ Retail
+          </button>
+          <button class="industry-chip" onclick="setIndustry('food', this)">
+            🍔 Food & Bev
+          </button>
+          <button class="industry-chip" onclick="setIndustry('beauty', this)">
+            💄 Beauty
+          </button>
+          <button class="industry-chip" onclick="setIndustry('apparel', this)">
+            👗 Apparel
+          </button>
+          <button
+            class="industry-chip"
+            onclick="setIndustry('electronics', this)"
+          >
+            💻 Electronics
+          </button>
+          <button class="industry-chip" onclick="setIndustry('home', this)">
+            🏠 Home & Garden
+          </button>
+          <button class="industry-chip" onclick="setIndustry('health', this)">
+            🏋️ Health & Fitness
+          </button>
+          <button class="industry-chip" onclick="setIndustry('services', this)">
+            💼 Services
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN INTEL GRID -->
+      <div class="intel-grid">
+        <!-- 1. HEALTH SCORE (col 1) -->
+        <div class="card">
+          <div class="card-label" style="color: #60a5fa">
+            <span class="card-label-dot"></span> Health Score
+          </div>
+          <div class="score-ring-wrap">
+            <svg class="score-ring-svg" viewBox="0 0 160 160">
+              <circle
+                cx="80"
+                cy="80"
+                r="66"
+                fill="none"
+                stroke="rgba(255,255,255,0.05)"
+                stroke-width="12"
+              />
+              <circle
+                cx="80"
+                cy="80"
+                r="66"
+                fill="none"
+                id="healthRing"
+                stroke="#3b82f6"
+                stroke-width="12"
+                stroke-dasharray="414.69"
+                stroke-dashoffset="414.69"
+                stroke-linecap="round"
+                transform="rotate(-90 80 80)"
+                style="
+                  transition:
+                    stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    stroke 0.5s;
+                "
+              />
+            </svg>
+            <div class="score-ring-center">
+              <div class="score-ring-num" id="healthNum" style="color: #3b82f6">
+                --
+              </div>
+              <div class="score-ring-sub">/ 100</div>
+            </div>
+          </div>
+          <div class="score-grade" id="healthGrade" style="color: #3b82f6">
+            Calculating...
+          </div>
+          <div class="score-breakdown" id="scoreBreakdown"></div>
+        </div>
+
+        <!-- 2. GOAL BUILDER (col 2-3) -->
+        <div class="card col-span-2">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 16px;
+            "
+          >
+            <div class="card-label" style="color: #a78bfa; margin-bottom: 0">
+              <span class="card-label-dot"></span> Goal Builder
+            </div>
+            <button
+              class="btn-primary"
+              onclick="saveGoals()"
+              style="font-size: 12px; padding: 6px 14px"
+            >
+              💾 Save Goals
+            </button>
+          </div>
+
+          <!-- Goal progress bars (shown when goals exist) -->
+          <div
+            id="goalProgressSection"
+            style="margin-bottom: 16px; display: none"
+          ></div>
+
+          <!-- Goal inputs -->
+          <div id="goalInputs">
+            <div class="goal-row">
+              <div>
+                <div class="goal-metric-name">Monthly Revenue</div>
+                <div class="goal-metric-sub" id="cur-revenue">Loading...</div>
+              </div>
+              <div class="goal-vs">→ target</div>
+              <div class="goal-input-wrap">
+                <input
+                  class="goal-input"
+                  type="number"
+                  id="g-revenue"
+                  placeholder="50,000"
+                />
+                <div class="goal-input-label">$ per month</div>
+              </div>
+            </div>
+            <div class="goal-row">
+              <div>
+                <div class="goal-metric-name">Order Volume</div>
+                <div class="goal-metric-sub" id="cur-orders">Loading...</div>
+              </div>
+              <div class="goal-vs">→ target</div>
+              <div class="goal-input-wrap">
+                <input
+                  class="goal-input"
+                  type="number"
+                  id="g-orders"
+                  placeholder="500"
+                />
+                <div class="goal-input-label">orders / month</div>
+              </div>
+            </div>
+            <div class="goal-row">
+              <div>
+                <div class="goal-metric-name">Avg. Order Value</div>
+                <div class="goal-metric-sub" id="cur-aov">Loading...</div>
+              </div>
+              <div class="goal-vs">→ target</div>
+              <div class="goal-input-wrap">
+                <input
+                  class="goal-input"
+                  type="number"
+                  id="g-aov"
+                  placeholder="85"
+                />
+                <div class="goal-input-label">$ per order</div>
+              </div>
+            </div>
+            <div class="goal-row">
+              <div>
+                <div class="goal-metric-name">Conversion Rate</div>
+                <div class="goal-metric-sub" id="cur-conv">Loading...</div>
+              </div>
+              <div class="goal-vs">→ target</div>
+              <div class="goal-input-wrap">
+                <input
+                  class="goal-input"
+                  type="number"
+                  id="g-conv"
+                  placeholder="3.5"
+                  step="0.1"
+                />
+                <div class="goal-input-label">% conversion</div>
+              </div>
+            </div>
+            <div class="goal-row">
+              <div>
+                <div class="goal-metric-name">Customer Retention</div>
+                <div class="goal-metric-sub" id="cur-retention">Loading...</div>
+              </div>
+              <div class="goal-vs">→ target</div>
+              <div class="goal-input-wrap">
+                <input
+                  class="goal-input"
+                  type="number"
+                  id="g-retention"
+                  placeholder="40"
+                  step="1"
+                />
+                <div class="goal-input-label">% repeat customers</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manual entry fallback -->
+          <div id="manualEntrySection" style="display: none">
+            <div
+              style="
+                border-top: 1px solid var(--border);
+                padding-top: 16px;
+                margin-top: 4px;
+              "
+            >
+              <div
+                class="card-label"
+                style="color: #fbbf24; margin-bottom: 10px"
+              >
+                <span class="card-label-dot"></span>Manual Data Entry
+              </div>
+              <div class="manual-grid">
+                <div class="manual-field">
+                  <label>Monthly Revenue ($)</label
+                  ><input
+                    type="number"
+                    id="m-revenue"
+                    placeholder="38000"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+                <div class="manual-field">
+                  <label>Total Orders</label
+                  ><input
+                    type="number"
+                    id="m-orders"
+                    placeholder="312"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+                <div class="manual-field">
+                  <label>Avg Order Value ($)</label
+                  ><input
+                    type="number"
+                    id="m-aov"
+                    placeholder="72"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+                <div class="manual-field">
+                  <label>Conversion Rate (%)</label
+                  ><input
+                    type="number"
+                    id="m-conv"
+                    placeholder="2.4"
+                    step="0.1"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+                <div class="manual-field">
+                  <label>Repeat Customer Rate (%)</label
+                  ><input
+                    type="number"
+                    id="m-retention"
+                    placeholder="18"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+                <div class="manual-field">
+                  <label>Refund Rate (%)</label
+                  ><input
+                    type="number"
+                    id="m-refund"
+                    placeholder="5"
+                    step="0.1"
+                    oninput="updateManualMetrics()"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. INDUSTRY BENCHMARKS (col 1-2) -->
+        <div class="card col-span-2">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 4px;
+            "
+          >
+            <div class="card-label" style="color: #34d399; margin-bottom: 0">
+              <span class="card-label-dot"></span> Industry Benchmarks
+            </div>
+            <span
+              style="font-size: 11px; color: var(--text-3)"
+              id="benchIndustryLabel"
+              >Retail</span
+            >
+          </div>
+          <div id="benchmarkRows"></div>
+        </div>
+
+        <!-- 4. AI INSIGHTS (col 3) -->
+        <div class="card">
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 14px;
+            "
+          >
+            <div class="card-label" style="color: #f59e0b; margin-bottom: 0">
+              <span class="card-label-dot"></span> AI Insights
+            </div>
+            <button
+              class="btn-ghost"
+              id="refreshInsightsBtn"
+              onclick="refreshInsights()"
+              style="font-size: 11px; padding: 5px 10px"
+            >
+              ↻ Refresh
+            </button>
+          </div>
+          <div id="aiInsightsList">
+            ${[1,2,3].map(()=>`
+            <div class="ai-insight-item">
+              <div style="display: flex; gap: 10px">
+                <div
+                  class="skel"
+                  style="width: 70px; height: 18px; flex-shrink: 0"
+                ></div>
+                <div class="skel" style="flex: 1; height: 18px"></div>
+              </div>
+              <div
+                class="skel"
+                style="height: 13px; margin-top: 8px; width: 80%"
+              ></div>
+            </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- 5. TRENDS (col 1) -->
+        <div class="card">
+          <div class="card-label" style="color: #60a5fa">
+            <span class="card-label-dot"></span> Key Trends
+          </div>
+          <div id="trendSparklines"></div>
+        </div>
+
+        <!-- 6. CSV UPLOAD (col 2) -->
+        <div class="card" id="csvUploadCard">
+          <div class="card-label" style="color: #a78bfa">
+            <span class="card-label-dot"></span> Data Import
+          </div>
+          <div
+            class="upload-zone"
+            id="uploadZone"
+            onclick="triggerCsvUpload()"
+            ondragover="
+              (e) => {
+                e.preventDefault();
+                document.getElementById('uploadZone').classList.add('drag');
+              }
+            "
+            ondragleave="
+              document.getElementById('uploadZone').classList.remove('drag')
+            "
+            ondrop="handleDrop(event)"
+          >
+            <div class="upload-zone-icon">📂</div>
+            <div class="upload-zone-title">
+              Drop your CSV or click to upload
+            </div>
+            <div class="upload-zone-sub">
+              Supports order exports from Shopify, Square, WooCommerce, or any
+              custom CSV
+            </div>
+          </div>
+          <div id="csvStatus" style="margin-top: 12px; display: none"></div>
+          <div style="margin-top: 14px">
+            <div
+              style="
+                font-size: 11px;
+                color: var(--text-3);
+                margin-bottom: 8px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.7px;
+              "
+            >
+              Expected columns
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap">
+              ${['date','revenue','orders','aov','customers'].map(c=>`<span
+                style="
+                  font-size: 11px;
+                  padding: 3px 8px;
+                  border-radius: 5px;
+                  background: rgba(255, 255, 255, 0.05);
+                  color: var(--text-3);
+                  font-family: var(--mono);
+                "
+                >${c}</span
+              >`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. AI CHAT (col 3) -->
+        <div class="card">
+          <div class="card-label" style="color: #f59e0b">
+            <span class="card-label-dot"></span> Ask Intelligence
+          </div>
+          <div class="intel-chat">
+            <div class="chat-suggestions">
+              <button class="chat-sug" onclick="askChat(this.textContent)">
+                Am I on track?
+              </button>
+              <button class="chat-sug" onclick="askChat(this.textContent)">
+                Where am I losing?
+              </button>
+              <button class="chat-sug" onclick="askChat(this.textContent)">
+                Best growth lever?
+              </button>
+              <button class="chat-sug" onclick="askChat(this.textContent)">
+                vs industry?
+              </button>
+            </div>
+            <div class="intel-chat-msgs" id="intelChatMsgs">
+              <div class="chat-msg chat-msg-ai">
+                <div class="chat-msg-bubble">
+                  👋 I'm your Intelligence AI. I know your goals, live store
+                  data, and industry benchmarks. Ask me anything!
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-row">
+              <input
+                class="chat-input-box"
+                id="intelChatInput"
+                placeholder="Ask about your goals, benchmarks, growth..."
+                onkeypress="if (event.key === 'Enter') sendIntelChat();"
+              />
+              <button class="chat-send-btn" onclick="sendIntelChat()">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /intel-grid -->
+    </div>
+    <!-- /page -->
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const BACKEND_URL = "https://api.aervoapp.com";
+      const token = localStorage.getItem("aervo_token");
+      if (!token) window.location.href = "/login";
+
+      // ── STATE ──
+      let userData = null,
+        shopData = null;
+      let metrics = {
+        revenue: 0,
+        orders: 0,
+        aov: 0,
+        conv: 0,
+        retention: 0,
+        refund: 0,
+      };
+      let storedGoals = {};
+      let currentIndustry = "retail";
+      let currentSource = null;
+      let csvData = null;
+      let chatHistory = [];
+
+      // ── INDUSTRY BENCHMARKS ──
+      const BENCHMARKS = {
+        retail: {
+          revenue: 45000,
+          orders: 420,
+          aov: 87,
+          conv: 2.5,
+          retention: 28,
+          refund: 8,
+        },
+        food: {
+          revenue: 38000,
+          orders: 900,
+          aov: 42,
+          conv: 3.2,
+          retention: 35,
+          refund: 4,
+        },
+        beauty: {
+          revenue: 32000,
+          orders: 310,
+          aov: 68,
+          conv: 2.1,
+          retention: 42,
+          refund: 6,
+        },
+        apparel: {
+          revenue: 41000,
+          orders: 380,
+          aov: 72,
+          conv: 1.9,
+          retention: 24,
+          refund: 14,
+        },
+        electronics: {
+          revenue: 62000,
+          orders: 180,
+          aov: 210,
+          conv: 1.4,
+          retention: 18,
+          refund: 11,
+        },
+        home: {
+          revenue: 35000,
+          orders: 220,
+          aov: 130,
+          conv: 1.7,
+          retention: 22,
+          refund: 9,
+        },
+        health: {
+          revenue: 28000,
+          orders: 260,
+          aov: 78,
+          conv: 2.8,
+          retention: 38,
+          refund: 5,
+        },
+        services: {
+          revenue: 22000,
+          orders: 85,
+          aov: 195,
+          conv: 4.1,
+          retention: 55,
+          refund: 2,
+        },
+      };
+      const INDUSTRY_LABELS = {
+        retail: "Retail",
+        food: "Food & Bev",
+        beauty: "Beauty",
+        apparel: "Apparel",
+        electronics: "Electronics",
+        home: "Home & Garden",
+        health: "Health & Fitness",
+        services: "Services",
+      };
+
+      // ── INIT ──
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("aervo_token");
+        window.location.href = "/login";
+      });
+
+      async function init() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) {
+            window.location.href = "/login";
+            return;
+          }
+          const data = await res.json();
+          userData = data.user;
+          shopData = data.shop;
+
+          if (userData.companyName) {
+            document.getElementById("companyNameTitle").textContent =
+              userData.companyName + "'s";
+            document.title = `${userData.companyName} – Intelligence Center`;
+          }
+
+          // Load goals from backend
+          try {
+            const gRes = await fetch(`${BACKEND_URL}/api/goals`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const gData = await gRes.json();
+            if (gData.success && gData.goals.length > 0) {
+              gData.goals.forEach((g) => {
+                storedGoals[g.type] = g.target;
+                const el = document.getElementById(
+                  "g-" + (g.type === "customers" ? "retention" : g.type),
+                );
+                if (el) el.value = g.target;
+              });
+            }
+          } catch (e) {}
+
+          // Determine data source
+          if (shopData) {
+            activateSource("shopify");
+            await loadShopifyMetrics();
+          } else {
+            // Check square
+            try {
+              const sqRes = await fetch(
+                `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
+                { headers: { Authorization: `Bearer ${token}` } },
+              );
+              const sqData = await sqRes.json();
+              if (sqData.connected) {
+                activateSource("square");
+                await loadSquareMetrics();
+              } else {
+                activateSource("manual");
+              }
+            } catch (e) {
+              activateSource("manual");
+            }
+          }
+
+          // Load health score
+          await loadHealthScore();
+
+          // Render
+          renderBenchmarks();
+          renderGoalProgress();
+          renderTrends();
+          await refreshInsights();
+
+          document.getElementById("pageLoading").style.display = "none";
+          document.getElementById("mainPage").style.display = "block";
+        } catch (e) {
+          console.error(e);
+          document.getElementById("pageLoading").innerHTML =
+            `<p style="color:#f87171">Error loading — <a href="/dashboard/shopify" style="color:#60a5fa">return to dashboard</a></p>`;
+        }
+      }
+
+      // ── DATA SOURCES ──
+      function activateSource(src) {
+        currentSource = src;
+        ["shopify", "square", "csv", "manual"].forEach((s) => {
+          const el = document.getElementById(
+            "pill" + s.charAt(0).toUpperCase() + s.slice(1),
+          );
+          if (el)
+            el.className = "source-pill" + (s === src ? " active-" + s : "");
+        });
+        if (src === "manual") {
+          document.getElementById("manualEntrySection").style.display = "block";
+        } else {
+          document.getElementById("manualEntrySection").style.display = "none";
+        }
+      }
+
+      async function loadShopifyMetrics() {
+        if (!shopData) return;
+        try {
+          const h = { Authorization: `Bearer ${token}` };
+          const [oRes, ordRes, cusRes] = await Promise.all([
+            fetch(
+              `${BACKEND_URL}/api/shopify/overview?shop=${shopData.shopOrigin}`,
+              { headers: h },
+            ),
+            fetch(
+              `${BACKEND_URL}/api/shopify/orders?shop=${shopData.shopOrigin}&limit=100`,
+              { headers: h },
+            ),
+            fetch(
+              `${BACKEND_URL}/api/shopify/customers?shop=${shopData.shopOrigin}`,
+              { headers: h },
+            ),
+          ]);
+          const [o, ord, cus] = await Promise.all([
+            oRes.json(),
+            ordRes.json(),
+            cusRes.json(),
+          ]);
+
+          if (o.success && o.data) {
+            metrics.revenue = parseFloat(o.data.revenue.total) || 0;
+            metrics.conv = parseFloat(o.data.conversion?.rate) || 0;
+          }
+          if (ord.success && ord.orders) {
+            const orders = ord.orders;
+            metrics.orders = orders.length;
+            metrics.aov = orders.length
+              ? orders.reduce((s, o) => s + parseFloat(o.total_price || 0), 0) /
+                orders.length
+              : 0;
+            metrics.aov = Math.round(metrics.aov * 100) / 100;
+          }
+          if (cus.success && cus.customers) {
+            metrics.retention = parseFloat(cus.customers.repeatRate) || 0;
+          }
+          updateMetricDisplays();
+        } catch (e) {
+          console.error("Shopify metrics error:", e);
+        }
+      }
+
+      async function loadSquareMetrics() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ merchantId: String(userData.id) }),
+          });
+          const data = await res.json();
+          if (data.success && data.metrics) {
+            metrics = { ...metrics, ...data.metrics };
+            updateMetricDisplays();
+          }
+        } catch (e) {
+          console.error("Square metrics error:", e);
+        }
+      }
+
+      function updateManualMetrics() {
+        metrics.revenue =
+          parseFloat(document.getElementById("m-revenue").value) || 0;
+        metrics.orders =
+          parseFloat(document.getElementById("m-orders").value) || 0;
+        metrics.aov = parseFloat(document.getElementById("m-aov").value) || 0;
+        metrics.conv = parseFloat(document.getElementById("m-conv").value) || 0;
+        metrics.retention =
+          parseFloat(document.getElementById("m-retention").value) || 0;
+        metrics.refund =
+          parseFloat(document.getElementById("m-refund").value) || 0;
+        updateMetricDisplays();
+        renderBenchmarks();
+        renderGoalProgress();
+      }
+
+      function updateMetricDisplays() {
+        const fmt = (v, pre = "$") =>
+          v > 0
+            ? pre + v.toLocaleString(undefined, { maximumFractionDigits: 1 })
+            : "No data yet";
+        const setEl = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val;
+        };
+
+        setEl(
+          "cur-revenue",
+          metrics.revenue > 0
+            ? `Current: $${Math.round(metrics.revenue).toLocaleString()}/mo`
+            : "No data yet",
+        );
+        setEl(
+          "cur-orders",
+          metrics.orders > 0
+            ? `Current: ${metrics.orders} orders/mo`
+            : "No data yet",
+        );
+        setEl(
+          "cur-aov",
+          metrics.aov > 0
+            ? `Current: $${metrics.aov.toFixed(2)}/order`
+            : "No data yet",
+        );
+        setEl(
+          "cur-conv",
+          metrics.conv > 0 ? `Current: ${metrics.conv}%` : "No data yet",
+        );
+        setEl(
+          "cur-retention",
+          metrics.retention > 0
+            ? `Current: ${metrics.retention}% repeat`
+            : "No data yet",
+        );
+
+        renderBenchmarks();
+        renderGoalProgress();
+      }
+
+      // ── HEALTH SCORE ──
+      async function loadHealthScore() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/health-score`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success && data.score) renderHealthScore(data.score);
+          else if (shopData) {
+            const calc = await fetch(
+              `${BACKEND_URL}/api/health-score/calculate`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ shopOrigin: shopData.shopOrigin }),
+              },
+            );
+            const cd = await calc.json();
+            if (cd.success) renderHealthScore(cd.score);
+          }
+        } catch (e) {}
+      }
+
+      function renderHealthScore(score) {
+        const s = score.score || 0;
+        const color = s >= 70 ? "#10b981" : s >= 40 ? "#f59e0b" : "#ef4444";
+        const grade =
+          s >= 70
+            ? "Healthy 💚"
+            : s >= 40
+              ? "Needs Attention ⚠️"
+              : "At Risk 🔴";
+        const circumference = 414.69;
+        const offset = circumference - (s / 100) * circumference;
+        const ring = document.getElementById("healthRing");
+        ring.style.stroke = color;
+        setTimeout(() => {
+          ring.style.strokeDashoffset = offset;
+        }, 200);
+        document.getElementById("healthNum").textContent = s;
+        document.getElementById("healthNum").style.color = color;
+        document.getElementById("healthGrade").textContent = grade;
+        document.getElementById("healthGrade").style.color = color;
+
+        const breakdown = [
+          { label: "Revenue", val: score.revenue_score, max: 25 },
+          { label: "Orders", val: score.orders_score, max: 20 },
+          { label: "Refunds", val: score.refund_score, max: 20 },
+          { label: "Inventory", val: score.inventory_score, max: 20 },
+          { label: "Retention", val: score.retention_score, max: 15 },
+        ];
+        document.getElementById("scoreBreakdown").innerHTML = breakdown
+          .map((b) => {
+            const pct = (b.val / b.max) * 100;
+            const c = pct >= 70 ? "#10b981" : pct >= 40 ? "#f59e0b" : "#ef4444";
+            return `<div class="score-bar-row">
+      <div class="score-bar-label">${b.label}</div>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${pct}%;background:${c}"></div></div>
+      <div class="score-bar-val">${b.val}/${b.max}</div>
+    </div>`;
+          })
+          .join("");
+
+        // Update metrics from score if we don't have them
+        if (score.revenue && !metrics.revenue) {
+          metrics.revenue = score.revenue;
+          updateMetricDisplays();
+        }
+      }
+
+      // ── INDUSTRY ──
+      function setIndustry(industry, btn) {
+        currentIndustry = industry;
+        document
+          .querySelectorAll(".industry-chip")
+          .forEach((c) => c.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("benchIndustryLabel").textContent =
+          INDUSTRY_LABELS[industry];
+        renderBenchmarks();
+        refreshInsights();
+      }
+
+      // ── BENCHMARKS ──
+      function renderBenchmarks() {
+        const bench = BENCHMARKS[currentIndustry];
+        const rows = [
+          {
+            icon: "💰",
+            name: "Monthly Revenue",
+            key: "revenue",
+            yours: metrics.revenue,
+            ind: bench.revenue,
+            fmt: (v) => "$" + Math.round(v).toLocaleString(),
+          },
+          {
+            icon: "📦",
+            name: "Order Volume",
+            key: "orders",
+            yours: metrics.orders,
+            ind: bench.orders,
+            fmt: (v) => v + " orders",
+          },
+          {
+            icon: "🧾",
+            name: "Avg Order Value",
+            key: "aov",
+            yours: metrics.aov,
+            ind: bench.aov,
+            fmt: (v) => "$" + v.toFixed(2),
+          },
+          {
+            icon: "🎯",
+            name: "Conversion Rate",
+            key: "conv",
+            yours: metrics.conv,
+            ind: bench.conv,
+            fmt: (v) => v + "%",
+          },
+          {
+            icon: "🔁",
+            name: "Customer Retention",
+            key: "retention",
+            yours: metrics.retention,
+            ind: bench.retention,
+            fmt: (v) => v + "%",
+          },
+          {
+            icon: "↩️",
+            name: "Refund Rate",
+            key: "refund",
+            yours: metrics.refund,
+            ind: bench.refund,
+            fmt: (v) => v + "%",
+            inverse: true,
+          },
+        ];
+
+        document.getElementById("benchmarkRows").innerHTML = rows
+          .map((r) => {
+            const hasData = r.yours > 0;
+            const ratio = hasData ? r.yours / r.ind : null;
+            let status = "near",
+              badgeClass = "bench-near",
+              badgeText = "≈ Near avg";
+            if (ratio !== null) {
+              const isGood = r.inverse ? ratio < 0.85 : ratio > 1.15;
+              const isBad = r.inverse ? ratio > 1.15 : ratio < 0.85;
+              if (isGood) {
+                status = "above";
+                badgeClass = "bench-above";
+                badgeText = "▲ Above avg";
+              } else if (isBad) {
+                status = "below";
+                badgeClass = "bench-below";
+                badgeText = "▼ Below avg";
+              }
+            }
+            return `<div class="bench-row">
+      <div class="bench-icon">${r.icon}</div>
+      <div class="bench-info">
+        <div class="bench-name">${r.name}</div>
+        <div class="bench-sub">Industry avg: ${r.fmt(r.ind)}</div>
+      </div>
+      <div class="bench-vals">
+        <div class="bench-yours" style="color:${status === "above" ? "#10b981" : status === "below" ? "#ef4444" : "#f1f5f9"}">${hasData ? r.fmt(r.yours) : "—"}</div>
+        ${hasData ? `<div class="bench-badge ${badgeClass}">${badgeText}</div>` : '<div class="bench-industry">No data yet</div>'}
+      </div>
+    </div>`;
+          })
+          .join("");
+      }
+
+      // ── GOAL PROGRESS ──
+      function renderGoalProgress() {
+        const goals = [];
+        const goalDefs = [
+          {
+            key: "revenue",
+            input: "g-revenue",
+            label: "Monthly Revenue",
+            fmt: (v) => "$" + Math.round(v).toLocaleString(),
+            cur: metrics.revenue,
+          },
+          {
+            key: "orders",
+            input: "g-orders",
+            label: "Order Volume",
+            fmt: (v) => v + " orders",
+            cur: metrics.orders,
+          },
+          {
+            key: "aov",
+            input: "g-aov",
+            label: "Avg Order Value",
+            fmt: (v) => "$" + v.toFixed(2),
+            cur: metrics.aov,
+          },
+          {
+            key: "conv",
+            input: "g-conv",
+            label: "Conversion Rate",
+            fmt: (v) => v + "%",
+            cur: metrics.conv,
+          },
+          {
+            key: "retention",
+            input: "g-retention",
+            label: "Customer Retention",
+            fmt: (v) => v + "%",
+            cur: metrics.retention,
+          },
+        ];
+
+        goalDefs.forEach((g) => {
+          const inputEl = document.getElementById(g.input);
+          const target = inputEl ? parseFloat(inputEl.value) : 0;
+          if (target > 0 && g.cur > 0) {
+            const pct = Math.min(100, Math.round((g.cur / target) * 100));
+            const col =
+              pct >= 80 ? "#10b981" : pct >= 50 ? "#f59e0b" : "#ef4444";
+            goals.push({
+              label: g.label,
+              current: g.cur,
+              target,
+              pct,
+              col,
+              fmt: g.fmt,
+            });
+          }
+        });
+
+        const section = document.getElementById("goalProgressSection");
+        if (goals.length === 0) {
+          section.style.display = "none";
+          return;
+        }
+
+        section.style.display = "block";
+        section.innerHTML = `<div style="margin-bottom:14px;">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);margin-bottom:10px;">Goal Progress</div>
+    ${goals
+      .map(
+        (g) => `
+      <div class="goal-progress-row">
+        <div class="goal-progress-header">
+          <div class="goal-progress-name">${g.label}</div>
+          <div class="goal-progress-pct" style="color:${g.col}">${g.pct}% <span style="font-size:11px;color:var(--text-3);font-weight:400">${g.fmt(g.current)} / ${g.fmt(g.target)}</span></div>
+        </div>
+        <div class="goal-track"><div class="goal-fill" style="width:${g.pct}%;background:${g.col}"></div></div>
+      </div>
+    `,
+      )
+      .join("")}
+  </div><div style="border-top:1px solid var(--border);margin-bottom:14px;"></div>`;
+      }
+
+      async function saveGoals() {
+        const goalDefs = [
+          { type: "revenue", input: "g-revenue" },
+          { type: "orders", input: "g-orders" },
+          { type: "aov", input: "g-aov" },
+          { type: "customers", input: "g-retention" },
+        ];
+
+        let saved = 0;
+        for (const g of goalDefs) {
+          const el = document.getElementById(g.input);
+          if (!el || !el.value) continue;
+          const target = parseFloat(el.value);
+          if (!target) continue;
+          try {
+            await fetch(`${BACKEND_URL}/api/goals`, {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                type: g.type,
+                target,
+                current: metrics[g.type] || 0,
+              }),
+            });
+            saved++;
+          } catch (e) {}
+        }
+        showToast(
+          saved > 0
+            ? `✓ ${saved} goals saved!`
+            : "No goals to save — enter a target first",
+        );
+        renderGoalProgress();
+      }
+
+      // ── TRENDS ──
+      function renderTrends() {
+        const trends = [
+          {
+            label: "Revenue",
+            values: [0.6, 0.7, 0.65, 0.8, 0.75, 0.9, 1.0].map(
+              (v) => v * metrics.revenue || v * 30000,
+            ),
+            color: "#3b82f6",
+          },
+          {
+            label: "Orders",
+            values: [0.7, 0.8, 0.75, 0.85, 0.8, 0.95, 1.0].map(
+              (v) => v * metrics.orders || v * 300,
+            ),
+            color: "#10b981",
+          },
+          {
+            label: "AOV",
+            values: [0.9, 0.95, 0.92, 0.97, 0.93, 0.98, 1.0].map(
+              (v) => v * metrics.aov || v * 70,
+            ),
+            color: "#f59e0b",
+          },
+          {
+            label: "Retention",
+            values: [0.8, 0.85, 0.83, 0.88, 0.9, 0.95, 1.0].map(
+              (v) => v * metrics.retention || v * 25,
+            ),
+            color: "#8b5cf6",
+          },
+        ];
+
+        document.getElementById("trendSparklines").innerHTML = trends
+          .map((t) => {
+            const max = Math.max(...t.values);
+            const min = Math.min(...t.values);
+            const range = max - min || 1;
+            const W = 200,
+              H = 28,
+              pts = t.values.map((v, i) => [
+                i * (W / (t.values.length - 1)),
+                H - ((v - min) / range) * (H - 4) - 2,
+              ]);
+            let path = `M ${pts[0][0]} ${pts[0][1]}`;
+            for (let i = 1; i < pts.length; i++) {
+              const cx = (pts[i - 1][0] + pts[i][0]) / 2;
+              path += ` C ${cx} ${pts[i - 1][1]}, ${cx} ${pts[i][1]}, ${pts[i][0]} ${pts[i][1]}`;
+            }
+            const last = t.values[t.values.length - 1];
+            const change = (
+              ((last - t.values[t.values.length - 2]) /
+                (t.values[t.values.length - 2] || 1)) *
+              100
+            ).toFixed(1);
+            return `<div class="sparkline-row">
+      <div class="sparkline-label">${t.label}</div>
+      <svg class="sparkline-svg" viewBox="0 0 200 28" preserveAspectRatio="none">
+        <path d="${path}" fill="none" stroke="${t.color}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="${pts[pts.length - 1][0]}" cy="${pts[pts.length - 1][1]}" r="3" fill="${t.color}"/>
+      </svg>
+      <div class="sparkline-val" style="color:${parseFloat(change) >= 0 ? "#10b981" : "#ef4444"}">${parseFloat(change) >= 0 ? "+" : ""}${change}%</div>
+    </div>`;
+          })
+          .join("");
+      }
+
+      // ── AI INSIGHTS ──
+      async function refreshInsights() {
+        document.getElementById("aiInsightsList").innerHTML = [1, 2, 3]
+          .map(
+            () => `
+    <div class="ai-insight-item">
+      <div style="display:flex;gap:10px;"><div class="skel" style="width:70px;height:18px;flex-shrink:0"></div><div class="skel" style="flex:1;height:18px"></div></div>
+      <div class="skel" style="height:13px;margin-top:8px;width:80%"></div>
+    </div>`,
+          )
+          .join("");
+        document.getElementById("refreshInsightsBtn").textContent = "⏳";
+
+        const bench = BENCHMARKS[currentIndustry];
+        const goalInputs = ["revenue", "orders", "aov", "conv", "retention"]
+          .map((k) => {
+            const el = document.getElementById("g-" + k);
+            return el?.value ? `${k} goal: ${el.value}` : null;
+          })
+          .filter(Boolean)
+          .join(", ");
+
+        const context = `Industry: ${INDUSTRY_LABELS[currentIndustry]}.
+Metrics: revenue=$${Math.round(metrics.revenue || 0)}, orders=${metrics.orders || 0}, aov=$${(metrics.aov || 0).toFixed(2)}, conversion=${metrics.conv || 0}%, retention=${metrics.retention || 0}%, refund=${metrics.refund || 0}%.
+Industry averages: revenue=$${bench.revenue}, orders=${bench.orders}, aov=$${bench.aov}, conversion=${bench.conv}%, retention=${bench.retention}%.
+${goalInputs ? "Goals: " + goalInputs : "No goals set yet."}`;
+
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 600,
+              system:
+                'You are a business intelligence AI. Return ONLY a JSON array of 4 insight objects with no markdown or preamble: [{"type":"opportunity"|"warning"|"insight"|"action","title":"short title","body":"1-2 sentence explanation with specific numbers"}]',
+              messages: [
+                {
+                  role: "user",
+                  content: `Generate 4 business insights based on this data:\n${context}`,
+                },
+              ],
+            }),
+          });
+          const data = await res.json();
+          let insights = [];
+          try {
+            insights = JSON.parse(
+              data.content[0].text.replace(/```json|```/g, "").trim(),
+            );
+          } catch (e) {
+            insights = getFallbackInsights();
+          }
+
+          document.getElementById("aiInsightsList").innerHTML = insights
+            .map(
+              (ins) => `
+      <div class="ai-insight-item">
+        <div class="ai-insight-top">
+          <span class="ai-insight-badge badge-${ins.type}">${ins.type}</span>
+          <div class="ai-insight-title">${ins.title}</div>
+        </div>
+        <div class="ai-insight-body">${ins.body}</div>
+      </div>`,
+            )
+            .join("");
+        } catch (e) {
+          document.getElementById("aiInsightsList").innerHTML =
+            getFallbackInsights()
+              .map(
+                (ins) => `
+      <div class="ai-insight-item">
+        <div class="ai-insight-top"><span class="ai-insight-badge badge-${ins.type}">${ins.type}</span><div class="ai-insight-title">${ins.title}</div></div>
+        <div class="ai-insight-body">${ins.body}</div>
+      </div>`,
+              )
+              .join("");
+        }
+        document.getElementById("refreshInsightsBtn").textContent = "↻ Refresh";
+      }
+
+      function getFallbackInsights() {
+        const bench = BENCHMARKS[currentIndustry];
+        const insights = [];
+        if (metrics.revenue > 0 && metrics.revenue > bench.revenue)
+          insights.push({
+            type: "opportunity",
+            title: "Revenue above industry average",
+            body: `Your $${Math.round(metrics.revenue).toLocaleString()}/mo beats the ${INDUSTRY_LABELS[currentIndustry]} average of $${bench.revenue.toLocaleString()}. Consider scaling marketing spend.`,
+          });
+        else
+          insights.push({
+            type: "action",
+            title: "Close the revenue gap",
+            body: `${INDUSTRY_LABELS[currentIndustry]} businesses average $${bench.revenue.toLocaleString()}/mo. Focus on increasing order frequency and AOV to close the gap.`,
+          });
+        if (metrics.retention > 0 && metrics.retention < bench.retention)
+          insights.push({
+            type: "warning",
+            title: "Retention below industry average",
+            body: `Your ${metrics.retention}% repeat rate trails the industry average of ${bench.retention}%. A post-purchase email sequence could add 5-10% retention.`,
+          });
+        insights.push({
+          type: "insight",
+          title: "Set goals to unlock personalized insights",
+          body: "Add revenue and order targets above to see real-time progress tracking and get AI recommendations tailored to your specific gaps.",
+        });
+        return insights;
+      }
+
+      // ── CSV ──
+      function triggerCsvUpload() {
+        document.getElementById("csvFileInput").click();
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById("uploadZone").classList.remove("drag");
+        const file = e.dataTransfer.files[0];
+        if (file && file.name.endsWith(".csv")) processCsvFile(file);
+      }
+
+      function handleCsvFile(e) {
+        processCsvFile(e.target.files[0]);
+      }
+
+      function processCsvFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target.result;
+          const lines = text.trim().split("\n");
+          const headers = lines[0]
+            .split(",")
+            .map((h) => h.trim().toLowerCase().replace(/"/g, ""));
+          const rows = lines
+            .slice(1)
+            .map((l) => {
+              const vals = l.split(",").map((v) => v.trim().replace(/"/g, ""));
+              const obj = {};
+              headers.forEach((h, i) => (obj[h] = vals[i]));
+              return obj;
+            })
+            .filter((r) => Object.values(r).some((v) => v));
+
+          // Extract metrics from CSV
+          let totalRev = 0,
+            totalOrders = 0;
+          const revCol = headers.find(
+            (h) =>
+              h.includes("revenue") ||
+              h.includes("total") ||
+              h.includes("amount") ||
+              h.includes("sales"),
+          );
+          const orderCol = headers.find((h) => h.includes("order"));
+
+          rows.forEach((r) => {
+            if (revCol && r[revCol])
+              totalRev += parseFloat(r[revCol].replace(/[$,]/g, "")) || 0;
+            if (orderCol) totalOrders++;
+          });
+
+          if (!orderCol) totalOrders = rows.length;
+
+          csvData = { rows, headers, totalRev, totalOrders };
+          if (totalRev > 0) {
+            metrics.revenue = totalRev;
+            metrics.orders = totalOrders;
+            metrics.aov = totalOrders ? totalRev / totalOrders : 0;
+          }
+
+          activateSource("csv");
+          updateMetricDisplays();
+          renderBenchmarks();
+          renderGoalProgress();
+
+          const status = document.getElementById("csvStatus");
+          status.style.display = "block";
+          status.innerHTML = `<div style="padding:10px 13px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);border-radius:8px;font-size:12px;color:#a78bfa">
+      ✓ <strong>${file.name}</strong> loaded — ${rows.length} rows, ${headers.length} columns detected
+      ${totalRev > 0 ? `<br>Revenue: $${Math.round(totalRev).toLocaleString()} across ${totalOrders} orders` : ""}
+    </div>`;
+          showToast("✓ CSV loaded successfully");
+        };
+        reader.readAsText(file);
+      }
+
+      // ── INTEL CHAT ──
+      async function sendIntelChat() {
+        const input = document.getElementById("intelChatInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+        askChat(msg);
+        input.value = "";
+      }
+
+      async function askChat(msg) {
+        const msgs = document.getElementById("intelChatMsgs");
+        msgs.innerHTML += `<div class="chat-msg chat-msg-user"><div class="chat-msg-bubble">${msg}</div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+
+        const thinkingId = "think-" + Date.now();
+        msgs.innerHTML += `<div class="chat-msg chat-msg-ai" id="${thinkingId}"><div class="chat-msg-bubble" style="color:var(--text-3);font-style:italic">Thinking...</div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+
+        const bench = BENCHMARKS[currentIndustry];
+        const systemCtx = `You are an intelligent business advisor inside Aervo, a business intelligence platform.
+Current business data: revenue=$${Math.round(metrics.revenue || 0)}, orders=${metrics.orders || 0}, aov=$${(metrics.aov || 0).toFixed(2)}, conversion=${metrics.conv || 0}%, retention=${metrics.retention || 0}%.
+Industry (${INDUSTRY_LABELS[currentIndustry]}) averages: revenue=$${bench.revenue}, orders=${bench.orders}, aov=$${bench.aov}, conversion=${bench.conv}%.
+Goals set: ${
+          ["revenue", "orders", "aov", "conv", "retention"]
+            .map((k) => {
+              const el = document.getElementById("g-" + k);
+              return el?.value ? k + "=" + el.value : null;
+            })
+            .filter(Boolean)
+            .join(", ") || "none"
+        }.
+Give concise, direct, data-driven advice in 2-4 sentences. Reference specific numbers.`;
+
+        chatHistory.push({ role: "user", content: msg });
+
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 300,
+              system: systemCtx,
+              messages: chatHistory.slice(-6),
+            }),
+          });
+          const data = await res.json();
+          const reply = data.content[0].text;
+          chatHistory.push({ role: "assistant", content: reply });
+          document.getElementById(thinkingId).innerHTML =
+            `<div class="chat-msg-bubble">${reply.replace(/\n/g, "<br>")}</div>`;
+        } catch (e) {
+          document.getElementById(thinkingId).innerHTML =
+            `<div class="chat-msg-bubble" style="color:#f87171">Couldn't connect. Try again.</div>`;
+        }
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      // ── TOAST ──
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      // ── BOOT ──
+      init();
+    </script>
+  </body>
+</html>
