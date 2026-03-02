@@ -779,15 +779,15 @@
               "inline-flex";
           }
 
-     if (data.shop) {
-  shopOrigin = data.shop.shopOrigin;
-  localStorage.setItem("shopify_shop", shopOrigin);
-}
-
-renderView("overview");
-loadHealthScore(); // MOVE HERE - after renderView
+          if (shopData) {
+            document.getElementById("shopBadge").style.display = "flex";
+            document.getElementById("shopName").textContent =
+              shopData.shopOrigin.replace(".myshopify.com", "");
+            await fetchAllShopifyData(shopData.shopOrigin);
+          }
 
           renderView("overview");
+          loadHealthScore(); // ADD THIS
         } catch (error) {
           console.error("Dashboard load error:", error);
           document.getElementById("content").innerHTML = `
@@ -1982,6 +1982,7 @@ async function loadHealthScore() {
 }
 
 async function calculateHealthScore() {
+  const shopOrigin = shopData?.shopOrigin || localStorage.getItem('shopify_shop');
   if (!shopOrigin) return;
   try {
     const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
@@ -1999,23 +2000,7 @@ async function recalculateScore() {
   if (!btn) return;
   btn.textContent = '↻ Calculating...';
   btn.disabled = true;
-  
-  // Force recalculate by skipping cache
-  try {
-    const origin = typeof shopOrigin !== 'undefined' ? shopOrigin : null;
-    const merchant = typeof merchantId !== 'undefined' ? merchantId : null;
-    
-    const body = origin ? { shopOrigin: origin, force: true } : { merchantId: merchant, force: true };
-    
-    const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (data.success) renderHealthScore(data.score, data.ai);
-  } catch(e) { console.error('Recalculate error:', e); }
-
+  await calculateHealthScore();
   btn.textContent = '↻ Recalculate';
   btn.disabled = false;
 }
