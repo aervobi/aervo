@@ -1,0 +1,1457 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aervo – Dashboard</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+      :root {
+        --bg: #020618;
+        --surface: #0b1120;
+        --surface2: #111827;
+        --border: rgba(148, 163, 255, 0.1);
+        --border2: rgba(255, 255, 255, 0.06);
+        --text: #f0f4ff;
+        --muted: #6b7a9e;
+        --accent: #29c8ff;
+        --accent2: #7c5cff;
+        --accent3: #23e6a8;
+        --danger: #ff5c5c;
+        --warn: #fbbf24;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 220px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding: 20px 0;
+        z-index: 100;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 18px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 12px;
+      }
+      .logo-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        box-shadow: 0 0 18px rgba(41, 200, 255, 0.3);
+        flex-shrink: 0;
+      }
+      .logo-name {
+        font-size: 0.85rem;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 18px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+        border-radius: 0;
+        transition: all 0.15s;
+        text-decoration: none;
+        border-left: 2px solid transparent;
+      }
+      .nav-item:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .nav-item.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: rgba(41, 200, 255, 0.06);
+      }
+      .nav-icon {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+      }
+      .nav-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 10px 18px;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        padding: 0 18px;
+      }
+      .platform-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: rgba(124, 92, 255, 0.08);
+        border: 1px solid rgba(124, 92, 255, 0.2);
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #a78bfa;
+        margin-bottom: 12px;
+      }
+
+      /* ── Main ── */
+      .main {
+        margin-left: 220px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(2, 6, 24, 0.8);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .topbar-left h1 {
+        font-size: 1.1rem;
+        font-weight: 800;
+      }
+      .topbar-left p {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .upload-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 16px;
+        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .upload-btn:hover {
+        opacity: 0.88;
+      }
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #050816;
+        cursor: pointer;
+      }
+
+      /* ── Content ── */
+      .content {
+        padding: 28px;
+        flex: 1;
+      }
+
+      /* ── Upload prompt (shown when no data) ── */
+      .upload-prompt {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+      }
+      .upload-zone {
+        border: 2px dashed rgba(124, 92, 255, 0.4);
+        border-radius: 20px;
+        padding: 60px 48px;
+        max-width: 520px;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(124, 92, 255, 0.03);
+      }
+      .upload-zone:hover,
+      .upload-zone.dragging {
+        border-color: rgba(124, 92, 255, 0.8);
+        background: rgba(124, 92, 255, 0.07);
+      }
+      .upload-zone-icon {
+        font-size: 3.5rem;
+        margin-bottom: 16px;
+      }
+      .upload-zone h2 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .upload-zone p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+      .upload-zone-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .supported-formats {
+        margin-top: 20px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .format-tag {
+        padding: 4px 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--muted);
+        font-family: "DM Mono", monospace;
+      }
+
+      /* ── Dashboard data (shown when CSV loaded) ── */
+      .dashboard-data {
+        display: none;
+      }
+
+      /* ── Stats row ── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .stat-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .stat-value {
+        font-size: 1.7rem;
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .stat-change {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .stat-change.up {
+        color: var(--accent3);
+      }
+      .stat-change.down {
+        color: var(--danger);
+      }
+      .stat-change.neutral {
+        color: var(--muted);
+      }
+
+      /* ── Charts row ── */
+      .charts-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .card-title {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .chart-wrap {
+        position: relative;
+        height: 220px;
+      }
+
+      /* ── Bottom row ── */
+      .bottom-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      /* ── Top products table ── */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      th {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0 0 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        color: var(--text);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .bar-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mini-bar-wrap {
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .mini-bar {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--accent2), #a855f7);
+      }
+
+      /* ── AI Chat ── */
+      .chat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 380px;
+      }
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .chat-messages::-webkit-scrollbar {
+        width: 4px;
+      }
+      .chat-messages::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+      }
+      .msg {
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+      .msg.user {
+        background: rgba(124, 92, 255, 0.15);
+        border: 1px solid rgba(124, 92, 255, 0.2);
+        align-self: flex-end;
+        color: #e5ecff;
+      }
+      .msg.ai {
+        background: rgba(41, 200, 255, 0.07);
+        border: 1px solid rgba(41, 200, 255, 0.12);
+        align-self: flex-start;
+        color: var(--text);
+      }
+      .msg.ai .ai-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--accent);
+        margin-bottom: 4px;
+        letter-spacing: 0.06em;
+      }
+      .chat-input-row {
+        display: flex;
+        gap: 8px;
+      }
+      .chat-input {
+        flex: 1;
+        padding: 9px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 0.82rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .chat-input:focus {
+        border-color: rgba(124, 92, 255, 0.4);
+      }
+      .chat-input::placeholder {
+        color: var(--muted);
+      }
+      .chat-send {
+        padding: 9px 14px;
+        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .chat-send:hover {
+        opacity: 0.85;
+      }
+      .chat-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ── Goals ── */
+      .goals-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .goal-item {
+        margin-bottom: 16px;
+      }
+      .goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .goal-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .goal-progress-text {
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-family: "DM Mono", monospace;
+      }
+      .goal-bar-wrap {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .goal-bar {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        transition: width 0.6s ease;
+      }
+      .add-goal-btn {
+        width: 100%;
+        padding: 9px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        margin-top: 4px;
+      }
+      .add-goal-btn:hover {
+        border-color: rgba(41, 200, 255, 0.3);
+        color: var(--accent);
+        background: rgba(41, 200, 255, 0.04);
+      }
+
+      /* ── Upload progress overlay ── */
+      .upload-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 24, 0.85);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+      }
+      .upload-overlay.show {
+        display: flex;
+      }
+      .upload-modal {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        max-width: 380px;
+        width: 100%;
+      }
+      .upload-spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(124, 92, 255, 0.2);
+        border-top-color: #a855f7;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .upload-modal h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .upload-modal p {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      /* ── Notification toast ── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 12px 18px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        transform: translateY(80px);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 300;
+      }
+      .toast.show {
+        transform: translateY(0);
+      }
+      .toast.success {
+        border-color: rgba(35, 230, 168, 0.3);
+        color: var(--accent3);
+      }
+      .toast.error {
+        border-color: rgba(255, 92, 92, 0.3);
+        color: var(--danger);
+      }
+
+      /* ── Upload modal header input ── */
+      .modal-upload-zone {
+        border: 2px dashed rgba(124, 92, 255, 0.3);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        cursor: pointer;
+        margin-top: 16px;
+        transition: all 0.2s;
+      }
+      .modal-upload-zone:hover {
+        border-color: rgba(124, 92, 255, 0.6);
+        background: rgba(124, 92, 255, 0.05);
+      }
+
+      /* Loading dots */
+      .typing {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        padding: 4px 0;
+      }
+      .typing span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        opacity: 0.4;
+        animation: blink 1.2s ease-in-out infinite;
+      }
+      .typing span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 1100px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .charts-row {
+          grid-template-columns: 1fr;
+        }
+        .bottom-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .main {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">⚡</div>
+        <div class="logo-name">Aervo</div>
+      </div>
+      <a class="nav-item active" href="/dashboard/csv">
+        <span class="nav-icon">📊</span> Overview
+      </a>
+      <a class="nav-item" href="/intelligence">
+        <span class="nav-icon">🧠</span> Intelligence
+      </a>
+      <a class="nav-item" href="/reports">
+        <span class="nav-icon">📄</span> Reports
+      </a>
+      <div class="nav-divider"></div>
+      <a class="nav-item" href="/integrations">
+        <span class="nav-icon">🔌</span> Integrations
+      </a>
+      <a class="nav-item" href="/settings">
+        <span class="nav-icon">⚙️</span> Settings
+      </a>
+      <div class="sidebar-bottom">
+        <div class="platform-badge">
+          <span>📊</span>
+          <span>CSV Mode</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <h1 id="topbarTitle">Dashboard</h1>
+          <p id="topbarSub">Upload a CSV to get started</p>
+        </div>
+        <div class="topbar-right">
+          <button class="upload-btn" onclick="openUploadModal()">
+            <span>📂</span> Upload CSV
+          </button>
+          <div class="user-avatar" id="userAvatar">?</div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Upload prompt (no data state) -->
+        <div class="upload-prompt" id="uploadPrompt">
+          <div
+            class="upload-zone"
+            id="mainDropZone"
+            onclick="document.getElementById('mainFileInput').click()"
+            ondragover="
+              event.preventDefault();
+              this.classList.add('dragging');
+            "
+            ondragleave="this.classList.remove('dragging')"
+            ondrop="handleMainDrop(event)"
+          >
+            <input
+              type="file"
+              id="mainFileInput"
+              accept=".csv,.xlsx,.xls"
+              style="display: none"
+              onchange="handleMainSelect(event)"
+            />
+            <div class="upload-zone-icon">📊</div>
+            <h2>Upload your sales data</h2>
+            <p>
+              Drop your CSV export from Shopify, Square, WooCommerce, or any
+              platform. Aervo will analyze it and build your dashboard
+              automatically.
+            </p>
+            <button
+              class="upload-zone-btn"
+              onclick="
+                event.stopPropagation();
+                document.getElementById('mainFileInput').click();
+              "
+            >
+              <span>📂</span> Choose file
+            </button>
+            <div class="supported-formats">
+              <span class="format-tag">.CSV</span>
+              <span class="format-tag">.XLSX</span>
+              <span class="format-tag">.XLS</span>
+              <span class="format-tag">Shopify export</span>
+              <span class="format-tag">Square export</span>
+              <span class="format-tag">WooCommerce</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard data (populated after upload) -->
+        <div class="dashboard-data" id="dashboardData">
+          <!-- Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-value" id="statRevenue">—</div>
+              <div class="stat-change neutral" id="statRevenueChange">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value" id="statOrders">—</div>
+              <div class="stat-change neutral" id="statOrdersChange">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Avg Order Value</div>
+              <div class="stat-value" id="statAOV">—</div>
+              <div class="stat-change neutral" id="statAOVChange">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Unique Customers</div>
+              <div class="stat-value" id="statCustomers">—</div>
+              <div class="stat-change neutral" id="statCustomersChange">—</div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-row">
+            <div class="chart-card">
+              <div class="card-title">Revenue Over Time</div>
+              <div class="chart-wrap">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="card-title">Orders by Day</div>
+              <div class="chart-wrap">
+                <canvas id="ordersChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom row -->
+          <div class="bottom-row">
+            <!-- Top products -->
+            <div class="chart-card">
+              <div class="card-title">Top Products</div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Revenue</th>
+                      <th>Units</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productsTable">
+                    <tr>
+                      <td
+                        colspan="3"
+                        style="
+                          color: var(--muted);
+                          text-align: center;
+                          padding: 20px 0;
+                        "
+                      >
+                        No data yet
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- AI Chat -->
+            <div class="chat-card">
+              <div class="card-title">AI Advisor</div>
+              <div class="chat-messages" id="chatMessages">
+                <div class="msg ai">
+                  <div class="ai-label">AERVO AI</div>
+                  Upload your CSV and I'll analyze your business data, answer
+                  questions, and give you actionable recommendations.
+                </div>
+              </div>
+              <div class="chat-input-row">
+                <input
+                  class="chat-input"
+                  id="chatInput"
+                  placeholder="Ask about your data…"
+                  onkeydown="if (event.key === 'Enter') sendChat();"
+                />
+                <button class="chat-send" id="chatSendBtn" onclick="sendChat()">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Goals row -->
+          <div style="margin-top: 14px">
+            <div class="goals-card">
+              <div class="card-title" style="margin-bottom: 16px">Goals</div>
+              <div id="goalsList"></div>
+              <button class="add-goal-btn" onclick="openAddGoal()">
+                + Add Goal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload progress overlay -->
+    <div class="upload-overlay" id="uploadOverlay">
+      <div class="upload-modal">
+        <div class="upload-spinner"></div>
+        <h3 id="overlayTitle">Analyzing your data…</h3>
+        <p id="overlayMsg">This takes a few seconds</p>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Upload modal (topbar button) -->
+    <div
+      class="upload-overlay"
+      id="uploadModal"
+      onclick="if (event.target === this) closeUploadModal();"
+    >
+      <div class="upload-modal" style="max-width: 440px">
+        <h3 style="margin-bottom: 8px">Upload New Data</h3>
+        <p style="color: var(--muted); font-size: 0.82rem; margin-bottom: 0">
+          Replace your dashboard with a new CSV export. Previous data will be
+          updated.
+        </p>
+        <div
+          class="modal-upload-zone"
+          onclick="document.getElementById('modalFileInput').click()"
+          ondragover="event.preventDefault()"
+          ondrop="handleModalDrop(event)"
+        >
+          <input
+            type="file"
+            id="modalFileInput"
+            accept=".csv,.xlsx,.xls"
+            style="display: none"
+            onchange="handleModalSelect(event)"
+          />
+          <div style="font-size: 2rem; margin-bottom: 8px">📂</div>
+          <div style="font-size: 0.88rem; font-weight: 700">
+            Drop file here or click to browse
+          </div>
+          <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px">
+            CSV, XLSX, XLS
+          </div>
+        </div>
+        <div
+          id="modalFileInfo"
+          style="
+            display: none;
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: var(--accent3);
+          "
+        >
+          ✓ <span id="modalFileName"></span>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px">
+          <button
+            onclick="closeUploadModal()"
+            style="
+              flex: 1;
+              padding: 10px;
+              background: rgba(255, 255, 255, 0.04);
+              border: 1px solid var(--border);
+              border-radius: 8px;
+              color: var(--muted);
+              font-size: 0.85rem;
+              cursor: pointer;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            onclick="submitModalUpload()"
+            id="modalUploadBtn"
+            style="
+              flex: 1;
+              padding: 10px;
+              background: linear-gradient(90deg, var(--accent2), #a855f7);
+              border: none;
+              border-radius: 8px;
+              color: #fff;
+              font-size: 0.85rem;
+              font-weight: 700;
+              cursor: pointer;
+            "
+          >
+            Upload & Analyze
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BACKEND_URL = "https://api.aervoapp.com";
+      const token = localStorage.getItem("aervo_token");
+
+      if (!token) window.location.href = "/login";
+
+      let csvSummary = null;
+      let uploadId = null;
+      let modalFile = null;
+      let revenueChartInstance = null;
+      let ordersChartInstance = null;
+
+      // ── Init ──────────────────────────────────────────────
+      async function init() {
+        // Load user info
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            const name = data.user.companyName || data.user.name || "Business";
+            document.getElementById("topbarTitle").textContent = name;
+            document.getElementById("userAvatar").textContent = name
+              .charAt(0)
+              .toUpperCase();
+          }
+        } catch (e) {}
+
+        // Load existing CSV data if any
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/csv/latest`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success && data.summary) {
+            csvSummary = data.summary;
+            uploadId = data.uploadId;
+            renderDashboard(data.summary);
+          }
+        } catch (e) {}
+
+        // Load goals
+        loadGoals();
+      }
+
+      // ── Upload handlers ───────────────────────────────────
+      function handleMainDrop(event) {
+        event.preventDefault();
+        document.getElementById("mainDropZone").classList.remove("dragging");
+        const file = event.dataTransfer.files[0];
+        if (file) uploadFile(file);
+      }
+      function handleMainSelect(event) {
+        const file = event.target.files[0];
+        if (file) uploadFile(file);
+      }
+      function handleModalDrop(event) {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        if (file) {
+          modalFile = file;
+          document.getElementById("modalFileName").textContent = file.name;
+          document.getElementById("modalFileInfo").style.display = "block";
+        }
+      }
+      function handleModalSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+          modalFile = file;
+          document.getElementById("modalFileName").textContent = file.name;
+          document.getElementById("modalFileInfo").style.display = "block";
+        }
+      }
+      function submitModalUpload() {
+        if (!modalFile) return showToast("Please select a file first", "error");
+        closeUploadModal();
+        uploadFile(modalFile);
+        modalFile = null;
+      }
+      function openUploadModal() {
+        document.getElementById("uploadModal").classList.add("show");
+      }
+      function closeUploadModal() {
+        document.getElementById("uploadModal").classList.remove("show");
+        document.getElementById("modalFileInfo").style.display = "none";
+        modalFile = null;
+      }
+
+      async function uploadFile(file) {
+        showOverlay(
+          "Analyzing your data…",
+          "Aervo is reading your CSV and crunching the numbers",
+        );
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/csv/upload`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData,
+          });
+          const data = await res.json();
+          hideOverlay();
+
+          if (!data.success) throw new Error(data.message || "Upload failed");
+
+          csvSummary = data.summary;
+          uploadId = data.uploadId;
+          renderDashboard(data.summary);
+          showToast("✓ Data loaded successfully", "success");
+
+          // Trigger AI intro message
+          addAiMessage(
+            `I've analyzed your data! Here's a quick summary:\n\n**${formatCurrency(data.summary.totalRevenue)}** in total revenue across **${data.summary.totalOrders}** orders. Your average order value is **${formatCurrency(data.summary.avgOrderValue)}**. Ask me anything about your business performance.`,
+          );
+        } catch (err) {
+          hideOverlay();
+          showToast(err.message || "Upload failed", "error");
+        }
+      }
+
+      // ── Render dashboard ──────────────────────────────────
+      function renderDashboard(summary) {
+        document.getElementById("uploadPrompt").style.display = "none";
+        document.getElementById("dashboardData").style.display = "block";
+        document.getElementById("topbarSub").textContent =
+          `Last updated: ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+
+        // Stats
+        document.getElementById("statRevenue").textContent = formatCurrency(
+          summary.totalRevenue,
+        );
+        document.getElementById("statOrders").textContent =
+          summary.totalOrders?.toLocaleString() || "0";
+        document.getElementById("statAOV").textContent = formatCurrency(
+          summary.avgOrderValue,
+        );
+        document.getElementById("statCustomers").textContent =
+          summary.uniqueCustomers?.toLocaleString() || "—";
+
+        // Revenue chart
+        if (summary.revenueByDate && summary.revenueByDate.length > 0) {
+          renderRevenueChart(summary.revenueByDate);
+          renderOrdersChart(summary.revenueByDate);
+        }
+
+        // Top products
+        if (summary.topProducts && summary.topProducts.length > 0) {
+          renderProductsTable(summary.topProducts);
+        }
+      }
+
+      function renderRevenueChart(data) {
+        const ctx = document.getElementById("revenueChart").getContext("2d");
+        if (revenueChartInstance) revenueChartInstance.destroy();
+        revenueChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.map((d) => d.date),
+            datasets: [
+              {
+                label: "Revenue",
+                data: data.map((d) => d.revenue),
+                borderColor: "#29c8ff",
+                backgroundColor: "rgba(41,200,255,0.08)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "#111827",
+                titleColor: "#9ca3af",
+                bodyColor: "#f0f4ff",
+                borderColor: "rgba(148,163,255,0.15)",
+                borderWidth: 1,
+                callbacks: { label: (ctx) => " $" + ctx.parsed.y.toFixed(2) },
+              },
+            },
+            scales: {
+              x: {
+                grid: { color: "rgba(255,255,255,0.04)" },
+                ticks: {
+                  color: "#6b7a9e",
+                  font: { size: 11 },
+                  maxTicksLimit: 8,
+                },
+              },
+              y: {
+                grid: { color: "rgba(255,255,255,0.04)" },
+                ticks: {
+                  color: "#6b7a9e",
+                  font: { size: 11 },
+                  callback: (v) => "$" + v.toLocaleString(),
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function renderOrdersChart(data) {
+        const ctx = document.getElementById("ordersChart").getContext("2d");
+        if (ordersChartInstance) ordersChartInstance.destroy();
+        ordersChartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.map((d) => d.date),
+            datasets: [
+              {
+                label: "Orders",
+                data: data.map((d) => d.orders || 0),
+                backgroundColor: "rgba(124,92,255,0.5)",
+                borderColor: "rgba(124,92,255,0.8)",
+                borderWidth: 1,
+                borderRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: {
+                  color: "#6b7a9e",
+                  font: { size: 11 },
+                  maxTicksLimit: 7,
+                },
+              },
+              y: {
+                grid: { color: "rgba(255,255,255,0.04)" },
+                ticks: { color: "#6b7a9e", font: { size: 11 } },
+              },
+            },
+          },
+        });
+      }
+
+      function renderProductsTable(products) {
+        const maxRevenue = Math.max(...products.map((p) => p.revenue));
+        const tbody = document.getElementById("productsTable");
+        tbody.innerHTML = products
+          .slice(0, 8)
+          .map(
+            (p) => `
+      <tr>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
+        <td>
+          <div class="bar-cell">
+            ${formatCurrency(p.revenue)}
+            <div class="mini-bar-wrap"><div class="mini-bar" style="width:${((p.revenue / maxRevenue) * 100).toFixed(1)}%"></div></div>
+          </div>
+        </td>
+        <td style="color:var(--muted)">${p.units || "—"}</td>
+      </tr>
+    `,
+          )
+          .join("");
+      }
+
+      // ── AI Chat ───────────────────────────────────────────
+      async function sendChat() {
+        const input = document.getElementById("chatInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = "";
+        addUserMessage(msg);
+
+        const btn = document.getElementById("chatSendBtn");
+        btn.disabled = true;
+
+        // Typing indicator
+        const typingEl = addTypingIndicator();
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/csv/chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ message: msg, uploadId }),
+          });
+          const data = await res.json();
+          typingEl.remove();
+          if (data.success) {
+            addAiMessage(data.reply);
+          } else {
+            addAiMessage("Sorry, I ran into an issue. Please try again.");
+          }
+        } catch (err) {
+          typingEl.remove();
+          addAiMessage("Connection error. Please try again.");
+        }
+
+        btn.disabled = false;
+      }
+
+      function addUserMessage(text) {
+        const el = document.createElement("div");
+        el.className = "msg user";
+        el.textContent = text;
+        document.getElementById("chatMessages").appendChild(el);
+        scrollChat();
+      }
+
+      function addAiMessage(text) {
+        const el = document.createElement("div");
+        el.className = "msg ai";
+        el.innerHTML = `<div class="ai-label">AERVO AI</div>${formatMarkdown(text)}`;
+        document.getElementById("chatMessages").appendChild(el);
+        scrollChat();
+      }
+
+      function addTypingIndicator() {
+        const el = document.createElement("div");
+        el.className = "msg ai";
+        el.innerHTML = `<div class="ai-label">AERVO AI</div><div class="typing"><span></span><span></span><span></span></div>`;
+        document.getElementById("chatMessages").appendChild(el);
+        scrollChat();
+        return el;
+      }
+
+      function scrollChat() {
+        const msgs = document.getElementById("chatMessages");
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      function formatMarkdown(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br>");
+      }
+
+      // ── Goals ─────────────────────────────────────────────
+      let goals = [];
+
+      async function loadGoals() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/goals`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success && data.goals) {
+            goals = data.goals;
+            renderGoals();
+          }
+        } catch (e) {}
+      }
+
+      function renderGoals() {
+        const container = document.getElementById("goalsList");
+        if (!goals.length) {
+          container.innerHTML =
+            '<p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">No goals yet. Add one to track your progress.</p>';
+          return;
+        }
+        container.innerHTML = goals
+          .map((g) => {
+            const progress =
+              g.target_value > 0
+                ? Math.min((g.current_value / g.target_value) * 100, 100)
+                : 0;
+            return `
+        <div class="goal-item">
+          <div class="goal-header">
+            <span class="goal-name">${g.name}</span>
+            <span class="goal-progress-text">${formatGoalValue(g.current_value, g.metric_type)} / ${formatGoalValue(g.target_value, g.metric_type)}</span>
+          </div>
+          <div class="goal-bar-wrap">
+            <div class="goal-bar" style="width:${progress.toFixed(1)}%"></div>
+          </div>
+        </div>
+      `;
+          })
+          .join("");
+      }
+
+      function formatGoalValue(val, type) {
+        if (type === "revenue") return formatCurrency(val);
+        return Number(val).toLocaleString();
+      }
+
+      function openAddGoal() {
+        const name = prompt("Goal name (e.g. Monthly Revenue):");
+        if (!name) return;
+        const target = prompt("Target value (e.g. 10000):");
+        if (!target) return;
+        const metric = confirm(
+          "Is this a revenue goal? OK = Revenue, Cancel = Orders",
+        )
+          ? "revenue"
+          : "orders";
+        createGoal(name, parseFloat(target), metric);
+      }
+
+      async function createGoal(name, targetValue, metricType) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/goals`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              name,
+              target_value: targetValue,
+              metric_type: metricType,
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            await loadGoals();
+            showToast("✓ Goal added", "success");
+          }
+        } catch (e) {
+          showToast("Failed to save goal", "error");
+        }
+      }
+
+      // ── Helpers ───────────────────────────────────────────
+      function formatCurrency(val) {
+        if (!val && val !== 0) return "—";
+        return (
+          "$" +
+          Number(val).toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+
+      function showOverlay(title, msg) {
+        document.getElementById("overlayTitle").textContent = title;
+        document.getElementById("overlayMsg").textContent = msg;
+        document.getElementById("uploadOverlay").classList.add("show");
+      }
+      function hideOverlay() {
+        document.getElementById("uploadOverlay").classList.remove("show");
+      }
+
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

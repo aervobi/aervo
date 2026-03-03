@@ -358,6 +358,11 @@
         background: rgba(124, 92, 255, 0.08);
         box-shadow: 0 0 20px rgba(124, 92, 255, 0.15);
       }
+      #csvCard.selected {
+        border-color: #a855f7;
+        background: rgba(168, 85, 247, 0.08);
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+      }
       .both-icons {
         font-size: 1.4rem;
       }
@@ -665,6 +670,28 @@
               <div class="both-desc">Unified view across Shopify + Square</div>
             </div>
             <div class="both-badge">Pro</div>
+          </div>
+
+          <div
+            class="both-option"
+            onclick="selectPlatform(this, 'csv')"
+            id="csvCard"
+            style="border-color: rgba(124, 92, 255, 0.2); margin-top: -12px"
+          >
+            <div class="both-icons">📊</div>
+            <div class="both-text">
+              <div class="both-name">Upload my own data</div>
+              <div class="both-desc">Use CSV exports from any platform</div>
+            </div>
+            <div
+              class="both-badge"
+              style="
+                background: linear-gradient(90deg, #7c5cff, #a855f7);
+                white-space: nowrap;
+              "
+            >
+              No integration needed
+            </div>
           </div>
 
           <button class="btn-next" onclick="goToStep3()">Continue →</button>
@@ -993,6 +1020,132 @@
             </div>
           </div>
 
+          <!-- CSV upload -->
+          <div id="csvConnect" style="display: none">
+            <div
+              style="
+                background: rgba(124, 92, 255, 0.07);
+                border: 1px solid rgba(124, 92, 255, 0.25);
+                border-radius: 18px;
+                padding: 24px;
+                margin-bottom: 16px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 16px;
+                "
+              >
+                <div
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 14px;
+                    background: rgba(124, 92, 255, 0.15);
+                    border: 1px solid rgba(124, 92, 255, 0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                  "
+                >
+                  📊
+                </div>
+                <div>
+                  <div style="font-size: 1rem; font-weight: 800">
+                    CSV / Data Upload
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--muted)">
+                    Import from any platform
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  font-size: 0.82rem;
+                  color: var(--muted);
+                  margin-bottom: 16px;
+                  line-height: 1.6;
+                "
+              >
+                Upload a CSV export from Shopify, Square, WooCommerce, or any
+                sales platform. Your dashboard will be populated automatically.
+              </div>
+              <div
+                id="csvDropZone"
+                style="
+                  border: 2px dashed rgba(124, 92, 255, 0.4);
+                  border-radius: 14px;
+                  padding: 32px 20px;
+                  text-align: center;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  background: rgba(124, 92, 255, 0.04);
+                  margin-bottom: 12px;
+                "
+                onclick="document.getElementById('csvFileInput').click()"
+                ondragover="
+                  event.preventDefault();
+                  this.style.borderColor = 'rgba(124,92,255,0.8)';
+                  this.style.background = 'rgba(124,92,255,0.1)';
+                "
+                ondragleave="
+                  this.style.borderColor = 'rgba(124,92,255,0.4)';
+                  this.style.background = 'rgba(124,92,255,0.04)';
+                "
+                ondrop="handleCsvDrop(event)"
+              >
+                <div style="font-size: 2rem; margin-bottom: 8px">📂</div>
+                <div
+                  style="
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                    margin-bottom: 4px;
+                  "
+                >
+                  Drop your CSV here
+                </div>
+                <div style="font-size: 0.78rem; color: var(--muted)">
+                  or click to browse &mdash; orders, sales, or transactions CSV
+                </div>
+                <input
+                  type="file"
+                  id="csvFileInput"
+                  accept=".csv,.xlsx,.xls"
+                  style="display: none"
+                  onchange="handleCsvSelect(event)"
+                />
+              </div>
+              <div
+                id="csvFileSelected"
+                style="
+                  display: none;
+                  background: rgba(35, 230, 168, 0.08);
+                  border: 1px solid rgba(35, 230, 168, 0.25);
+                  border-radius: 10px;
+                  padding: 10px 14px;
+                  font-size: 0.82rem;
+                  color: #23e6a8;
+                  margin-bottom: 12px;
+                "
+              >
+                ✓ <span id="csvFileName"></span> ready to upload
+              </div>
+              <div
+                style="
+                  font-size: 0.75rem;
+                  color: var(--muted);
+                  text-align: center;
+                "
+              >
+                You can also skip and upload later from your dashboard
+              </div>
+            </div>
+          </div>
+
           <!-- Skip option -->
           <div style="text-align: center; margin-bottom: 16px">
             <span style="font-size: 0.8rem; color: var(--muted)"
@@ -1161,15 +1314,56 @@
         }
         document.getElementById("error2").style.display = "none";
 
-        // Show correct connect panels
         document.getElementById("shopifyConnect").style.display =
           selectedPlatform === "shopify" ? "block" : "none";
         document.getElementById("squareConnect").style.display =
           selectedPlatform === "square" ? "block" : "none";
         document.getElementById("bothConnect").style.display =
           selectedPlatform === "both" ? "block" : "none";
+        document.getElementById("csvConnect").style.display =
+          selectedPlatform === "csv" ? "block" : "none";
+
+        if (selectedPlatform === "csv") {
+          document.querySelector("#step3 .step-title").innerHTML =
+            "Upload your <span>sales data</span>";
+          document.querySelector("#step3 .step-sub").textContent =
+            "Upload a CSV export from your sales platform. Aervo will analyze it and build your dashboard automatically.";
+          document.getElementById("finishBtn").textContent =
+            "Build my dashboard ⚡";
+        } else {
+          document.querySelector("#step3 .step-title").innerHTML =
+            "Connect your <span>integration</span>";
+          document.querySelector("#step3 .step-sub").textContent =
+            "Aervo uses read-only access — we can never modify your store data. Encrypted and secure.";
+          document.getElementById("finishBtn").textContent =
+            "Launch my dashboard ⚡";
+        }
 
         goToStep(3);
+      }
+
+      let csvFile = null;
+
+      function handleCsvDrop(event) {
+        event.preventDefault();
+        const zone = document.getElementById("csvDropZone");
+        zone.style.borderColor = "rgba(124,92,255,0.4)";
+        zone.style.background = "rgba(124,92,255,0.04)";
+        const file = event.dataTransfer.files[0];
+        if (file) setCsvFile(file);
+      }
+
+      function handleCsvSelect(event) {
+        const file = event.target.files[0];
+        if (file) setCsvFile(file);
+      }
+
+      function setCsvFile(file) {
+        csvFile = file;
+        document.getElementById("csvFileName").textContent = file.name;
+        document.getElementById("csvFileSelected").style.display = "block";
+        document.getElementById("csvDropZone").style.borderColor =
+          "rgba(35,230,168,0.5)";
       }
 
       function connectShopify() {
@@ -1213,6 +1407,21 @@
         const role = document.getElementById("userRole").value;
 
         try {
+          if (selectedPlatform === "csv" && csvFile && !skip) {
+            btn.textContent = "Uploading data…";
+            const formData = new FormData();
+            formData.append("file", csvFile);
+            const uploadRes = await fetch(`${BACKEND_URL}/api/csv/upload`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+              body: formData,
+            });
+            const uploadData = await uploadRes.json();
+            if (!uploadData.success)
+              throw new Error(uploadData.message || "CSV upload failed");
+            btn.textContent = "Finishing up…";
+          }
+
           const res = await fetch(`${BACKEND_URL}/api/onboarding`, {
             method: "POST",
             headers: {
@@ -1233,6 +1442,7 @@
           if (data.success) {
             const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
             user.company_name = businessName;
+            user.platform = selectedPlatform;
             localStorage.setItem("aervo_user", JSON.stringify(user));
             localStorage.removeItem("aervo_onboarding");
 
@@ -1240,12 +1450,25 @@
               shopify: "Shopify",
               square: "Square",
               both: "Shopify + Square",
+              csv: "CSV Upload",
             };
-            document.getElementById("summaryText").innerHTML = `
-        <strong style="color:var(--text)">${businessName}</strong> · ${selectedType}<br>
-        Platform: ${platformMap[selectedPlatform] || "Not connected yet"}<br>
-        ${skip ? '<span style="color:#ffc107">⚠ Integration not connected yet — you can connect from your dashboard</span>' : "✓ Integration connected"}
-      `;
+            const csvNote = csvFile
+              ? "✓ " + csvFile.name + " uploaded"
+              : '<span style="color:#ffc107">⚠ No file uploaded yet — you can upload from your dashboard</span>';
+            document.getElementById("summaryText").innerHTML =
+              "<strong style='color:var(--text)'>" +
+              businessName +
+              "</strong> · " +
+              selectedType +
+              "<br>" +
+              "Platform: " +
+              (platformMap[selectedPlatform] || "Not connected yet") +
+              "<br>" +
+              (skip
+                ? '<span style="color:#ffc107">⚠ Integration not connected yet — you can connect from your dashboard</span>'
+                : selectedPlatform === "csv"
+                  ? csvNote
+                  : "✓ Integration connected");
 
             if (urlName)
               document.getElementById("welcomeName").textContent =
@@ -1263,12 +1486,23 @@
             err.message || "Something went wrong. Please try again.";
           document.getElementById("error3").style.display = "block";
           btn.disabled = false;
-          btn.textContent = "Launch my dashboard ⚡";
+          btn.textContent =
+            selectedPlatform === "csv"
+              ? "Build my dashboard ⚡"
+              : "Launch my dashboard ⚡";
         }
       }
 
       function goToDashboard() {
-        window.location.href = "/dashboard";
+        const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
+        const platform = user.platform || selectedPlatform;
+        if (platform === "csv") {
+          window.location.href = "/dashboard/csv";
+        } else if (platform === "square") {
+          window.location.href = "/dashboard/square";
+        } else {
+          window.location.href = "/dashboard";
+        }
       }
     </script>
   </body>
