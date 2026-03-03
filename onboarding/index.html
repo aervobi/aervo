@@ -1494,14 +1494,12 @@
       }
 
       function goToDashboard() {
-        const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
-        const platform = user.platform || selectedPlatform;
-        if (platform === "csv") {
+        if (selectedPlatform === "csv") {
           window.location.href = "/dashboard/csv";
-        } else if (platform === "square") {
+        } else if (selectedPlatform === "square") {
           window.location.href = "/dashboard/square";
         } else {
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard/shopify";
         }
       }
     </script>
