@@ -678,6 +678,37 @@
       const token = localStorage.getItem("aervo_token");
       if (!token) window.location.href = "/login";
 
+      // ─────────────────────────────────────────────────────────────────────────────
+// SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
+//
+// Find this line near the top of the <script> block:
+//
+//   const token = localStorage.getItem("aervo_token");
+//   if (!token) window.location.href = "/login";
+//
+// Add the block below IMMEDIATELY AFTER those two lines:
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Redirect CSV/Square users to their correct dashboard
+(async () => {
+  try {
+    const res = await fetch("https://api.aervoapp.com/api/user/me", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    const platform = data.user && data.user.platform;
+    if (platform === "csv") {
+      window.location.href = "/dashboard/csv";
+    } else if (platform === "square") {
+      window.location.href = "/dashboard/square";
+    }
+  } catch(e) {}
+})();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// END OF PATCH
+// ─────────────────────────────────────────────────────────────────────────────
+
       let currentView = "overview";
       let userData = null;
       let shopData = null;
