@@ -3,9 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aervo – Login</title>
+    <title>Aervo - Login</title>
     <link rel="icon" type="image/png" href="favicon.png" />
-
     <style>
       body {
         margin: 0;
@@ -18,7 +17,6 @@
         background: #050817;
         color: #d6def8;
       }
-
       .nav {
         position: fixed;
         top: 0;
@@ -34,25 +32,22 @@
         z-index: 10;
         border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       }
-
       .nav-brand {
         font-weight: 600;
         letter-spacing: 4px;
         font-size: 14px;
         color: #8fbfff;
+        text-decoration: none;
       }
-
       .nav-links a {
         margin: 0 12px;
         font-size: 14px;
         text-decoration: none;
         color: #a6b3dd;
       }
-
       .nav-links a:hover {
         color: #dfe7ff;
       }
-
       main {
         min-height: 100vh;
         display: flex;
@@ -60,7 +55,6 @@
         justify-content: center;
         padding-top: 64px;
       }
-
       .card {
         background: radial-gradient(circle at top left, #1a2237, #050817);
         border-radius: 18px;
@@ -70,26 +64,22 @@
         width: 100%;
         max-width: 380px;
       }
-
       .card h1 {
         margin: 0 0 4px;
         font-size: 24px;
         color: #e5ecff;
       }
-
       .card p {
         margin: 0 0 24px;
         font-size: 14px;
         color: #9ca7d6;
       }
-
       label {
         display: block;
         font-size: 13px;
         margin-bottom: 6px;
         color: #c5cff6;
       }
-
       input {
         width: 100%;
         padding: 10px 11px;
@@ -101,14 +91,12 @@
         font-size: 14px;
         box-sizing: border-box;
       }
-
       input:focus {
         outline: none;
         border-color: #6e9bff;
         box-shadow: 0 0 0 1px rgba(110, 155, 255, 0.5);
       }
-
-      button {
+      button[type="submit"] {
         width: 100%;
         padding: 11px 0;
         border-radius: 10px;
@@ -123,69 +111,75 @@
           0 0 26px rgba(80, 130, 255, 0.3);
         transition: all 0.2s ease;
       }
-
-      button:hover {
+      button[type="submit"]:hover {
         background: #222c48;
         transform: translateY(-1px);
         box-shadow:
           0 0 16px rgba(137, 180, 255, 0.8),
           0 0 40px rgba(80, 130, 255, 0.6);
       }
-
       .helper {
         font-size: 12px;
         color: #8b94c0;
         margin-top: 10px;
         line-height: 1.5;
       }
-
-      .helper code {
-        background: rgba(255, 255, 255, 0.03);
-        padding: 2px 6px;
-        border-radius: 6px;
-        font-size: 11px;
-      }
-
       .error {
         margin-top: 8px;
         font-size: 13px;
         color: #ff7b7b;
         min-height: 18px;
       }
-
-      /* NEW: forgot-password link */
       .forgot-row {
         display: flex;
         justify-content: flex-end;
         margin-top: -4px;
         margin-bottom: 14px;
       }
-
       .forgot-link {
         font-size: 12px;
         color: #a6b3dd;
         text-decoration: none;
       }
-
       .forgot-link:hover {
         color: #dfe7ff;
         text-decoration: underline;
       }
-
+      .verified-banner {
+        background: rgba(35, 230, 168, 0.08);
+        border: 1px solid rgba(35, 230, 168, 0.3);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        color: #23e6a8;
+        line-height: 1.5;
+      }
+      .verified-icon {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        background: rgba(35, 230, 168, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
       @media (max-width: 768px) {
         .nav {
           padding: 0 16px;
           height: 56px;
         }
-
         .nav-links {
           display: none;
         }
-
         main {
           padding: 80px 16px 24px;
         }
-
         .card {
           padding: 24px 20px 20px;
         }
@@ -198,20 +192,27 @@
       style="display: none; margin: 16px auto 0; max-width: 520px"
     ></div>
     <header class="nav">
-      <div class="nav-left">
-        <a href="/" class="nav-brand">← Back to Aervo</a>
-      </div>
+      <a href="/" class="nav-brand">Back to Aervo</a>
       <nav class="nav-links">
         <a href="/#product">Product</a>
         <a href="/pricing">Pricing</a>
       </nav>
-      <div class="nav-right"></div>
+      <div></div>
     </header>
 
     <main>
       <div class="card">
         <h1>Sign in</h1>
         <p>Use your Aervo login to access the dashboard.</p>
+
+        <!-- Shown when user arrives after clicking verification email -->
+        <div class="verified-banner" id="verifiedBanner" style="display: none">
+          <div class="verified-icon">&#10003;</div>
+          <div>
+            <strong>Email verified!</strong><br />
+            Your account is confirmed. Please log in below.
+          </div>
+        </div>
 
         <!-- Google Sign In -->
         <button
@@ -243,6 +244,7 @@
           />
           Continue with Google
         </button>
+
         <div
           style="
             display: flex;
@@ -267,10 +269,9 @@
           <input
             id="email"
             type="email"
-            placeholder="demo@aervo.com"
+            placeholder="you@business.com"
             required
           />
-
           <label for="password">Password</label>
           <input
             id="password"
@@ -278,25 +279,30 @@
             placeholder="••••••••"
             required
           />
-
-          <!-- NEW: forgot password link -->
           <div class="forgot-row">
-            <a href="/forgot-password" class="forgot-link">
-              Forgot your password?
-            </a>
+            <a href="/forgot-password" class="forgot-link"
+              >Forgot your password?</a
+            >
           </div>
-
           <button type="submit">Login</button>
-
           <div class="error" id="error"></div>
-
-          <div class="helper"></div>
+          <div class="helper">
+            Don't have an account?
+            <a href="/signup" style="color: #93c5fd; text-decoration: none"
+              >Sign up free</a
+            >
+          </div>
         </form>
       </div>
     </main>
 
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
+
+      // Show verified banner if coming from email verification link
+      if (new URLSearchParams(window.location.search).get("verified") === "1") {
+        document.getElementById("verifiedBanner").style.display = "flex";
+      }
 
       document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("login-form");
@@ -305,57 +311,34 @@
         const errorEl = document.getElementById("error");
         const submitBtn = form.querySelector('button[type="submit"]');
         const banner = document.getElementById("authMsg");
-
         let isSubmitting = false;
-
         let authMsgTimer = null;
 
-        function showAuthMsg(type, text, hint = "") {
+        function showAuthMsg(type, text, hint) {
           if (!banner) return;
-
-          // Clear previous timer
           if (authMsgTimer) {
             clearTimeout(authMsgTimer);
             authMsgTimer = null;
           }
-
-          banner.style.display = "block";
-          banner.style.position = "fixed";
-          banner.style.top = "78px";
-          banner.style.left = "50%";
-          banner.style.transform = "translateX(-50%)";
-          banner.style.zIndex = "99999";
-          banner.style.maxWidth = "520px";
-          banner.style.width = "calc(100% - 32px)";
-          banner.style.padding = "12px 14px";
-          banner.style.borderRadius = "14px";
-          banner.style.fontSize = "13px";
-          banner.style.background = "rgba(15,23,42,0.92)";
-          banner.style.color = "#e5ecff";
-          banner.style.boxShadow = "0 16px 50px rgba(0,0,0,0.55)";
-          banner.style.border =
-            type === "error"
-              ? "1px solid rgba(248,113,113,0.55)"
-              : "1px solid rgba(96,165,250,0.55)";
-
-          banner.innerHTML = `
-    <div style="font-weight:600; margin-bottom:${hint ? "6px" : "0"};">
-      ${text}
-    </div>
-    ${
-      hint
-        ? `<div style="font-size:12px; color:#9ca3af; line-height:1.5;">
-             ${hint}
-           </div>`
-        : ""
-    }
-  `;
-
-          // Auto-dismiss
+          banner.style.cssText =
+            "display:block;position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:99999;max-width:520px;width:calc(100% - 32px);padding:12px 14px;border-radius:14px;font-size:13px;background:rgba(15,23,42,0.92);color:#e5ecff;box-shadow:0 16px 50px rgba(0,0,0,0.55);border:1px solid " +
+            (type === "error"
+              ? "rgba(248,113,113,0.55)"
+              : "rgba(96,165,250,0.55)");
+          banner.innerHTML =
+            "<div style='font-weight:600;margin-bottom:" +
+            (hint ? "6px" : "0") +
+            "'>" +
+            text +
+            "</div>" +
+            (hint
+              ? "<div style='font-size:12px;color:#9ca3af;line-height:1.5'>" +
+                hint +
+                "</div>"
+              : "");
           authMsgTimer = setTimeout(
             () => {
               banner.style.display = "none";
-              banner.innerHTML = "";
             },
             type === "error" ? 9000 : 3500,
           );
@@ -363,16 +346,14 @@
 
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
-
           if (isSubmitting) return;
           isSubmitting = true;
           submitBtn.disabled = true;
-
           errorEl.textContent = "";
           banner.style.display = "none";
 
           try {
-            const response = await fetch(`${BACKEND_URL}/api/login`, {
+            const response = await fetch(BACKEND_URL + "/api/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -383,19 +364,15 @@
 
             const data = await response.json().catch(() => ({}));
 
-            // 🚨 Rate limit
             if (response.status === 429) {
               showAuthMsg(
                 "error",
-                data.message ||
-                  "Aervo Shield is on. Too many attempts from this device.",
-                data.hint ||
-                  "Wait a minute and try again. If you're stuck, use “Forgot password.”",
+                data.message || "Too many attempts.",
+                data.hint || "Wait a moment and try again.",
               );
               return;
             }
 
-            // ❌ Invalid login
             if (!response.ok || !data.success) {
               const msg = data.message || "Invalid email or password.";
               showAuthMsg("error", msg);
@@ -403,14 +380,32 @@
               return;
             }
 
-            // ✅ Success
-            showAuthMsg("success", "Welcome back 👋 Redirecting…");
-
+            // Success — save token and route based on platform
             localStorage.setItem("aervo_token", data.token);
             localStorage.setItem("aervo_user", JSON.stringify(data.user));
+            showAuthMsg("success", "Welcome back! Redirecting...");
 
-            setTimeout(() => {
-              window.location.href = "/dashboard";
+            setTimeout(async () => {
+              try {
+                const meRes = await fetch(BACKEND_URL + "/api/user/me", {
+                  headers: { Authorization: "Bearer " + data.token },
+                });
+                const meData = await meRes.json();
+                const platform = meData.user && meData.user.platform;
+                const onboarded = meData.user && meData.user.onboarded;
+
+                if (!onboarded) {
+                  window.location.href = "/onboarding";
+                } else if (platform === "csv") {
+                  window.location.href = "/dashboard/csv";
+                } else if (platform === "square") {
+                  window.location.href = "/dashboard/square";
+                } else {
+                  window.location.href = "/dashboard/shopify";
+                }
+              } catch (err) {
+                window.location.href = "/dashboard/shopify";
+              }
             }, 600);
           } catch (err) {
             console.error(err);
@@ -422,6 +417,7 @@
           }
         });
       });
+
       async function signInWithGoogle() {
         try {
           const res = await fetch("https://api.aervoapp.com/auth/google");
