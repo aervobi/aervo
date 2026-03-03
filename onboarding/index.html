@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Aervo – Welcome</title>
+    <title>Aervo – Get Started</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <style>
       :root {
@@ -38,8 +38,6 @@
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
-
-      /* Aurora */
       body::before {
         content: "";
         position: fixed;
@@ -64,8 +62,6 @@
           );
         filter: blur(10px);
       }
-
-      /* Grid texture */
       body::after {
         content: "";
         position: fixed;
@@ -78,8 +74,6 @@
         background-size: 48px 48px;
         opacity: 0.06;
       }
-
-      /* Layout */
       .page {
         position: relative;
         z-index: 1;
@@ -90,8 +84,6 @@
         justify-content: center;
         padding: 40px 20px;
       }
-
-      /* Logo */
       .logo {
         display: flex;
         align-items: center;
@@ -116,8 +108,6 @@
         letter-spacing: 0.22em;
         text-transform: uppercase;
       }
-
-      /* Card */
       .card {
         width: 100%;
         max-width: 520px;
@@ -132,7 +122,6 @@
         box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
         animation: fadeUp 0.5s ease 0.1s both;
       }
-
       @keyframes fadeDown {
         from {
           opacity: 0;
@@ -154,7 +143,7 @@
         }
       }
 
-      /* Steps */
+      /* Steps indicator */
       .steps {
         display: flex;
         align-items: center;
@@ -204,7 +193,6 @@
         display: block;
         animation: fadeUp 0.3s ease both;
       }
-
       .step-kicker {
         font-size: 0.75rem;
         font-weight: 800;
@@ -272,13 +260,108 @@
         background: #0d1124;
         color: var(--text);
       }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* Password field with toggle */
+      .pw-wrap {
+        position: relative;
+      }
+      .pw-wrap input {
+        padding-right: 44px;
+      }
+      .pw-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: rgba(215, 220, 240, 0.5);
+        padding: 4px;
+      }
+      .pw-toggle:hover {
+        color: rgba(215, 220, 240, 0.9);
+      }
+
+      /* Password strength */
+      .strength-bar {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2px;
+        margin-top: 6px;
+        overflow: hidden;
+      }
+      .strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 2px;
+        transition:
+          width 0.2s,
+          background 0.2s;
+      }
+      .hint {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 4px;
+        min-height: 16px;
+      }
+      .hint.good {
+        color: #bbf7d0;
+      }
+      .hint.bad {
+        color: #fecaca;
+      }
+
+      /* Google button */
+      .btn-google {
+        width: 100%;
+        padding: 11px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: #e5ecff;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        transition: background 0.2s;
+      }
+      .btn-google:hover {
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      /* Divider */
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .divider-line {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .divider-text {
+        font-size: 0.75rem;
+        color: rgba(139, 148, 192, 1);
+      }
 
       /* Platform cards */
       .platform-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
-        margin-bottom: 24px;
+        margin-bottom: 14px;
       }
       .platform-card {
         border: 2px solid rgba(255, 255, 255, 0.08);
@@ -336,8 +419,8 @@
         background: linear-gradient(135deg, var(--a3), var(--a1));
       }
 
-      /* Both option */
-      .both-option {
+      /* Both / CSV option */
+      .wide-option {
         border: 2px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
         padding: 16px 20px;
@@ -347,37 +430,37 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        margin-bottom: 24px;
+        margin-bottom: 12px;
       }
-      .both-option:hover {
+      .wide-option:hover {
         border-color: rgba(255, 255, 255, 0.18);
         background: rgba(255, 255, 255, 0.06);
       }
-      .both-option.selected {
+      .wide-option.selected {
         border-color: var(--a2);
         background: rgba(124, 92, 255, 0.08);
         box-shadow: 0 0 20px rgba(124, 92, 255, 0.15);
       }
-      #csvCard.selected {
+      #csvOption.selected {
         border-color: #a855f7;
         background: rgba(168, 85, 247, 0.08);
         box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
       }
-      .both-icons {
+      .wide-icons {
         font-size: 1.4rem;
       }
-      .both-text {
+      .wide-text {
         flex: 1;
       }
-      .both-name {
+      .wide-name {
         font-size: 0.9rem;
         font-weight: 800;
       }
-      .both-desc {
+      .wide-desc {
         font-size: 0.75rem;
         color: var(--muted);
       }
-      .both-badge {
+      .wide-badge {
         font-size: 0.68rem;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -386,9 +469,10 @@
         padding: 3px 8px;
         border-radius: var(--r-pill);
         text-transform: uppercase;
+        white-space: nowrap;
       }
 
-      /* Business type */
+      /* Business type grid */
       .type-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -421,6 +505,94 @@
       .type-name {
         font-size: 0.85rem;
         font-weight: 700;
+      }
+
+      /* CSV drop zone */
+      .csv-drop {
+        border: 2px dashed rgba(124, 92, 255, 0.4);
+        border-radius: 14px;
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(124, 92, 255, 0.04);
+        margin-bottom: 12px;
+      }
+      .csv-drop:hover,
+      .csv-drop.dragging {
+        border-color: rgba(124, 92, 255, 0.8);
+        background: rgba(124, 92, 255, 0.1);
+      }
+      .csv-drop-icon {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+      .csv-drop-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .csv-drop-sub {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .csv-selected {
+        display: none;
+        background: rgba(35, 230, 168, 0.08);
+        border: 1px solid rgba(35, 230, 168, 0.25);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.82rem;
+        color: #23e6a8;
+        margin-bottom: 12px;
+      }
+
+      /* Connect boxes */
+      .connect-box {
+        border-radius: 18px;
+        padding: 22px;
+        margin-bottom: 14px;
+      }
+      .connect-box-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .connect-box-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+      }
+      .connect-box-title {
+        font-size: 0.95rem;
+        font-weight: 800;
+      }
+      .connect-box-sub {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .connect-status {
+        margin-left: auto;
+        display: none;
+        background: rgba(35, 230, 168, 0.12);
+        border: 1px solid rgba(35, 230, 168, 0.3);
+        color: #23e6a8;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+      .connect-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.6;
       }
 
       /* Buttons */
@@ -468,8 +640,50 @@
       .btn-back:hover {
         background: rgba(255, 255, 255, 0.07);
       }
+      .btn-connect-shopify {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(90deg, #96bf48, #5a8a1f);
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: transform 0.15s;
+      }
+      .btn-connect-shopify:hover {
+        transform: translateY(-2px);
+      }
+      .btn-connect-square {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(90deg, #23e6a8, #1aad80);
+        color: #050816;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: transform 0.15s;
+      }
+      .btn-connect-square:hover {
+        transform: translateY(-2px);
+      }
 
-      /* Success */
+      /* Error */
+      .error-msg {
+        font-size: 0.82rem;
+        color: #ff6464;
+        background: rgba(255, 100, 100, 0.08);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-top: 12px;
+        display: none;
+      }
+
+      /* Success / verify screen */
       .success-icon {
         width: 64px;
         height: 64px;
@@ -494,15 +708,15 @@
         }
       }
 
-      .error-msg {
-        font-size: 0.82rem;
-        color: #ff6464;
-        background: rgba(255, 100, 100, 0.08);
-        border: 1px solid rgba(255, 100, 100, 0.2);
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-top: 12px;
-        display: none;
+      .helper {
+        margin-top: 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: center;
+      }
+      .helper a {
+        color: #93c5fd;
+        text-decoration: none;
       }
 
       @media (max-width: 560px) {
@@ -518,6 +732,9 @@
         .step-title {
           font-size: 1.3rem;
         }
+        .field-row {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -529,37 +746,100 @@
         <div class="logo-name">AERVO</div>
       </div>
 
-      <!-- Card -->
       <div class="card">
-        <!-- Progress steps -->
+        <!-- Progress dots -->
         <div class="steps">
           <div class="step-dot active" id="dot1">1</div>
           <div class="step-line" id="line1"></div>
           <div class="step-dot" id="dot2">2</div>
           <div class="step-line" id="line2"></div>
           <div class="step-dot" id="dot3">3</div>
+          <div class="step-line" id="line3"></div>
+          <div class="step-dot" id="dot4">4</div>
         </div>
 
-        <!-- Step 1 — Business info -->
+        <!-- ── STEP 1: Create Account ── -->
         <div class="step-panel active" id="step1">
-          <div class="step-kicker">Step 1 of 3</div>
-          <div class="step-title">Let's set up your <span>business</span></div>
+          <div class="step-kicker">Step 1 of 4</div>
+          <div class="step-title">Create your <span>account</span></div>
           <div class="step-sub">
-            Tell us a bit about your business so we can personalize your Aervo
-            dashboard.
+            Get started with Aervo — free forever, no credit card needed.
           </div>
+
+          <button class="btn-google" onclick="signInWithGoogle()">
+            <img
+              src="https://www.google.com/favicon.ico"
+              width="18"
+              height="18"
+            />
+            Continue with Google
+          </button>
+          <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">or sign up with email</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <div class="field">
+            <label>Work email</label>
+            <input id="s1Email" type="email" placeholder="you@business.com" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Password</label>
+              <div class="pw-wrap">
+                <input
+                  id="s1Password"
+                  type="password"
+                  placeholder="Create a password"
+                />
+                <button type="button" class="pw-toggle" id="togglePw1">
+                  👁
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Confirm password</label>
+              <div class="pw-wrap">
+                <input
+                  id="s1Confirm"
+                  type="password"
+                  placeholder="Re-enter password"
+                />
+                <button type="button" class="pw-toggle" id="togglePw2">
+                  👁
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <div class="hint" id="strengthHint"></div>
+          <div class="hint" id="matchHint"></div>
+
+          <button class="btn-next" style="margin-top: 16px" onclick="goStep1()">
+            Continue →
+          </button>
+          <div class="error-msg" id="err1"></div>
+          <div class="helper">
+            Already have an account? <a href="/login">Log in</a>
+          </div>
+        </div>
+
+        <!-- ── STEP 2: Business Info ── -->
+        <div class="step-panel" id="step2">
+          <div class="step-kicker">Step 2 of 4</div>
+          <div class="step-title">Tell us about your <span>business</span></div>
+          <div class="step-sub">Help us personalize your Aervo dashboard.</div>
 
           <div class="field">
             <label>Business name</label>
-            <input
-              type="text"
-              id="businessName"
-              placeholder="e.g. Haven & Co."
-            />
+            <input id="s2BusinessName" placeholder="e.g. Haven &amp; Co." />
           </div>
           <div class="field">
             <label>Your role</label>
-            <select id="userRole">
+            <select id="s2Role">
               <option value="">Select your role…</option>
               <option value="Owner">Owner</option>
               <option value="Manager">Manager</option>
@@ -570,70 +850,51 @@
           <div class="field">
             <label>Business type</label>
             <div class="type-grid">
-              <div
-                class="type-card"
-                onclick="selectType(this, 'Retail')"
-                data-type="Retail"
-              >
+              <div class="type-card" onclick="selectType(this, 'Retail')">
                 <div class="type-icon">🛍️</div>
                 <div class="type-name">Retail</div>
               </div>
-              <div
-                class="type-card"
-                onclick="selectType(this, 'Restaurant')"
-                data-type="Restaurant"
-              >
+              <div class="type-card" onclick="selectType(this, 'Restaurant')">
                 <div class="type-icon">🍽️</div>
                 <div class="type-name">Restaurant</div>
               </div>
               <div
                 class="type-card"
                 onclick="selectType(this, 'Salon & Beauty')"
-                data-type="Salon & Beauty"
               >
                 <div class="type-icon">✂️</div>
-                <div class="type-name">Salon & Beauty</div>
+                <div class="type-name">Salon &amp; Beauty</div>
               </div>
-              <div
-                class="type-card"
-                onclick="selectType(this, 'E-commerce')"
-                data-type="E-commerce"
-              >
+              <div class="type-card" onclick="selectType(this, 'E-commerce')">
                 <div class="type-icon">💻</div>
                 <div class="type-name">E-commerce</div>
               </div>
               <div
                 class="type-card"
                 onclick="selectType(this, 'Health & Wellness')"
-                data-type="Health & Wellness"
               >
                 <div class="type-icon">🏃</div>
-                <div class="type-name">Health & Wellness</div>
+                <div class="type-name">Health &amp; Wellness</div>
               </div>
-              <div
-                class="type-card"
-                onclick="selectType(this, 'Other')"
-                data-type="Other"
-              >
+              <div class="type-card" onclick="selectType(this, 'Other')">
                 <div class="type-icon">✦</div>
                 <div class="type-name">Other</div>
               </div>
             </div>
           </div>
 
-          <button class="btn-next" onclick="goToStep2()">Continue →</button>
-          <div class="error-msg" id="error1">
-            Please fill in your business name and select a type.
-          </div>
+          <button class="btn-next" onclick="goStep2()">Continue →</button>
+          <button class="btn-back" onclick="goToStep(1)">← Back</button>
+          <div class="error-msg" id="err2"></div>
         </div>
 
-        <!-- Step 2 — Platform -->
-        <div class="step-panel" id="step2">
-          <div class="step-kicker">Step 2 of 3</div>
+        <!-- ── STEP 3: Platform ── -->
+        <div class="step-panel" id="step3">
+          <div class="step-kicker">Step 3 of 4</div>
           <div class="step-title">Which platform do <span>you use?</span></div>
           <div class="step-sub">
-            Aervo connects to your existing tools. Pick the platform your
-            business runs on.
+            Aervo connects to your existing tools. Pick how you run your
+            business.
           </div>
 
           <div class="platform-grid">
@@ -644,7 +905,7 @@
             >
               <div class="platform-icon">🛍️</div>
               <div class="platform-name">Shopify</div>
-              <div class="platform-desc">Online store & e-commerce</div>
+              <div class="platform-desc">Online store &amp; e-commerce</div>
               <div class="platform-check">✓</div>
             </div>
             <div
@@ -654,151 +915,90 @@
             >
               <div class="platform-icon">⬛</div>
               <div class="platform-name">Square</div>
-              <div class="platform-desc">POS, appointments & in-person</div>
+              <div class="platform-desc">POS, appointments &amp; in-person</div>
               <div class="platform-check">✓</div>
             </div>
           </div>
 
           <div
-            class="both-option"
+            class="wide-option"
             onclick="selectPlatform(this, 'both')"
             id="bothCard"
           >
-            <div class="both-icons">🛍️⬛</div>
-            <div class="both-text">
-              <div class="both-name">Both platforms</div>
-              <div class="both-desc">Unified view across Shopify + Square</div>
+            <div class="wide-icons">🛍️⬛</div>
+            <div class="wide-text">
+              <div class="wide-name">Both platforms</div>
+              <div class="wide-desc">Unified view across Shopify + Square</div>
             </div>
-            <div class="both-badge">Pro</div>
+            <div class="wide-badge">Pro</div>
           </div>
 
           <div
-            class="both-option"
+            class="wide-option"
             onclick="selectPlatform(this, 'csv')"
-            id="csvCard"
-            style="border-color: rgba(124, 92, 255, 0.2); margin-top: -12px"
+            id="csvOption"
+            style="border-color: rgba(124, 92, 255, 0.2)"
           >
-            <div class="both-icons">📊</div>
-            <div class="both-text">
-              <div class="both-name">Upload my own data</div>
-              <div class="both-desc">Use CSV exports from any platform</div>
+            <div class="wide-icons">📊</div>
+            <div class="wide-text">
+              <div class="wide-name">Upload my own data</div>
+              <div class="wide-desc">Use CSV exports from any platform</div>
             </div>
             <div
-              class="both-badge"
-              style="
-                background: linear-gradient(90deg, #7c5cff, #a855f7);
-                white-space: nowrap;
-              "
+              class="wide-badge"
+              style="background: linear-gradient(90deg, var(--a2), #a855f7)"
             >
               No integration needed
             </div>
           </div>
 
-          <button class="btn-next" onclick="goToStep3()">Continue →</button>
-          <button class="btn-back" onclick="goToStep(1)">← Back</button>
-          <div class="error-msg" id="error2">
-            Please select a platform to continue.
-          </div>
+          <button class="btn-next" onclick="goStep3()">Continue →</button>
+          <button class="btn-back" onclick="goToStep(2)">← Back</button>
+          <div class="error-msg" id="err3"></div>
         </div>
 
-        <!-- Step 3 — Connect Integration -->
-        <div class="step-panel" id="step3">
-          <div class="step-kicker">Step 3 of 3</div>
-          <div class="step-title">Connect your <span>integration</span></div>
-          <div class="step-sub">
+        <!-- ── STEP 4: Connect / Upload ── -->
+        <div class="step-panel" id="step4">
+          <div class="step-kicker">Step 4 of 4</div>
+          <div class="step-title" id="step4Title">
+            Connect your <span>integration</span>
+          </div>
+          <div class="step-sub" id="step4Sub">
             Aervo uses read-only access — we can never modify your store data.
-            Encrypted and secure.
           </div>
 
           <!-- Shopify connect -->
-          <div id="shopifyConnect">
+          <div id="shopifyConnect" style="display: none">
             <div
+              class="connect-box"
               style="
                 background: rgba(150, 191, 72, 0.07);
                 border: 1px solid rgba(150, 191, 72, 0.2);
-                border-radius: 18px;
-                padding: 24px;
-                margin-bottom: 16px;
               "
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 14px;
-                  margin-bottom: 16px;
-                "
-              >
+              <div class="connect-box-header">
                 <div
+                  class="connect-box-icon"
                   style="
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 14px;
                     background: rgba(150, 191, 72, 0.15);
                     border: 1px solid rgba(150, 191, 72, 0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 24px;
                   "
                 >
                   🛍️
                 </div>
                 <div>
-                  <div style="font-size: 1rem; font-weight: 800">Shopify</div>
-                  <div style="font-size: 0.8rem; color: var(--muted)">
-                    Online store & e-commerce platform
+                  <div class="connect-box-title">Shopify</div>
+                  <div class="connect-box-sub">
+                    Online store &amp; e-commerce
                   </div>
                 </div>
-                <div
-                  id="shopifyStatus"
-                  style="
-                    margin-left: auto;
-                    display: none;
-                    background: rgba(35, 230, 168, 0.12);
-                    border: 1px solid rgba(35, 230, 168, 0.3);
-                    color: #23e6a8;
-                    font-size: 0.75rem;
-                    font-weight: 800;
-                    padding: 4px 12px;
-                    border-radius: 999px;
-                  "
-                >
-                  ✓ Connected
-                </div>
+                <div class="connect-status" id="shopifyStatus">✓ Connected</div>
               </div>
-              <div
-                style="
-                  font-size: 0.82rem;
-                  color: var(--muted);
-                  margin-bottom: 16px;
-                  line-height: 1.6;
-                "
-              >
-                You'll be redirected to Shopify to authorize Aervo. This grants
-                read-only access to your orders, products, and customers.
+              <div class="connect-desc">
+                You'll be redirected to Shopify to authorize Aervo. Read-only
+                access to orders, products, and customers.
               </div>
-              <button
-                onclick="connectShopify()"
-                id="shopifyConnectBtn"
-                style="
-                  width: 100%;
-                  padding: 13px;
-                  border-radius: 12px;
-                  border: none;
-                  cursor: pointer;
-                  background: linear-gradient(90deg, #96bf48, #5a8a1f);
-                  color: #fff;
-                  font-size: 0.95rem;
-                  font-weight: 800;
-                  transition:
-                    transform 0.15s,
-                    box-shadow 0.15s;
-                  box-shadow: 0 0 20px rgba(150, 191, 72, 0.3);
-                "
-                onmouseover="this.style.transform = 'translateY(-2px)'"
-                onmouseout="this.style.transform = ''"
-              >
+              <button class="btn-connect-shopify" onclick="connectShopify()">
                 Connect Shopify →
               </button>
             </div>
@@ -807,92 +1007,35 @@
           <!-- Square connect -->
           <div id="squareConnect" style="display: none">
             <div
+              class="connect-box"
               style="
                 background: rgba(35, 230, 168, 0.06);
                 border: 1px solid rgba(35, 230, 168, 0.2);
-                border-radius: 18px;
-                padding: 24px;
-                margin-bottom: 16px;
               "
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 14px;
-                  margin-bottom: 16px;
-                "
-              >
+              <div class="connect-box-header">
                 <div
+                  class="connect-box-icon"
                   style="
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 14px;
                     background: rgba(35, 230, 168, 0.1);
                     border: 1px solid rgba(35, 230, 168, 0.25);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 24px;
                   "
                 >
                   ⬛
                 </div>
                 <div>
-                  <div style="font-size: 1rem; font-weight: 800">Square</div>
-                  <div style="font-size: 0.8rem; color: var(--muted)">
-                    POS, appointments & in-person sales
+                  <div class="connect-box-title">Square</div>
+                  <div class="connect-box-sub">
+                    POS, appointments &amp; in-person sales
                   </div>
                 </div>
-                <div
-                  id="squareStatus"
-                  style="
-                    margin-left: auto;
-                    display: none;
-                    background: rgba(35, 230, 168, 0.12);
-                    border: 1px solid rgba(35, 230, 168, 0.3);
-                    color: #23e6a8;
-                    font-size: 0.75rem;
-                    font-weight: 800;
-                    padding: 4px 12px;
-                    border-radius: 999px;
-                  "
-                >
-                  ✓ Connected
-                </div>
+                <div class="connect-status" id="squareStatus">✓ Connected</div>
               </div>
-              <div
-                style="
-                  font-size: 0.82rem;
-                  color: var(--muted);
-                  margin-bottom: 16px;
-                  line-height: 1.6;
-                "
-              >
-                You'll be redirected to Square to authorize Aervo. This grants
-                read-only access to your sales, appointments, and customer data.
+              <div class="connect-desc">
+                You'll be redirected to Square to authorize Aervo. Read-only
+                access to sales, appointments, and customers.
               </div>
-              <button
-                onclick="connectSquare()"
-                id="squareConnectBtn"
-                style="
-                  width: 100%;
-                  padding: 13px;
-                  border-radius: 12px;
-                  border: none;
-                  cursor: pointer;
-                  background: linear-gradient(90deg, #23e6a8, #1aad80);
-                  color: #050816;
-                  font-size: 0.95rem;
-                  font-weight: 800;
-                  transition:
-                    transform 0.15s,
-                    box-shadow 0.15s;
-                  box-shadow: 0 0 20px rgba(35, 230, 168, 0.3);
-                "
-                onmouseover="this.style.transform = 'translateY(-2px)'"
-                onmouseout="this.style.transform = ''"
-              >
+              <button class="btn-connect-square" onclick="connectSquare()">
                 Connect Square →
               </button>
             </div>
@@ -901,120 +1044,44 @@
           <!-- Both connect -->
           <div id="bothConnect" style="display: none">
             <div
+              class="connect-box"
               style="
                 background: rgba(150, 191, 72, 0.07);
                 border: 1px solid rgba(150, 191, 72, 0.2);
-                border-radius: 18px;
-                padding: 24px;
-                margin-bottom: 12px;
               "
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 14px;
-                  margin-bottom: 12px;
-                "
-              >
-                <div style="font-size: 24px">🛍️</div>
+              <div class="connect-box-header">
+                <div style="font-size: 22px">🛍️</div>
                 <div style="flex: 1">
-                  <div style="font-size: 0.95rem; font-weight: 800">
-                    Shopify
-                  </div>
-                  <div style="font-size: 0.78rem; color: var(--muted)">
-                    Online store & e-commerce
-                  </div>
+                  <div class="connect-box-title">Shopify</div>
+                  <div class="connect-box-sub">Online store</div>
                 </div>
-                <div
-                  id="shopifyStatusBoth"
-                  style="
-                    display: none;
-                    background: rgba(35, 230, 168, 0.12);
-                    border: 1px solid rgba(35, 230, 168, 0.3);
-                    color: #23e6a8;
-                    font-size: 0.72rem;
-                    font-weight: 800;
-                    padding: 3px 10px;
-                    border-radius: 999px;
-                  "
-                >
+                <div class="connect-status" id="shopifyStatusBoth">
                   ✓ Connected
                 </div>
               </div>
-              <button
-                onclick="connectShopify()"
-                id="shopifyConnectBtnBoth"
-                style="
-                  width: 100%;
-                  padding: 12px;
-                  border-radius: 12px;
-                  border: none;
-                  cursor: pointer;
-                  background: linear-gradient(90deg, #96bf48, #5a8a1f);
-                  color: #fff;
-                  font-size: 0.9rem;
-                  font-weight: 800;
-                "
-              >
+              <button class="btn-connect-shopify" onclick="connectShopify()">
                 Connect Shopify →
               </button>
             </div>
             <div
+              class="connect-box"
               style="
                 background: rgba(35, 230, 168, 0.06);
                 border: 1px solid rgba(35, 230, 168, 0.2);
-                border-radius: 18px;
-                padding: 24px;
-                margin-bottom: 16px;
               "
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 14px;
-                  margin-bottom: 12px;
-                "
-              >
-                <div style="font-size: 24px">⬛</div>
+              <div class="connect-box-header">
+                <div style="font-size: 22px">⬛</div>
                 <div style="flex: 1">
-                  <div style="font-size: 0.95rem; font-weight: 800">Square</div>
-                  <div style="font-size: 0.78rem; color: var(--muted)">
-                    POS & appointments
-                  </div>
+                  <div class="connect-box-title">Square</div>
+                  <div class="connect-box-sub">POS &amp; appointments</div>
                 </div>
-                <div
-                  id="squareStatusBoth"
-                  style="
-                    display: none;
-                    background: rgba(35, 230, 168, 0.12);
-                    border: 1px solid rgba(35, 230, 168, 0.3);
-                    color: #23e6a8;
-                    font-size: 0.72rem;
-                    font-weight: 800;
-                    padding: 3px 10px;
-                    border-radius: 999px;
-                  "
-                >
+                <div class="connect-status" id="squareStatusBoth">
                   ✓ Connected
                 </div>
               </div>
-              <button
-                onclick="connectSquare()"
-                id="squareConnectBtnBoth"
-                style="
-                  width: 100%;
-                  padding: 12px;
-                  border-radius: 12px;
-                  border: none;
-                  cursor: pointer;
-                  background: linear-gradient(90deg, #23e6a8, #1aad80);
-                  color: #050816;
-                  font-size: 0.9rem;
-                  font-weight: 800;
-                "
-              >
+              <button class="btn-connect-square" onclick="connectSquare()">
                 Connect Square →
               </button>
             </div>
@@ -1023,94 +1090,42 @@
           <!-- CSV upload -->
           <div id="csvConnect" style="display: none">
             <div
+              class="connect-box"
               style="
                 background: rgba(124, 92, 255, 0.07);
                 border: 1px solid rgba(124, 92, 255, 0.25);
-                border-radius: 18px;
-                padding: 24px;
-                margin-bottom: 16px;
               "
             >
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 14px;
-                  margin-bottom: 16px;
-                "
-              >
+              <div class="connect-box-header">
                 <div
+                  class="connect-box-icon"
                   style="
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 14px;
                     background: rgba(124, 92, 255, 0.15);
                     border: 1px solid rgba(124, 92, 255, 0.3);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 24px;
                   "
                 >
                   📊
                 </div>
                 <div>
-                  <div style="font-size: 1rem; font-weight: 800">
-                    CSV / Data Upload
-                  </div>
-                  <div style="font-size: 0.8rem; color: var(--muted)">
-                    Import from any platform
-                  </div>
+                  <div class="connect-box-title">CSV / Data Upload</div>
+                  <div class="connect-box-sub">Import from any platform</div>
                 </div>
               </div>
-              <div
-                style="
-                  font-size: 0.82rem;
-                  color: var(--muted);
-                  margin-bottom: 16px;
-                  line-height: 1.6;
-                "
-              >
+              <div class="connect-desc">
                 Upload a CSV export from Shopify, Square, WooCommerce, or any
                 sales platform. Your dashboard will be populated automatically.
               </div>
               <div
+                class="csv-drop"
                 id="csvDropZone"
-                style="
-                  border: 2px dashed rgba(124, 92, 255, 0.4);
-                  border-radius: 14px;
-                  padding: 32px 20px;
-                  text-align: center;
-                  cursor: pointer;
-                  transition: all 0.2s;
-                  background: rgba(124, 92, 255, 0.04);
-                  margin-bottom: 12px;
-                "
                 onclick="document.getElementById('csvFileInput').click()"
                 ondragover="
                   event.preventDefault();
-                  this.style.borderColor = 'rgba(124,92,255,0.8)';
-                  this.style.background = 'rgba(124,92,255,0.1)';
+                  this.classList.add('dragging');
                 "
-                ondragleave="
-                  this.style.borderColor = 'rgba(124,92,255,0.4)';
-                  this.style.background = 'rgba(124,92,255,0.04)';
-                "
+                ondragleave="this.classList.remove('dragging')"
                 ondrop="handleCsvDrop(event)"
               >
-                <div style="font-size: 2rem; margin-bottom: 8px">📂</div>
-                <div
-                  style="
-                    font-size: 0.9rem;
-                    font-weight: 700;
-                    margin-bottom: 4px;
-                  "
-                >
-                  Drop your CSV here
-                </div>
-                <div style="font-size: 0.78rem; color: var(--muted)">
-                  or click to browse &mdash; orders, sales, or transactions CSV
-                </div>
                 <input
                   type="file"
                   id="csvFileInput"
@@ -1118,20 +1133,13 @@
                   style="display: none"
                   onchange="handleCsvSelect(event)"
                 />
+                <div class="csv-drop-icon">📂</div>
+                <div class="csv-drop-title">Drop your CSV here</div>
+                <div class="csv-drop-sub">
+                  or click to browse — orders, sales, or transactions CSV
+                </div>
               </div>
-              <div
-                id="csvFileSelected"
-                style="
-                  display: none;
-                  background: rgba(35, 230, 168, 0.08);
-                  border: 1px solid rgba(35, 230, 168, 0.25);
-                  border-radius: 10px;
-                  padding: 10px 14px;
-                  font-size: 0.82rem;
-                  color: #23e6a8;
-                  margin-bottom: 12px;
-                "
-              >
+              <div class="csv-selected" id="csvFileSelected">
                 ✓ <span id="csvFileName"></span> ready to upload
               </div>
               <div
@@ -1146,13 +1154,13 @@
             </div>
           </div>
 
-          <!-- Skip option -->
+          <!-- Skip -->
           <div style="text-align: center; margin-bottom: 16px">
             <span style="font-size: 0.8rem; color: var(--muted)"
               >Not ready yet?
             </span>
             <span
-              onclick="completeOnboarding(true)"
+              onclick="finishOnboarding(true)"
               style="
                 font-size: 0.8rem;
                 color: var(--a1);
@@ -1165,31 +1173,29 @@
 
           <button
             class="btn-next"
-            onclick="completeOnboarding(false)"
+            onclick="finishOnboarding(false)"
             id="finishBtn"
           >
             Launch my dashboard ⚡
           </button>
-          <button class="btn-back" onclick="goToStep(2)">← Back</button>
-          <div class="error-msg" id="error3">
-            Please connect at least one integration or skip to continue.
-          </div>
+          <button class="btn-back" onclick="goToStep(3)">← Back</button>
+          <div class="error-msg" id="err4"></div>
         </div>
 
-        <!-- Step 4 — Success -->
-        <div class="step-panel" id="step4">
+        <!-- ── STEP 5: Verify Email ── -->
+        <div class="step-panel" id="step5">
           <div style="text-align: center; padding: 20px 0">
-            <div class="success-icon">⚡</div>
+            <div class="success-icon">📬</div>
             <div class="step-title" style="text-align: center">
-              You're all set, <span id="welcomeName">there</span>!
+              Check your <span>inbox</span>
             </div>
             <div class="step-sub" style="text-align: center; margin-top: 8px">
-              Your Aervo dashboard is ready. We'll guide you through connecting
-              your first integration.
+              We sent a verification link to<br />
+              <strong id="verifyEmail" style="color: #93c5fd"></strong>
             </div>
             <div
               style="
-                margin-top: 28px;
+                margin-top: 24px;
                 padding: 16px;
                 background: rgba(35, 230, 168, 0.07);
                 border: 1px solid rgba(35, 230, 168, 0.2);
@@ -1205,115 +1211,223 @@
                   margin-bottom: 8px;
                 "
               >
-                ✓ Account created
+                What happens next?
               </div>
               <div
                 style="
                   font-size: 0.82rem;
                   color: var(--muted);
-                  line-height: 1.6;
+                  line-height: 1.7;
                 "
-                id="summaryText"
-              ></div>
+              >
+                1. Click the link in your email to verify your account<br />
+                2. You'll be taken to the login page<br />
+                3. Log in and your dashboard will be ready
+              </div>
             </div>
-            <button
-              class="btn-next"
-              style="margin-top: 24px"
-              onclick="goToDashboard()"
+            <div
+              style="margin-top: 16px; font-size: 0.8rem; color: var(--muted)"
             >
-              Go to dashboard →
-            </button>
+              Didn't get it? Check your spam folder or
+              <span
+                onclick="resendVerification()"
+                style="color: var(--a1); cursor: pointer; font-weight: 700"
+                >resend the email</span
+              >
+            </div>
+            <a
+              href="/login"
+              style="
+                display: inline-block;
+                margin-top: 20px;
+                font-size: 0.85rem;
+                color: var(--muted);
+                text-decoration: none;
+              "
+              >← Back to login</a
+            >
           </div>
         </div>
       </div>
+      <!-- /card -->
     </div>
+    <!-- /page -->
 
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
 
       let selectedType = "";
       let selectedPlatform = "";
+      let csvFile = null;
+      let aervoToken = null;
       let currentStep = 1;
 
-      // Get token from URL or localStorage
+      // Check if already logged in (returning from OAuth)
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       const urlName = urlParams.get("name");
-
       if (urlToken) {
+        aervoToken = urlToken;
         localStorage.setItem("aervo_token", urlToken);
+      } else {
+        aervoToken = localStorage.getItem("aervo_token");
       }
 
-      const token = localStorage.getItem("aervo_token");
-
-      // Pre-fill name if coming from Google
-      if (urlName) {
-        document.getElementById("welcomeName").textContent =
-          decodeURIComponent(urlName);
+      // Password toggles
+      function setupToggle(btnId, inputId) {
+        document.getElementById(btnId).onclick = () => {
+          const inp = document.getElementById(inputId);
+          inp.type = inp.type === "password" ? "text" : "password";
+          document.getElementById(btnId).textContent =
+            inp.type === "password" ? "👁" : "🙈";
+        };
       }
+      setupToggle("togglePw1", "s1Password");
+      setupToggle("togglePw2", "s1Confirm");
 
-      // Redirect if not logged in
-      if (!token) {
-        window.location.href = "/login";
-      }
+      // Password strength
+      document.getElementById("s1Password").oninput = () => {
+        const val = document.getElementById("s1Password").value;
+        const pct = Math.min((val.length / 12) * 100, 100);
+        const fill = document.getElementById("strengthFill");
+        fill.style.width = pct + "%";
+        fill.style.background =
+          pct < 40 ? "#f87171" : pct < 70 ? "#fbbf24" : "#23e6a8";
+        document.getElementById("strengthHint").textContent =
+          pct < 40
+            ? "Weak password"
+            : pct < 70
+              ? "Okay password"
+              : "Strong password";
+      };
 
-      function selectType(el, type) {
-        document
-          .querySelectorAll(".type-card")
-          .forEach((c) => c.classList.remove("selected"));
-        el.classList.add("selected");
-        selectedType = type;
-      }
+      // Password match
+      document.getElementById("s1Confirm").oninput = () => {
+        const pw = document.getElementById("s1Password").value;
+        const cf = document.getElementById("s1Confirm").value;
+        const el = document.getElementById("matchHint");
+        if (!cf) {
+          el.textContent = "";
+          return;
+        }
+        if (pw === cf) {
+          el.textContent = "Passwords match ✓";
+          el.className = "hint good";
+        } else {
+          el.textContent = "Passwords do not match";
+          el.className = "hint bad";
+        }
+      };
 
-      function selectPlatform(el, platform) {
-        document
-          .querySelectorAll(".platform-card, .both-option")
-          .forEach((c) => c.classList.remove("selected"));
-        el.classList.add("selected");
-        selectedPlatform = platform;
-      }
-
+      // Step navigation
       function goToStep(n) {
         document
           .querySelectorAll(".step-panel")
           .forEach((p) => p.classList.remove("active"));
         document.getElementById("step" + n).classList.add("active");
         currentStep = n;
-        updateStepDots(n);
+        updateDots(n);
+        window.scrollTo(0, 0);
       }
 
-      function updateStepDots(n) {
-        for (let i = 1; i <= 3; i++) {
+      function updateDots(n) {
+        for (let i = 1; i <= 4; i++) {
           const dot = document.getElementById("dot" + i);
           dot.classList.remove("active", "done");
-          if (i < n) (dot.classList.add("done"), (dot.textContent = "✓"));
-          else if (i === n)
-            (dot.classList.add("active"), (dot.textContent = i));
-          else dot.textContent = i;
+          if (i < n) {
+            dot.classList.add("done");
+            dot.textContent = "✓";
+          } else if (i === n) {
+            dot.classList.add("active");
+            dot.textContent = i;
+          } else dot.textContent = i;
         }
-        for (let i = 1; i <= 2; i++) {
-          const line = document.getElementById("line" + i);
-          line.classList.toggle("done", i < n);
+        for (let i = 1; i <= 3; i++) {
+          document.getElementById("line" + i).classList.toggle("done", i < n);
         }
       }
 
-      function goToStep2() {
-        const name = document.getElementById("businessName").value.trim();
-        if (!name || !selectedType) {
-          document.getElementById("error1").style.display = "block";
-          return;
-        }
-        document.getElementById("error1").style.display = "none";
-        goToStep(2);
+      function showErr(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.style.display = "block";
+      }
+      function hideErr(id) {
+        document.getElementById(id).style.display = "none";
       }
 
-      function goToStep3() {
-        if (!selectedPlatform) {
-          document.getElementById("error2").style.display = "block";
-          return;
-        }
-        document.getElementById("error2").style.display = "none";
+      // ── STEP 1: Create account ───────────────────────────────────
+      async function goStep1() {
+        hideErr("err1");
+        const email = document.getElementById("s1Email").value.trim();
+        const pw = document.getElementById("s1Password").value;
+        const cf = document.getElementById("s1Confirm").value;
 
+        if (!email) return showErr("err1", "Please enter your email.");
+        if (!pw || pw.length < 8)
+          return showErr("err1", "Password must be at least 8 characters.");
+        if (pw !== cf) return showErr("err1", "Passwords do not match.");
+
+        const btn = document.querySelector("#step1 .btn-next");
+        btn.disabled = true;
+        btn.textContent = "Creating account…";
+
+        try {
+          const res = await fetch(BACKEND_URL + "/api/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email,
+              password: pw,
+              companyName: "My Business",
+            }),
+          });
+
+          if (res.status === 429) {
+            const d = await res.json().catch(() => ({}));
+            return showErr(
+              "err1",
+              d.message || "Too many attempts. Please wait.",
+            );
+          }
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.success) {
+            return showErr(
+              "err1",
+              data.message || "Signup failed. Please try again.",
+            );
+          }
+
+          aervoToken = data.token;
+          localStorage.setItem("aervo_token", data.token);
+          localStorage.setItem("aervo_user", JSON.stringify(data.user));
+          goToStep(2);
+        } catch (err) {
+          showErr("err1", "Network error. Please try again.");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Continue →";
+        }
+      }
+
+      // ── STEP 2: Business info ────────────────────────────────────
+      function goStep2() {
+        hideErr("err2");
+        const name = document.getElementById("s2BusinessName").value.trim();
+        if (!name) return showErr("err2", "Please enter your business name.");
+        if (!selectedType)
+          return showErr("err2", "Please select a business type.");
+        goToStep(3);
+      }
+
+      // ── STEP 3: Platform ─────────────────────────────────────────
+      function goStep3() {
+        hideErr("err3");
+        if (!selectedPlatform)
+          return showErr("err3", "Please select a platform to continue.");
+
+        // Configure step 4
         document.getElementById("shopifyConnect").style.display =
           selectedPlatform === "shopify" ? "block" : "none";
         document.getElementById("squareConnect").style.display =
@@ -1324,40 +1438,52 @@
           selectedPlatform === "csv" ? "block" : "none";
 
         if (selectedPlatform === "csv") {
-          document.querySelector("#step3 .step-title").innerHTML =
+          document.getElementById("step4Title").innerHTML =
             "Upload your <span>sales data</span>";
-          document.querySelector("#step3 .step-sub").textContent =
-            "Upload a CSV export from your sales platform. Aervo will analyze it and build your dashboard automatically.";
+          document.getElementById("step4Sub").textContent =
+            "Upload a CSV export and Aervo will build your dashboard automatically.";
           document.getElementById("finishBtn").textContent =
             "Build my dashboard ⚡";
         } else {
-          document.querySelector("#step3 .step-title").innerHTML =
+          document.getElementById("step4Title").innerHTML =
             "Connect your <span>integration</span>";
-          document.querySelector("#step3 .step-sub").textContent =
-            "Aervo uses read-only access — we can never modify your store data. Encrypted and secure.";
+          document.getElementById("step4Sub").textContent =
+            "Aervo uses read-only access — we can never modify your store data.";
           document.getElementById("finishBtn").textContent =
             "Launch my dashboard ⚡";
         }
 
-        goToStep(3);
+        goToStep(4);
       }
 
-      let csvFile = null;
+      // ── Selectors ────────────────────────────────────────────────
+      function selectType(el, type) {
+        document
+          .querySelectorAll(".type-card")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedType = type;
+      }
 
+      function selectPlatform(el, platform) {
+        document
+          .querySelectorAll(".platform-card, .wide-option")
+          .forEach((c) => c.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedPlatform = platform;
+      }
+
+      // ── CSV handlers ─────────────────────────────────────────────
       function handleCsvDrop(event) {
         event.preventDefault();
-        const zone = document.getElementById("csvDropZone");
-        zone.style.borderColor = "rgba(124,92,255,0.4)";
-        zone.style.background = "rgba(124,92,255,0.04)";
+        document.getElementById("csvDropZone").classList.remove("dragging");
         const file = event.dataTransfer.files[0];
         if (file) setCsvFile(file);
       }
-
       function handleCsvSelect(event) {
         const file = event.target.files[0];
         if (file) setCsvFile(file);
       }
-
       function setCsvFile(file) {
         csvFile = file;
         document.getElementById("csvFileName").textContent = file.name;
@@ -1366,67 +1492,66 @@
           "rgba(35,230,168,0.5)";
       }
 
+      // ── OAuth connectors ─────────────────────────────────────────
       function connectShopify() {
-        // Save onboarding state so we can resume after OAuth
-        localStorage.setItem(
-          "aervo_onboarding",
-          JSON.stringify({
-            businessName: document.getElementById("businessName").value.trim(),
-            role: document.getElementById("userRole").value,
-            businessType: selectedType,
-            platform: selectedPlatform,
-          }),
-        );
-        // Redirect to Shopify OAuth
-        window.location.href = `${BACKEND_URL}/auth/shopify?token=${token}`;
+        saveOnboardingState();
+        window.location.href =
+          BACKEND_URL + "/auth/shopify?token=" + aervoToken;
       }
-
       function connectSquare() {
-        // Save onboarding state
+        saveOnboardingState();
+        window.location.href =
+          BACKEND_URL + "/integrations/square/connect?token=" + aervoToken;
+      }
+      function saveOnboardingState() {
         localStorage.setItem(
           "aervo_onboarding",
           JSON.stringify({
-            businessName: document.getElementById("businessName").value.trim(),
-            role: document.getElementById("userRole").value,
+            businessName: document
+              .getElementById("s2BusinessName")
+              .value.trim(),
+            role: document.getElementById("s2Role").value,
             businessType: selectedType,
             platform: selectedPlatform,
           }),
         );
-        // Redirect to Square OAuth
-        window.location.href = `${BACKEND_URL}/integrations/square/connect?token=${token}`;
       }
 
-      async function completeOnboarding(skip = false) {
+      // ── Finish onboarding ────────────────────────────────────────
+      async function finishOnboarding(skip = false) {
+        hideErr("err4");
         const btn = document.getElementById("finishBtn");
         btn.disabled = true;
         btn.textContent = "Setting up…";
 
         const businessName = document
-          .getElementById("businessName")
+          .getElementById("s2BusinessName")
           .value.trim();
-        const role = document.getElementById("userRole").value;
+        const role = document.getElementById("s2Role").value;
 
         try {
+          // Upload CSV if present
           if (selectedPlatform === "csv" && csvFile && !skip) {
             btn.textContent = "Uploading data…";
             const formData = new FormData();
             formData.append("file", csvFile);
-            const uploadRes = await fetch(`${BACKEND_URL}/api/csv/upload`, {
+            const upRes = await fetch(BACKEND_URL + "/api/csv/upload", {
               method: "POST",
-              headers: { Authorization: `Bearer ${token}` },
+              headers: { Authorization: "Bearer " + aervoToken },
               body: formData,
             });
-            const uploadData = await uploadRes.json();
-            if (!uploadData.success)
-              throw new Error(uploadData.message || "CSV upload failed");
+            const upData = await upRes.json();
+            if (!upData.success)
+              throw new Error(upData.message || "CSV upload failed");
             btn.textContent = "Finishing up…";
           }
 
-          const res = await fetch(`${BACKEND_URL}/api/onboarding`, {
+          // Save onboarding data
+          const res = await fetch(BACKEND_URL + "/api/onboarding", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: "Bearer " + aervoToken,
             },
             body: JSON.stringify({
               company_name: businessName,
@@ -1438,53 +1563,35 @@
           });
 
           const data = await res.json();
-
-          if (data.success) {
-            const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
-            user.company_name = businessName;
-            user.platform = selectedPlatform;
-            localStorage.setItem("aervo_user", JSON.stringify(user));
-            localStorage.removeItem("aervo_onboarding");
-
-            const platformMap = {
-              shopify: "Shopify",
-              square: "Square",
-              both: "Shopify + Square",
-              csv: "CSV Upload",
-            };
-            const csvNote = csvFile
-              ? "✓ " + csvFile.name + " uploaded"
-              : '<span style="color:#ffc107">⚠ No file uploaded yet — you can upload from your dashboard</span>';
-            document.getElementById("summaryText").innerHTML =
-              "<strong style='color:var(--text)'>" +
-              businessName +
-              "</strong> · " +
-              selectedType +
-              "<br>" +
-              "Platform: " +
-              (platformMap[selectedPlatform] || "Not connected yet") +
-              "<br>" +
-              (skip
-                ? '<span style="color:#ffc107">⚠ Integration not connected yet — you can connect from your dashboard</span>'
-                : selectedPlatform === "csv"
-                  ? csvNote
-                  : "✓ Integration connected");
-
-            if (urlName)
-              document.getElementById("welcomeName").textContent =
-                decodeURIComponent(urlName);
-
-            goToStep(4);
-            document.getElementById("dot3").classList.add("done");
-            document.getElementById("dot3").textContent = "✓";
-          } else {
+          if (!data.success)
             throw new Error(data.message || "Something went wrong");
+
+          // Update stored user
+          const user = JSON.parse(localStorage.getItem("aervo_user") || "{}");
+          user.company_name = businessName;
+          user.platform = selectedPlatform;
+          localStorage.setItem("aervo_user", JSON.stringify(user));
+          localStorage.removeItem("aervo_onboarding");
+
+          // Show verify email screen
+          document.getElementById("verifyEmail").textContent =
+            document.getElementById("s1Email").value;
+          goToStep(5);
+          // Mark all dots done
+          for (let i = 1; i <= 4; i++) {
+            const dot = document.getElementById("dot" + i);
+            dot.classList.remove("active");
+            dot.classList.add("done");
+            dot.textContent = "✓";
+          }
+          for (let i = 1; i <= 3; i++) {
+            document.getElementById("line" + i).classList.add("done");
           }
         } catch (err) {
-          console.error(err);
-          document.getElementById("error3").textContent =
-            err.message || "Something went wrong. Please try again.";
-          document.getElementById("error3").style.display = "block";
+          showErr(
+            "err4",
+            err.message || "Something went wrong. Please try again.",
+          );
           btn.disabled = false;
           btn.textContent =
             selectedPlatform === "csv"
@@ -1493,13 +1600,32 @@
         }
       }
 
-      function goToDashboard() {
-        if (selectedPlatform === "csv") {
-          window.location.href = "/dashboard/csv";
-        } else if (selectedPlatform === "square") {
-          window.location.href = "/dashboard/square";
-        } else {
-          window.location.href = "/dashboard/shopify";
+      // ── Resend verification ──────────────────────────────────────
+      async function resendVerification() {
+        const email =
+          document.getElementById("s1Email").value ||
+          JSON.parse(localStorage.getItem("aervo_user") || "{}").email;
+        if (!email) return;
+        try {
+          await fetch(BACKEND_URL + "/api/resend-verification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          alert("Verification email resent to " + email);
+        } catch (e) {
+          alert("Could not resend. Please try again.");
+        }
+      }
+
+      // ── Google OAuth ─────────────────────────────────────────────
+      async function signInWithGoogle() {
+        try {
+          const res = await fetch(BACKEND_URL + "/auth/google");
+          const data = await res.json();
+          window.location.href = data.url;
+        } catch (err) {
+          console.error("Google sign in error:", err);
         }
       }
     </script>
