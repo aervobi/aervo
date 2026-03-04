@@ -2020,8 +2020,8 @@
       function closeUploadModal() {
         document.getElementById("uploadModal").classList.remove("show");
         document.getElementById("modalFileInfo").style.display = "none";
-        modalFile = null;
       }
+
       function submitModalUpload() {
         if (!modalFile) return showToast("Please select a file first", "error");
         const label =
@@ -2031,9 +2031,10 @@
               month: "short",
               year: "numeric",
             });
-        closeUploadModal();
-        uploadFile(modalFile, label);
+        const fileToUpload = modalFile; // capture before closing
         modalFile = null;
+        closeUploadModal();
+        uploadFile(fileToUpload, label);
       }
 
       async function uploadFile(file, periodLabel) {
