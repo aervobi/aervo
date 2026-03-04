@@ -526,6 +526,7 @@ nav a:hover::after {
       }
       
       .mobile-nav .btn {
+        display: flex !important;
         width: 100%;
         text-align: center;
       }
@@ -2234,12 +2235,10 @@ footer {
     <header>
       <div class="container">
         <div class="header-inner">
-          <div class="scroll-progress" aria-hidden="true"><i id="scrollBar"></i></div>
-          <a class="brand" href="#" aria-label="Aervo home">
- <a href="/dashboard/shopify" style="text-decoration:none;">
-  <img src="/assets/images/logo.png" alt="Aervo" style="height:36px;width:auto;" />
-</a>
-</a>
+          <div class="scroll-progress" aria-label="true"><i id="scrollBar"></i></div>
+          <a class="brand" href="/dashboard/shopify" aria-label="Aervo home">
+            <img src="/assets/images/logo.png" alt="Aervo" style="height:36px;width:auto;" />
+          </a>
 
           <nav aria-label="Main navigation">
             <a href="#services">Capabilities</a>
