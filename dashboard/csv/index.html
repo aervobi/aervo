@@ -2,12 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aervo – Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Aervo – Business Intelligence</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -15,16 +15,19 @@
       :root {
         --bg: #020618;
         --surface: #0b1120;
-        --surface2: #111827;
-        --border: rgba(148, 163, 255, 0.1);
-        --border2: rgba(255, 255, 255, 0.06);
+        --surface2: #0f172a;
+        --surface3: #111827;
+        --border: rgba(148, 163, 255, 0.09);
+        --border2: rgba(255, 255, 255, 0.05);
         --text: #f0f4ff;
-        --muted: #6b7a9e;
+        --muted: #4b5a7a;
+        --muted2: #6b7a9e;
         --accent: #29c8ff;
         --accent2: #7c5cff;
         --accent3: #23e6a8;
         --danger: #ff5c5c;
         --warn: #fbbf24;
+        --purple: #a855f7;
       }
       * {
         box-sizing: border-box;
@@ -37,9 +40,10 @@
         color: var(--text);
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
       }
 
-      /* ── Sidebar ── */
+      /* NAV SIDEBAR */
       .sidebar {
         position: fixed;
         left: 0;
@@ -57,9 +61,9 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 0 18px 24px;
+        padding: 0 18px 22px;
         border-bottom: 1px solid var(--border);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
       .logo-mark {
         width: 32px;
@@ -84,23 +88,22 @@
         align-items: center;
         gap: 10px;
         padding: 9px 18px;
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-weight: 600;
-        color: var(--muted);
+        color: var(--muted2);
         cursor: pointer;
-        border-radius: 0;
         transition: all 0.15s;
         text-decoration: none;
         border-left: 2px solid transparent;
       }
       .nav-item:hover {
         color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.03);
       }
       .nav-item.active {
         color: var(--accent);
         border-left-color: var(--accent);
-        background: rgba(41, 200, 255, 0.06);
+        background: rgba(41, 200, 255, 0.05);
       }
       .nav-icon {
         font-size: 1rem;
@@ -122,15 +125,77 @@
         gap: 8px;
         padding: 10px 12px;
         background: rgba(124, 92, 255, 0.08);
-        border: 1px solid rgba(124, 92, 255, 0.2);
+        border: 1px solid rgba(124, 92, 255, 0.18);
         border-radius: 10px;
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         font-weight: 700;
         color: #a78bfa;
         margin-bottom: 12px;
       }
 
-      /* ── Main ── */
+      /* UPLOAD HISTORY PANEL — inside left sidebar, below nav */
+      .history-section {
+        padding: 10px 0 0;
+      }
+      .history-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px 8px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .history-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+        position: relative;
+      }
+      .history-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .history-item.active-period {
+        border-left-color: var(--purple);
+        background: rgba(168, 85, 247, 0.06);
+      }
+      .history-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--muted);
+        flex-shrink: 0;
+      }
+      .history-item.active-period .history-dot {
+        background: var(--purple);
+      }
+      .history-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--muted2);
+      }
+      .history-item.active-period .history-label {
+        color: var(--text);
+      }
+      .history-date {
+        font-size: 0.68rem;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .history-empty {
+        padding: 8px 18px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      /* MAIN */
       .main {
         margin-left: 220px;
         min-height: 100vh;
@@ -141,21 +206,21 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 28px;
+        padding: 14px 28px;
         border-bottom: 1px solid var(--border);
-        background: rgba(2, 6, 24, 0.8);
+        background: rgba(2, 6, 24, 0.85);
         backdrop-filter: blur(12px);
         position: sticky;
         top: 0;
         z-index: 50;
       }
       .topbar-left h1 {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 800;
       }
       .topbar-left p {
-        font-size: 0.78rem;
-        color: var(--muted);
+        font-size: 0.75rem;
+        color: var(--muted2);
         margin-top: 2px;
       }
       .topbar-right {
@@ -163,18 +228,32 @@
         align-items: center;
         gap: 10px;
       }
+      .period-selector {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--muted2);
+        cursor: pointer;
+      }
       .upload-btn {
         display: flex;
         align-items: center;
         gap: 7px;
         padding: 8px 16px;
-        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        background: linear-gradient(90deg, var(--accent2), var(--purple));
         color: #fff;
         border: none;
         border-radius: 8px;
         font-size: 0.82rem;
         font-weight: 700;
         cursor: pointer;
+        font-family: inherit;
         transition: opacity 0.15s;
       }
       .upload-btn:hover {
@@ -192,28 +271,29 @@
         font-weight: 800;
         color: #050816;
         cursor: pointer;
+        flex-shrink: 0;
       }
 
-      /* ── Content ── */
+      /* CONTENT */
       .content {
-        padding: 28px;
+        padding: 24px 28px;
         flex: 1;
       }
 
-      /* ── Upload prompt (shown when no data) ── */
+      /* UPLOAD PROMPT */
       .upload-prompt {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 60vh;
+        min-height: 65vh;
         text-align: center;
       }
       .upload-zone {
-        border: 2px dashed rgba(124, 92, 255, 0.4);
+        border: 2px dashed rgba(124, 92, 255, 0.35);
         border-radius: 20px;
-        padding: 60px 48px;
-        max-width: 520px;
+        padding: 56px 48px;
+        max-width: 500px;
         width: 100%;
         cursor: pointer;
         transition: all 0.2s;
@@ -221,90 +301,259 @@
       }
       .upload-zone:hover,
       .upload-zone.dragging {
-        border-color: rgba(124, 92, 255, 0.8);
+        border-color: rgba(124, 92, 255, 0.7);
         background: rgba(124, 92, 255, 0.07);
       }
       .upload-zone-icon {
-        font-size: 3.5rem;
-        margin-bottom: 16px;
+        font-size: 3rem;
+        margin-bottom: 14px;
       }
       .upload-zone h2 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 800;
         margin-bottom: 8px;
       }
       .upload-zone p {
-        font-size: 0.88rem;
-        color: var(--muted);
+        font-size: 0.85rem;
+        color: var(--muted2);
         line-height: 1.6;
-        margin-bottom: 24px;
+        margin-bottom: 22px;
       }
       .upload-zone-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 12px 24px;
-        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        padding: 11px 22px;
+        background: linear-gradient(90deg, var(--accent2), var(--purple));
         color: #fff;
         border: none;
         border-radius: 10px;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 700;
         cursor: pointer;
+        font-family: inherit;
       }
       .supported-formats {
-        margin-top: 20px;
+        margin-top: 18px;
         display: flex;
-        gap: 8px;
+        gap: 6px;
         justify-content: center;
         flex-wrap: wrap;
       }
       .format-tag {
-        padding: 4px 10px;
-        background: rgba(255, 255, 255, 0.05);
+        padding: 3px 9px;
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid var(--border2);
-        border-radius: 6px;
-        font-size: 0.72rem;
+        border-radius: 5px;
+        font-size: 0.7rem;
         font-weight: 600;
-        color: var(--muted);
+        color: var(--muted2);
         font-family: "DM Mono", monospace;
       }
 
-      /* ── Dashboard data (shown when CSV loaded) ── */
+      /* DASHBOARD */
       .dashboard-data {
         display: none;
       }
 
-      /* ── Stats row ── */
+      /* NARRATIVE BANNER */
+      .narrative-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(124, 92, 255, 0.1),
+          rgba(41, 200, 255, 0.06)
+        );
+        border: 1px solid rgba(124, 92, 255, 0.2);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      .narrative-banner::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 100%;
+        background: radial-gradient(
+          ellipse at right,
+          rgba(41, 200, 255, 0.07),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .narrative-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .narrative-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .narrative-badge {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--accent2), var(--purple));
+        color: #fff;
+      }
+      .narrative-period {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--muted2);
+      }
+      .narrative-text {
+        font-size: 0.88rem;
+        color: rgba(240, 244, 255, 0.85);
+        line-height: 1.75;
+      }
+      .narrative-text strong {
+        color: var(--text);
+      }
+      .narrative-loading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: var(--muted2);
+      }
+
+      /* ANOMALY ALERTS */
+      .anomaly-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .anomaly-row::-webkit-scrollbar {
+        height: 3px;
+      }
+      .anomaly-row::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2px;
+      }
+      .anomaly-card {
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid;
+        min-width: 220px;
+        max-width: 280px;
+      }
+      .anomaly-card.warn {
+        background: rgba(251, 191, 36, 0.06);
+        border-color: rgba(251, 191, 36, 0.2);
+      }
+      .anomaly-card.danger {
+        background: rgba(255, 92, 92, 0.06);
+        border-color: rgba(255, 92, 92, 0.2);
+      }
+      .anomaly-card.positive {
+        background: rgba(35, 230, 168, 0.06);
+        border-color: rgba(35, 230, 168, 0.2);
+      }
+      .anomaly-icon {
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .anomaly-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 2px;
+      }
+      .anomaly-card.warn .anomaly-label {
+        color: var(--warn);
+      }
+      .anomaly-card.danger .anomaly-label {
+        color: var(--danger);
+      }
+      .anomaly-card.positive .anomaly-label {
+        color: var(--accent3);
+      }
+      .anomaly-msg {
+        font-size: 0.78rem;
+        color: var(--muted2);
+        line-height: 1.45;
+      }
+
+      /* STATS */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-        margin-bottom: 24px;
+        gap: 12px;
+        margin-bottom: 20px;
       }
       .stat-card {
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 18px;
+        padding: 16px 18px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s;
+      }
+      .stat-card:hover {
+        border-color: rgba(148, 163, 255, 0.18);
+      }
+      .stat-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        filter: blur(30px);
+        opacity: 0.4;
+      }
+      .stat-card.revenue::after {
+        background: var(--accent);
+      }
+      .stat-card.orders::after {
+        background: var(--accent2);
+      }
+      .stat-card.aov::after {
+        background: var(--accent3);
+      }
+      .stat-card.customers::after {
+        background: var(--warn);
       }
       .stat-label {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 700;
-        color: var(--muted);
-        letter-spacing: 0.06em;
+        color: var(--muted2);
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
       .stat-value {
-        font-size: 1.7rem;
+        font-size: 1.65rem;
         font-weight: 900;
         line-height: 1;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
       }
       .stat-change {
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
       .stat-change.up {
         color: var(--accent3);
@@ -313,15 +562,106 @@
         color: var(--danger);
       }
       .stat-change.neutral {
-        color: var(--muted);
+        color: var(--muted2);
+      }
+      .stat-sparkline {
+        margin-top: 12px;
+        height: 28px;
+        position: relative;
       }
 
-      /* ── Charts row ── */
+      /* PROJECTION BAR */
+      .projection-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 20px;
+      }
+      .projection-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .projection-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--muted2);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .projection-pace {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 99px;
+      }
+      .projection-pace.on-track {
+        background: rgba(35, 230, 168, 0.12);
+        color: var(--accent3);
+      }
+      .projection-pace.behind {
+        background: rgba(255, 92, 92, 0.1);
+        color: var(--danger);
+      }
+      .projection-pace.ahead {
+        background: rgba(41, 200, 255, 0.1);
+        color: var(--accent);
+      }
+      .projection-numbers {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      .projection-current {
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+      .projection-sep {
+        color: var(--muted);
+        font-size: 1rem;
+      }
+      .projection-target {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--muted2);
+      }
+      .projection-bar-wrap {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        position: relative;
+      }
+      .projection-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        transition: width 1s ease;
+      }
+      .projection-bar-marker {
+        position: absolute;
+        top: -3px;
+        height: 14px;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 1px;
+      }
+      .projection-sub {
+        font-size: 0.75rem;
+        color: var(--muted2);
+      }
+
+      /* CHARTS */
       .charts-row {
         display: grid;
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 3fr 2fr;
         gap: 14px;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
       }
       .chart-card {
         background: var(--surface);
@@ -329,37 +669,98 @@
         border-radius: 14px;
         padding: 20px;
       }
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
       .card-title {
-        font-size: 0.8rem;
+        font-size: 0.72rem;
         font-weight: 800;
-        color: var(--muted);
+        color: var(--muted2);
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        margin-bottom: 16px;
+      }
+      .card-meta {
+        font-size: 0.72rem;
+        color: var(--muted);
       }
       .chart-wrap {
         position: relative;
-        height: 220px;
+        height: 200px;
+      }
+      .chart-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 14px;
+      }
+      .chart-tab {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--muted2);
+        background: transparent;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+        font-family: inherit;
+      }
+      .chart-tab.active {
+        background: rgba(41, 200, 255, 0.1);
+        border-color: rgba(41, 200, 255, 0.2);
+        color: var(--accent);
       }
 
-      /* ── Bottom row ── */
-      .bottom-row {
+      /* COMPARISON VIEW */
+      .compare-banner {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: rgba(168, 85, 247, 0.07);
+        border: 1px solid rgba(168, 85, 247, 0.2);
+        border-radius: 10px;
+        margin-bottom: 16px;
+        font-size: 0.78rem;
+      }
+      .compare-banner.show {
+        display: flex;
+      }
+      .compare-vs {
+        font-weight: 800;
+        color: var(--purple);
+      }
+      .compare-exit {
+        cursor: pointer;
+        color: var(--muted2);
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .compare-exit:hover {
+        color: var(--text);
+      }
+
+      /* BOTTOM GRID */
+      .bottom-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: 14px;
+        margin-bottom: 20px;
       }
 
-      /* ── Top products table ── */
+      /* TOP PRODUCTS */
       .table-wrap {
         overflow-x: auto;
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
       }
       th {
-        font-size: 0.7rem;
+        font-size: 0.67rem;
         font-weight: 700;
         color: var(--muted);
         text-transform: uppercase;
@@ -369,8 +770,8 @@
         border-bottom: 1px solid var(--border);
       }
       td {
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 9px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         color: var(--text);
       }
       tr:last-child td {
@@ -379,11 +780,11 @@
       .bar-cell {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
       }
       .mini-bar-wrap {
         flex: 1;
-        height: 4px;
+        height: 3px;
         background: rgba(255, 255, 255, 0.06);
         border-radius: 2px;
         overflow: hidden;
@@ -391,105 +792,23 @@
       .mini-bar {
         height: 100%;
         border-radius: 2px;
-        background: linear-gradient(90deg, var(--accent2), #a855f7);
+        background: linear-gradient(90deg, var(--accent2), var(--purple));
       }
-
-      /* ── AI Chat ── */
-      .chat-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 20px;
+      .rank-badge {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
         display: flex;
-        flex-direction: column;
-        height: 380px;
-      }
-      .chat-messages {
-        flex: 1;
-        overflow-y: auto;
-        margin-bottom: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .chat-messages::-webkit-scrollbar {
-        width: 4px;
-      }
-      .chat-messages::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .chat-messages::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-      }
-      .msg {
-        max-width: 85%;
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-size: 0.82rem;
-        line-height: 1.5;
-      }
-      .msg.user {
-        background: rgba(124, 92, 255, 0.15);
-        border: 1px solid rgba(124, 92, 255, 0.2);
-        align-self: flex-end;
-        color: #e5ecff;
-      }
-      .msg.ai {
-        background: rgba(41, 200, 255, 0.07);
-        border: 1px solid rgba(41, 200, 255, 0.12);
-        align-self: flex-start;
-        color: var(--text);
-      }
-      .msg.ai .ai-label {
-        font-size: 0.7rem;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
         font-weight: 800;
-        color: var(--accent);
-        margin-bottom: 4px;
-        letter-spacing: 0.06em;
-      }
-      .chat-input-row {
-        display: flex;
-        gap: 8px;
-      }
-      .chat-input {
-        flex: 1;
-        padding: 9px 12px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text);
-        font-size: 0.82rem;
-        font-family: inherit;
-        outline: none;
-        transition: border-color 0.15s;
-      }
-      .chat-input:focus {
-        border-color: rgba(124, 92, 255, 0.4);
-      }
-      .chat-input::placeholder {
-        color: var(--muted);
-      }
-      .chat-send {
-        padding: 9px 14px;
-        background: linear-gradient(90deg, var(--accent2), #a855f7);
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 0.82rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: opacity 0.15s;
-      }
-      .chat-send:hover {
-        opacity: 0.85;
-      }
-      .chat-send:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted2);
+        flex-shrink: 0;
       }
 
-      /* ── Goals ── */
+      /* GOALS */
       .goals-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -497,25 +816,44 @@
         padding: 20px;
       }
       .goal-item {
-        margin-bottom: 16px;
+        margin-bottom: 14px;
       }
       .goal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
       }
       .goal-name {
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 700;
       }
+      .goal-numbers {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
       .goal-progress-text {
-        font-size: 0.75rem;
-        color: var(--muted);
+        font-size: 0.72rem;
+        color: var(--muted2);
         font-family: "DM Mono", monospace;
       }
+      .goal-pct {
+        font-size: 0.68rem;
+        font-weight: 800;
+        padding: 1px 6px;
+        border-radius: 99px;
+      }
+      .goal-pct.on {
+        background: rgba(35, 230, 168, 0.12);
+        color: var(--accent3);
+      }
+      .goal-pct.off {
+        background: rgba(255, 92, 92, 0.1);
+        color: var(--danger);
+      }
       .goal-bar-wrap {
-        height: 6px;
+        height: 5px;
         background: rgba(255, 255, 255, 0.06);
         border-radius: 3px;
         overflow: hidden;
@@ -523,34 +861,134 @@
       .goal-bar {
         height: 100%;
         border-radius: 3px;
-        background: linear-gradient(90deg, var(--accent), var(--accent2));
-        transition: width 0.6s ease;
+        background: linear-gradient(90deg, var(--accent3), var(--accent));
+        transition: width 0.8s ease;
+      }
+      .goal-projection {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-top: 4px;
       }
       .add-goal-btn {
         width: 100%;
         padding: 9px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px dashed rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed rgba(255, 255, 255, 0.08);
         border-radius: 8px;
-        color: var(--muted);
-        font-size: 0.8rem;
+        color: var(--muted2);
+        font-size: 0.78rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.15s;
-        margin-top: 4px;
+        margin-top: 6px;
+        font-family: inherit;
       }
       .add-goal-btn:hover {
-        border-color: rgba(41, 200, 255, 0.3);
-        color: var(--accent);
-        background: rgba(41, 200, 255, 0.04);
+        border-color: rgba(35, 230, 168, 0.3);
+        color: var(--accent3);
+        background: rgba(35, 230, 168, 0.03);
       }
 
-      /* ── Upload progress overlay ── */
+      /* AI CHAT */
+      .chat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 360px;
+      }
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding-right: 4px;
+      }
+      .chat-messages::-webkit-scrollbar {
+        width: 3px;
+      }
+      .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2px;
+      }
+      .msg {
+        max-width: 88%;
+        padding: 9px 13px;
+        border-radius: 11px;
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+      .msg.user {
+        background: rgba(124, 92, 255, 0.14);
+        border: 1px solid rgba(124, 92, 255, 0.2);
+        align-self: flex-end;
+        color: #e5ecff;
+      }
+      .msg.ai {
+        background: rgba(41, 200, 255, 0.06);
+        border: 1px solid rgba(41, 200, 255, 0.1);
+        align-self: flex-start;
+        color: var(--text);
+      }
+      .msg.ai .ai-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: var(--accent);
+        margin-bottom: 4px;
+        letter-spacing: 0.07em;
+      }
+      .chat-input-row {
+        display: flex;
+        gap: 7px;
+      }
+      .chat-input {
+        flex: 1;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 0.8rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .chat-input:focus {
+        border-color: rgba(124, 92, 255, 0.35);
+      }
+      .chat-input::placeholder {
+        color: var(--muted);
+      }
+      .chat-send {
+        padding: 8px 14px;
+        background: linear-gradient(90deg, var(--accent2), var(--purple));
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+      .chat-send:hover {
+        opacity: 0.85;
+      }
+      .chat-send:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* OVERLAYS */
       .upload-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(2, 6, 24, 0.85);
-        backdrop-filter: blur(8px);
+        background: rgba(2, 6, 24, 0.88);
+        backdrop-filter: blur(10px);
         display: none;
         align-items: center;
         justify-content: center;
@@ -563,18 +1001,18 @@
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 20px;
-        padding: 40px;
+        padding: 36px;
         text-align: center;
         max-width: 380px;
         width: 100%;
       }
       .upload-spinner {
-        width: 48px;
-        height: 48px;
-        border: 3px solid rgba(124, 92, 255, 0.2);
-        border-top-color: #a855f7;
+        width: 44px;
+        height: 44px;
+        border: 3px solid rgba(124, 92, 255, 0.15);
+        border-top-color: var(--purple);
         border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+        animation: spin 0.7s linear infinite;
         margin: 0 auto 16px;
       }
       @keyframes spin {
@@ -583,25 +1021,58 @@
         }
       }
       .upload-modal h3 {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 800;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
       .upload-modal p {
-        font-size: 0.85rem;
-        color: var(--muted);
+        font-size: 0.82rem;
+        color: var(--muted2);
       }
 
-      /* ── Notification toast ── */
+      /* UPLOAD MODAL (period tag) */
+      .period-input {
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 0.88rem;
+        font-family: inherit;
+        outline: none;
+        margin-top: 12px;
+      }
+      .period-input:focus {
+        border-color: rgba(124, 92, 255, 0.4);
+      }
+      .period-input::placeholder {
+        color: var(--muted);
+      }
+      .modal-upload-zone {
+        border: 2px dashed rgba(124, 92, 255, 0.25);
+        border-radius: 12px;
+        padding: 22px;
+        text-align: center;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: all 0.2s;
+      }
+      .modal-upload-zone:hover {
+        border-color: rgba(124, 92, 255, 0.55);
+        background: rgba(124, 92, 255, 0.04);
+      }
+
+      /* TOAST */
       .toast {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        padding: 12px 18px;
+        padding: 11px 16px;
         background: var(--surface2);
         border: 1px solid var(--border);
         border-radius: 10px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 600;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         transform: translateY(80px);
@@ -620,22 +1091,7 @@
         color: var(--danger);
       }
 
-      /* ── Upload modal header input ── */
-      .modal-upload-zone {
-        border: 2px dashed rgba(124, 92, 255, 0.3);
-        border-radius: 12px;
-        padding: 24px;
-        text-align: center;
-        cursor: pointer;
-        margin-top: 16px;
-        transition: all 0.2s;
-      }
-      .modal-upload-zone:hover {
-        border-color: rgba(124, 92, 255, 0.6);
-        background: rgba(124, 92, 255, 0.05);
-      }
-
-      /* Loading dots */
+      /* TYPING */
       .typing {
         display: flex;
         gap: 4px;
@@ -643,11 +1099,11 @@
         padding: 4px 0;
       }
       .typing span {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         border-radius: 50%;
         background: var(--accent);
-        opacity: 0.4;
+        opacity: 0.3;
         animation: blink 1.2s ease-in-out infinite;
       }
       .typing span:nth-child(2) {
@@ -659,21 +1115,129 @@
       @keyframes blink {
         0%,
         100% {
-          opacity: 0.2;
+          opacity: 0.15;
         }
         50% {
           opacity: 1;
         }
       }
 
-      @media (max-width: 1100px) {
+      /* GOAL MODAL */
+      .goal-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 24, 0.85);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 250;
+      }
+      .goal-modal-backdrop.show {
+        display: flex;
+      }
+      .goal-modal {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 28px;
+        max-width: 380px;
+        width: 100%;
+      }
+      .goal-modal h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 18px;
+      }
+      .gm-field {
+        margin-bottom: 14px;
+      }
+      .gm-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted2);
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
+        display: block;
+      }
+      .gm-input {
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 0.88rem;
+        font-family: inherit;
+        outline: none;
+      }
+      .gm-input:focus {
+        border-color: rgba(41, 200, 255, 0.4);
+      }
+      .gm-type-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .gm-type-btn {
+        padding: 9px;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted2);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.15s;
+      }
+      .gm-type-btn.active {
+        border-color: rgba(41, 200, 255, 0.4);
+        background: rgba(41, 200, 255, 0.07);
+        color: var(--accent);
+      }
+      .gm-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .gm-cancel {
+        flex: 1;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        color: var(--muted2);
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .gm-save {
+        flex: 1;
+        padding: 10px;
+        background: linear-gradient(90deg, var(--accent3), var(--accent));
+        border: none;
+        border-radius: 9px;
+        color: #050816;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      @media (max-width: 1200px) {
+        .bottom-grid {
+          grid-template-columns: 1fr 1fr;
+        }
         .stats-grid {
           grid-template-columns: repeat(2, 1fr);
         }
         .charts-row {
           grid-template-columns: 1fr;
         }
-        .bottom-row {
+      }
+      @media (max-width: 900px) {
+        .bottom-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -688,55 +1252,76 @@
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
+    <!-- LEFT SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-logo">
-        <div class="logo-mark">⚡</div>
+        <div class="logo-mark">&#9889;</div>
         <div class="logo-name">Aervo</div>
       </div>
-      <a class="nav-item active" href="/dashboard/csv">
-        <span class="nav-icon">📊</span> Overview
-      </a>
-      <a class="nav-item" href="/intelligence">
-        <span class="nav-icon">🧠</span> Intelligence
-      </a>
-      <a class="nav-item" href="/reports">
-        <span class="nav-icon">📄</span> Reports
-      </a>
+      <a class="nav-item active" href="/dashboard/csv"
+        ><span class="nav-icon">&#128202;</span> Overview</a
+      >
+      <a class="nav-item" href="#" onclick="return false;"
+        ><span class="nav-icon">&#129504;</span> Intelligence</a
+      >
+      <a class="nav-item" href="#" onclick="return false;"
+        ><span class="nav-icon">&#128196;</span> Reports</a
+      >
       <div class="nav-divider"></div>
-      <a class="nav-item" href="/integrations">
-        <span class="nav-icon">🔌</span> Integrations
-      </a>
-      <a class="nav-item" href="/settings">
-        <span class="nav-icon">⚙️</span> Settings
-      </a>
+      <a class="nav-item" href="#" onclick="return false;"
+        ><span class="nav-icon">&#128268;</span> Integrations</a
+      >
+      <a class="nav-item" href="#" onclick="return false;"
+        ><span class="nav-icon">&#9881;</span> Settings</a
+      >
+
+      <!-- UPLOAD HISTORY -->
+      <div class="history-section" id="historySection" style="display: none">
+        <div class="nav-divider" style="margin-top: 10px"></div>
+        <div class="history-header">
+          <span>Data Periods</span>
+          <span
+            style="cursor: pointer; color: var(--accent); font-size: 0.7rem"
+            onclick="openCompareMode()"
+            >Compare</span
+          >
+        </div>
+        <div id="historyList"></div>
+      </div>
+
       <div class="sidebar-bottom">
         <div class="platform-badge">
-          <span>📊</span>
-          <span>CSV Mode</span>
+          <span>&#128202;</span><span>CSV Mode</span>
         </div>
       </div>
     </div>
 
-    <!-- Main -->
+    <!-- MAIN -->
     <div class="main">
-      <!-- Topbar -->
       <div class="topbar">
         <div class="topbar-left">
-          <h1 id="topbarTitle">Dashboard</h1>
+          <h1 id="topbarTitle">Business Intelligence</h1>
           <p id="topbarSub">Upload a CSV to get started</p>
         </div>
         <div class="topbar-right">
+          <div
+            class="period-selector"
+            id="periodSelector"
+            style="display: none"
+            onclick="togglePeriodMenu()"
+          >
+            <span id="activePeriodLabel">This period</span>
+            <span style="opacity: 0.5">&#9660;</span>
+          </div>
           <button class="upload-btn" onclick="openUploadModal()">
-            <span>📂</span> Upload CSV
+            &#128194; Upload CSV
           </button>
           <div class="user-avatar" id="userAvatar">?</div>
         </div>
       </div>
 
-      <!-- Content -->
       <div class="content">
-        <!-- Upload prompt (no data state) -->
+        <!-- UPLOAD PROMPT -->
         <div class="upload-prompt" id="uploadPrompt">
           <div
             class="upload-zone"
@@ -756,12 +1341,12 @@
               style="display: none"
               onchange="handleMainSelect(event)"
             />
-            <div class="upload-zone-icon">📊</div>
-            <h2>Upload your sales data</h2>
+            <div class="upload-zone-icon">&#128202;</div>
+            <h2>Your Business Intelligence Center</h2>
             <p>
-              Drop your CSV export from Shopify, Square, WooCommerce, or any
-              platform. Aervo will analyze it and build your dashboard
-              automatically.
+              Upload a CSV export from Shopify, Square, WooCommerce, or any
+              platform. Aervo will analyze it, detect anomalies, project your
+              month-end, and generate your executive summary automatically.
             </p>
             <button
               class="upload-zone-btn"
@@ -770,70 +1355,178 @@
                 document.getElementById('mainFileInput').click();
               "
             >
-              <span>📂</span> Choose file
+              &#128194; Choose file
             </button>
             <div class="supported-formats">
               <span class="format-tag">.CSV</span>
               <span class="format-tag">.XLSX</span>
               <span class="format-tag">.XLS</span>
-              <span class="format-tag">Shopify export</span>
-              <span class="format-tag">Square export</span>
+              <span class="format-tag">Shopify</span>
+              <span class="format-tag">Square</span>
               <span class="format-tag">WooCommerce</span>
             </div>
           </div>
         </div>
 
-        <!-- Dashboard data (populated after upload) -->
+        <!-- DASHBOARD -->
         <div class="dashboard-data" id="dashboardData">
-          <!-- Stats -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-label">Total Revenue</div>
-              <div class="stat-value" id="statRevenue">—</div>
-              <div class="stat-change neutral" id="statRevenueChange">—</div>
+          <!-- COMPARE BANNER -->
+          <div class="compare-banner" id="compareBanner">
+            <div>
+              Comparing <span class="compare-vs" id="compareLabel">— vs —</span>
             </div>
-            <div class="stat-card">
-              <div class="stat-label">Total Orders</div>
-              <div class="stat-value" id="statOrders">—</div>
-              <div class="stat-change neutral" id="statOrdersChange">—</div>
+            <span class="compare-exit" onclick="exitCompare()"
+              >&#10005; Exit comparison</span
+            >
+          </div>
+
+          <!-- NARRATIVE -->
+          <div class="narrative-banner" id="narrativeBanner">
+            <div class="narrative-header">
+              <div class="narrative-title">
+                <span class="narrative-badge"
+                  >&#129504; AI Executive Summary</span
+                >
+                <span class="narrative-period" id="narrativePeriod"></span>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-label">Avg Order Value</div>
-              <div class="stat-value" id="statAOV">—</div>
-              <div class="stat-change neutral" id="statAOVChange">—</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Unique Customers</div>
-              <div class="stat-value" id="statCustomers">—</div>
-              <div class="stat-change neutral" id="statCustomersChange">—</div>
+            <div class="narrative-text" id="narrativeText">
+              <div class="narrative-loading">
+                <div class="typing">
+                  <span></span><span></span><span></span>
+                </div>
+                &nbsp; Generating your executive summary&hellip;
+              </div>
             </div>
           </div>
 
-          <!-- Charts -->
+          <!-- ANOMALY ALERTS -->
+          <div class="anomaly-row" id="anomalyRow" style="display: none"></div>
+
+          <!-- STATS -->
+          <div class="stats-grid">
+            <div class="stat-card revenue">
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-value" id="statRevenue">&#8212;</div>
+              <div class="stat-change neutral" id="statRevenueChange">
+                &#8212;
+              </div>
+              <div class="stat-sparkline">
+                <canvas id="sparkRevenue" height="28"></canvas>
+              </div>
+            </div>
+            <div class="stat-card orders">
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value" id="statOrders">&#8212;</div>
+              <div class="stat-change neutral" id="statOrdersChange">
+                &#8212;
+              </div>
+              <div class="stat-sparkline">
+                <canvas id="sparkOrders" height="28"></canvas>
+              </div>
+            </div>
+            <div class="stat-card aov">
+              <div class="stat-label">Avg Order Value</div>
+              <div class="stat-value" id="statAOV">&#8212;</div>
+              <div class="stat-change neutral" id="statAOVChange">&#8212;</div>
+              <div class="stat-sparkline">
+                <canvas id="sparkAOV" height="28"></canvas>
+              </div>
+            </div>
+            <div class="stat-card customers">
+              <div class="stat-label">Unique Customers</div>
+              <div class="stat-value" id="statCustomers">&#8212;</div>
+              <div class="stat-change neutral" id="statCustomersChange">
+                &#8212;
+              </div>
+              <div class="stat-sparkline">
+                <canvas id="sparkCustomers" height="28"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECTION -->
+          <div
+            class="projection-card"
+            id="projectionCard"
+            style="display: none"
+          >
+            <div class="projection-header">
+              <div class="projection-title">&#127919; Month-End Projection</div>
+              <div class="projection-pace" id="projectionPace">
+                Calculating&hellip;
+              </div>
+            </div>
+            <div class="projection-numbers">
+              <div class="projection-current" id="projCurrent">&#8212;</div>
+              <div class="projection-sep">&#8594; projected</div>
+              <div class="projection-target" id="projTarget">&#8212;</div>
+            </div>
+            <div class="projection-bar-wrap">
+              <div
+                class="projection-bar-fill"
+                id="projBarFill"
+                style="width: 0%"
+              ></div>
+              <div
+                class="projection-bar-marker"
+                id="projBarMarker"
+                style="left: 50%"
+              ></div>
+            </div>
+            <div class="projection-sub" id="projSub"></div>
+          </div>
+
+          <!-- CHARTS -->
           <div class="charts-row">
             <div class="chart-card">
-              <div class="card-title">Revenue Over Time</div>
-              <div class="chart-wrap">
-                <canvas id="revenueChart"></canvas>
+              <div class="card-header">
+                <div class="card-title">Revenue Trend</div>
+                <div class="chart-tabs">
+                  <button
+                    class="chart-tab active"
+                    onclick="switchChartView('revenue', this)"
+                  >
+                    Revenue
+                  </button>
+                  <button
+                    class="chart-tab"
+                    onclick="switchChartView('orders', this)"
+                  >
+                    Orders
+                  </button>
+                  <button
+                    class="chart-tab"
+                    onclick="switchChartView('aov', this)"
+                  >
+                    AOV
+                  </button>
+                </div>
               </div>
+              <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
             </div>
             <div class="chart-card">
-              <div class="card-title">Orders by Day</div>
-              <div class="chart-wrap">
-                <canvas id="ordersChart"></canvas>
+              <div class="card-header">
+                <div class="card-title">Revenue Breakdown</div>
+                <div class="card-meta" id="donutMeta"></div>
               </div>
+              <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
             </div>
           </div>
 
-          <!-- Bottom row -->
-          <div class="bottom-row">
-            <!-- Top products -->
+          <!-- BOTTOM GRID -->
+          <div class="bottom-grid">
+            <!-- Top Products -->
             <div class="chart-card">
-              <div class="card-title">Top Products</div>
+              <div class="card-header">
+                <div class="card-title">Top Products</div>
+                <div class="card-meta" id="productsMeta"></div>
+              </div>
               <div class="table-wrap">
                 <table>
                   <thead>
                     <tr>
+                      <th>#</th>
                       <th>Product</th>
                       <th>Revenue</th>
                       <th>Units</th>
@@ -842,14 +1535,14 @@
                   <tbody id="productsTable">
                     <tr>
                       <td
-                        colspan="3"
+                        colspan="4"
                         style="
                           color: var(--muted);
                           text-align: center;
-                          padding: 20px 0;
+                          padding: 16px 0;
                         "
                       >
-                        No data yet
+                        No data
                       </td>
                     </tr>
                   </tbody>
@@ -857,21 +1550,45 @@
               </div>
             </div>
 
-            <!-- AI Chat -->
+            <!-- Goals -->
+            <div class="goals-card">
+              <div class="card-header" style="margin-bottom: 14px">
+                <div class="card-title">Goals & Targets</div>
+                <div class="card-meta" id="goalsMeta"></div>
+              </div>
+              <div id="goalsList"></div>
+              <button class="add-goal-btn" onclick="openGoalModal()">
+                + Set a Goal
+              </button>
+            </div>
+
+            <!-- AI Advisor -->
             <div class="chat-card">
-              <div class="card-title">AI Advisor</div>
+              <div class="card-header" style="margin-bottom: 12px">
+                <div class="card-title">AI Advisor</div>
+                <div
+                  style="
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: var(--accent3);
+                    box-shadow: 0 0 6px var(--accent3);
+                  "
+                ></div>
+              </div>
               <div class="chat-messages" id="chatMessages">
                 <div class="msg ai">
                   <div class="ai-label">AERVO AI</div>
-                  Upload your CSV and I'll analyze your business data, answer
-                  questions, and give you actionable recommendations.
+                  Upload your CSV and I'll instantly analyze your business,
+                  detect anomalies, project your month-end revenue, and answer
+                  any questions about your data.
                 </div>
               </div>
               <div class="chat-input-row">
                 <input
                   class="chat-input"
                   id="chatInput"
-                  placeholder="Ask about your data…"
+                  placeholder="Ask about your business&hellip;"
                   onkeydown="if (event.key === 'Enter') sendChat();"
                 />
                 <button class="chat-send" id="chatSendBtn" onclick="sendChat()">
@@ -880,45 +1597,42 @@
               </div>
             </div>
           </div>
-
-          <!-- Goals row -->
-          <div style="margin-top: 14px">
-            <div class="goals-card">
-              <div class="card-title" style="margin-bottom: 16px">Goals</div>
-              <div id="goalsList"></div>
-              <button class="add-goal-btn" onclick="openAddGoal()">
-                + Add Goal
-              </button>
-            </div>
-          </div>
         </div>
+        <!-- /dashboard-data -->
       </div>
+      <!-- /content -->
     </div>
+    <!-- /main -->
 
-    <!-- Upload progress overlay -->
+    <!-- OVERLAYS -->
     <div class="upload-overlay" id="uploadOverlay">
       <div class="upload-modal">
         <div class="upload-spinner"></div>
-        <h3 id="overlayTitle">Analyzing your data…</h3>
-        <p id="overlayMsg">This takes a few seconds</p>
+        <h3 id="overlayTitle">Analyzing your data&hellip;</h3>
+        <p id="overlayMsg">
+          Aervo is reading your CSV and generating your executive summary
+        </p>
       </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- Upload modal (topbar button) -->
+    <!-- UPLOAD MODAL -->
     <div
       class="upload-overlay"
       id="uploadModal"
       onclick="if (event.target === this) closeUploadModal();"
     >
-      <div class="upload-modal" style="max-width: 440px">
-        <h3 style="margin-bottom: 8px">Upload New Data</h3>
-        <p style="color: var(--muted); font-size: 0.82rem; margin-bottom: 0">
-          Replace your dashboard with a new CSV export. Previous data will be
-          updated.
+      <div class="upload-modal" style="max-width: 440px; text-align: left">
+        <h3 style="margin-bottom: 6px">Upload New Data</h3>
+        <p style="color: var(--muted2); font-size: 0.82rem; margin-bottom: 0">
+          Tag this upload with a period so you can compare month over month.
         </p>
+        <input
+          class="period-input"
+          id="periodLabel"
+          placeholder="e.g. February 2026, Q1 2026, Week 8&hellip;"
+        />
         <div
           class="modal-upload-zone"
           onclick="document.getElementById('modalFileInput').click()"
@@ -932,11 +1646,13 @@
             style="display: none"
             onchange="handleModalSelect(event)"
           />
-          <div style="font-size: 2rem; margin-bottom: 8px">📂</div>
-          <div style="font-size: 0.88rem; font-weight: 700">
+          <div style="font-size: 1.8rem; margin-bottom: 8px">&#128194;</div>
+          <div style="font-size: 0.85rem; font-weight: 700">
             Drop file here or click to browse
           </div>
-          <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px">
+          <div
+            style="font-size: 0.72rem; color: var(--muted2); margin-top: 4px"
+          >
             CSV, XLSX, XLS
           </div>
         </div>
@@ -944,14 +1660,14 @@
           id="modalFileInfo"
           style="
             display: none;
-            margin-top: 12px;
-            font-size: 0.82rem;
+            margin-top: 10px;
+            font-size: 0.8rem;
             color: var(--accent3);
           "
         >
-          ✓ <span id="modalFileName"></span>
+          &#10003; <span id="modalFileName"></span>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px">
+        <div style="display: flex; gap: 8px; margin-top: 18px">
           <button
             onclick="closeUploadModal()"
             style="
@@ -960,30 +1676,89 @@
               background: rgba(255, 255, 255, 0.04);
               border: 1px solid var(--border);
               border-radius: 8px;
-              color: var(--muted);
-              font-size: 0.85rem;
+              color: var(--muted2);
+              font-size: 0.82rem;
               cursor: pointer;
+              font-family: inherit;
             "
           >
             Cancel
           </button>
           <button
             onclick="submitModalUpload()"
-            id="modalUploadBtn"
             style="
               flex: 1;
               padding: 10px;
-              background: linear-gradient(90deg, var(--accent2), #a855f7);
+              background: linear-gradient(90deg, var(--accent2), var(--purple));
               border: none;
               border-radius: 8px;
               color: #fff;
-              font-size: 0.85rem;
+              font-size: 0.82rem;
               font-weight: 700;
               cursor: pointer;
+              font-family: inherit;
             "
           >
-            Upload & Analyze
+            Upload &amp; Analyze
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOAL MODAL -->
+    <div
+      class="goal-modal-backdrop"
+      id="goalModal"
+      onclick="if (event.target === this) closeGoalModal();"
+    >
+      <div class="goal-modal">
+        <h3>Set a Business Goal</h3>
+        <div class="gm-field">
+          <label class="gm-label">Goal Name</label>
+          <input
+            class="gm-input"
+            id="gmName"
+            placeholder="e.g. Monthly Revenue Target"
+          />
+        </div>
+        <div class="gm-field">
+          <label class="gm-label">Target Value</label>
+          <input
+            class="gm-input"
+            id="gmTarget"
+            type="number"
+            placeholder="e.g. 50000"
+          />
+        </div>
+        <div class="gm-field">
+          <label class="gm-label">Metric Type</label>
+          <div class="gm-type-grid">
+            <button
+              class="gm-type-btn active"
+              onclick="selectGoalType('revenue', this)"
+            >
+              &#128178; Revenue
+            </button>
+            <button
+              class="gm-type-btn"
+              onclick="selectGoalType('orders', this)"
+            >
+              &#128230; Orders
+            </button>
+            <button class="gm-type-btn" onclick="selectGoalType('aov', this)">
+              &#127919; Avg Order Value
+            </button>
+            <button
+              class="gm-type-btn"
+              onclick="selectGoalType('customers', this)"
+            >
+              &#128101; Customers
+            </button>
+          </div>
+        </div>
+        <div class="gm-actions">
+          <button class="gm-cancel" onclick="closeGoalModal()">Cancel</button>
+          <button class="gm-save" onclick="saveGoal()">Save Goal</button>
         </div>
       </div>
     </div>
@@ -991,21 +1766,23 @@
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
       const token = localStorage.getItem("aervo_token");
-
       if (!token) window.location.href = "/login";
 
       let csvSummary = null;
-      let uploadId = null;
+      let currentUploadId = null;
       let modalFile = null;
-      let revenueChartInstance = null;
-      let ordersChartInstance = null;
+      let allUploads = [];
+      let activeUploadIndex = 0;
+      let compareMode = false;
+      let compareUploadIndex = null;
+      let goalMetricType = "revenue";
+      let charts = {};
 
-      // ── Init ──────────────────────────────────────────────
+      // ── INIT ──────────────────────────────────────────────────────────
       async function init() {
-        // Load user info
         try {
-          const res = await fetch(`${BACKEND_URL}/api/user/me`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const res = await fetch(BACKEND_URL + "/api/user/me", {
+            headers: { Authorization: "Bearer " + token },
           });
           const data = await res.json();
           if (data.success) {
@@ -1017,56 +1794,225 @@
           }
         } catch (e) {}
 
-        // Load existing CSV data if any
+        // Load all uploads for history
         try {
-          const res = await fetch(`${BACKEND_URL}/api/csv/latest`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const res = await fetch(BACKEND_URL + "/api/csv/uploads", {
+            headers: { Authorization: "Bearer " + token },
           });
           const data = await res.json();
-          if (data.success && data.summary) {
-            csvSummary = data.summary;
-            uploadId = data.uploadId;
-            renderDashboard(data.summary);
+          if (data.success && data.uploads && data.uploads.length > 0) {
+            allUploads = data.uploads;
+            renderHistory();
+            loadUpload(0);
+            return;
           }
         } catch (e) {}
 
-        // Load goals
+        // Fallback to latest
+        try {
+          const res = await fetch(BACKEND_URL + "/api/csv/latest", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const data = await res.json();
+          if (data.success && data.summary) {
+            allUploads = [
+              {
+                id: data.uploadId,
+                period_label: "Latest Upload",
+                created_at: new Date().toISOString(),
+                summary: data.summary,
+              },
+            ];
+            renderHistory();
+            renderDashboard(data.summary, data.uploadId);
+            loadNarrative(data.uploadId, "Latest Upload");
+          }
+        } catch (e) {}
+
         loadGoals();
       }
 
-      // ── Upload handlers ───────────────────────────────────
-      function handleMainDrop(event) {
-        event.preventDefault();
+      // ── HISTORY ───────────────────────────────────────────────────────
+      function renderHistory() {
+        if (!allUploads.length) return;
+        document.getElementById("historySection").style.display = "block";
+        document.getElementById("periodSelector").style.display = "flex";
+        const list = document.getElementById("historyList");
+        list.innerHTML = allUploads
+          .map(
+            (u, i) => `
+    <div class="history-item ${i === activeUploadIndex ? "active-period" : ""}" onclick="loadUpload(${i})">
+      <div class="history-dot"></div>
+      <div>
+        <div class="history-label">${u.period_label || "Upload " + (i + 1)}</div>
+        <div class="history-date">${formatDate(u.created_at)}</div>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      async function loadUpload(index) {
+        activeUploadIndex = index;
+        const upload = allUploads[index];
+        document.getElementById("activePeriodLabel").textContent =
+          upload.period_label || "Upload " + (index + 1);
+        renderHistory();
+
+        if (upload.summary) {
+          renderDashboard(upload.summary, upload.id);
+          loadNarrative(upload.id, upload.period_label);
+          return;
+        }
+
+        showOverlay(
+          "Loading period data\u2026",
+          "Fetching " + (upload.period_label || "upload"),
+        );
+        try {
+          const res = await fetch(
+            BACKEND_URL + "/api/csv/upload/" + upload.id,
+            { headers: { Authorization: "Bearer " + token } },
+          );
+          const data = await res.json();
+          hideOverlay();
+          if (data.success) {
+            allUploads[index].summary = data.summary;
+            renderDashboard(data.summary, upload.id);
+            loadNarrative(upload.id, upload.period_label);
+          }
+        } catch (e) {
+          hideOverlay();
+        }
+        loadGoals();
+      }
+
+      // ── NARRATIVE ─────────────────────────────────────────────────────
+      async function loadNarrative(uploadId, period) {
+        document.getElementById("narrativePeriod").textContent = period || "";
+        document.getElementById("narrativeText").innerHTML =
+          '<div class="narrative-loading"><div class="typing"><span></span><span></span><span></span></div>&nbsp; Generating your executive summary\u2026</div>';
+
+        try {
+          const res = await fetch(
+            BACKEND_URL + "/api/csv/narrative/" + uploadId,
+            { headers: { Authorization: "Bearer " + token } },
+          );
+          const data = await res.json();
+          if (data.success && data.narrative) {
+            document.getElementById("narrativeText").innerHTML = formatMarkdown(
+              data.narrative,
+            );
+            if (data.anomalies && data.anomalies.length > 0)
+              renderAnomalies(data.anomalies);
+            if (data.projection) renderProjection(data.projection);
+          } else {
+            // Generate on-the-fly from summary
+            generateNarrativeFromSummary(csvSummary, period);
+          }
+        } catch (e) {
+          generateNarrativeFromSummary(csvSummary, period);
+        }
+      }
+
+      function generateNarrativeFromSummary(summary, period) {
+        if (!summary) {
+          document.getElementById("narrativeText").textContent =
+            "Upload a CSV to generate your executive summary.";
+          return;
+        }
+        const rev = formatCurrency(summary.totalRevenue);
+        const orders = summary.totalOrders?.toLocaleString() || "0";
+        const aov = formatCurrency(summary.avgOrderValue);
+        const customers = summary.uniqueCustomers?.toLocaleString() || "N/A";
+        const topProduct = summary.topProducts?.[0]?.name || "your top product";
+        document.getElementById("narrativeText").innerHTML =
+          `<strong>${period || "This period"}</strong> your business generated <strong>${rev}</strong> across <strong>${orders} orders</strong> from <strong>${customers} unique customers</strong>. Your average order value was <strong>${aov}</strong>. <strong>${topProduct}</strong> was your top-performing product. Upload multiple periods to unlock month-over-month comparisons, anomaly detection, and predictive projections.`;
+      }
+
+      // ── ANOMALIES ─────────────────────────────────────────────────────
+      function renderAnomalies(anomalies) {
+        const row = document.getElementById("anomalyRow");
+        row.style.display = "flex";
+        row.innerHTML = anomalies
+          .map(
+            (a) => `
+    <div class="anomaly-card ${a.type}">
+      <div class="anomaly-icon">${a.icon || (a.type === "positive" ? "\u2197\uFE0F" : a.type === "danger" ? "\u26A0\uFE0F" : "\u26A0\uFE0F")}</div>
+      <div>
+        <div class="anomaly-label">${a.label}</div>
+        <div class="anomaly-msg">${a.message}</div>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      // ── PROJECTION ────────────────────────────────────────────────────
+      function renderProjection(proj) {
+        if (!proj) return;
+        const card = document.getElementById("projectionCard");
+        card.style.display = "block";
+        document.getElementById("projCurrent").textContent = formatCurrency(
+          proj.projected_revenue,
+        );
+        document.getElementById("projTarget").textContent = proj.goal_revenue
+          ? "Goal: " + formatCurrency(proj.goal_revenue)
+          : "No goal set";
+
+        const pct = proj.goal_revenue
+          ? Math.min((proj.projected_revenue / proj.goal_revenue) * 100, 110)
+          : 70;
+        document.getElementById("projBarFill").style.width =
+          Math.min(pct, 100) + "%";
+
+        const daysPct = proj.days_elapsed_pct || 50;
+        document.getElementById("projBarMarker").style.left = daysPct + "%";
+
+        const paceEl = document.getElementById("projectionPace");
+        if (proj.on_track) {
+          paceEl.textContent = "\u2713 On Track";
+          paceEl.className = "projection-pace on-track";
+        } else if (proj.projected_revenue > (proj.goal_revenue || 0)) {
+          paceEl.textContent = "\u2B06 Ahead of Target";
+          paceEl.className = "projection-pace ahead";
+        } else {
+          paceEl.textContent = "\u26A0 Behind Target";
+          paceEl.className = "projection-pace behind";
+        }
+
+        document.getElementById("projSub").textContent = proj.message || "";
+      }
+
+      // ── UPLOAD ────────────────────────────────────────────────────────
+      function handleMainDrop(e) {
+        e.preventDefault();
         document.getElementById("mainDropZone").classList.remove("dragging");
-        const file = event.dataTransfer.files[0];
-        if (file) uploadFile(file);
+        const f = e.dataTransfer.files[0];
+        if (f) uploadFile(f);
       }
-      function handleMainSelect(event) {
-        const file = event.target.files[0];
-        if (file) uploadFile(file);
+      function handleMainSelect(e) {
+        const f = e.target.files[0];
+        if (f) uploadFile(f);
       }
-      function handleModalDrop(event) {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        if (file) {
-          modalFile = file;
-          document.getElementById("modalFileName").textContent = file.name;
+      function handleModalDrop(e) {
+        e.preventDefault();
+        const f = e.dataTransfer.files[0];
+        if (f) {
+          modalFile = f;
+          document.getElementById("modalFileName").textContent = f.name;
           document.getElementById("modalFileInfo").style.display = "block";
         }
       }
-      function handleModalSelect(event) {
-        const file = event.target.files[0];
-        if (file) {
-          modalFile = file;
-          document.getElementById("modalFileName").textContent = file.name;
+      function handleModalSelect(e) {
+        const f = e.target.files[0];
+        if (f) {
+          modalFile = f;
+          document.getElementById("modalFileName").textContent = f.name;
           document.getElementById("modalFileInfo").style.display = "block";
         }
-      }
-      function submitModalUpload() {
-        if (!modalFile) return showToast("Please select a file first", "error");
-        closeUploadModal();
-        uploadFile(modalFile);
-        modalFile = null;
       }
       function openUploadModal() {
         document.getElementById("uploadModal").classList.add("show");
@@ -1076,48 +2022,80 @@
         document.getElementById("modalFileInfo").style.display = "none";
         modalFile = null;
       }
+      function submitModalUpload() {
+        if (!modalFile) return showToast("Please select a file first", "error");
+        const label =
+          document.getElementById("periodLabel").value.trim() ||
+          "Upload " +
+            new Date().toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            });
+        closeUploadModal();
+        uploadFile(modalFile, label);
+        modalFile = null;
+      }
 
-      async function uploadFile(file) {
+      async function uploadFile(file, periodLabel) {
+        const label =
+          periodLabel ||
+          "Upload " +
+            new Date().toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            });
         showOverlay(
-          "Analyzing your data…",
-          "Aervo is reading your CSV and crunching the numbers",
+          "Analyzing your data\u2026",
+          "Aervo is reading your CSV and generating insights",
         );
-
         const formData = new FormData();
         formData.append("file", file);
-
+        formData.append("period_label", label);
         try {
-          const res = await fetch(`${BACKEND_URL}/api/csv/upload`, {
+          const res = await fetch(BACKEND_URL + "/api/csv/upload", {
             method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: "Bearer " + token },
             body: formData,
           });
           const data = await res.json();
           hideOverlay();
-
           if (!data.success) throw new Error(data.message || "Upload failed");
 
           csvSummary = data.summary;
-          uploadId = data.uploadId;
-          renderDashboard(data.summary);
-          showToast("✓ Data loaded successfully", "success");
+          currentUploadId = data.uploadId;
 
-          // Trigger AI intro message
-          addAiMessage(
-            `I've analyzed your data! Here's a quick summary:\n\n**${formatCurrency(data.summary.totalRevenue)}** in total revenue across **${data.summary.totalOrders}** orders. Your average order value is **${formatCurrency(data.summary.avgOrderValue)}**. Ask me anything about your business performance.`,
-          );
+          // Add to upload history
+          const newUpload = {
+            id: data.uploadId,
+            period_label: label,
+            created_at: new Date().toISOString(),
+            summary: data.summary,
+          };
+          allUploads.unshift(newUpload);
+          activeUploadIndex = 0;
+          renderHistory();
+          renderDashboard(data.summary, data.uploadId);
+          loadNarrative(data.uploadId, label);
+          showToast("\u2713 " + label + " loaded", "success");
         } catch (err) {
           hideOverlay();
           showToast(err.message || "Upload failed", "error");
         }
       }
 
-      // ── Render dashboard ──────────────────────────────────
-      function renderDashboard(summary) {
+      // ── RENDER DASHBOARD ──────────────────────────────────────────────
+      function renderDashboard(summary, uploadId) {
+        csvSummary = summary;
+        currentUploadId = uploadId;
         document.getElementById("uploadPrompt").style.display = "none";
         document.getElementById("dashboardData").style.display = "block";
         document.getElementById("topbarSub").textContent =
-          `Last updated: ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+          "Last updated: " +
+          new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
 
         // Stats
         document.getElementById("statRevenue").textContent = formatCurrency(
@@ -1129,70 +2107,261 @@
           summary.avgOrderValue,
         );
         document.getElementById("statCustomers").textContent =
-          summary.uniqueCustomers?.toLocaleString() || "—";
+          summary.uniqueCustomers?.toLocaleString() || "\u2014";
 
-        // Revenue chart
-        if (summary.revenueByDate && summary.revenueByDate.length > 0) {
-          renderRevenueChart(summary.revenueByDate);
-          renderOrdersChart(summary.revenueByDate);
+        // Changes (compare mode)
+        if (
+          compareMode &&
+          compareUploadIndex !== null &&
+          allUploads[compareUploadIndex]?.summary
+        ) {
+          const prev = allUploads[compareUploadIndex].summary;
+          setStatChange(
+            "statRevenueChange",
+            summary.totalRevenue,
+            prev.totalRevenue,
+            true,
+          );
+          setStatChange(
+            "statOrdersChange",
+            summary.totalOrders,
+            prev.totalOrders,
+            false,
+          );
+          setStatChange(
+            "statAOVChange",
+            summary.avgOrderValue,
+            prev.avgOrderValue,
+            true,
+          );
+          setStatChange(
+            "statCustomersChange",
+            summary.uniqueCustomers,
+            prev.uniqueCustomers,
+            false,
+          );
+        } else {
+          [
+            "statRevenueChange",
+            "statOrdersChange",
+            "statAOVChange",
+            "statCustomersChange",
+          ].forEach((id) => {
+            const el = document.getElementById(id);
+            el.textContent = summary.periodLabel
+              ? summary.periodLabel
+              : "\u2014";
+            el.className = "stat-change neutral";
+          });
         }
 
-        // Top products
+        // Sparklines
+        if (summary.revenueByDate && summary.revenueByDate.length > 1) {
+          renderSparkline(
+            "sparkRevenue",
+            summary.revenueByDate.map((d) => d.revenue),
+            "#29c8ff",
+          );
+          renderSparkline(
+            "sparkOrders",
+            summary.revenueByDate.map((d) => d.orders || 0),
+            "#7c5cff",
+          );
+          renderSparkline(
+            "sparkAOV",
+            summary.revenueByDate.map((d) =>
+              d.revenue && d.orders ? d.revenue / d.orders : 0,
+            ),
+            "#23e6a8",
+          );
+          renderSparkline(
+            "sparkCustomers",
+            summary.revenueByDate.map((_, i) => i),
+            "#fbbf24",
+          );
+        }
+
+        // Main chart
+        if (summary.revenueByDate && summary.revenueByDate.length > 0) {
+          renderMainChart(summary.revenueByDate, "revenue");
+        }
+
+        // Donut
         if (summary.topProducts && summary.topProducts.length > 0) {
+          renderDonut(summary.topProducts);
           renderProductsTable(summary.topProducts);
         }
+
+        loadGoals();
       }
 
-      function renderRevenueChart(data) {
-        const ctx = document.getElementById("revenueChart").getContext("2d");
-        if (revenueChartInstance) revenueChartInstance.destroy();
-        revenueChartInstance = new Chart(ctx, {
+      function setStatChange(id, current, prev, isCurrency) {
+        const el = document.getElementById(id);
+        if (!prev || !current) {
+          el.textContent = "\u2014";
+          el.className = "stat-change neutral";
+          return;
+        }
+        const pct = (((current - prev) / prev) * 100).toFixed(1);
+        const up = current >= prev;
+        el.textContent =
+          (up ? "\u25B2 +" : "\u25BC ") + Math.abs(pct) + "% vs prev period";
+        el.className = "stat-change " + (up ? "up" : "down");
+      }
+
+      // ── SPARKLINES ────────────────────────────────────────────────────
+      function renderSparkline(canvasId, data, color) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        if (charts[canvasId]) charts[canvasId].destroy();
+        charts[canvasId] = new Chart(ctx, {
           type: "line",
           data: {
-            labels: data.map((d) => d.date),
+            labels: data.map((_, i) => i),
             datasets: [
               {
-                label: "Revenue",
-                data: data.map((d) => d.revenue),
-                borderColor: "#29c8ff",
-                backgroundColor: "rgba(41,200,255,0.08)",
-                borderWidth: 2,
+                data,
+                borderColor: color,
+                borderWidth: 1.5,
                 fill: true,
+                backgroundColor: color
+                  .replace(")", ",0.08)")
+                  .replace("rgb", "rgba"),
                 tension: 0.4,
                 pointRadius: 0,
-                pointHoverRadius: 4,
               },
             ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             plugins: {
               legend: { display: false },
+              tooltip: { enabled: false },
+            },
+            scales: { x: { display: false }, y: { display: false } },
+          },
+        });
+      }
+
+      // ── MAIN CHART ────────────────────────────────────────────────────
+      let currentChartView = "revenue";
+      function switchChartView(view, btn) {
+        currentChartView = view;
+        document
+          .querySelectorAll(".chart-tab")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        if (csvSummary?.revenueByDate)
+          renderMainChart(csvSummary.revenueByDate, view);
+      }
+
+      function renderMainChart(data, view) {
+        const ctx = document.getElementById("mainChart").getContext("2d");
+        if (charts.main) charts.main.destroy();
+
+        let yData, color, label;
+        if (view === "revenue") {
+          yData = data.map((d) => d.revenue);
+          color = "#29c8ff";
+          label = "Revenue";
+        } else if (view === "orders") {
+          yData = data.map((d) => d.orders || 0);
+          color = "#7c5cff";
+          label = "Orders";
+        } else {
+          yData = data.map((d) =>
+            d.revenue && d.orders ? +(d.revenue / d.orders).toFixed(2) : 0,
+          );
+          color = "#23e6a8";
+          label = "AOV";
+        }
+
+        const datasets = [
+          {
+            label,
+            data: yData,
+            borderColor: color,
+            backgroundColor: createGradient(ctx, color),
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+        ];
+
+        // Add compare dataset if active
+        if (
+          compareMode &&
+          compareUploadIndex !== null &&
+          allUploads[compareUploadIndex]?.summary?.revenueByDate
+        ) {
+          const prev = allUploads[compareUploadIndex].summary.revenueByDate;
+          let prevData;
+          if (view === "revenue") prevData = prev.map((d) => d.revenue);
+          else if (view === "orders") prevData = prev.map((d) => d.orders || 0);
+          else
+            prevData = prev.map((d) =>
+              d.revenue && d.orders ? +(d.revenue / d.orders).toFixed(2) : 0,
+            );
+          datasets.push({
+            label: "Previous",
+            data: prevData,
+            borderColor: "rgba(255,255,255,0.25)",
+            backgroundColor: "transparent",
+            borderWidth: 1.5,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            borderDash: [4, 4],
+          });
+        }
+
+        charts.main = new Chart(ctx, {
+          type: "line",
+          data: { labels: data.map((d) => d.date), datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: compareMode,
+                labels: { color: "#6b7a9e", font: { size: 11 } },
+              },
               tooltip: {
-                backgroundColor: "#111827",
-                titleColor: "#9ca3af",
+                backgroundColor: "#0f172a",
+                titleColor: "#6b7a9e",
                 bodyColor: "#f0f4ff",
                 borderColor: "rgba(148,163,255,0.15)",
                 borderWidth: 1,
-                callbacks: { label: (ctx) => " $" + ctx.parsed.y.toFixed(2) },
+                callbacks: {
+                  label: (ctx) =>
+                    view === "revenue" || view === "aov"
+                      ? " $" + ctx.parsed.y.toFixed(2)
+                      : " " + ctx.parsed.y,
+                },
               },
             },
             scales: {
               x: {
-                grid: { color: "rgba(255,255,255,0.04)" },
+                grid: { color: "rgba(255,255,255,0.03)" },
                 ticks: {
-                  color: "#6b7a9e",
+                  color: "#4b5a7a",
                   font: { size: 11 },
                   maxTicksLimit: 8,
                 },
               },
               y: {
-                grid: { color: "rgba(255,255,255,0.04)" },
+                grid: { color: "rgba(255,255,255,0.03)" },
                 ticks: {
-                  color: "#6b7a9e",
+                  color: "#4b5a7a",
                   font: { size: 11 },
-                  callback: (v) => "$" + v.toLocaleString(),
+                  callback: (v) =>
+                    view === "revenue" || view === "aov"
+                      ? "$" + v.toLocaleString()
+                      : v,
                 },
               },
             },
@@ -1200,104 +2369,182 @@
         });
       }
 
-      function renderOrdersChart(data) {
-        const ctx = document.getElementById("ordersChart").getContext("2d");
-        if (ordersChartInstance) ordersChartInstance.destroy();
-        ordersChartInstance = new Chart(ctx, {
-          type: "bar",
+      function createGradient(ctx, color) {
+        const g = ctx.createLinearGradient(0, 0, 0, 200);
+        g.addColorStop(
+          0,
+          color.replace("#", "").length === 6 ? hexToRgba(color, 0.15) : color,
+        );
+        g.addColorStop(
+          1,
+          color.replace("#", "").length === 6 ? hexToRgba(color, 0.01) : color,
+        );
+        return g;
+      }
+      function hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16),
+          g = parseInt(hex.slice(3, 5), 16),
+          b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+      }
+
+      // ── DONUT ─────────────────────────────────────────────────────────
+      function renderDonut(products) {
+        const top5 = products.slice(0, 5);
+        const others = products.slice(5).reduce((s, p) => s + p.revenue, 0);
+        const labels = top5.map((p) =>
+          p.name.length > 18 ? p.name.slice(0, 18) + "\u2026" : p.name,
+        );
+        const dataVals = top5.map((p) => p.revenue);
+        if (others > 0) {
+          labels.push("Others");
+          dataVals.push(others);
+        }
+
+        const ctx = document.getElementById("donutChart").getContext("2d");
+        if (charts.donut) charts.donut.destroy();
+        const colors = [
+          "#29c8ff",
+          "#7c5cff",
+          "#23e6a8",
+          "#fbbf24",
+          "#ff5c5c",
+          "#a855f7",
+        ];
+
+        document.getElementById("donutMeta").textContent =
+          products.length + " products";
+
+        charts.donut = new Chart(ctx, {
+          type: "doughnut",
           data: {
-            labels: data.map((d) => d.date),
+            labels,
             datasets: [
               {
-                label: "Orders",
-                data: data.map((d) => d.orders || 0),
-                backgroundColor: "rgba(124,92,255,0.5)",
-                borderColor: "rgba(124,92,255,0.8)",
-                borderWidth: 1,
-                borderRadius: 4,
+                data: dataVals,
+                backgroundColor: colors,
+                borderColor: "#0b1120",
+                borderWidth: 3,
+                hoverOffset: 6,
               },
             ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              x: {
-                grid: { display: false },
-                ticks: {
+            cutout: "68%",
+            plugins: {
+              legend: {
+                position: "right",
+                labels: {
                   color: "#6b7a9e",
                   font: { size: 11 },
-                  maxTicksLimit: 7,
+                  boxWidth: 10,
+                  padding: 12,
                 },
               },
-              y: {
-                grid: { color: "rgba(255,255,255,0.04)" },
-                ticks: { color: "#6b7a9e", font: { size: 11 } },
+              tooltip: {
+                backgroundColor: "#0f172a",
+                titleColor: "#6b7a9e",
+                bodyColor: "#f0f4ff",
+                borderColor: "rgba(148,163,255,0.15)",
+                borderWidth: 1,
+                callbacks: {
+                  label: (ctx) =>
+                    " $" +
+                    ctx.parsed.toFixed(2) +
+                    " (" +
+                    (
+                      (ctx.parsed / dataVals.reduce((a, b) => a + b, 0)) *
+                      100
+                    ).toFixed(1) +
+                    "%)",
+                },
               },
             },
           },
         });
       }
 
+      // ── PRODUCTS TABLE ────────────────────────────────────────────────
       function renderProductsTable(products) {
-        const maxRevenue = Math.max(...products.map((p) => p.revenue));
-        const tbody = document.getElementById("productsTable");
-        tbody.innerHTML = products
+        const max = Math.max(...products.map((p) => p.revenue));
+        document.getElementById("productsMeta").textContent =
+          products.length + " total";
+        document.getElementById("productsTable").innerHTML = products
           .slice(0, 8)
           .map(
-            (p) => `
-      <tr>
-        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
-        <td>
-          <div class="bar-cell">
-            ${formatCurrency(p.revenue)}
-            <div class="mini-bar-wrap"><div class="mini-bar" style="width:${((p.revenue / maxRevenue) * 100).toFixed(1)}%"></div></div>
-          </div>
-        </td>
-        <td style="color:var(--muted)">${p.units || "—"}</td>
-      </tr>
-    `,
+            (p, i) => `
+    <tr>
+      <td><div class="rank-badge">${i + 1}</div></td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
+      <td><div class="bar-cell">${formatCurrency(p.revenue)}<div class="mini-bar-wrap"><div class="mini-bar" style="width:${((p.revenue / max) * 100).toFixed(1)}%"></div></div></div></td>
+      <td style="color:var(--muted2)">${p.units || "\u2014"}</td>
+    </tr>
+  `,
           )
           .join("");
       }
 
-      // ── AI Chat ───────────────────────────────────────────
+      // ── COMPARE ───────────────────────────────────────────────────────
+      function openCompareMode() {
+        if (allUploads.length < 2)
+          return showToast("Upload at least 2 periods to compare", "error");
+        const other = allUploads.find((_, i) => i !== activeUploadIndex);
+        const otherIndex = allUploads.indexOf(other);
+        compareMode = true;
+        compareUploadIndex = otherIndex;
+        const a = allUploads[activeUploadIndex].period_label || "Period A";
+        const b = allUploads[otherIndex].period_label || "Period B";
+        document.getElementById("compareLabel").textContent = a + " vs " + b;
+        document.getElementById("compareBanner").classList.add("show");
+        renderDashboard(
+          allUploads[activeUploadIndex].summary,
+          allUploads[activeUploadIndex].id,
+        );
+        if (currentChartView && csvSummary?.revenueByDate)
+          renderMainChart(csvSummary.revenueByDate, currentChartView);
+      }
+      function exitCompare() {
+        compareMode = false;
+        compareUploadIndex = null;
+        document.getElementById("compareBanner").classList.remove("show");
+        renderDashboard(
+          allUploads[activeUploadIndex].summary,
+          allUploads[activeUploadIndex].id,
+        );
+      }
+
+      // ── AI CHAT ───────────────────────────────────────────────────────
       async function sendChat() {
         const input = document.getElementById("chatInput");
         const msg = input.value.trim();
         if (!msg) return;
-
         input.value = "";
         addUserMessage(msg);
-
         const btn = document.getElementById("chatSendBtn");
         btn.disabled = true;
-
-        // Typing indicator
         const typingEl = addTypingIndicator();
-
         try {
-          const res = await fetch(`${BACKEND_URL}/api/csv/chat`, {
+          const res = await fetch(BACKEND_URL + "/api/csv/chat", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: "Bearer " + token,
             },
-            body: JSON.stringify({ message: msg, uploadId }),
+            body: JSON.stringify({ message: msg, uploadId: currentUploadId }),
           });
           const data = await res.json();
           typingEl.remove();
-          if (data.success) {
-            addAiMessage(data.reply);
-          } else {
-            addAiMessage("Sorry, I ran into an issue. Please try again.");
-          }
+          addAiMessage(
+            data.success
+              ? data.reply
+              : "Sorry, I ran into an issue. Please try again.",
+          );
         } catch (err) {
           typingEl.remove();
           addAiMessage("Connection error. Please try again.");
         }
-
         btn.disabled = false;
       }
 
@@ -1308,42 +2555,81 @@
         document.getElementById("chatMessages").appendChild(el);
         scrollChat();
       }
-
       function addAiMessage(text) {
         const el = document.createElement("div");
         el.className = "msg ai";
-        el.innerHTML = `<div class="ai-label">AERVO AI</div>${formatMarkdown(text)}`;
+        el.innerHTML =
+          '<div class="ai-label">AERVO AI</div>' + formatMarkdown(text);
         document.getElementById("chatMessages").appendChild(el);
         scrollChat();
       }
-
       function addTypingIndicator() {
         const el = document.createElement("div");
         el.className = "msg ai";
-        el.innerHTML = `<div class="ai-label">AERVO AI</div><div class="typing"><span></span><span></span><span></span></div>`;
+        el.innerHTML =
+          '<div class="ai-label">AERVO AI</div><div class="typing"><span></span><span></span><span></span></div>';
         document.getElementById("chatMessages").appendChild(el);
         scrollChat();
         return el;
       }
-
       function scrollChat() {
-        const msgs = document.getElementById("chatMessages");
-        msgs.scrollTop = msgs.scrollHeight;
+        const m = document.getElementById("chatMessages");
+        m.scrollTop = m.scrollHeight;
       }
 
-      function formatMarkdown(text) {
-        return text
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-          .replace(/\n/g, "<br>");
-      }
-
-      // ── Goals ─────────────────────────────────────────────
+      // ── GOALS ─────────────────────────────────────────────────────────
       let goals = [];
+      let goalMetric = "revenue";
+
+      function openGoalModal() {
+        document.getElementById("goalModal").classList.add("show");
+      }
+      function closeGoalModal() {
+        document.getElementById("goalModal").classList.remove("show");
+        document.getElementById("gmName").value = "";
+        document.getElementById("gmTarget").value = "";
+      }
+      function selectGoalType(type, btn) {
+        goalMetric = type;
+        document
+          .querySelectorAll(".gm-type-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      async function saveGoal() {
+        const name = document.getElementById("gmName").value.trim();
+        const target = parseFloat(document.getElementById("gmTarget").value);
+        if (!name || !target)
+          return showToast("Please fill in all fields", "error");
+        try {
+          const res = await fetch(BACKEND_URL + "/api/goals", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({
+              name,
+              target_value: target,
+              metric_type: goalMetric,
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            closeGoalModal();
+            await loadGoals();
+            showToast("\u2713 Goal saved", "success");
+          }
+        } catch (e) {
+          showToast("Failed to save goal", "error");
+        }
+      }
 
       async function loadGoals() {
         try {
-          const res = await fetch(`${BACKEND_URL}/api/goals`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const res = await fetch(BACKEND_URL + "/api/goals", {
+            headers: { Authorization: "Bearer " + token },
           });
           const data = await res.json();
           if (data.success && data.goals) {
@@ -1357,75 +2643,76 @@
         const container = document.getElementById("goalsList");
         if (!goals.length) {
           container.innerHTML =
-            '<p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;">No goals yet. Add one to track your progress.</p>';
+            '<p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">No goals set. Add one to track progress against your targets.</p>';
+          document.getElementById("goalsMeta").textContent = "";
           return;
         }
+        const onTrack = goals.filter(
+          (g) => g.target_value > 0 && g.current_value / g.target_value >= 0.75,
+        ).length;
+        document.getElementById("goalsMeta").textContent =
+          onTrack + "/" + goals.length + " on track";
+
         container.innerHTML = goals
           .map((g) => {
-            const progress =
+            const pct =
               g.target_value > 0
                 ? Math.min((g.current_value / g.target_value) * 100, 100)
                 : 0;
+            const isOnTrack = pct >= 75;
+            const currentVal =
+              g.metric_type === "revenue" || g.metric_type === "aov"
+                ? formatCurrency(g.current_value)
+                : g.current_value?.toLocaleString() || "0";
+            const targetVal =
+              g.metric_type === "revenue" || g.metric_type === "aov"
+                ? formatCurrency(g.target_value)
+                : g.target_value?.toLocaleString();
+
+            // Projection
+            let projText = "";
+            if (
+              csvSummary &&
+              g.metric_type === "revenue" &&
+              csvSummary.totalRevenue
+            ) {
+              const dayOfMonth = new Date().getDate();
+              const daysInMonth = new Date(
+                new Date().getFullYear(),
+                new Date().getMonth() + 1,
+                0,
+              ).getDate();
+              const projectedMonthEnd =
+                (csvSummary.totalRevenue / dayOfMonth) * daysInMonth;
+              const diff = projectedMonthEnd - g.target_value;
+              if (Math.abs(diff) > 0) {
+                projText =
+                  diff >= 0
+                    ? `\u2197 Projected to exceed target by ${formatCurrency(diff)}`
+                    : `\u2198 ${formatCurrency(Math.abs(diff))} short of target at current pace`;
+              }
+            }
+
             return `
-        <div class="goal-item">
-          <div class="goal-header">
-            <span class="goal-name">${g.name}</span>
-            <span class="goal-progress-text">${formatGoalValue(g.current_value, g.metric_type)} / ${formatGoalValue(g.target_value, g.metric_type)}</span>
-          </div>
-          <div class="goal-bar-wrap">
-            <div class="goal-bar" style="width:${progress.toFixed(1)}%"></div>
+      <div class="goal-item">
+        <div class="goal-header">
+          <span class="goal-name">${g.name}</span>
+          <div class="goal-numbers">
+            <span class="goal-progress-text">${currentVal} / ${targetVal}</span>
+            <span class="goal-pct ${isOnTrack ? "on" : "off"}">${pct.toFixed(0)}%</span>
           </div>
         </div>
-      `;
+        <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct.toFixed(1)}%;background:${isOnTrack ? "linear-gradient(90deg,var(--accent3),var(--accent))" : "linear-gradient(90deg,var(--danger),var(--warn))"}"></div></div>
+        ${projText ? `<div class="goal-projection">${projText}</div>` : ""}
+      </div>
+    `;
           })
           .join("");
       }
 
-      function formatGoalValue(val, type) {
-        if (type === "revenue") return formatCurrency(val);
-        return Number(val).toLocaleString();
-      }
-
-      function openAddGoal() {
-        const name = prompt("Goal name (e.g. Monthly Revenue):");
-        if (!name) return;
-        const target = prompt("Target value (e.g. 10000):");
-        if (!target) return;
-        const metric = confirm(
-          "Is this a revenue goal? OK = Revenue, Cancel = Orders",
-        )
-          ? "revenue"
-          : "orders";
-        createGoal(name, parseFloat(target), metric);
-      }
-
-      async function createGoal(name, targetValue, metricType) {
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/goals`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              name,
-              target_value: targetValue,
-              metric_type: metricType,
-            }),
-          });
-          const data = await res.json();
-          if (data.success) {
-            await loadGoals();
-            showToast("✓ Goal added", "success");
-          }
-        } catch (e) {
-          showToast("Failed to save goal", "error");
-        }
-      }
-
-      // ── Helpers ───────────────────────────────────────────
+      // ── HELPERS ───────────────────────────────────────────────────────
       function formatCurrency(val) {
-        if (!val && val !== 0) return "—";
+        if (!val && val !== 0) return "\u2014";
         return (
           "$" +
           Number(val).toLocaleString("en-US", {
@@ -1434,7 +2721,18 @@
           })
         );
       }
-
+      function formatDate(iso) {
+        if (!iso) return "";
+        return new Date(iso).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+      }
+      function formatMarkdown(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br>");
+      }
       function showOverlay(title, msg) {
         document.getElementById("overlayTitle").textContent = title;
         document.getElementById("overlayMsg").textContent = msg;
@@ -1443,11 +2741,10 @@
       function hideOverlay() {
         document.getElementById("uploadOverlay").classList.remove("show");
       }
-
       function showToast(msg, type = "success") {
         const t = document.getElementById("toast");
         t.textContent = msg;
-        t.className = `toast ${type} show`;
+        t.className = "toast " + type + " show";
         setTimeout(() => t.classList.remove("show"), 3000);
       }
 
