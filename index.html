@@ -2999,12 +2999,13 @@ footer {
       ).matches;
 
       const canvas = document.getElementById("dataCanvas");
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas ? canvas.getContext("2d") : null;
 
       let particles = [];
       const PARTICLE_COUNT = prefersReducedMotion ? 0 : 80;
 
       function resizeCanvas() {
+        if (!canvas || !ctx) return;
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width * window.devicePixelRatio;
         canvas.height = rect.height * window.devicePixelRatio;
@@ -3066,7 +3067,7 @@ footer {
       }
 
       function tick() {
-        if (prefersReducedMotion) return;
+        if (prefersReducedMotion || !canvas || !ctx) return;
 
         const rect = canvas.getBoundingClientRect();
         const w = rect.width;
@@ -3109,12 +3110,13 @@ footer {
       requestAnimationFrame(tick);
       // ---- full page ambient particles (subtle, everywhere) ----
       const siteCanvas = document.getElementById("siteCanvas");
-      const siteCtx = siteCanvas.getContext("2d");
+      const siteCtx = siteCanvas ? siteCanvas.getContext("2d") : null;
 
       let siteParticles = [];
       const SITE_COUNT = prefersReducedMotion ? 0 : 120;
 
       function resizeSiteCanvas() {
+        if (!siteCanvas || !siteCtx) return;
         siteCanvas.width = window.innerWidth * window.devicePixelRatio;
         siteCanvas.height = window.innerHeight * window.devicePixelRatio;
         siteCtx.setTransform(
@@ -3148,7 +3150,7 @@ footer {
       }
 
       function drawSiteParticles() {
-        if (prefersReducedMotion) return;
+        if (prefersReducedMotion || !siteCanvas || !siteCtx) return;
 
         const w = window.innerWidth;
         const h = window.innerHeight;
