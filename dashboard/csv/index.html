@@ -43,7 +43,7 @@
         overflow-x: hidden;
       }
 
-      /* NAV SIDEBAR */
+      /* ── SIDEBAR ── */
       .sidebar {
         position: fixed;
         left: 0;
@@ -56,6 +56,7 @@
         flex-direction: column;
         padding: 20px 0;
         z-index: 100;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .sidebar-logo {
         display: flex;
@@ -132,8 +133,6 @@
         color: #a78bfa;
         margin-bottom: 12px;
       }
-
-      /* UPLOAD HISTORY PANEL — inside left sidebar, below nav */
       .history-section {
         padding: 10px 0 0;
       }
@@ -195,7 +194,29 @@
         font-style: italic;
       }
 
-      /* MAIN */
+      /* ── MOBILE ONLY ELEMENTS (hidden on desktop) ── */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 24, 0.75);
+        backdrop-filter: blur(4px);
+        z-index: 99;
+      }
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        color: var(--text);
+        flex-shrink: 0;
+        border-radius: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── MAIN ── */
       .main {
         margin-left: 220px;
         min-height: 100vh;
@@ -213,6 +234,7 @@
         position: sticky;
         top: 0;
         z-index: 50;
+        gap: 12px;
       }
       .topbar-left h1 {
         font-size: 1.05rem;
@@ -227,6 +249,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-shrink: 0;
       }
       .period-selector {
         display: flex;
@@ -255,6 +278,7 @@
         cursor: pointer;
         font-family: inherit;
         transition: opacity 0.15s;
+        white-space: nowrap;
       }
       .upload-btn:hover {
         opacity: 0.88;
@@ -274,13 +298,13 @@
         flex-shrink: 0;
       }
 
-      /* CONTENT */
+      /* ── CONTENT ── */
       .content {
         padding: 24px 28px;
         flex: 1;
       }
 
-      /* UPLOAD PROMPT */
+      /* ── UPLOAD PROMPT ── */
       .upload-prompt {
         display: flex;
         flex-direction: column;
@@ -351,12 +375,12 @@
         font-family: "DM Mono", monospace;
       }
 
-      /* DASHBOARD */
+      /* ── DASHBOARD ── */
       .dashboard-data {
         display: none;
       }
 
-      /* NARRATIVE BANNER */
+      /* ── NARRATIVE ── */
       .narrative-banner {
         background: linear-gradient(
           135deg,
@@ -389,11 +413,14 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .narrative-title {
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-wrap: wrap;
       }
       .narrative-badge {
         font-size: 0.65rem;
@@ -426,7 +453,7 @@
         color: var(--muted2);
       }
 
-      /* ANOMALY ALERTS */
+      /* ── ANOMALIES ── */
       .anomaly-row {
         display: flex;
         gap: 10px;
@@ -491,7 +518,7 @@
         line-height: 1.45;
       }
 
-      /* STATS */
+      /* ── STATS ── */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -570,7 +597,7 @@
         position: relative;
       }
 
-      /* PROJECTION BAR */
+      /* ── PROJECTION ── */
       .projection-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -583,6 +610,8 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .projection-title {
         font-size: 0.72rem;
@@ -614,6 +643,7 @@
         align-items: baseline;
         gap: 6px;
         margin-bottom: 10px;
+        flex-wrap: wrap;
       }
       .projection-current {
         font-size: 1.5rem;
@@ -656,7 +686,7 @@
         color: var(--muted2);
       }
 
-      /* CHARTS */
+      /* ── CHARTS ── */
       .charts-row {
         display: grid;
         grid-template-columns: 3fr 2fr;
@@ -674,6 +704,8 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .card-title {
         font-size: 0.72rem;
@@ -693,7 +725,7 @@
       .chart-tabs {
         display: flex;
         gap: 4px;
-        margin-bottom: 14px;
+        flex-wrap: wrap;
       }
       .chart-tab {
         padding: 4px 10px;
@@ -713,7 +745,7 @@
         color: var(--accent);
       }
 
-      /* COMPARISON VIEW */
+      /* ── COMPARE ── */
       .compare-banner {
         display: none;
         align-items: center;
@@ -724,6 +756,8 @@
         border-radius: 10px;
         margin-bottom: 16px;
         font-size: 0.78rem;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       .compare-banner.show {
         display: flex;
@@ -742,7 +776,7 @@
         color: var(--text);
       }
 
-      /* BOTTOM GRID */
+      /* ── BOTTOM GRID ── */
       .bottom-grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
@@ -750,7 +784,7 @@
         margin-bottom: 20px;
       }
 
-      /* TOP PRODUCTS */
+      /* ── TABLE ── */
       .table-wrap {
         overflow-x: auto;
       }
@@ -808,7 +842,7 @@
         flex-shrink: 0;
       }
 
-      /* GOALS */
+      /* ── GOALS ── */
       .goals-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -889,7 +923,7 @@
         background: rgba(35, 230, 168, 0.03);
       }
 
-      /* AI CHAT */
+      /* ── CHAT ── */
       .chat-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -983,7 +1017,7 @@
         cursor: not-allowed;
       }
 
-      /* OVERLAYS */
+      /* ── OVERLAYS ── */
       .upload-overlay {
         position: fixed;
         inset: 0;
@@ -1004,7 +1038,7 @@
         padding: 36px;
         text-align: center;
         max-width: 380px;
-        width: 100%;
+        width: calc(100% - 32px);
       }
       .upload-spinner {
         width: 44px;
@@ -1029,8 +1063,6 @@
         font-size: 0.82rem;
         color: var(--muted2);
       }
-
-      /* UPLOAD MODAL (period tag) */
       .period-input {
         width: 100%;
         padding: 10px 12px;
@@ -1063,7 +1095,7 @@
         background: rgba(124, 92, 255, 0.04);
       }
 
-      /* TOAST */
+      /* ── TOAST ── */
       .toast {
         position: fixed;
         bottom: 24px;
@@ -1091,7 +1123,7 @@
         color: var(--danger);
       }
 
-      /* TYPING */
+      /* ── TYPING ── */
       .typing {
         display: flex;
         gap: 4px;
@@ -1122,7 +1154,7 @@
         }
       }
 
-      /* GOAL MODAL */
+      /* ── GOAL MODAL ── */
       .goal-modal-backdrop {
         position: fixed;
         inset: 0;
@@ -1142,7 +1174,7 @@
         border-radius: 18px;
         padding: 28px;
         max-width: 380px;
-        width: 100%;
+        width: calc(100% - 32px);
       }
       .goal-modal h3 {
         font-size: 1rem;
@@ -1224,11 +1256,193 @@
         cursor: pointer;
         font-family: inherit;
       }
+
+      /* ════════════════════════════════════════
+         MOBILE RESPONSIVE — desktop untouched
+         ════════════════════════════════════════ */
+
+      @media (max-width: 1200px) {
+        .bottom-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .charts-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 900px) {
+        .bottom-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        /* Sidebar becomes a slide-in drawer */
+        .sidebar {
+          transform: translateX(-100%);
+          width: 260px;
+          z-index: 200;
+          box-shadow: 4px 0 32px rgba(0, 0, 0, 0.6);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay.show {
+          display: block;
+        }
+        .hamburger {
+          display: flex;
+        }
+
+        /* Main takes full width */
+        .main {
+          margin-left: 0;
+        }
+
+        /* Topbar */
+        .topbar {
+          padding: 11px 14px;
+        }
+        .topbar-left p {
+          display: none;
+        }
+        .period-selector {
+          display: none !important;
+        }
+        .upload-btn {
+          padding: 8px 12px;
+          font-size: 0.78rem;
+        }
+        .upload-btn .btn-text {
+          display: none;
+        }
+
+        /* Content */
+        .content {
+          padding: 14px;
+        }
+
+        /* Stats 2 col */
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        .stat-value {
+          font-size: 1.35rem;
+        }
+
+        /* Charts */
+        .charts-row {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .chart-wrap {
+          height: 180px;
+        }
+
+        /* Bottom */
+        .bottom-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        /* Upload zone */
+        .upload-zone {
+          padding: 36px 24px;
+        }
+
+        /* Chat */
+        .chat-card {
+          height: 320px;
+        }
+
+        /* Toast full width */
+        .toast {
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .topbar {
+          padding: 10px 12px;
+          gap: 8px;
+        }
+        .topbar-left h1 {
+          font-size: 0.92rem;
+        }
+        .upload-btn {
+          padding: 8px 10px;
+          font-size: 0.75rem;
+        }
+        .user-avatar {
+          width: 30px;
+          height: 30px;
+          font-size: 0.72rem;
+        }
+
+        .content {
+          padding: 12px;
+        }
+
+        .stats-grid {
+          gap: 8px;
+        }
+        .stat-card {
+          padding: 12px 14px;
+        }
+        .stat-value {
+          font-size: 1.2rem;
+        }
+        .stat-label {
+          font-size: 0.62rem;
+        }
+
+        .narrative-banner {
+          padding: 14px;
+        }
+        .narrative-text {
+          font-size: 0.82rem;
+        }
+
+        .chart-card {
+          padding: 14px;
+        }
+        .chart-wrap {
+          height: 160px;
+        }
+
+        .upload-zone {
+          padding: 28px 16px;
+        }
+        .upload-zone h2 {
+          font-size: 1.05rem;
+        }
+        .upload-zone p {
+          font-size: 0.8rem;
+        }
+
+        .chat-card {
+          height: 280px;
+          padding: 14px;
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- Mobile overlay (hidden on desktop) -->
+    <div
+      class="sidebar-overlay"
+      id="sidebarOverlay"
+      onclick="closeSidebar()"
+    ></div>
+
     <!-- LEFT SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">&#9889;</div>
         <div class="logo-name">Aervo</div>
@@ -1274,6 +1488,31 @@
     <!-- MAIN -->
     <div class="main">
       <div class="topbar">
+        <!-- Hamburger — visible on mobile only via CSS -->
+        <button
+          class="hamburger"
+          onclick="openSidebar()"
+          aria-label="Open menu"
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect y="3" width="22" height="2.2" rx="1.1" fill="currentColor" />
+            <rect
+              y="9.9"
+              width="22"
+              height="2.2"
+              rx="1.1"
+              fill="currentColor"
+            />
+            <rect
+              y="16.8"
+              width="22"
+              height="2.2"
+              rx="1.1"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+
         <div class="topbar-left">
           <h1 id="topbarTitle">Business Intelligence</h1>
           <p id="topbarSub">Upload a CSV to get started</p>
@@ -1289,7 +1528,7 @@
             <span style="opacity: 0.5">&#9660;</span>
           </div>
           <button class="upload-btn" onclick="openUploadModal()">
-            &#128194; Upload CSV
+            &#128194; <span class="btn-text">Upload CSV</span>
           </button>
           <div class="user-avatar" id="userAvatar">?</div>
         </div>
@@ -1491,7 +1730,6 @@
 
           <!-- BOTTOM GRID -->
           <div class="bottom-grid">
-            <!-- Top Products -->
             <div class="chart-card">
               <div class="card-header">
                 <div class="card-title">Top Products</div>
@@ -1525,10 +1763,9 @@
               </div>
             </div>
 
-            <!-- Goals -->
             <div class="goals-card">
               <div class="card-header" style="margin-bottom: 14px">
-                <div class="card-title">Goals & Targets</div>
+                <div class="card-title">Goals &amp; Targets</div>
                 <div class="card-meta" id="goalsMeta"></div>
               </div>
               <div id="goalsList"></div>
@@ -1537,7 +1774,6 @@
               </button>
             </div>
 
-            <!-- AI Advisor -->
             <div class="chat-card">
               <div class="card-header" style="margin-bottom: 12px">
                 <div class="card-title">AI Advisor</div>
@@ -1573,13 +1809,10 @@
             </div>
           </div>
         </div>
-        <!-- /dashboard-data -->
       </div>
-      <!-- /content -->
     </div>
-    <!-- /main -->
 
-    <!-- OVERLAYS -->
+    <!-- PROCESSING OVERLAY -->
     <div class="upload-overlay" id="uploadOverlay">
       <div class="upload-modal">
         <div class="upload-spinner"></div>
@@ -1753,6 +1986,18 @@
       let goalMetricType = "revenue";
       let charts = {};
 
+      // ── MOBILE SIDEBAR ────────────────────────────────────────────────
+      function openSidebar() {
+        document.getElementById("sidebar").classList.add("open");
+        document.getElementById("sidebarOverlay").classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("show");
+        document.body.style.overflow = "";
+      }
+
       // ── INIT ──────────────────────────────────────────────────────────
       async function init() {
         try {
@@ -1769,7 +2014,6 @@
           }
         } catch (e) {}
 
-        // Load all uploads for history
         try {
           const res = await fetch(BACKEND_URL + "/api/csv/uploads", {
             headers: { Authorization: "Bearer " + token },
@@ -1783,7 +2027,6 @@
           }
         } catch (e) {}
 
-        // Fallback to latest
         try {
           const res = await fetch(BACKEND_URL + "/api/csv/latest", {
             headers: { Authorization: "Bearer " + token },
@@ -1816,14 +2059,13 @@
         list.innerHTML = allUploads
           .map(
             (u, i) => `
-    <div class="history-item ${i === activeUploadIndex ? "active-period" : ""}" onclick="loadUpload(${i})">
-      <div class="history-dot"></div>
-      <div>
-        <div class="history-label">${u.period_label || "Upload " + (i + 1)}</div>
-        <div class="history-date">${formatDate(u.created_at)}</div>
-      </div>
-    </div>
-  `,
+          <div class="history-item ${i === activeUploadIndex ? "active-period" : ""}" onclick="loadUpload(${i}); closeSidebar();">
+            <div class="history-dot"></div>
+            <div>
+              <div class="history-label">${u.period_label || "Upload " + (i + 1)}</div>
+              <div class="history-date">${formatDate(u.created_at)}</div>
+            </div>
+          </div>`,
           )
           .join("");
       }
@@ -1834,13 +2076,11 @@
         document.getElementById("activePeriodLabel").textContent =
           upload.period_label || "Upload " + (index + 1);
         renderHistory();
-
         if (upload.summary) {
           renderDashboard(upload.summary, upload.id);
           loadNarrative(upload.id, upload.period_label);
           return;
         }
-
         showOverlay(
           "Loading period data\u2026",
           "Fetching " + (upload.period_label || "upload"),
@@ -1868,7 +2108,6 @@
         document.getElementById("narrativePeriod").textContent = period || "";
         document.getElementById("narrativeText").innerHTML =
           '<div class="narrative-loading"><div class="typing"><span></span><span></span><span></span></div>&nbsp; Generating your executive summary\u2026</div>';
-
         try {
           const res = await fetch(
             BACKEND_URL + "/api/csv/narrative/" + uploadId,
@@ -1883,7 +2122,6 @@
               renderAnomalies(data.anomalies);
             if (data.projection) renderProjection(data.projection);
           } else {
-            // Generate on-the-fly from summary
             generateNarrativeFromSummary(csvSummary, period);
           }
         } catch (e) {
@@ -1913,14 +2151,10 @@
         row.innerHTML = anomalies
           .map(
             (a) => `
-    <div class="anomaly-card ${a.type}">
-      <div class="anomaly-icon">${a.icon || (a.type === "positive" ? "\u2197\uFE0F" : a.type === "danger" ? "\u26A0\uFE0F" : "\u26A0\uFE0F")}</div>
-      <div>
-        <div class="anomaly-label">${a.label}</div>
-        <div class="anomaly-msg">${a.message}</div>
-      </div>
-    </div>
-  `,
+          <div class="anomaly-card ${a.type}">
+            <div class="anomaly-icon">${a.icon || (a.type === "positive" ? "\u2197\uFE0F" : "\u26A0\uFE0F")}</div>
+            <div><div class="anomaly-label">${a.label}</div><div class="anomaly-msg">${a.message}</div></div>
+          </div>`,
           )
           .join("");
       }
@@ -1928,24 +2162,20 @@
       // ── PROJECTION ────────────────────────────────────────────────────
       function renderProjection(proj) {
         if (!proj) return;
-        const card = document.getElementById("projectionCard");
-        card.style.display = "block";
+        document.getElementById("projectionCard").style.display = "block";
         document.getElementById("projCurrent").textContent = formatCurrency(
           proj.projected_revenue,
         );
         document.getElementById("projTarget").textContent = proj.goal_revenue
           ? "Goal: " + formatCurrency(proj.goal_revenue)
           : "No goal set";
-
         const pct = proj.goal_revenue
           ? Math.min((proj.projected_revenue / proj.goal_revenue) * 100, 110)
           : 70;
         document.getElementById("projBarFill").style.width =
           Math.min(pct, 100) + "%";
-
-        const daysPct = proj.days_elapsed_pct || 50;
-        document.getElementById("projBarMarker").style.left = daysPct + "%";
-
+        document.getElementById("projBarMarker").style.left =
+          (proj.days_elapsed_pct || 50) + "%";
         const paceEl = document.getElementById("projectionPace");
         if (proj.on_track) {
           paceEl.textContent = "\u2713 On Track";
@@ -1957,7 +2187,6 @@
           paceEl.textContent = "\u26A0 Behind Target";
           paceEl.className = "projection-pace behind";
         }
-
         document.getElementById("projSub").textContent = proj.message || "";
       }
 
@@ -2006,7 +2235,7 @@
               month: "short",
               year: "numeric",
             });
-        const fileToUpload = modalFile; // capture before closing
+        const fileToUpload = modalFile;
         modalFile = null;
         closeUploadModal();
         uploadFile(fileToUpload, label);
@@ -2036,11 +2265,8 @@
           const data = await res.json();
           hideOverlay();
           if (!data.success) throw new Error(data.message || "Upload failed");
-
           csvSummary = data.summary;
           currentUploadId = data.uploadId;
-
-          // Add to upload history
           const newUpload = {
             id: data.uploadId,
             period_label: label,
@@ -2072,8 +2298,6 @@
             day: "numeric",
             year: "numeric",
           });
-
-        // Stats
         document.getElementById("statRevenue").textContent = formatCurrency(
           summary.totalRevenue,
         );
@@ -2084,8 +2308,6 @@
         );
         document.getElementById("statCustomers").textContent =
           summary.uniqueCustomers?.toLocaleString() || "\u2014";
-
-        // Changes (compare mode)
         if (
           compareMode &&
           compareUploadIndex !== null &&
@@ -2130,8 +2352,6 @@
             el.className = "stat-change neutral";
           });
         }
-
-        // Sparklines
         if (summary.revenueByDate && summary.revenueByDate.length > 1) {
           renderSparkline(
             "sparkRevenue",
@@ -2156,18 +2376,12 @@
             "#fbbf24",
           );
         }
-
-        // Main chart
-        if (summary.revenueByDate && summary.revenueByDate.length > 0) {
+        if (summary.revenueByDate && summary.revenueByDate.length > 0)
           renderMainChart(summary.revenueByDate, "revenue");
-        }
-
-        // Donut
         if (summary.topProducts && summary.topProducts.length > 0) {
           renderDonut(summary.topProducts);
           renderProductsTable(summary.topProducts);
         }
-
         loadGoals();
       }
 
@@ -2185,7 +2399,6 @@
         el.className = "stat-change " + (up ? "up" : "down");
       }
 
-      // ── SPARKLINES ────────────────────────────────────────────────────
       function renderSparkline(canvasId, data, color) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
@@ -2221,7 +2434,6 @@
         });
       }
 
-      // ── MAIN CHART ────────────────────────────────────────────────────
       let currentChartView = "revenue";
       function switchChartView(view, btn) {
         currentChartView = view;
@@ -2236,7 +2448,6 @@
       function renderMainChart(data, view) {
         const ctx = document.getElementById("mainChart").getContext("2d");
         if (charts.main) charts.main.destroy();
-
         let yData, color, label;
         if (view === "revenue") {
           yData = data.map((d) => d.revenue);
@@ -2253,7 +2464,6 @@
           color = "#23e6a8";
           label = "AOV";
         }
-
         const datasets = [
           {
             label,
@@ -2267,8 +2477,6 @@
             pointHoverRadius: 5,
           },
         ];
-
-        // Add compare dataset if active
         if (
           compareMode &&
           compareUploadIndex !== null &&
@@ -2294,7 +2502,6 @@
             borderDash: [4, 4],
           });
         }
-
         charts.main = new Chart(ctx, {
           type: "line",
           data: { labels: data.map((d) => d.date), datasets },
@@ -2364,7 +2571,6 @@
         return `rgba(${r},${g},${b},${alpha})`;
       }
 
-      // ── DONUT ─────────────────────────────────────────────────────────
       function renderDonut(products) {
         const top5 = products.slice(0, 5);
         const others = products.slice(5).reduce((s, p) => s + p.revenue, 0);
@@ -2376,21 +2582,10 @@
           labels.push("Others");
           dataVals.push(others);
         }
-
         const ctx = document.getElementById("donutChart").getContext("2d");
         if (charts.donut) charts.donut.destroy();
-        const colors = [
-          "#29c8ff",
-          "#7c5cff",
-          "#23e6a8",
-          "#fbbf24",
-          "#ff5c5c",
-          "#a855f7",
-        ];
-
         document.getElementById("donutMeta").textContent =
           products.length + " products";
-
         charts.donut = new Chart(ctx, {
           type: "doughnut",
           data: {
@@ -2398,7 +2593,14 @@
             datasets: [
               {
                 data: dataVals,
-                backgroundColor: colors,
+                backgroundColor: [
+                  "#29c8ff",
+                  "#7c5cff",
+                  "#23e6a8",
+                  "#fbbf24",
+                  "#ff5c5c",
+                  "#a855f7",
+                ],
                 borderColor: "#0b1120",
                 borderWidth: 3,
                 hoverOffset: 6,
@@ -2442,7 +2644,6 @@
         });
       }
 
-      // ── PRODUCTS TABLE ────────────────────────────────────────────────
       function renderProductsTable(products) {
         const max = Math.max(...products.map((p) => p.revenue));
         document.getElementById("productsMeta").textContent =
@@ -2451,18 +2652,16 @@
           .slice(0, 8)
           .map(
             (p, i) => `
-    <tr>
-      <td><div class="rank-badge">${i + 1}</div></td>
-      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
-      <td><div class="bar-cell">${formatCurrency(p.revenue)}<div class="mini-bar-wrap"><div class="mini-bar" style="width:${((p.revenue / max) * 100).toFixed(1)}%"></div></div></div></td>
-      <td style="color:var(--muted2)">${p.units || "\u2014"}</td>
-    </tr>
-  `,
+          <tr>
+            <td><div class="rank-badge">${i + 1}</div></td>
+            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.name}">${p.name}</td>
+            <td><div class="bar-cell">${formatCurrency(p.revenue)}<div class="mini-bar-wrap"><div class="mini-bar" style="width:${((p.revenue / max) * 100).toFixed(1)}%"></div></div></div></td>
+            <td style="color:var(--muted2)">${p.units || "\u2014"}</td>
+          </tr>`,
           )
           .join("");
       }
 
-      // ── COMPARE ───────────────────────────────────────────────────────
       function openCompareMode() {
         if (allUploads.length < 2)
           return showToast("Upload at least 2 periods to compare", "error");
@@ -2491,7 +2690,6 @@
         );
       }
 
-      // ── AI CHAT ───────────────────────────────────────────────────────
       async function sendChat() {
         const input = document.getElementById("chatInput");
         const msg = input.value.trim();
@@ -2553,10 +2751,8 @@
         m.scrollTop = m.scrollHeight;
       }
 
-      // ── GOALS ─────────────────────────────────────────────────────────
       let goals = [];
       let goalMetric = "revenue";
-
       function openGoalModal() {
         document.getElementById("goalModal").classList.add("show");
       }
@@ -2628,7 +2824,6 @@
         ).length;
         document.getElementById("goalsMeta").textContent =
           onTrack + "/" + goals.length + " on track";
-
         container.innerHTML = goals
           .map((g) => {
             const pct =
@@ -2644,8 +2839,6 @@
               g.metric_type === "revenue" || g.metric_type === "aov"
                 ? formatCurrency(g.target_value)
                 : g.target_value?.toLocaleString();
-
-            // Projection
             let projText = "";
             if (
               csvSummary &&
@@ -2661,32 +2854,28 @@
               const projectedMonthEnd =
                 (csvSummary.totalRevenue / dayOfMonth) * daysInMonth;
               const diff = projectedMonthEnd - g.target_value;
-              if (Math.abs(diff) > 0) {
+              if (Math.abs(diff) > 0)
                 projText =
                   diff >= 0
                     ? `\u2197 Projected to exceed target by ${formatCurrency(diff)}`
                     : `\u2198 ${formatCurrency(Math.abs(diff))} short of target at current pace`;
-              }
             }
-
             return `
-      <div class="goal-item">
-        <div class="goal-header">
-          <span class="goal-name">${g.name}</span>
-          <div class="goal-numbers">
-            <span class="goal-progress-text">${currentVal} / ${targetVal}</span>
-            <span class="goal-pct ${isOnTrack ? "on" : "off"}">${pct.toFixed(0)}%</span>
-          </div>
-        </div>
-        <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct.toFixed(1)}%;background:${isOnTrack ? "linear-gradient(90deg,var(--accent3),var(--accent))" : "linear-gradient(90deg,var(--danger),var(--warn))"}"></div></div>
-        ${projText ? `<div class="goal-projection">${projText}</div>` : ""}
-      </div>
-    `;
+            <div class="goal-item">
+              <div class="goal-header">
+                <span class="goal-name">${g.name}</span>
+                <div class="goal-numbers">
+                  <span class="goal-progress-text">${currentVal} / ${targetVal}</span>
+                  <span class="goal-pct ${isOnTrack ? "on" : "off"}">${pct.toFixed(0)}%</span>
+                </div>
+              </div>
+              <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct.toFixed(1)}%;background:${isOnTrack ? "linear-gradient(90deg,var(--accent3),var(--accent))" : "linear-gradient(90deg,var(--danger),var(--warn))"}"></div></div>
+              ${projText ? `<div class="goal-projection">${projText}</div>` : ""}
+            </div>`;
           })
           .join("");
       }
 
-      // ── HELPERS ───────────────────────────────────────────────────────
       function formatCurrency(val) {
         if (!val && val !== 0) return "\u2014";
         return (
