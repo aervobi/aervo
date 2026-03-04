@@ -2968,6 +2968,14 @@ footer {
             ? "Close"
             : "Menu";
         });
+        
+        // Close menu when a link is clicked
+        mobileNav.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            mobileNav.classList.remove("open");
+            menuBtn.textContent = "Menu";
+          });
+        });
       }
 
       // reveal animations
@@ -3320,26 +3328,6 @@ if (preview && hasFinePointer && !prefersReducedMotion2) {
     preview.style.transform = "";
   });
 }
-// Mobile menu toggle
-const menuBtn = document.getElementById("menuBtn");
-const mobileNav = document.getElementById("mobileNav");
-
-if (menuBtn && mobileNav) {
-  menuBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    mobileNav.classList.toggle("open");
-    menuBtn.textContent = mobileNav.classList.contains("open") ? "Close" : "Menu";
-  });
-
-  // Close menu when a link is clicked
-  mobileNav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      mobileNav.classList.remove("open");
-      menuBtn.textContent = "Menu";
-    });
-  });
-}
-
 // Header scroll progress (touch safe)
 const scrollBar = document.getElementById("scrollBar");
 function updateScrollBar() {
