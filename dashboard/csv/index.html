@@ -213,6 +213,7 @@
         position: sticky;
         top: 0;
         z-index: 50;
+        
       }
       .topbar-left h1 {
         font-size: 1.05rem;
@@ -1225,33 +1226,65 @@
         font-family: inherit;
       }
 
-      @media (max-width: 1200px) {
-        .bottom-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .stats-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .charts-row {
-          grid-template-columns: 1fr;
-        }
-      }
-      @media (max-width: 900px) {
-        .bottom-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      @media (max-width: 768px) {
-        .sidebar {
-          display: none;
-        }
-        .main {
-          margin-left: 0;
-        }
-      }
+     @media (max-width: 1200px) {
+  .bottom-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 200;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(2,6,24,0.7); backdrop-filter: blur(4px); z-index: 199;
+  }
+  .sidebar-overlay.show { display: block; }
+  .main { margin-left: 0; }
+  .hamburger { display: flex !important; }
+  .topbar { padding: 12px 16px; }
+  .topbar-left p { display: none; }
+  .period-selector { display: none !important; }
+  .upload-btn .btn-text { display: none; }
+  .content { padding: 16px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-value { font-size: 1.3rem; }
+  .charts-row { grid-template-columns: 1fr; gap: 12px; }
+  .chart-wrap { height: 180px; }
+  .bottom-grid { grid-template-columns: 1fr; gap: 12px; }
+  .upload-zone { padding: 32px 20px; }
+  .toast { bottom: 16px; right: 16px; left: 16px; text-align: center; }
+  .upload-modal, .goal-modal { width: calc(100% - 32px); padding: 24px 20px; }
+  .chat-card { height: 300px; }
+}
+@media (max-width: 480px) {
+  .topbar { padding: 10px 12px; }
+  .topbar-left h1 { font-size: 0.9rem; }
+  .upload-btn { padding: 7px 10px; font-size: 0.75rem; }
+  .content { padding: 12px; }
+  .stat-card { padding: 12px 14px; }
+  .stat-value { font-size: 1.15rem; }
+  .stat-label { font-size: 0.62rem; }
+  .chart-card { padding: 14px; }
+  .chart-wrap { height: 160px; }
+  .narrative-banner { padding: 14px; }
+  .narrative-text { font-size: 0.8rem; }
+}
     </style>
   </head>
   <body>
+  <body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar" id="sidebar">  
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-logo">
@@ -1299,6 +1332,12 @@
     <!-- MAIN -->
     <div class="main">
       <div class="topbar">
+      <div class="topbar">
+  <button class="hamburger" id="hamburgerBtn" ...>...</button>
+
+  <div class="topbar-left">
+    <h1 id="topbarTitle">Business Intelligence</h1>  
+
         <div class="topbar-left">
           <h1 id="topbarTitle">Business Intelligence</h1>
           <p id="topbarSub">Upload a CSV to get started</p>
