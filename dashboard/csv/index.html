@@ -1263,6 +1263,34 @@
   .toast { bottom: 16px; right: 16px; left: 16px; text-align: center; }
   .upload-modal, .goal-modal { width: calc(100% - 32px); padding: 24px 20px; }
   .chat-card { height: 300px; }
+  /* touch targets and spacing enhancements */
+  button,
+  .upload-btn,
+  .hamburger,
+  .nav-item {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  /* ensure sidebar items wrap correctly */
+  .nav-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* horizontal scrolling for any wide tables */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* make charts adapt to container width */
+  .chart-wrap canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  /* collapse stats grid fully on small tablets */
+  .stats-grid { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 480px) {
   .topbar { padding: 10px 12px; }
@@ -1276,6 +1304,10 @@
   .chart-wrap { height: 160px; }
   .narrative-banner { padding: 14px; }
   .narrative-text { font-size: 0.8rem; }
+  /* extra compaction for phones */
+  .content { padding: 8px; }
+  .sidebar { box-shadow: none; }
+  .nav-item { font-size: 0.85rem; }
 }
     </style>
   </head>
