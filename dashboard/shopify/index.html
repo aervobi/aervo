@@ -242,13 +242,18 @@
         background: rgba(15, 23, 42, 0.5);
         border: 1px solid rgba(148, 163, 184, 0.15);
         border-radius: 10px;
-        padding: 14px 16px;
-        margin-bottom: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
         display: flex;
         align-items: center;
         gap: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
+        min-height: 48px;
+      }
+      .action-item:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: rgba(59, 130, 246, 0.3);
       }
       .action-item:hover {
         background: rgba(59, 130, 246, 0.1);
@@ -315,14 +320,15 @@
         border: 1px solid rgba(148, 163, 184, 0.3);
         background: rgba(15, 23, 42, 0.6);
         color: #e5ecff;
-        font-size: 14px;
+        font-size: 16px;
+        min-height: 44px;
       }
       .chat-input:focus {
         outline: none;
         border-color: #60a5fa;
       }
       .btn-send {
-        padding: 12px 24px;
+        padding: 12px 20px;
         border-radius: 12px;
         border: none;
         background: linear-gradient(135deg, #3b82f6, #60a5fa);
@@ -330,6 +336,8 @@
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
+        min-height: 44px;
+        min-width: 44px;
       }
       .data-table {
         width: 100%;
@@ -354,6 +362,9 @@
       .table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        margin: -24px;
+        margin-top: 16px;
       }
       .loading {
         text-align: center;
@@ -400,7 +411,7 @@
       }
       .btn-primary {
         display: inline-block;
-        padding: 14px 32px;
+        padding: 12px 28px;
         border-radius: 999px;
         border: none;
         background: linear-gradient(135deg, #3b82f6, #60a5fa);
@@ -411,6 +422,10 @@
         text-decoration: none;
         box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
         transition: all 0.2s ease;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .btn-primary:hover {
         transform: translateY(-2px);
@@ -444,7 +459,7 @@
       .mobile-nav-tab {
         display: block;
         width: 100%;
-        padding: 12px 16px;
+        padding: 14px 16px;
         margin-bottom: 8px;
         border-radius: 8px;
         color: #9ca7d6;
@@ -453,6 +468,9 @@
         transition: all 0.2s ease;
         border: 1px solid transparent;
         text-align: left;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
       }
       .mobile-nav-tab.active {
         background: rgba(143, 191, 255, 0.15);
@@ -461,13 +479,33 @@
       }
 
       @media (max-width: 768px) {
-        .nav {
-          padding: 0 16px;
-          height: 56px;
+        /* keep nav clean */
+        .nav-right a.btn-logout,
+        .nav-right #shopBadge,
+        .nav-right #integrationSwitcher {
+          display: none !important;
         }
+
+        /* keep logout + hamburger visible */
+        #logoutBtn {
+          padding: 8px 12px;
+          font-size: 12px;
+          min-height: 44px;
+          min-width: 44px;
+        }
+
+        .mobile-menu-btn {
+          display: block;
+          min-height: 44px;
+          min-width: 44px;
+        }
+
         .nav-brand {
           font-size: 12px;
           letter-spacing: 3px;
+          min-width: auto;
+          flex-shrink: 0;
+          gap: 0;
         }
         .nav-center {
           display: none;
@@ -528,9 +566,14 @@
         }
         .chat-container {
           height: 320px;
+          min-height: 280px;
+        }
+        .chat-messages {
+          max-height: 220px;
         }
         .action-item {
           padding: 12px;
+          min-height: 44px;
         }
         .action-title {
           font-size: 13px;
@@ -546,12 +589,14 @@
       @media (max-width: 480px) {
         .nav {
           height: 52px;
+          padding: 0 8px;
         }
         .nav-brand {
           font-size: 11px;
+          gap: 0;
         }
         .container {
-          padding: 68px 8px 20px;
+          padding: 60px 8px 20px;
         }
         .welcome h1 {
           font-size: 20px;
@@ -560,7 +605,7 @@
           font-size: 28px;
         }
         .grid-4 {
-          grid-template-columns: repeat(2, 1fr);
+          grid-template-columns: 1fr;
           gap: 12px;
         }
         .card h3 {
@@ -575,42 +620,57 @@
           overflow-x: auto;
         }
         canvas {
-          max-height: 180px !important;
+          max-height: 200px !important;
+          max-width: 100%;
         }
       }
     </style>
   </head>
   <body>
     <nav class="nav">
-      <a href="/dashboard/shopify" class="nav-brand" style="display:flex;align-items:center;gap:0;text-decoration:none;">
-  <img src="/assets/images/logo.png" alt="Aervo" style="height:38px;width:auto;display:block;" />
-  <div id="companyLogoContainer" style="display:none;align-items:center;gap:10px;margin-left:14px;padding-left:14px;border-left:1px solid rgba(255,255,255,0.2);">
-    <img id="companyLogo" src="" alt="" style="height:32px;width:auto;border-radius:6px;object-fit:contain;display:none;" />
-    <span id="companyLogoName" style="font-size:14px;color:#e5e7eb;font-weight:600;"></span>
-  </div>
-</a>
+      <a
+        href="/dashboard/shopify"
+        class="nav-brand"
+        style="
+          display: flex;
+          align-items: center;
+          gap: 0;
+          text-decoration: none;
+        "
+      >
+        <img
+          src="/assets/images/logo.png"
+          alt="Aervo"
+          style="height: 38px; width: auto"
+        />
+        <div
+          id="companyLogoContainer"
+          style="
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-left: 14px;
+            padding-left: 14px;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+          "
+        >
           <img
             id="companyLogo"
             src=""
             alt=""
             style="
               height: 32px;
-              width: 32px;
+              width: auto;
               border-radius: 6px;
               object-fit: contain;
             "
           />
           <span
             id="companyLogoName"
-            style="
-              font-size: 14px;
-              color: #e5e7eb;
-              font-weight: 600;
-              letter-spacing: -0.2px;
-            "
+            style="font-size: 14px; color: #e5e7eb; font-weight: 600"
           ></span>
         </div>
-      </div>
+      </a>
       <div class="nav-center">
         <div class="nav-tab active" data-view="overview">Overview</div>
         <div class="nav-tab" data-view="analytics">Analytics</div>
@@ -642,7 +702,9 @@
         <a href="/reports" class="btn-logout" style="text-decoration: none"
           >📊 Reports</a
         >
-        <a href="/intelligence" class="btn-logout" style="text-decoration:none">🧠 Intelligence Center</a>
+        <a href="/intelligence" class="btn-logout" style="text-decoration: none"
+          >🧠 Intelligence Center</a
+        >
 
         <a href="/integrations" class="btn-logout" style="text-decoration: none"
           >⚙️ Integrations</a
@@ -679,35 +741,35 @@
       if (!token) window.location.href = "/login";
 
       // ─────────────────────────────────────────────────────────────────────────────
-// SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
-//
-// Find this line near the top of the <script> block:
-//
-//   const token = localStorage.getItem("aervo_token");
-//   if (!token) window.location.href = "/login";
-//
-// Add the block below IMMEDIATELY AFTER those two lines:
-// ─────────────────────────────────────────────────────────────────────────────
+      // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
+      //
+      // Find this line near the top of the <script> block:
+      //
+      //   const token = localStorage.getItem("aervo_token");
+      //   if (!token) window.location.href = "/login";
+      //
+      // Add the block below IMMEDIATELY AFTER those two lines:
+      // ─────────────────────────────────────────────────────────────────────────────
 
-// Redirect CSV/Square users to their correct dashboard
-(async () => {
-  try {
-    const res = await fetch("https://api.aervoapp.com/api/user/me", {
-      headers: { Authorization: "Bearer " + token }
-    });
-    const data = await res.json();
-    const platform = data.user && data.user.platform;
-    if (platform === "csv") {
-      window.location.href = "/dashboard/csv";
-    } else if (platform === "square") {
-      window.location.href = "/dashboard/square";
-    }
-  } catch(e) {}
-})();
+      // Redirect CSV/Square users to their correct dashboard
+      (async () => {
+        try {
+          const res = await fetch("https://api.aervoapp.com/api/user/me", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const data = await res.json();
+          const platform = data.user && data.user.platform;
+          if (platform === "csv") {
+            window.location.href = "/dashboard/csv";
+          } else if (platform === "square") {
+            window.location.href = "/dashboard/square";
+          }
+        } catch (e) {}
+      })();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// END OF PATCH
-// ─────────────────────────────────────────────────────────────────────────────
+      // ─────────────────────────────────────────────────────────────────────────────
+      // END OF PATCH
+      // ─────────────────────────────────────────────────────────────────────────────
 
       let currentView = "overview";
       let userData = null;
@@ -1027,7 +1089,7 @@
           </div>`;
 
         // Render quick 7-day chart
-       // Render quick 7-day chart
+        // Render quick 7-day chart
         setTimeout(() => renderOverviewChart(orders), 100);
         setTimeout(() => loadHealthScore(), 200);
         return html;
@@ -2002,80 +2064,97 @@
       // ============= BOOT =============
       loadUserData();
       // ── HEALTH SCORE ───────────────────────────────────────────────
-async function loadHealthScore() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/health-score`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success && data.score) {
-      renderHealthScore(data.score);
-    } else {
-      calculateHealthScore();
-    }
-  } catch(e) { console.error('Health score error:', e); }
-}
+      async function loadHealthScore() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/health-score`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success && data.score) {
+            renderHealthScore(data.score);
+          } else {
+            calculateHealthScore();
+          }
+        } catch (e) {
+          console.error("Health score error:", e);
+        }
+      }
 
-async function calculateHealthScore() {
-  const shopOrigin = shopData?.shopOrigin || localStorage.getItem('shopify_shop');
-  if (!shopOrigin) return;
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ shopOrigin })
-    });
-    const data = await res.json();
-    if (data.success) renderHealthScore(data.score, data.ai);
-  } catch(e) { console.error('Calculate score error:', e); }
-}
+      async function calculateHealthScore() {
+        const shopOrigin =
+          shopData?.shopOrigin || localStorage.getItem("shopify_shop");
+        if (!shopOrigin) return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ shopOrigin }),
+          });
+          const data = await res.json();
+          if (data.success) renderHealthScore(data.score, data.ai);
+        } catch (e) {
+          console.error("Calculate score error:", e);
+        }
+      }
 
-async function recalculateScore() {
-  const btn = document.getElementById('recalcBtn');
-  if (!btn) return;
-  btn.textContent = '↻ Calculating...';
-  btn.disabled = true;
-  await calculateHealthScore();
-  btn.textContent = '↻ Recalculate';
-  btn.disabled = false;
-}
+      async function recalculateScore() {
+        const btn = document.getElementById("recalcBtn");
+        if (!btn) return;
+        btn.textContent = "↻ Calculating...";
+        btn.disabled = true;
+        await calculateHealthScore();
+        btn.textContent = "↻ Recalculate";
+        btn.disabled = false;
+      }
 
-function renderHealthScore(score, ai) {
-  const s = score.score;
-  const color = s >= 70 ? '#23e6a8' : s >= 40 ? '#fbbf24' : '#f87171';
-  const grade = s >= 70 ? 'Healthy 💚' : s >= 40 ? 'Needs Attention ⚠️' : 'At Risk 🔴';
+      function renderHealthScore(score, ai) {
+        const s = score.score;
+        const color = s >= 70 ? "#23e6a8" : s >= 40 ? "#fbbf24" : "#f87171";
+        const grade =
+          s >= 70
+            ? "Healthy 💚"
+            : s >= 40
+              ? "Needs Attention ⚠️"
+              : "At Risk 🔴";
 
-  const ring = document.getElementById('scoreRing');
-  const numEl = document.getElementById('scoreNumber');
-  const gradeEl = document.getElementById('scoreGrade');
-  const summaryEl = document.getElementById('scoreSummary');
-  if (!ring || !numEl) return;
+        const ring = document.getElementById("scoreRing");
+        const numEl = document.getElementById("scoreNumber");
+        const gradeEl = document.getElementById("scoreGrade");
+        const summaryEl = document.getElementById("scoreSummary");
+        if (!ring || !numEl) return;
 
-  const circumference = 264;
-  const offset = circumference - (s / 100) * circumference;
-  ring.style.stroke = color;
-  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+        const circumference = 264;
+        const offset = circumference - (s / 100) * circumference;
+        ring.style.stroke = color;
+        setTimeout(() => {
+          ring.style.strokeDashoffset = offset;
+        }, 100);
 
-  numEl.textContent = s;
-  numEl.style.color = color;
-  gradeEl.textContent = grade;
-  gradeEl.style.color = color;
-  summaryEl.textContent = score.summary || '';
+        numEl.textContent = s;
+        numEl.style.color = color;
+        gradeEl.textContent = grade;
+        gradeEl.style.color = color;
+        summaryEl.textContent = score.summary || "";
 
-  const breakdown = [
-    { label: 'Revenue', score: score.revenue_score, max: 25 },
-    { label: 'Orders', score: score.orders_score, max: 20 },
-    { label: 'Refunds', score: score.refund_score, max: 20 },
-    { label: 'Inventory', score: score.inventory_score, max: 20 },
-    { label: 'Retention', score: score.retention_score, max: 15 }
-  ];
+        const breakdown = [
+          { label: "Revenue", score: score.revenue_score, max: 25 },
+          { label: "Orders", score: score.orders_score, max: 20 },
+          { label: "Refunds", score: score.refund_score, max: 20 },
+          { label: "Inventory", score: score.inventory_score, max: 20 },
+          { label: "Retention", score: score.retention_score, max: 15 },
+        ];
 
-  const breakdownEl = document.getElementById('scoreBreakdown');
-  if (breakdownEl) {
-    breakdownEl.innerHTML = breakdown.map(b => {
-      const pct = (b.score / b.max) * 100;
-      const c = pct >= 70 ? '#23e6a8' : pct >= 40 ? '#fbbf24' : '#f87171';
-      return `
+        const breakdownEl = document.getElementById("scoreBreakdown");
+        if (breakdownEl) {
+          breakdownEl.innerHTML = breakdown
+            .map((b) => {
+              const pct = (b.score / b.max) * 100;
+              const c =
+                pct >= 70 ? "#23e6a8" : pct >= 40 ? "#fbbf24" : "#f87171";
+              return `
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
           <div style="font-size:12px;color:#6b7a99;width:65px;">${b.label}</div>
           <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;">
@@ -2084,26 +2163,34 @@ function renderHealthScore(score, ai) {
           <div style="font-size:11px;color:#9aa8c8;width:30px;text-align:right;">${b.score}/${b.max}</div>
         </div>
       `;
-    }).join('');
-  }
+            })
+            .join("");
+        }
 
-  let improvements = [];
-  try {
-    const parsed = typeof score.improvements === 'string' ? JSON.parse(score.improvements) : score.improvements;
-    improvements = parsed.improvements || [];
-  } catch(e) {}
-  if (ai?.improvements) improvements = ai.improvements;
+        let improvements = [];
+        try {
+          const parsed =
+            typeof score.improvements === "string"
+              ? JSON.parse(score.improvements)
+              : score.improvements;
+          improvements = parsed.improvements || [];
+        } catch (e) {}
+        if (ai?.improvements) improvements = ai.improvements;
 
-  const impEl = document.getElementById('scoreImprovements');
-  if (impEl) {
-    impEl.innerHTML = improvements.map(imp => `
+        const impEl = document.getElementById("scoreImprovements");
+        if (impEl) {
+          impEl.innerHTML = improvements
+            .map(
+              (imp) => `
       <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;">
         <span style="color:#f87171;font-size:12px;margin-top:1px;">→</span>
         <span style="font-size:12px;color:#9aa8c8;line-height:1.5;">${imp}</span>
       </div>
-    `).join('');
-  }
-}
+    `,
+            )
+            .join("");
+        }
+      }
     </script>
   </body>
 </html>
