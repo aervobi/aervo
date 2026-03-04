@@ -2266,6 +2266,97 @@ footer {
   }
 }
 
+/* ---------- additional mobile tweaks ---------- */
+@media (max-width: 768px) {
+  /* page padding for small tablets/large phones */
+  body {
+    padding: 0 12px;
+  }
+
+  /* collapse any multi‑column grids */
+  .grid,
+  .home-pricing-grid,
+  .bottom-wrap {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* cards should span full width */
+  .card,
+  .luxe-card,
+  .preview,
+  .about-box {
+    width: 100% !important;
+  }
+
+  /* hero text scaling for readability */
+  .hero h1 {
+    font-size: 1.8rem !important;
+  }
+  .hero p {
+    font-size: 1rem !important;
+  }
+
+  /* sections need extra bottom space */
+  .section {
+    padding-bottom: 40px;
+  }
+
+  /* tables scroll horizontally on narrow viewports */
+  table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* charts respect container width */
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* default interactive elements sized for touch */
+  .btn,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* tighter padding on phones */
+  body {
+    padding: 0 8px;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem !important;
+  }
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  /* centre call‑to‑action components */
+  .cta-card,
+  .cta-right,
+  .cta-note {
+    text-align: center;
+  }
+
+  /* compress header buttons further */
+  .actions .btn {
+    font-size: 0.9rem;
+  }
+
+  /* footer elements stack vertically */
+  footer .footer-inner {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
     </style>
   </head>
 
