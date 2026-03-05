@@ -2091,6 +2091,12 @@
         }
       }
 
+      fetch(`${BACKEND_URL}/api/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((d) => console.log("USER ME RESPONSE:", JSON.stringify(d)));
+
       async function calculateHealthScore() {
         const shopOrigin =
           shopData?.shopOrigin || localStorage.getItem("shopify_shop");
