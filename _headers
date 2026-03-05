@@ -1,2 +1,2 @@
 /*
-  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors https://admin.shopify.com https://*.myshopify.com
