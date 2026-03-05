@@ -2013,6 +2013,7 @@
         input.disabled = true;
         document.querySelector(".btn-send").disabled = true;
 
+        let data;
         try {
           const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
             method: "POST",
@@ -2042,8 +2043,15 @@
           document.getElementById("typingIndicator")?.remove();
           const errMsg = document.createElement("div");
           errMsg.className = "chat-message ai";
-          errMsg.textContent =
-            "Sorry, I had trouble responding. Please try again.";
+
+          if (data && data.code === "PLAN_LIMIT") {
+            errMsg.innerHTML = `⚠️ <strong>Message limit reached.</strong><br>${data.message}<br><br>
+      <a href="/pricing" style="color:#60a5fa;text-decoration:underline">Upgrade your plan →</a>`;
+          } else {
+            errMsg.textContent =
+              "Sorry, I had trouble responding. Please try again.";
+          }
+
           messages.appendChild(errMsg);
         }
 
