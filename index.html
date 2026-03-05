@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+  // If loaded inside Shopify admin, redirect to auth
+  if (window.self !== window.top) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shop = urlParams.get('shop');
+    if (shop) {
+      window.top.location.href = 'https://api.aervoapp.com/auth/shopify?shop=' + shop;
+    }
+  }
+</script>
     <meta charset="UTF-8" />
     <title>Aervo – A higher view of your business</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
