@@ -851,7 +851,8 @@
             throw new Error("Failed to fetch user data");
           }
 
-          const data = await response.json();
+          data = await response.json();
+
           if (!data.success)
             throw new Error(data.message || "Failed to load user data");
 
@@ -2026,7 +2027,8 @@
               shopOrigin: shopData ? shopData.shopOrigin : null,
             }),
           });
-          const data = await response.json();
+          data = await response.json();
+
           document.getElementById("typingIndicator")?.remove();
           if (data.success) {
             const aiMsg = document.createElement("div");
