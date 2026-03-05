@@ -737,9 +737,20 @@
 
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get("token");
+      if (urlToken) {
+        localStorage.setItem("aervo_token", urlToken);
+        window.history.replaceState(
+          {},
+          "",
+          window.location.pathname + "?shop=" + urlParams.get("shop"),
+        );
+      }
+
       const token = localStorage.getItem("aervo_token");
       if (!token) window.location.href = "/login";
-
       // ─────────────────────────────────────────────────────────────────────────────
       // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
       //
