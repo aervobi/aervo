@@ -743,1581 +743,1578 @@
     </div>
 
     <script>
-      const BACKEND_URL = "https://api.aervoapp.com";
+            const BACKEND_URL = "https://api.aervoapp.com";
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get("token");
-      if (urlToken) {
-        localStorage.setItem("aervo_token", urlToken);
-        window.history.replaceState(
-          {},
-          "",
-          window.location.pathname + "?shop=" + urlParams.get("shop"),
-        );
-      }
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlToken = urlParams.get("token");
+            if (urlToken) {
+              localStorage.setItem("aervo_token", urlToken);
+              window.history.replaceState(
+                {},
+                "",
+                window.location.pathname + "?shop=" + urlParams.get("shop"),
+              );
+            }
 
-      const token = localStorage.getItem("aervo_token");
-      if (!token) window.location.href = "/login";
+            const token = localStorage.getItem("aervo_token");
+            if (!token) window.location.href = "/login";
 
-      // Check for billing result
-      const billingStatus = urlParams.get("billing");
-      const billingPlan = urlParams.get("plan");
-      if (billingStatus === "success") {
-        alert(`🎉 Successfully upgraded to ${billingPlan} plan!`);
-        window.history.replaceState({}, "", window.location.pathname);
-      } else if (billingStatus === "failed") {
-        alert("Billing was not completed. Please try again.");
-        window.history.replaceState({}, "", window.location.pathname);
-      }
-      // ─────────────────────────────────────────────────────────────────────────────
-      // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
-      //
-      // Find this line near the top of the <script> block:
-      //
-      //   const token = localStorage.getItem("aervo_token");
-      //   if (!token) window.location.href = "/login";
-      //
-      // Add the block below IMMEDIATELY AFTER those two lines:
-      // ─────────────────────────────────────────────────────────────────────────────
+            // Check for billing result
+            const billingStatus = urlParams.get("billing");
+            const billingPlan = urlParams.get("plan");
+            if (billingStatus === "success") {
+              alert(`🎉 Successfully upgraded to ${billingPlan} plan!`);
+              window.history.replaceState({}, "", window.location.pathname);
+            } else if (billingStatus === "failed") {
+              alert("Billing was not completed. Please try again.");
+              window.history.replaceState({}, "", window.location.pathname);
+            }
+            // ─────────────────────────────────────────────────────────────────────────────
+            // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
+            //
+            // Find this line near the top of the <script> block:
+            //
+            //   const token = localStorage.getItem("aervo_token");
+            //   if (!token) window.location.href = "/login";
+            //
+            // Add the block below IMMEDIATELY AFTER those two lines:
+            // ─────────────────────────────────────────────────────────────────────────────
 
-      // Redirect CSV/Square users to their correct dashboard
-      (async () => {
-        try {
-          const res = await fetch("https://api.aervoapp.com/api/user/me", {
-            headers: { Authorization: "Bearer " + token },
-          });
-          const data = await res.json();
-          const platform = data.user && data.user.platform;
-          if (platform === "csv") {
-            window.location.href = "/dashboard/csv";
-          } else if (platform === "square") {
-            window.location.href = "/dashboard/square";
-          }
-        } catch (e) {}
-      })();
+            // Redirect CSV/Square users to their correct dashboard
+            (async () => {
+              try {
+                const res = await fetch("https://api.aervoapp.com/api/user/me", {
+                  headers: { Authorization: "Bearer " + token },
+                });
+                const data = await res.json();
+                const platform = data.user && data.user.platform;
+                if (platform === "csv") {
+                  window.location.href = "/dashboard/csv";
+                } else if (platform === "square") {
+                  window.location.href = "/dashboard/square";
+                }
+              } catch (e) {}
+            })();
 
-      // ─────────────────────────────────────────────────────────────────────────────
-      // END OF PATCH
-      // ─────────────────────────────────────────────────────────────────────────────
+            // ─────────────────────────────────────────────────────────────────────────────
+            // END OF PATCH
+            // ─────────────────────────────────────────────────────────────────────────────
 
-      let currentView = "overview";
-      let userData = null;
-      let shopData = null;
-      let userPlan = "free";
-      let realData = {
-        overview: null,
-        orders: [],
-        inventory: null,
-        customers: null,
-      };
+            let currentView = "overview";
+            let userData = null;
+            let shopData = null;
+            let userPlan = "free";
+            let realData = {
+              overview: null,
+              orders: [],
+              inventory: null,
+              customers: null,
+            };
 
-      // ============= LOGOUT =============
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("aervo_token");
-        localStorage.removeItem("aervo_user");
-        window.location.href = "/login";
-      });
-
-      // ============= MOBILE MENU TOGGLE =============
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const mobileMenu = document.getElementById("mobileMenu");
-
-      mobileMenuBtn.addEventListener("click", () => {
-        mobileMenu.classList.toggle("active");
-      });
-
-      // ============= TAB NAVIGATION =============
-      document.querySelectorAll(".nav-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const view = tab.dataset.view;
-          const freeTabs = ["overview"];
-
-          if (userPlan === "free" && !freeTabs.includes(view)) {
-            document.getElementById("content").innerHTML = `
-        <div class="card connect-cta" style="margin-top:40px">
-          <h2>⭐ Upgrade to Essential</h2>
-          <p>Get access to Analytics, Inventory, and Customer tabs plus full dashboard features for just $19/month.</p>
-          <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
-  <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
-  <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
-  <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
-</div>
-        </div>`;
-            return;
-          }
-
-          currentView = view;
-          document
-            .querySelectorAll(".nav-tab")
-            .forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-          renderView(currentView);
-        });
-      });
-
-      // Mobile tab navigation
-      document.querySelectorAll(".mobile-nav-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          currentView = tab.dataset.view;
-          document
-            .querySelectorAll(".mobile-nav-tab")
-            .forEach((t) => t.classList.remove("active"));
-          document
-            .querySelectorAll(".nav-tab")
-            .forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-          mobileMenu.classList.remove("active"); // Close menu after selection
-          renderView(currentView);
-        });
-      });
-
-      // ============= LOAD USER + SHOPIFY DATA =============
-      async function loadUserData() {
-        try {
-          const response = await fetch(`${BACKEND_URL}/api/user/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-
-          if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
+            // ============= LOGOUT =============
+            document.getElementById("logoutBtn").addEventListener("click", () => {
               localStorage.removeItem("aervo_token");
+              localStorage.removeItem("aervo_user");
               window.location.href = "/login";
-              return;
-            }
-            throw new Error("Failed to fetch user data");
-          }
+            });
 
-          data = await response.json();
+            // ============= MOBILE MENU TOGGLE =============
+            const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+            const mobileMenu = document.getElementById("mobileMenu");
 
-          if (!data.success)
-            throw new Error(data.message || "Failed to load user data");
+            mobileMenuBtn.addEventListener("click", () => {
+              mobileMenu.classList.toggle("active");
+            });
 
-          userData = data.user;
-          userData = data.user;
-          userPlan = data.user.plan || "free";
-          // Gate Reports and Intelligence Center
-          if (userPlan === "free") {
-            document
-              .querySelectorAll('a[href="/reports"], a[href="/intelligence"]')
-              .forEach((link) => {
-                link.href = "/pricing";
-                link.title = "Upgrade to access this feature";
-                link.style.opacity = "0.5";
+            // ============= TAB NAVIGATION =============
+            document.querySelectorAll(".nav-tab").forEach((tab) => {
+              tab.addEventListener("click", () => {
+                const view = tab.dataset.view;
+                const freeTabs = ["overview"];
+
+                if (userPlan === "free" && !freeTabs.includes(view)) {
+                if (userPlan === "free" && !freeTabs.includes(view)) {
+        document.getElementById("content").innerHTML = `
+          <div class="card connect-cta" style="margin-top:40px">
+            <div style="font-size:48px;margin-bottom:16px">🚀</div>
+            <h2>Coming Soon</h2>
+            <p>This feature is currently in development and will be available soon. Stay tuned!</p>
+          </div>`;
+                  return;
+                }
+
+                currentView = view;
+                document
+                  .querySelectorAll(".nav-tab")
+                  .forEach((t) => t.classList.remove("active"));
+                tab.classList.add("active");
+                renderView(currentView);
               });
-          }
-          shopData = data.shop;
+            });
 
-          shopData = data.shop;
-          shopData = data.shop;
+            // Mobile tab navigation
+            document.querySelectorAll(".mobile-nav-tab").forEach((tab) => {
+              tab.addEventListener("click", () => {
+                currentView = tab.dataset.view;
+                document
+                  .querySelectorAll(".mobile-nav-tab")
+                  .forEach((t) => t.classList.remove("active"));
+                document
+                  .querySelectorAll(".nav-tab")
+                  .forEach((t) => t.classList.remove("active"));
+                tab.classList.add("active");
+                mobileMenu.classList.remove("active"); // Close menu after selection
+                renderView(currentView);
+              });
+            });
 
-          shopData = data.shop;
+            // ============= LOAD USER + SHOPIFY DATA =============
+            async function loadUserData() {
+              try {
+                const response = await fetch(`${BACKEND_URL}/api/user/me`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
 
-          // Company logo in nav
-          if (userData.companyLogoUrl || userData.companyName) {
-            const container = document.getElementById("companyLogoContainer");
-            container.style.display = "flex";
-            if (userData.companyLogoUrl) {
-              document.getElementById("companyLogo").src =
-                userData.companyLogoUrl;
-              document.getElementById("companyLogo").style.display = "block";
-            } else {
-              document.getElementById("companyLogo").style.display = "none";
+                if (!response.ok) {
+                  if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem("aervo_token");
+                    window.location.href = "/login";
+                    return;
+                  }
+                  throw new Error("Failed to fetch user data");
+                }
+
+                data = await response.json();
+
+                if (!data.success)
+                  throw new Error(data.message || "Failed to load user data");
+
+                userData = data.user;
+                userData = data.user;
+                userPlan = data.user.plan || "free";
+                // Gate Reports and Intelligence Center
+                if (userPlan === "free") {
+                  document
+                    .querySelectorAll('a[href="/reports"], a[href="/intelligence"]')
+                    .forEach((link) => {
+                      link.href = "/pricing";
+                      link.title = "Upgrade to access this feature";
+                      link.style.opacity = "0.5";
+                    });
+                }
+                shopData = data.shop;
+
+                shopData = data.shop;
+                shopData = data.shop;
+
+                shopData = data.shop;
+
+                // Company logo in nav
+                if (userData.companyLogoUrl || userData.companyName) {
+                  const container = document.getElementById("companyLogoContainer");
+                  container.style.display = "flex";
+                  if (userData.companyLogoUrl) {
+                    document.getElementById("companyLogo").src =
+                      userData.companyLogoUrl;
+                    document.getElementById("companyLogo").style.display = "block";
+                  } else {
+                    document.getElementById("companyLogo").style.display = "none";
+                  }
+                  document.getElementById("companyLogoName").textContent =
+                    userData.companyName || "";
+                }
+                // Check if Square is also connected
+                const squareStatus = await fetch(
+                  `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
+                  { headers: { Authorization: `Bearer ${token}` } },
+                );
+                const squareData = await squareStatus.json();
+                if (squareData.connected) {
+                  document.getElementById("integrationSwitcher").style.display =
+                    "inline-flex";
+                }
+
+                if (shopData) {
+                  document.getElementById("shopBadge").style.display = "flex";
+                  document.getElementById("shopName").textContent =
+                    shopData.shopOrigin.replace(".myshopify.com", "");
+                  await fetchAllShopifyData(shopData.shopOrigin);
+                }
+
+                renderView("overview");
+                loadHealthScore(); // ADD THIS
+              } catch (error) {
+                console.error("Dashboard load error:", error);
+                document.getElementById("content").innerHTML = `
+                  <div class="error-banner">
+                    <strong>⚠ Error loading dashboard</strong><br>
+                    ${error.message || "Something went wrong. Please try refreshing the page."}
+                  </div>
+                  <div class="card" style="text-align:center;padding:40px;">
+                    <button class="btn-primary" onclick="location.reload()">Refresh Page</button>
+                  </div>`;
+              }
             }
-            document.getElementById("companyLogoName").textContent =
-              userData.companyName || "";
-          }
-          // Check if Square is also connected
-          const squareStatus = await fetch(
-            `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          const squareData = await squareStatus.json();
-          if (squareData.connected) {
-            document.getElementById("integrationSwitcher").style.display =
-              "inline-flex";
-          }
 
-          if (shopData) {
-            document.getElementById("shopBadge").style.display = "flex";
-            document.getElementById("shopName").textContent =
-              shopData.shopOrigin.replace(".myshopify.com", "");
-            await fetchAllShopifyData(shopData.shopOrigin);
-          }
+            // ============= FETCH ALL SHOPIFY DATA =============
+            async function fetchAllShopifyData(shop) {
+              try {
+                const h = { Authorization: `Bearer ${token}` };
+                const [oRes, ordRes, invRes, cusRes] = await Promise.all([
+                  fetch(`${BACKEND_URL}/api/shopify/overview?shop=${shop}`, {
+                    headers: h,
+                  }),
+                  fetch(`${BACKEND_URL}/api/shopify/orders?shop=${shop}&limit=50`, {
+                    headers: h,
+                  }),
+                  fetch(`${BACKEND_URL}/api/shopify/inventory?shop=${shop}`, {
+                    headers: h,
+                  }),
+                  fetch(`${BACKEND_URL}/api/shopify/customers?shop=${shop}`, {
+                    headers: h,
+                  }),
+                ]);
+                const [o, ord, inv, cus] = await Promise.all([
+                  oRes.json(),
+                  ordRes.json(),
+                  invRes.json(),
+                  cusRes.json(),
+                ]);
+                realData.overview = o.success ? o.data : null;
+                realData.orders = ord.success ? ord.orders : [];
+                realData.inventory = inv.success ? inv.inventory : null;
+                realData.customers = cus.success ? cus.customers : null;
+              } catch (err) {
+                console.error("Shopify data error:", err);
+              }
+            }
 
-          renderView("overview");
-          loadHealthScore(); // ADD THIS
-        } catch (error) {
-          console.error("Dashboard load error:", error);
-          document.getElementById("content").innerHTML = `
-            <div class="error-banner">
-              <strong>⚠ Error loading dashboard</strong><br>
-              ${error.message || "Something went wrong. Please try refreshing the page."}
-            </div>
-            <div class="card" style="text-align:center;padding:40px;">
-              <button class="btn-primary" onclick="location.reload()">Refresh Page</button>
-            </div>`;
-        }
-      }
+            // ============= RENDER ROUTER =============
+            function renderView(view) {
+              const content = document.getElementById("content");
+              if (!shopData && view !== "overview") {
+                content.innerHTML = renderConnectShopify();
+                return;
+              }
+              switch (view) {
+                case "overview":
+                  content.innerHTML = renderOverview();
+                  break;
+                case "analytics":
+                  content.innerHTML = renderAnalytics();
+                  break;
+                case "inventory":
+                  content.innerHTML = renderInventory();
+                  break;
+                case "customers":
+                  content.innerHTML = renderCustomers();
+                  break;
+              }
+            }
 
-      // ============= FETCH ALL SHOPIFY DATA =============
-      async function fetchAllShopifyData(shop) {
-        try {
-          const h = { Authorization: `Bearer ${token}` };
-          const [oRes, ordRes, invRes, cusRes] = await Promise.all([
-            fetch(`${BACKEND_URL}/api/shopify/overview?shop=${shop}`, {
-              headers: h,
-            }),
-            fetch(`${BACKEND_URL}/api/shopify/orders?shop=${shop}&limit=50`, {
-              headers: h,
-            }),
-            fetch(`${BACKEND_URL}/api/shopify/inventory?shop=${shop}`, {
-              headers: h,
-            }),
-            fetch(`${BACKEND_URL}/api/shopify/customers?shop=${shop}`, {
-              headers: h,
-            }),
-          ]);
-          const [o, ord, inv, cus] = await Promise.all([
-            oRes.json(),
-            ordRes.json(),
-            invRes.json(),
-            cusRes.json(),
-          ]);
-          realData.overview = o.success ? o.data : null;
-          realData.orders = ord.success ? ord.orders : [];
-          realData.inventory = inv.success ? inv.inventory : null;
-          realData.customers = cus.success ? cus.customers : null;
-        } catch (err) {
-          console.error("Shopify data error:", err);
-        }
-      }
+            // ============= RENDER OVERVIEW =============
+            function renderOverview() {
+              if (!shopData) return renderConnectShopify();
+              const d = realData.overview;
+              const inv = realData.inventory;
+              const orders = realData.orders || [];
+              const revenue = d
+                ? "$" + parseFloat(d.revenue.total).toLocaleString()
+                : "—";
+              const revChange = d ? parseFloat(d.revenue.change) : 0;
+              const todayOrders = d ? d.orders.today : "—";
+              const ordChange = d ? parseFloat(d.orders.change) : 0;
+              const convRate = d ? d.conversion.rate + "%" : "—";
+              const outOfStock = inv ? inv.outOfStock.length : "—";
+              const lowStock = inv ? inv.lowStock.length : 0;
+              const insights = generateInsights(d, inv);
 
-      // ============= RENDER ROUTER =============
-      function renderView(view) {
-        const content = document.getElementById("content");
-        if (!shopData && view !== "overview") {
-          content.innerHTML = renderConnectShopify();
-          return;
-        }
-        switch (view) {
-          case "overview":
-            content.innerHTML = renderOverview();
-            break;
-          case "analytics":
-            content.innerHTML = renderAnalytics();
-            break;
-          case "inventory":
-            content.innerHTML = renderInventory();
-            break;
-          case "customers":
-            content.innerHTML = renderCustomers();
-            break;
-        }
-      }
+              const html = `
+                <div class="welcome">
+                  <h1>Welcome back, ${userData.companyName}</h1>
+                  <p>Here's what's happening with your store today</p>
+                </div>
 
-      // ============= RENDER OVERVIEW =============
-      function renderOverview() {
-        if (!shopData) return renderConnectShopify();
-        const d = realData.overview;
-        const inv = realData.inventory;
-        const orders = realData.orders || [];
-        const revenue = d
-          ? "$" + parseFloat(d.revenue.total).toLocaleString()
-          : "—";
-        const revChange = d ? parseFloat(d.revenue.change) : 0;
-        const todayOrders = d ? d.orders.today : "—";
-        const ordChange = d ? parseFloat(d.orders.change) : 0;
-        const convRate = d ? d.conversion.rate + "%" : "—";
-        const outOfStock = inv ? inv.outOfStock.length : "—";
-        const lowStock = inv ? inv.lowStock.length : 0;
-        const insights = generateInsights(d, inv);
-
-        const html = `
-          <div class="welcome">
-            <h1>Welcome back, ${userData.companyName}</h1>
-            <p>Here's what's happening with your store today</p>
-          </div>
-
-          <!-- HEALTH SCORE WIDGET -->
-          ${
-            userPlan === "free"
-              ? `
-            <div class="card" style="margin-bottom:24px;text-align:center;padding:40px;border:1px dashed rgba(148,163,184,0.3)">
-              <div style="font-size:32px;margin-bottom:12px">📊</div>
-              <h3 style="color:#e5ecff;margin-bottom:8px">Business Health Score</h3>
-              <p style="color:#9ca7d6;margin-bottom:16px">Upgrade to Essential to unlock your AI-powered business health score.</p>
-              <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
-  <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
-  <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
-  <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
-</div>
-            </div>
-          `
-              : `
-            <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
-                <div style="display:flex;align-items:center;gap:24px;">
-                  <div style="position:relative;width:100px;height:100px;">
-                    <svg width="100" height="100" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                      <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
-                        stroke="#29c8ff" stroke-width="10"
-                        stroke-dasharray="264" stroke-dashoffset="264"
-                        stroke-linecap="round"
-                        transform="rotate(-90 50 50)"
-                        style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
-                    </svg>
-                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                      <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
-                      <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
+                <!-- HEALTH SCORE WIDGET -->
+                ${
+                  userPlan === "free"
+                    ? `
+                  <div class="card" style="margin-bottom:24px;text-align:center;padding:40px;border:1px dashed rgba(148,163,184,0.3)">
+                    <div style="font-size:32px;margin-bottom:12px">📊</div>
+                    <h3 style="color:#e5ecff;margin-bottom:8px">Business Health Score</h3>
+                    <p style="color:#9ca7d6;margin-bottom:16px">Upgrade to Essential to unlock your AI-powered business health score.</p>
+                    <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+        <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
+        <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
+        <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
+      </div>
+                  </div>
+                `
+                    : `
+                  <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+                      <div style="display:flex;align-items:center;gap:24px;">
+                        <div style="position:relative;width:100px;height:100px;">
+                          <svg width="100" height="100" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                            <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
+                              stroke="#29c8ff" stroke-width="10"
+                              stroke-dasharray="264" stroke-dashoffset="264"
+                              stroke-linecap="round"
+                              transform="rotate(-90 50 50)"
+                              style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
+                          </svg>
+                          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                            <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
+                            <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
+                          </div>
+                        </div>
+                        <div>
+                          <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
+                          <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
+                          <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
+                        </div>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
+                        <div id="scoreBreakdown"></div>
+                        <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;transition:all .2s;">↻ Recalculate</button>
+                      </div>
+                      <div style="min-width:200px;">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
+                        <div id="scoreImprovements"></div>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
-                    <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
-                    <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
+                `
+                }
+                <div class="ai-banner">
+                  <div class="ai-banner-header">
+                    <div class="ai-icon">🤖</div>
+                    <h2>AI Insights &amp; Recommendations</h2>
                   </div>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
-                  <div id="scoreBreakdown"></div>
-                  <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;transition:all .2s;">↻ Recalculate</button>
-                </div>
-                <div style="min-width:200px;">
-                  <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
-                  <div id="scoreImprovements"></div>
-                </div>
-              </div>
-            </div>
-          `
-          }
-          <div class="ai-banner">
-            <div class="ai-banner-header">
-              <div class="ai-icon">🤖</div>
-              <h2>AI Insights &amp; Recommendations</h2>
-            </div>
-            ${insights
-              .map(
-                (i) => `
-              <div class="insight-item">
-                <span class="insight-priority priority-${i.priority}">${i.label}</span>
-                <strong>${i.title}</strong> — ${i.desc}
-              </div>`,
-              )
-              .join("")}
-          </div>
-          <div class="grid-4">
-            <div class="card">
-              <h3>Revenue (30 days)</h3>
-              <div class="stat-large">${revenue}</div>
-              <div class="stat-change ${revChange >= 0 ? "positive" : "negative"}">
-                ${revChange >= 0 ? "↑" : "↓"} ${Math.abs(revChange)}% vs last month
-              </div>
-            </div>
-            <div class="card">
-              <h3>Orders Today</h3>
-              <div class="stat-large">${todayOrders}</div>
-              <div class="stat-change ${ordChange >= 0 ? "positive" : "negative"}">
-                ${ordChange >= 0 ? "↑" : "↓"} ${Math.abs(ordChange)}% vs yesterday
-              </div>
-            </div>
-            <div class="card">
-              <h3>Conversion Rate</h3>
-              <div class="stat-large">${convRate}</div>
-              <div class="stat-label">Industry avg: 2.5%</div>
-            </div>
-            <div class="card">
-              <h3>Inventory Alerts</h3>
-              <div class="stat-large" style="color:#ef4444">${outOfStock}</div>
-              <div class="stat-change negative">⚠ Out of stock</div>
-              <div class="stat-label">${lowStock} low stock items</div>
-            </div>
-          </div>
-          
-          <div class="card" style="margin-bottom:24px">
-            <h3>Revenue Trend (Last 7 Days)</h3>
-            <canvas id="overviewRevenueChart" style="max-height:200px"></canvas>
-          </div>
-          
-          <div class="card" style="margin-bottom:24px">
-            <h3>Recent Orders</h3>
-            ${renderOrdersTable(orders.slice(0, 10))}
-          </div>
-          <div class="grid-2">
-            <div class="card">
-              <h3>Action Center</h3>
-              ${renderActionItems(inv)}
-            </div>
-            <div class="card">
-              <h3>Ask Aervo Anything</h3>
-              <div class="chat-container">
-                <div class="chat-messages" id="chatMessages">
-                  <div class="chat-message ai">
-                    👋 Hi! I'm <strong>Aervo</strong>, your AI business co-pilot. I have full access to your store's real data — ask me anything!<br><br>
-                    Try asking:<br>
-                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">What are my top 5 products in the last 180 days?</span><br>
-                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Should I run a sale? If so, what discount would increase sales?</span><br>
-                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Which products are at risk of running out of stock?</span><br>
-                    • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">How is my revenue trending month over month?</span>
-                  </div>
-                </div>
-                <div class="chat-input-wrapper">
-                  <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything about your store..." />
-                  <button class="btn-send" onclick="sendMessage()">Send</button>
-                </div>
-              </div>
-            </div>
-          </div>`;
-        // Render quick 7-day chart
-        // Render quick 7-day chart
-        setTimeout(() => renderOverviewChart(orders), 100);
-        setTimeout(() => loadHealthScore(), 200);
-        return html;
-      }
-
-      // ============= OVERVIEW CHART =============
-      function renderOverviewChart(orders) {
-        if (!orders || orders.length === 0) return;
-
-        const dailyRevenue = {};
-        const today = new Date();
-
-        // Last 7 days
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          const key = d.toISOString().split("T")[0];
-          dailyRevenue[key] = 0;
-        }
-
-        orders.forEach((order) => {
-          const dateKey = order.created_at.split("T")[0];
-          if (dailyRevenue.hasOwnProperty(dateKey)) {
-            dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
-          }
-        });
-
-        const labels = Object.keys(dailyRevenue).map((d) => {
-          const date = new Date(d);
-          return date.toLocaleDateString("en-US", { weekday: "short" });
-        });
-
-        const data = Object.values(dailyRevenue);
-
-        const ctx = document.getElementById("overviewRevenueChart");
-        if (ctx) {
-          new Chart(ctx, {
-            type: "line",
-            data: {
-              labels,
-              datasets: [
-                {
-                  label: "Revenue",
-                  data,
-                  borderColor: "#60a5fa",
-                  backgroundColor: "rgba(96, 165, 250, 0.15)",
-                  borderWidth: 3,
-                  fill: true,
-                  tension: 0.4,
-                  pointRadius: 4,
-                  pointHoverRadius: 7,
-                  pointBackgroundColor: "#60a5fa",
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  backgroundColor: "rgba(15, 23, 42, 0.95)",
-                  titleColor: "#e5ecff",
-                  bodyColor: "#9ca7d6",
-                  borderColor: "rgba(148, 163, 184, 0.2)",
-                  borderWidth: 1,
-                  padding: 12,
-                  displayColors: false,
-                  callbacks: { label: (ctx) => `$${ctx.parsed.y.toFixed(2)}` },
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: {
-                    color: "#9ca7d6",
-                    callback: (v) => "$" + v.toFixed(0),
-                  },
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "#9ca7d6" },
-                },
-              },
-            },
-          });
-        }
-      }
-
-      // ============= RENDER ANALYTICS =============
-      function renderAnalytics() {
-        const d = realData.overview;
-        const orders = realData.orders || [];
-        const total = orders.reduce(
-          (s, o) => s + parseFloat(o.total_price || 0),
-          0,
-        );
-        const avg = orders.length ? total / orders.length : 0;
-
-        // Render HTML first
-        const html = `
-          <div class="welcome">
-            <h1>Sales Analytics</h1>
-            <p>Deep dive into your revenue, orders, and performance trends</p>
-          </div>
-          <div class="grid-4">
-            <div class="card">
-              <h3>Total Revenue (30d)</h3>
-              <div class="stat-large">$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              ${d ? `<div class="stat-change ${parseFloat(d.revenue.change) >= 0 ? "positive" : "negative"}">${parseFloat(d.revenue.change) >= 0 ? "↑" : "↓"} ${Math.abs(d.revenue.change)}% vs last month</div>` : ""}
-            </div>
-            <div class="card">
-              <h3>Avg Order Value</h3>
-              <div class="stat-large">$${avg.toFixed(2)}</div>
-            </div>
-            <div class="card">
-              <h3>Total Orders</h3>
-              <div class="stat-large">${orders.length}</div>
-            </div>
-            <div class="card">
-              <h3>Orders Today</h3>
-              <div class="stat-large">${d ? d.orders.today : "—"}</div>
-            </div>
-          </div>
-          
-          <div class="grid-2" style="margin-bottom:24px">
-            <div class="card">
-              <h3>Revenue Trend (Last 30 Days)</h3>
-              <canvas id="revenueChart" style="max-height:280px"></canvas>
-            </div>
-            <div class="card">
-              <h3>Top 10 Products by Revenue</h3>
-              <canvas id="topProductsChart" style="max-height:280px"></canvas>
-            </div>
-          </div>
-          
-          <div class="card">
-            <h3>All Recent Orders</h3>
-            ${renderOrdersTable(orders.slice(0, 25))}
-          </div>`;
-
-        // Schedule chart rendering after DOM updates
-        setTimeout(() => renderCharts(orders), 100);
-
-        return html;
-      }
-
-      // ============= RENDER CHARTS =============
-      function renderCharts(orders) {
-        if (!orders || orders.length === 0) return;
-
-        // === REVENUE TREND CHART ===
-        const dailyRevenue = {};
-        const today = new Date();
-
-        // Initialize last 30 days
-        for (let i = 29; i >= 0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          const key = d.toISOString().split("T")[0];
-          dailyRevenue[key] = 0;
-        }
-
-        // Aggregate orders by day
-        orders.forEach((order) => {
-          const dateKey = order.created_at.split("T")[0];
-          if (dailyRevenue.hasOwnProperty(dateKey)) {
-            dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
-          }
-        });
-
-        const labels = Object.keys(dailyRevenue).map((d) => {
-          const date = new Date(d);
-          return date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          });
-        });
-
-        const revenueData = Object.values(dailyRevenue);
-
-        const revCtx = document.getElementById("revenueChart");
-        if (revCtx) {
-          new Chart(revCtx, {
-            type: "line",
-            data: {
-              labels,
-              datasets: [
-                {
-                  label: "Revenue",
-                  data: revenueData,
-                  borderColor: "#60a5fa",
-                  backgroundColor: "rgba(96, 165, 250, 0.1)",
-                  borderWidth: 2,
-                  fill: true,
-                  tension: 0.4,
-                  pointRadius: 3,
-                  pointHoverRadius: 6,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  backgroundColor: "rgba(15, 23, 42, 0.95)",
-                  titleColor: "#e5ecff",
-                  bodyColor: "#9ca7d6",
-                  borderColor: "rgba(148, 163, 184, 0.2)",
-                  borderWidth: 1,
-                  padding: 12,
-                  displayColors: false,
-                  callbacks: {
-                    label: (context) => `$${context.parsed.y.toFixed(2)}`,
-                  },
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: {
-                    color: "#9ca7d6",
-                    callback: (value) => "$" + value.toFixed(0),
-                  },
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "#9ca7d6", maxRotation: 45, minRotation: 45 },
-                },
-              },
-            },
-          });
-        }
-
-        // === TOP PRODUCTS CHART ===
-        const productSales = {};
-        orders.forEach((order) => {
-          (order.line_items || []).forEach((item) => {
-            if (!productSales[item.title]) productSales[item.title] = 0;
-            productSales[item.title] += parseFloat(item.price) * item.quantity;
-          });
-        });
-
-        const topProducts = Object.entries(productSales)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10);
-
-        const productLabels = topProducts.map(([name]) =>
-          name.length > 25 ? name.substring(0, 25) + "..." : name,
-        );
-        const productData = topProducts.map(([, revenue]) => revenue);
-
-        const prodCtx = document.getElementById("topProductsChart");
-        if (prodCtx && topProducts.length > 0) {
-          new Chart(prodCtx, {
-            type: "bar",
-            data: {
-              labels: productLabels,
-              datasets: [
-                {
-                  label: "Revenue",
-                  data: productData,
-                  backgroundColor: "rgba(96, 165, 250, 0.8)",
-                  borderColor: "#60a5fa",
-                  borderWidth: 1,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              indexAxis: "y",
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  backgroundColor: "rgba(15, 23, 42, 0.95)",
-                  titleColor: "#e5ecff",
-                  bodyColor: "#9ca7d6",
-                  borderColor: "rgba(148, 163, 184, 0.2)",
-                  borderWidth: 1,
-                  padding: 12,
-                  displayColors: false,
-                  callbacks: {
-                    label: (context) => `$${context.parsed.x.toFixed(2)}`,
-                  },
-                },
-              },
-              scales: {
-                x: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: {
-                    color: "#9ca7d6",
-                    callback: (value) => "$" + value.toFixed(0),
-                  },
-                },
-                y: {
-                  grid: { display: false },
-                  ticks: { color: "#9ca7d6", font: { size: 11 } },
-                },
-              },
-            },
-          });
-        }
-      }
-
-      // ============= RENDER INVENTORY =============
-      function renderInventory() {
-        const inv = realData.inventory;
-        if (!inv)
-          return `<div class="loading"><div class="spinner"></div><div>Loading inventory...</div></div>`;
-        const attention = [...inv.outOfStock, ...inv.lowStock].slice(0, 30);
-        return `
-          <div class="welcome">
-            <h1>Inventory Health</h1>
-            <p>Monitor stock levels and get smart reorder recommendations</p>
-          </div>
-          <div class="grid-4">
-            <div class="card">
-              <h3>Total Products</h3>
-              <div class="stat-large">${inv.totalProducts}</div>
-              <div class="stat-label">${inv.totalVariants} variants</div>
-            </div>
-            <div class="card">
-              <h3>Out of Stock</h3>
-              <div class="stat-large" style="color:#ef4444">${inv.outOfStock.length}</div>
-              <div class="stat-change negative">⚠ Needs attention</div>
-            </div>
-            <div class="card">
-              <h3>Low Stock</h3>
-              <div class="stat-large" style="color:#f59e0b">${inv.lowStock.length}</div>
-              <div class="stat-label">Below 10 units</div>
-            </div>
-            <div class="card">
-              <h3>In Stock</h3>
-              <div class="stat-large">${inv.items.filter((i) => i.status === "in_stock").length}</div>
-              <div class="stat-label">Healthy inventory</div>
-            </div>
-          </div>
-          <div class="card">
-            <h3>Products Needing Attention</h3>
-            ${
-              attention.length === 0
-                ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All products are well stocked!</p>`
-                : `<div class="table-wrapper"><table class="data-table">
-                  <thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Price</th><th>Status</th></tr></thead>
-                  <tbody>${attention
+                  ${insights
                     .map(
-                      (item) => `
-                    <tr>
-                      <td>${item.productTitle}${item.variantTitle && item.variantTitle !== "Default Title" ? ` (${item.variantTitle})` : ""}</td>
-                      <td>${item.sku || "N/A"}</td>
-                      <td style="color:${item.status === "out_of_stock" ? "#ef4444" : "#f59e0b"}">${item.quantity}</td>
-                      <td>$${parseFloat(item.price).toFixed(2)}</td>
-                      <td><span class="insight-priority priority-${item.status === "out_of_stock" ? "high" : "medium"}">${item.status === "out_of_stock" ? "Out of Stock" : "Low Stock"}</span></td>
-                    </tr>`,
+                      (i) => `
+                    <div class="insight-item">
+                      <span class="insight-priority priority-${i.priority}">${i.label}</span>
+                      <strong>${i.title}</strong> — ${i.desc}
+                    </div>`,
                     )
                     .join("")}
-                  </tbody>
-                </table></div>`
+                </div>
+                <div class="grid-4">
+                  <div class="card">
+                    <h3>Revenue (30 days)</h3>
+                    <div class="stat-large">${revenue}</div>
+                    <div class="stat-change ${revChange >= 0 ? "positive" : "negative"}">
+                      ${revChange >= 0 ? "↑" : "↓"} ${Math.abs(revChange)}% vs last month
+                    </div>
+                  </div>
+                  <div class="card">
+                    <h3>Orders Today</h3>
+                    <div class="stat-large">${todayOrders}</div>
+                    <div class="stat-change ${ordChange >= 0 ? "positive" : "negative"}">
+                      ${ordChange >= 0 ? "↑" : "↓"} ${Math.abs(ordChange)}% vs yesterday
+                    </div>
+                  </div>
+                  <div class="card">
+                    <h3>Conversion Rate</h3>
+                    <div class="stat-large">${convRate}</div>
+                    <div class="stat-label">Industry avg: 2.5%</div>
+                  </div>
+                  <div class="card">
+                    <h3>Inventory Alerts</h3>
+                    <div class="stat-large" style="color:#ef4444">${outOfStock}</div>
+                    <div class="stat-change negative">⚠ Out of stock</div>
+                    <div class="stat-label">${lowStock} low stock items</div>
+                  </div>
+                </div>
+
+                <div class="card" style="margin-bottom:24px">
+                  <h3>Revenue Trend (Last 7 Days)</h3>
+                  <canvas id="overviewRevenueChart" style="max-height:200px"></canvas>
+                </div>
+
+                <div class="card" style="margin-bottom:24px">
+                  <h3>Recent Orders</h3>
+                  ${renderOrdersTable(orders.slice(0, 10))}
+                </div>
+                <div class="grid-2">
+                  <div class="card">
+                    <h3>Action Center</h3>
+                    ${renderActionItems(inv)}
+                  </div>
+                  <div class="card">
+                    <h3>Ask Aervo Anything</h3>
+                    <div class="chat-container">
+                      <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message ai">
+                          👋 Hi! I'm <strong>Aervo</strong>, your AI business co-pilot. I have full access to your store's real data — ask me anything!<br><br>
+                          Try asking:<br>
+                          • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">What are my top 5 products in the last 180 days?</span><br>
+                          • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Should I run a sale? If so, what discount would increase sales?</span><br>
+                          • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">Which products are at risk of running out of stock?</span><br>
+                          • <span style="color:#93c5fd;cursor:pointer" onclick="askSuggestion(this)">How is my revenue trending month over month?</span>
+                        </div>
+                      </div>
+                      <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything about your store..." />
+                        <button class="btn-send" onclick="sendMessage()">Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+              // Render quick 7-day chart
+              // Render quick 7-day chart
+              setTimeout(() => renderOverviewChart(orders), 100);
+              setTimeout(() => loadHealthScore(), 200);
+              return html;
             }
-          </div>`;
-      }
 
-      // ============= RENDER CUSTOMERS =============
-      function renderCustomers() {
-        const c = realData.customers;
-        const orders = realData.orders || [];
+            // ============= OVERVIEW CHART =============
+            function renderOverviewChart(orders) {
+              if (!orders || orders.length === 0) return;
 
-        if (!c)
-          return `<div class="loading"><div class="spinner"></div><div>Loading customers...</div></div>`;
+              const dailyRevenue = {};
+              const today = new Date();
 
-        // === ADVANCED CUSTOMER SEGMENTATION ===
-        const today = new Date();
-        const thirtyDaysAgo = new Date(
-          today.getTime() - 30 * 24 * 60 * 60 * 1000,
-        );
-        const sixtyDaysAgo = new Date(
-          today.getTime() - 60 * 24 * 60 * 60 * 1000,
-        );
-
-        // Segment customers by value
-        const avgLTV = parseFloat(c.avgLifetimeValue);
-        const vipCustomers = c.topCustomers.filter(
-          (cu) => parseFloat(cu.totalSpent) > avgLTV * 2,
-        );
-        const regularCustomers = c.topCustomers.filter(
-          (cu) =>
-            parseFloat(cu.totalSpent) >= avgLTV &&
-            parseFloat(cu.totalSpent) <= avgLTV * 2,
-        );
-        const newCustomers = c.topCustomers.filter(
-          (cu) => cu.ordersCount === 1,
-        );
-
-        // Calculate at-risk customers (haven't ordered in 60+ days)
-        const customerLastOrder = {};
-        orders.forEach((order) => {
-          if (order.customer && order.customer.id) {
-            const orderId = order.customer.id;
-            const orderDate = new Date(order.created_at);
-            if (
-              !customerLastOrder[orderId] ||
-              orderDate > customerLastOrder[orderId]
-            ) {
-              customerLastOrder[orderId] = orderDate;
-            }
-          }
-        });
-
-        const atRiskCount = Object.values(customerLastOrder).filter(
-          (date) => date < sixtyDaysAgo,
-        ).length;
-
-        // New customers in last 30 days
-        const recentCustomerIds = new Set();
-        orders.forEach((order) => {
-          if (
-            order.customer &&
-            order.customer.id &&
-            new Date(order.created_at) > thirtyDaysAgo
-          ) {
-            recentCustomerIds.add(order.customer.id);
-          }
-        });
-
-        // Calculate purchase frequency
-        const ordersByCustomer = {};
-        orders.forEach((order) => {
-          if (order.customer && order.customer.id) {
-            const cid = order.customer.id;
-            if (!ordersByCustomer[cid]) ordersByCustomer[cid] = [];
-            ordersByCustomer[cid].push(new Date(order.created_at));
-          }
-        });
-
-        let totalDaysBetween = 0;
-        let pairCount = 0;
-        Object.values(ordersByCustomer).forEach((dates) => {
-          if (dates.length > 1) {
-            dates.sort((a, b) => a - b);
-            for (let i = 1; i < dates.length; i++) {
-              const daysBetween =
-                (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
-              totalDaysBetween += daysBetween;
-              pairCount++;
-            }
-          }
-        });
-
-        const avgDaysBetweenOrders =
-          pairCount > 0 ? Math.round(totalDaysBetween / pairCount) : 0;
-
-        const html = `
-          <div class="welcome">
-            <h1>Customer Intelligence</h1>
-            <p>Deep insights into your customer base and growth opportunities</p>
-          </div>
-          
-          <div class="grid-4">
-            <div class="card">
-              <h3>Total Customers</h3>
-              <div class="stat-large">${c.total}</div>
-              <div class="stat-label">${recentCustomerIds.size} new this month</div>
-            </div>
-            <div class="card">
-              <h3>Repeat Rate</h3>
-              <div class="stat-large">${c.repeatRate}%</div>
-              <div class="stat-label">${c.repeatCustomers} repeat customers</div>
-            </div>
-            <div class="card">
-              <h3>Avg Lifetime Value</h3>
-              <div class="stat-large">$${c.avgLifetimeValue}</div>
-              <div class="stat-label">Per customer</div>
-            </div>
-            <div class="card">
-              <h3>Purchase Frequency</h3>
-              <div class="stat-large">${avgDaysBetweenOrders}</div>
-              <div class="stat-label">Days between orders</div>
-            </div>
-          </div>
-          
-          <div class="grid-4" style="margin-bottom:24px">
-            <div class="card" style="border-left:3px solid #fbbf24">
-              <h3>VIP Customers</h3>
-              <div class="stat-large" style="color:#fbbf24">${vipCustomers.length}</div>
-              <div class="stat-label">Spent ${avgLTV > 0 ? "2x" : ""} above average</div>
-            </div>
-            <div class="card" style="border-left:3px solid #60a5fa">
-              <h3>Regular Customers</h3>
-              <div class="stat-large">${regularCustomers.length}</div>
-              <div class="stat-label">Core customer base</div>
-            </div>
-            <div class="card" style="border-left:3px solid #34d399">
-              <h3>New Customers</h3>
-              <div class="stat-large">${newCustomers.length}</div>
-              <div class="stat-label">First-time buyers</div>
-            </div>
-            <div class="card" style="border-left:3px solid #ef4444">
-              <h3>At-Risk Customers</h3>
-              <div class="stat-large">${atRiskCount}</div>
-              <div class="stat-label">No order in 60+ days</div>
-            </div>
-          </div>
-          
-          <div class="grid-2" style="margin-bottom:24px">
-            <div class="card">
-              <h3>Customer Value Distribution</h3>
-              <canvas id="customerValueChart" style="max-height:280px"></canvas>
-            </div>
-            <div class="card">
-              <h3>Customer Growth (Last 30 Days)</h3>
-              <canvas id="customerGrowthChart" style="max-height:280px"></canvas>
-            </div>
-          </div>
-          
-          <div class="grid-2">
-            <div class="card">
-              <h3>🏆 VIP Customers (Top Spenders)</h3>
-              ${
-                vipCustomers.length === 0
-                  ? `<p style="color:#64748b;padding:20px;text-align:center">No VIP customers yet</p>`
-                  : `<div class="table-wrapper"><table class="data-table">
-                    <thead><tr><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Status</th></tr></thead>
-                    <tbody>${vipCustomers
-                      .slice(0, 10)
-                      .map(
-                        (cu) => `
-                      <tr>
-                        <td>${cu.name}</td>
-                        <td>${cu.email || "N/A"}</td>
-                        <td>${cu.ordersCount}</td>
-                        <td style="color:#fbbf24;font-weight:600">$${cu.totalSpent}</td>
-                        <td><span class="insight-priority priority-medium">VIP</span></td>
-                      </tr>`,
-                      )
-                      .join("")}
-                    </tbody>
-                  </table></div>`
+              // Last 7 days
+              for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const key = d.toISOString().split("T")[0];
+                dailyRevenue[key] = 0;
               }
-            </div>
-            
-            <div class="card">
-              <h3>⚠️ At-Risk Customers</h3>
-              <p style="color:#9ca7d6;font-size:13px;margin-bottom:16px">Haven't ordered in 60+ days — time to re-engage!</p>
-              ${
-                atRiskCount === 0
-                  ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All customers are actively ordering!</p>`
-                  : `<div class="action-list">
-                    <div class="action-item">
-                      <div class="action-icon">📧</div>
-                      <div class="action-content">
-                        <div class="action-title">Send Win-Back Email</div>
-                        <div class="action-desc">Offer ${atRiskCount} customers a 15% discount to return</div>
-                      </div>
-                    </div>
-                    <div class="action-item">
-                      <div class="action-icon">🎁</div>
-                      <div class="action-content">
-                        <div class="action-title">Personalized Offers</div>
-                        <div class="action-desc">Show them products similar to past purchases</div>
-                      </div>
-                    </div>
-                    <div class="action-item">
-                      <div class="action-icon">💬</div>
-                      <div class="action-content">
-                        <div class="action-title">Feedback Survey</div>
-                        <div class="action-desc">Ask why they haven't returned</div>
-                      </div>
-                    </div>
-                  </div>`
-              }
-            </div>
-          </div>`;
 
-        // Render charts
-        setTimeout(() => renderCustomerCharts(c.topCustomers, orders), 100);
-        return html;
-      }
-
-      // ============= CUSTOMER CHARTS =============
-      function renderCustomerCharts(customers, orders) {
-        if (!customers || customers.length === 0) return;
-
-        // === CUSTOMER VALUE DISTRIBUTION (Pie Chart) ===
-        const avgLTV =
-          customers.reduce((s, c) => s + parseFloat(c.totalSpent), 0) /
-          customers.length;
-        const vip = customers.filter(
-          (c) => parseFloat(c.totalSpent) > avgLTV * 2,
-        ).length;
-        const regular = customers.filter(
-          (c) =>
-            parseFloat(c.totalSpent) >= avgLTV &&
-            parseFloat(c.totalSpent) <= avgLTV * 2,
-        ).length;
-        const occasional = customers.filter(
-          (c) => parseFloat(c.totalSpent) < avgLTV,
-        ).length;
-
-        const valueCtx = document.getElementById("customerValueChart");
-        if (valueCtx) {
-          new Chart(valueCtx, {
-            type: "doughnut",
-            data: {
-              labels: [
-                "VIP Customers",
-                "Regular Customers",
-                "Occasional Buyers",
-              ],
-              datasets: [
-                {
-                  data: [vip, regular, occasional],
-                  backgroundColor: ["#fbbf24", "#60a5fa", "#9ca7d6"],
-                  borderColor: "#0f172a",
-                  borderWidth: 2,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: {
-                  position: "bottom",
-                  labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
-                },
-                tooltip: {
-                  backgroundColor: "rgba(15, 23, 42, 0.95)",
-                  titleColor: "#e5ecff",
-                  bodyColor: "#9ca7d6",
-                  borderColor: "rgba(148, 163, 184, 0.2)",
-                  borderWidth: 1,
-                  padding: 12,
-                  callbacks: {
-                    label: (ctx) => `${ctx.label}: ${ctx.parsed} customers`,
-                  },
-                },
-              },
-            },
-          });
-        }
-
-        // === CUSTOMER GROWTH CHART (Last 30 days) ===
-        const dailyCustomers = {};
-        const today = new Date();
-
-        for (let i = 29; i >= 0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          const key = d.toISOString().split("T")[0];
-          dailyCustomers[key] = { new: 0, returning: 0 };
-        }
-
-        const seenCustomers = new Set();
-        orders
-          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-          .forEach((order) => {
-            if (order.customer && order.customer.id) {
-              const dateKey = order.created_at.split("T")[0];
-              const customerId = order.customer.id;
-
-              if (dailyCustomers.hasOwnProperty(dateKey)) {
-                if (seenCustomers.has(customerId)) {
-                  dailyCustomers[dateKey].returning++;
-                } else {
-                  dailyCustomers[dateKey].new++;
-                  seenCustomers.add(customerId);
+              orders.forEach((order) => {
+                const dateKey = order.created_at.split("T")[0];
+                if (dailyRevenue.hasOwnProperty(dateKey)) {
+                  dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
                 }
+              });
+
+              const labels = Object.keys(dailyRevenue).map((d) => {
+                const date = new Date(d);
+                return date.toLocaleDateString("en-US", { weekday: "short" });
+              });
+
+              const data = Object.values(dailyRevenue);
+
+              const ctx = document.getElementById("overviewRevenueChart");
+              if (ctx) {
+                new Chart(ctx, {
+                  type: "line",
+                  data: {
+                    labels,
+                    datasets: [
+                      {
+                        label: "Revenue",
+                        data,
+                        borderColor: "#60a5fa",
+                        backgroundColor: "rgba(96, 165, 250, 0.15)",
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: "#60a5fa",
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#e5ecff",
+                        bodyColor: "#9ca7d6",
+                        borderColor: "rgba(148, 163, 184, 0.2)",
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: { label: (ctx) => `$${ctx.parsed.y.toFixed(2)}` },
+                      },
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(148, 163, 184, 0.1)" },
+                        ticks: {
+                          color: "#9ca7d6",
+                          callback: (v) => "$" + v.toFixed(0),
+                        },
+                      },
+                      x: {
+                        grid: { display: false },
+                        ticks: { color: "#9ca7d6" },
+                      },
+                    },
+                  },
+                });
               }
             }
-          });
 
-        const growthLabels = Object.keys(dailyCustomers).map((d) => {
-          const date = new Date(d);
-          return date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          });
-        });
+            // ============= RENDER ANALYTICS =============
+            function renderAnalytics() {
+              const d = realData.overview;
+              const orders = realData.orders || [];
+              const total = orders.reduce(
+                (s, o) => s + parseFloat(o.total_price || 0),
+                0,
+              );
+              const avg = orders.length ? total / orders.length : 0;
 
-        const newCustomerData = Object.values(dailyCustomers).map((d) => d.new);
-        const returningCustomerData = Object.values(dailyCustomers).map(
-          (d) => d.returning,
-        );
+              // Render HTML first
+              const html = `
+                <div class="welcome">
+                  <h1>Sales Analytics</h1>
+                  <p>Deep dive into your revenue, orders, and performance trends</p>
+                </div>
+                <div class="grid-4">
+                  <div class="card">
+                    <h3>Total Revenue (30d)</h3>
+                    <div class="stat-large">$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    ${d ? `<div class="stat-change ${parseFloat(d.revenue.change) >= 0 ? "positive" : "negative"}">${parseFloat(d.revenue.change) >= 0 ? "↑" : "↓"} ${Math.abs(d.revenue.change)}% vs last month</div>` : ""}
+                  </div>
+                  <div class="card">
+                    <h3>Avg Order Value</h3>
+                    <div class="stat-large">$${avg.toFixed(2)}</div>
+                  </div>
+                  <div class="card">
+                    <h3>Total Orders</h3>
+                    <div class="stat-large">${orders.length}</div>
+                  </div>
+                  <div class="card">
+                    <h3>Orders Today</h3>
+                    <div class="stat-large">${d ? d.orders.today : "—"}</div>
+                  </div>
+                </div>
 
-        const growthCtx = document.getElementById("customerGrowthChart");
-        if (growthCtx) {
-          new Chart(growthCtx, {
-            type: "bar",
-            data: {
-              labels: growthLabels,
-              datasets: [
-                {
-                  label: "New Customers",
-                  data: newCustomerData,
-                  backgroundColor: "rgba(52, 211, 153, 0.8)",
-                  borderColor: "#34d399",
-                  borderWidth: 1,
-                },
-                {
-                  label: "Returning Customers",
-                  data: returningCustomerData,
-                  backgroundColor: "rgba(96, 165, 250, 0.8)",
-                  borderColor: "#60a5fa",
-                  borderWidth: 1,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: {
-                legend: {
-                  position: "bottom",
-                  labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
-                },
-                tooltip: {
-                  backgroundColor: "rgba(15, 23, 42, 0.95)",
-                  titleColor: "#e5ecff",
-                  bodyColor: "#9ca7d6",
-                  borderColor: "rgba(148, 163, 184, 0.2)",
-                  borderWidth: 1,
-                  padding: 12,
-                },
-              },
-              scales: {
-                x: {
-                  stacked: true,
-                  grid: { display: false },
-                  ticks: {
-                    color: "#9ca7d6",
-                    maxRotation: 45,
-                    minRotation: 45,
-                    font: { size: 10 },
+                <div class="grid-2" style="margin-bottom:24px">
+                  <div class="card">
+                    <h3>Revenue Trend (Last 30 Days)</h3>
+                    <canvas id="revenueChart" style="max-height:280px"></canvas>
+                  </div>
+                  <div class="card">
+                    <h3>Top 10 Products by Revenue</h3>
+                    <canvas id="topProductsChart" style="max-height:280px"></canvas>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <h3>All Recent Orders</h3>
+                  ${renderOrdersTable(orders.slice(0, 25))}
+                </div>`;
+
+              // Schedule chart rendering after DOM updates
+              setTimeout(() => renderCharts(orders), 100);
+
+              return html;
+            }
+
+            // ============= RENDER CHARTS =============
+            function renderCharts(orders) {
+              if (!orders || orders.length === 0) return;
+
+              // === REVENUE TREND CHART ===
+              const dailyRevenue = {};
+              const today = new Date();
+
+              // Initialize last 30 days
+              for (let i = 29; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const key = d.toISOString().split("T")[0];
+                dailyRevenue[key] = 0;
+              }
+
+              // Aggregate orders by day
+              orders.forEach((order) => {
+                const dateKey = order.created_at.split("T")[0];
+                if (dailyRevenue.hasOwnProperty(dateKey)) {
+                  dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
+                }
+              });
+
+              const labels = Object.keys(dailyRevenue).map((d) => {
+                const date = new Date(d);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              });
+
+              const revenueData = Object.values(dailyRevenue);
+
+              const revCtx = document.getElementById("revenueChart");
+              if (revCtx) {
+                new Chart(revCtx, {
+                  type: "line",
+                  data: {
+                    labels,
+                    datasets: [
+                      {
+                        label: "Revenue",
+                        data: revenueData,
+                        borderColor: "#60a5fa",
+                        backgroundColor: "rgba(96, 165, 250, 0.1)",
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                      },
+                    ],
                   },
-                },
-                y: {
-                  stacked: true,
-                  beginAtZero: true,
-                  grid: { color: "rgba(148, 163, 184, 0.1)" },
-                  ticks: { color: "#9ca7d6", precision: 0 },
-                },
-              },
-            },
-          });
-        }
-      }
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#e5ecff",
+                        bodyColor: "#9ca7d6",
+                        borderColor: "rgba(148, 163, 184, 0.2)",
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                          label: (context) => `$${context.parsed.y.toFixed(2)}`,
+                        },
+                      },
+                    },
+                    scales: {
+                      y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(148, 163, 184, 0.1)" },
+                        ticks: {
+                          color: "#9ca7d6",
+                          callback: (value) => "$" + value.toFixed(0),
+                        },
+                      },
+                      x: {
+                        grid: { display: false },
+                        ticks: { color: "#9ca7d6", maxRotation: 45, minRotation: 45 },
+                      },
+                    },
+                  },
+                });
+              }
 
-      // ============= CONNECT SHOPIFY =============
-      function renderConnectShopify() {
-        return `
-          <div class="card connect-cta">
-            <h2>Connect Your Shopify Store</h2>
-            <p>Aervo needs access to your Shopify data to provide AI-powered insights,<br>
-            sales analytics, inventory tracking, and smart recommendations.</p>
-            <button class="btn-primary" onclick="connectShopify()">🛍️ Connect Shopify Store</button>
-          </div>
-          <div class="card" style="margin-top:24px">
-            <h3 style="margin-bottom:16px;color:#e5ecff">What You'll Get:</h3>
-            <ul class="action-list">
-              <li class="action-item"><div class="action-icon">🤖</div><div class="action-content"><div class="action-title">AI-Powered Insights</div><div class="action-desc">Smart recommendations to grow your business</div></div></li>
-              <li class="action-item"><div class="action-icon">📊</div><div class="action-content"><div class="action-title">Real-Time Analytics</div><div class="action-desc">Track sales, revenue, and performance</div></div></li>
-              <li class="action-item"><div class="action-icon">📦</div><div class="action-content"><div class="action-title">Inventory Management</div><div class="action-desc">Never run out of your best-sellers</div></div></li>
-              <li class="action-item"><div class="action-icon">👥</div><div class="action-content"><div class="action-title">Customer Intelligence</div><div class="action-desc">Understand and grow your customer base</div></div></li>
-            </ul>
-          </div>`;
-      }
+              // === TOP PRODUCTS CHART ===
+              const productSales = {};
+              orders.forEach((order) => {
+                (order.line_items || []).forEach((item) => {
+                  if (!productSales[item.title]) productSales[item.title] = 0;
+                  productSales[item.title] += parseFloat(item.price) * item.quantity;
+                });
+              });
 
-      // ============= HELPER: ORDERS TABLE =============
-      function renderOrdersTable(orders) {
-        if (!orders || orders.length === 0)
-          return `<p style="color:#64748b;padding:20px;text-align:center">No orders yet</p>`;
-        return `<div class="table-wrapper"><table class="data-table">
-          <thead><tr><th>Order #</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
-          <tbody>${orders
-            .map(
-              (o) => `
-            <tr>
-              <td>${o.name || o.order_number}</td>
-              <td>${o.customer ? (o.customer.first_name || "") + " " + (o.customer.last_name || "").trim() || "Guest" : "Guest"}</td>
-              <td>${new Date(o.created_at).toLocaleDateString()}</td>
-              <td>${o.line_items ? o.line_items.length : 0}</td>
-              <td>$${parseFloat(o.total_price || 0).toFixed(2)}</td>
-              <td><span class="stat-change positive" style="margin:0">${o.financial_status}</span></td>
-            </tr>`,
-            )
-            .join("")}
-          </tbody>
-        </table></div>`;
-      }
+              const topProducts = Object.entries(productSales)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
 
-      // ============= HELPER: ACTION ITEMS =============
-      function renderActionItems(inv) {
-        const items = [];
-        if (inv && inv.outOfStock.length > 0)
-          items.push({
-            icon: "📦",
-            title: `Restock ${inv.outOfStock.length} out-of-stock items`,
-            desc: "Preventing potential lost revenue",
-          });
-        if (inv && inv.lowStock.length > 0)
-          items.push({
-            icon: "💰",
-            title: `Review ${inv.lowStock.length} low-stock products`,
-            desc: "Set reorder points to avoid stockouts",
-          });
-        if (items.length === 0)
-          items.push({
-            icon: "✅",
-            title: "All caught up!",
-            desc: "No urgent actions needed right now",
-          });
-        return `<ul class="action-list">${items
-          .map(
-            (a) => `
-          <li class="action-item">
-            <div class="action-icon">${a.icon}</div>
-            <div class="action-content">
-              <div class="action-title">${a.title}</div>
-              <div class="action-desc">${a.desc}</div>
-            </div>
-          </li>`,
-          )
-          .join("")}</ul>`;
-      }
+              const productLabels = topProducts.map(([name]) =>
+                name.length > 25 ? name.substring(0, 25) + "..." : name,
+              );
+              const productData = topProducts.map(([, revenue]) => revenue);
 
-      // ============= HELPER: AI INSIGHTS =============
-      function generateInsights(d, inv) {
-        const insights = [];
-        if (inv && inv.outOfStock.length > 0) {
-          insights.push({
-            priority: "high",
-            label: "HIGH PRIORITY",
-            title: `${inv.outOfStock.length} product${inv.outOfStock.length > 1 ? "s are" : " is"} out of stock`,
-            desc: `Restock to avoid lost sales. Top priority: ${inv.outOfStock[0]?.productTitle || "unknown"}`,
-          });
-        }
-        if (d && parseFloat(d.revenue.change) > 10) {
-          insights.push({
-            priority: "medium",
-            label: "OPPORTUNITY",
-            title: `Revenue is up ${d.revenue.change}% this month`,
-            desc: "Great momentum! Consider expanding your marketing to capitalize on this growth.",
-          });
-        }
-        if (d && d.orders.today > d.orders.yesterday) {
-          insights.push({
-            priority: "low",
-            label: "INSIGHT",
-            title: "Orders are trending up today",
-            desc: `${d.orders.today} orders so far vs ${d.orders.yesterday} yesterday.`,
-          });
-        }
-        insights.push({
-          priority: "low",
-          label: "INSIGHT",
-          title: "Monitor customer retention",
-          desc: "Focus on repeat customers to increase lifetime value and sustainable growth.",
-        });
-        return insights.slice(0, 3);
-      }
+              const prodCtx = document.getElementById("topProductsChart");
+              if (prodCtx && topProducts.length > 0) {
+                new Chart(prodCtx, {
+                  type: "bar",
+                  data: {
+                    labels: productLabels,
+                    datasets: [
+                      {
+                        label: "Revenue",
+                        data: productData,
+                        backgroundColor: "rgba(96, 165, 250, 0.8)",
+                        borderColor: "#60a5fa",
+                        borderWidth: 1,
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: "y",
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#e5ecff",
+                        bodyColor: "#9ca7d6",
+                        borderColor: "rgba(148, 163, 184, 0.2)",
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                          label: (context) => `$${context.parsed.x.toFixed(2)}`,
+                        },
+                      },
+                    },
+                    scales: {
+                      x: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(148, 163, 184, 0.1)" },
+                        ticks: {
+                          color: "#9ca7d6",
+                          callback: (value) => "$" + value.toFixed(0),
+                        },
+                      },
+                      y: {
+                        grid: { display: false },
+                        ticks: { color: "#9ca7d6", font: { size: 11 } },
+                      },
+                    },
+                  },
+                });
+              }
+            }
 
-      // ============= CONNECT SHOPIFY FUNCTION =============
-
-      function connectShopify() {
-        const shop = prompt(
-          "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
-        );
-        if (!shop) return;
-
-        const normalized = shop.trim().toLowerCase();
-        if (!normalized.includes(".myshopify.com")) {
-          alert("Please enter a valid Shopify domain ending in .myshopify.com");
-          return;
-        }
-
-        window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
-      }
-
-      // ============= CHAT =============
-      let isAIThinking = false;
-
-      async function sendMessage() {
-        if (isAIThinking) return;
-        const input = document.getElementById("chatInput");
-        const messages = document.getElementById("chatMessages");
-        const message = input.value.trim();
-        if (!message) return;
-
-        const userMsg = document.createElement("div");
-        userMsg.className = "chat-message user";
-        userMsg.textContent = message;
-        messages.appendChild(userMsg);
-        input.value = "";
-        messages.scrollTop = messages.scrollHeight;
-
-        isAIThinking = true;
-        const typingEl = document.createElement("div");
-        typingEl.className = "chat-message ai";
-        typingEl.id = "typingIndicator";
-        typingEl.innerHTML =
-          "<em style=\'color:#64748b\'>Aervo is thinking...</em>";
-        messages.appendChild(typingEl);
-        messages.scrollTop = messages.scrollHeight;
-        input.disabled = true;
-        document.querySelector(".btn-send").disabled = true;
-
-        let data;
-        try {
-          const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              message,
-              shopOrigin: shopData ? shopData.shopOrigin : null,
-            }),
-          });
-          data = await response.json();
-
-          document.getElementById("typingIndicator")?.remove();
-          if (data.success) {
-            const aiMsg = document.createElement("div");
-            aiMsg.className = "chat-message ai";
-            aiMsg.innerHTML = data.reply
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-              .replace(/\n\n/g, "<br><br>")
-              .replace(/\n/g, "<br>");
-            messages.appendChild(aiMsg);
-          } else {
-            throw new Error(data.message || "Failed to get response");
-          }
-        } catch (err) {
-          document.getElementById("typingIndicator")?.remove();
-          const errMsg = document.createElement("div");
-          errMsg.className = "chat-message ai";
-
-          if (data && data.code === "PLAN_LIMIT") {
-            errMsg.innerHTML = `⚠️ <strong>Message limit reached.</strong><br>${data.message}<br><br>
-      <a href="/pricing" style="color:#60a5fa;text-decoration:underline">Upgrade your plan →</a>`;
-          } else {
-            errMsg.textContent =
-              "Sorry, I had trouble responding. Please try again.";
-          }
-
-          messages.appendChild(errMsg);
-        }
-
-        isAIThinking = false;
-        input.disabled = false;
-        document.querySelector(".btn-send").disabled = false;
-        input.focus();
-        messages.scrollTop = messages.scrollHeight;
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const chatInput = document.getElementById("chatInput");
-        if (chatInput)
-          chatInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") sendMessage();
-          });
-      });
-
-      // ============= SUGGESTION HELPER =============
-      function askSuggestion(el) {
-        const input = document.getElementById("chatInput");
-        if (input) {
-          input.value = el.textContent;
-          input.focus();
-          sendMessage();
-        }
-      }
-
-      // ============= BILLING =============
-      async function upgradePlan(plan) {
-        const shop = shopData?.shopOrigin;
-        if (!shop) {
-          alert("No shop connected");
-          return;
-        }
-
-        try {
-          const response = await fetch(
-            `${BACKEND_URL}/auth/shopify/billing/create`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ shop, plan }),
-            },
-          );
-
-          const data = await response.json();
-          if (data.success && data.confirmationUrl) {
-            window.top.location.href = data.confirmationUrl;
-          } else {
-            alert("Failed to create billing charge. Please try again.");
-          }
-        } catch (err) {
-          console.error("Billing error:", err);
-          alert("Something went wrong. Please try again.");
-        }
-      }
-
-      // ============= BOOT =============
-      loadUserData();
-      // ── HEALTH SCORE ───────────────────────────────────────────────
-      async function loadHealthScore() {
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/health-score`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await res.json();
-          if (data.success && data.score) {
-            renderHealthScore(data.score);
-          } else {
-            calculateHealthScore();
-          }
-        } catch (e) {
-          console.error("Health score error:", e);
-        }
-      }
-
-      fetch(`${BACKEND_URL}/api/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then((d) => console.log("USER ME RESPONSE:", JSON.stringify(d)));
-
-      async function calculateHealthScore() {
-        const shopOrigin =
-          shopData?.shopOrigin || localStorage.getItem("shopify_shop");
-        if (!shopOrigin) return;
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ shopOrigin }),
-          });
-          const data = await res.json();
-          if (data.success) renderHealthScore(data.score, data.ai);
-        } catch (e) {
-          console.error("Calculate score error:", e);
-        }
-      }
-
-      async function recalculateScore() {
-        const btn = document.getElementById("recalcBtn");
-        if (!btn) return;
-        btn.textContent = "↻ Calculating...";
-        btn.disabled = true;
-        await calculateHealthScore();
-        btn.textContent = "↻ Recalculate";
-        btn.disabled = false;
-      }
-
-      function renderHealthScore(score, ai) {
-        const s = score.score;
-        const color = s >= 70 ? "#23e6a8" : s >= 40 ? "#fbbf24" : "#f87171";
-        const grade =
-          s >= 70
-            ? "Healthy 💚"
-            : s >= 40
-              ? "Needs Attention ⚠️"
-              : "At Risk 🔴";
-
-        const ring = document.getElementById("scoreRing");
-        const numEl = document.getElementById("scoreNumber");
-        const gradeEl = document.getElementById("scoreGrade");
-        const summaryEl = document.getElementById("scoreSummary");
-        if (!ring || !numEl) return;
-
-        const circumference = 264;
-        const offset = circumference - (s / 100) * circumference;
-        ring.style.stroke = color;
-        setTimeout(() => {
-          ring.style.strokeDashoffset = offset;
-        }, 100);
-
-        numEl.textContent = s;
-        numEl.style.color = color;
-        gradeEl.textContent = grade;
-        gradeEl.style.color = color;
-        summaryEl.textContent = score.summary || "";
-
-        const breakdown = [
-          { label: "Revenue", score: score.revenue_score, max: 25 },
-          { label: "Orders", score: score.orders_score, max: 20 },
-          { label: "Refunds", score: score.refund_score, max: 20 },
-          { label: "Inventory", score: score.inventory_score, max: 20 },
-          { label: "Retention", score: score.retention_score, max: 15 },
-        ];
-
-        const breakdownEl = document.getElementById("scoreBreakdown");
-        if (breakdownEl) {
-          breakdownEl.innerHTML = breakdown
-            .map((b) => {
-              const pct = (b.score / b.max) * 100;
-              const c =
-                pct >= 70 ? "#23e6a8" : pct >= 40 ? "#fbbf24" : "#f87171";
+            // ============= RENDER INVENTORY =============
+            function renderInventory() {
+              const inv = realData.inventory;
+              if (!inv)
+                return `<div class="loading"><div class="spinner"></div><div>Loading inventory...</div></div>`;
+              const attention = [...inv.outOfStock, ...inv.lowStock].slice(0, 30);
               return `
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <div style="font-size:12px;color:#6b7a99;width:65px;">${b.label}</div>
-          <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${c};border-radius:999px;transition:width 1s;"></div>
-          </div>
-          <div style="font-size:11px;color:#9aa8c8;width:30px;text-align:right;">${b.score}/${b.max}</div>
-        </div>
-      `;
+                <div class="welcome">
+                  <h1>Inventory Health</h1>
+                  <p>Monitor stock levels and get smart reorder recommendations</p>
+                </div>
+                <div class="grid-4">
+                  <div class="card">
+                    <h3>Total Products</h3>
+                    <div class="stat-large">${inv.totalProducts}</div>
+                    <div class="stat-label">${inv.totalVariants} variants</div>
+                  </div>
+                  <div class="card">
+                    <h3>Out of Stock</h3>
+                    <div class="stat-large" style="color:#ef4444">${inv.outOfStock.length}</div>
+                    <div class="stat-change negative">⚠ Needs attention</div>
+                  </div>
+                  <div class="card">
+                    <h3>Low Stock</h3>
+                    <div class="stat-large" style="color:#f59e0b">${inv.lowStock.length}</div>
+                    <div class="stat-label">Below 10 units</div>
+                  </div>
+                  <div class="card">
+                    <h3>In Stock</h3>
+                    <div class="stat-large">${inv.items.filter((i) => i.status === "in_stock").length}</div>
+                    <div class="stat-label">Healthy inventory</div>
+                  </div>
+                </div>
+                <div class="card">
+                  <h3>Products Needing Attention</h3>
+                  ${
+                    attention.length === 0
+                      ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All products are well stocked!</p>`
+                      : `<div class="table-wrapper"><table class="data-table">
+                        <thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Price</th><th>Status</th></tr></thead>
+                        <tbody>${attention
+                          .map(
+                            (item) => `
+                          <tr>
+                            <td>${item.productTitle}${item.variantTitle && item.variantTitle !== "Default Title" ? ` (${item.variantTitle})` : ""}</td>
+                            <td>${item.sku || "N/A"}</td>
+                            <td style="color:${item.status === "out_of_stock" ? "#ef4444" : "#f59e0b"}">${item.quantity}</td>
+                            <td>$${parseFloat(item.price).toFixed(2)}</td>
+                            <td><span class="insight-priority priority-${item.status === "out_of_stock" ? "high" : "medium"}">${item.status === "out_of_stock" ? "Out of Stock" : "Low Stock"}</span></td>
+                          </tr>`,
+                          )
+                          .join("")}
+                        </tbody>
+                      </table></div>`
+                  }
+                </div>`;
+            }
+
+            // ============= RENDER CUSTOMERS =============
+            function renderCustomers() {
+              const c = realData.customers;
+              const orders = realData.orders || [];
+
+              if (!c)
+                return `<div class="loading"><div class="spinner"></div><div>Loading customers...</div></div>`;
+
+              // === ADVANCED CUSTOMER SEGMENTATION ===
+              const today = new Date();
+              const thirtyDaysAgo = new Date(
+                today.getTime() - 30 * 24 * 60 * 60 * 1000,
+              );
+              const sixtyDaysAgo = new Date(
+                today.getTime() - 60 * 24 * 60 * 60 * 1000,
+              );
+
+              // Segment customers by value
+              const avgLTV = parseFloat(c.avgLifetimeValue);
+              const vipCustomers = c.topCustomers.filter(
+                (cu) => parseFloat(cu.totalSpent) > avgLTV * 2,
+              );
+              const regularCustomers = c.topCustomers.filter(
+                (cu) =>
+                  parseFloat(cu.totalSpent) >= avgLTV &&
+                  parseFloat(cu.totalSpent) <= avgLTV * 2,
+              );
+              const newCustomers = c.topCustomers.filter(
+                (cu) => cu.ordersCount === 1,
+              );
+
+              // Calculate at-risk customers (haven't ordered in 60+ days)
+              const customerLastOrder = {};
+              orders.forEach((order) => {
+                if (order.customer && order.customer.id) {
+                  const orderId = order.customer.id;
+                  const orderDate = new Date(order.created_at);
+                  if (
+                    !customerLastOrder[orderId] ||
+                    orderDate > customerLastOrder[orderId]
+                  ) {
+                    customerLastOrder[orderId] = orderDate;
+                  }
+                }
+              });
+
+              const atRiskCount = Object.values(customerLastOrder).filter(
+                (date) => date < sixtyDaysAgo,
+              ).length;
+
+              // New customers in last 30 days
+              const recentCustomerIds = new Set();
+              orders.forEach((order) => {
+                if (
+                  order.customer &&
+                  order.customer.id &&
+                  new Date(order.created_at) > thirtyDaysAgo
+                ) {
+                  recentCustomerIds.add(order.customer.id);
+                }
+              });
+
+              // Calculate purchase frequency
+              const ordersByCustomer = {};
+              orders.forEach((order) => {
+                if (order.customer && order.customer.id) {
+                  const cid = order.customer.id;
+                  if (!ordersByCustomer[cid]) ordersByCustomer[cid] = [];
+                  ordersByCustomer[cid].push(new Date(order.created_at));
+                }
+              });
+
+              let totalDaysBetween = 0;
+              let pairCount = 0;
+              Object.values(ordersByCustomer).forEach((dates) => {
+                if (dates.length > 1) {
+                  dates.sort((a, b) => a - b);
+                  for (let i = 1; i < dates.length; i++) {
+                    const daysBetween =
+                      (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24);
+                    totalDaysBetween += daysBetween;
+                    pairCount++;
+                  }
+                }
+              });
+
+              const avgDaysBetweenOrders =
+                pairCount > 0 ? Math.round(totalDaysBetween / pairCount) : 0;
+
+              const html = `
+                <div class="welcome">
+                  <h1>Customer Intelligence</h1>
+                  <p>Deep insights into your customer base and growth opportunities</p>
+                </div>
+
+                <div class="grid-4">
+                  <div class="card">
+                    <h3>Total Customers</h3>
+                    <div class="stat-large">${c.total}</div>
+                    <div class="stat-label">${recentCustomerIds.size} new this month</div>
+                  </div>
+                  <div class="card">
+                    <h3>Repeat Rate</h3>
+                    <div class="stat-large">${c.repeatRate}%</div>
+                    <div class="stat-label">${c.repeatCustomers} repeat customers</div>
+                  </div>
+                  <div class="card">
+                    <h3>Avg Lifetime Value</h3>
+                    <div class="stat-large">$${c.avgLifetimeValue}</div>
+                    <div class="stat-label">Per customer</div>
+                  </div>
+                  <div class="card">
+                    <h3>Purchase Frequency</h3>
+                    <div class="stat-large">${avgDaysBetweenOrders}</div>
+                    <div class="stat-label">Days between orders</div>
+                  </div>
+                </div>
+
+                <div class="grid-4" style="margin-bottom:24px">
+                  <div class="card" style="border-left:3px solid #fbbf24">
+                    <h3>VIP Customers</h3>
+                    <div class="stat-large" style="color:#fbbf24">${vipCustomers.length}</div>
+                    <div class="stat-label">Spent ${avgLTV > 0 ? "2x" : ""} above average</div>
+                  </div>
+                  <div class="card" style="border-left:3px solid #60a5fa">
+                    <h3>Regular Customers</h3>
+                    <div class="stat-large">${regularCustomers.length}</div>
+                    <div class="stat-label">Core customer base</div>
+                  </div>
+                  <div class="card" style="border-left:3px solid #34d399">
+                    <h3>New Customers</h3>
+                    <div class="stat-large">${newCustomers.length}</div>
+                    <div class="stat-label">First-time buyers</div>
+                  </div>
+                  <div class="card" style="border-left:3px solid #ef4444">
+                    <h3>At-Risk Customers</h3>
+                    <div class="stat-large">${atRiskCount}</div>
+                    <div class="stat-label">No order in 60+ days</div>
+                  </div>
+                </div>
+
+                <div class="grid-2" style="margin-bottom:24px">
+                  <div class="card">
+                    <h3>Customer Value Distribution</h3>
+                    <canvas id="customerValueChart" style="max-height:280px"></canvas>
+                  </div>
+                  <div class="card">
+                    <h3>Customer Growth (Last 30 Days)</h3>
+                    <canvas id="customerGrowthChart" style="max-height:280px"></canvas>
+                  </div>
+                </div>
+
+                <div class="grid-2">
+                  <div class="card">
+                    <h3>🏆 VIP Customers (Top Spenders)</h3>
+                    ${
+                      vipCustomers.length === 0
+                        ? `<p style="color:#64748b;padding:20px;text-align:center">No VIP customers yet</p>`
+                        : `<div class="table-wrapper"><table class="data-table">
+                          <thead><tr><th>Customer</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Status</th></tr></thead>
+                          <tbody>${vipCustomers
+                            .slice(0, 10)
+                            .map(
+                              (cu) => `
+                            <tr>
+                              <td>${cu.name}</td>
+                              <td>${cu.email || "N/A"}</td>
+                              <td>${cu.ordersCount}</td>
+                              <td style="color:#fbbf24;font-weight:600">$${cu.totalSpent}</td>
+                              <td><span class="insight-priority priority-medium">VIP</span></td>
+                            </tr>`,
+                            )
+                            .join("")}
+                          </tbody>
+                        </table></div>`
+                    }
+                  </div>
+
+                  <div class="card">
+                    <h3>⚠️ At-Risk Customers</h3>
+                    <p style="color:#9ca7d6;font-size:13px;margin-bottom:16px">Haven't ordered in 60+ days — time to re-engage!</p>
+                    ${
+                      atRiskCount === 0
+                        ? `<p style="color:#64748b;padding:20px;text-align:center">🎉 All customers are actively ordering!</p>`
+                        : `<div class="action-list">
+                          <div class="action-item">
+                            <div class="action-icon">📧</div>
+                            <div class="action-content">
+                              <div class="action-title">Send Win-Back Email</div>
+                              <div class="action-desc">Offer ${atRiskCount} customers a 15% discount to return</div>
+                            </div>
+                          </div>
+                          <div class="action-item">
+                            <div class="action-icon">🎁</div>
+                            <div class="action-content">
+                              <div class="action-title">Personalized Offers</div>
+                              <div class="action-desc">Show them products similar to past purchases</div>
+                            </div>
+                          </div>
+                          <div class="action-item">
+                            <div class="action-icon">💬</div>
+                            <div class="action-content">
+                              <div class="action-title">Feedback Survey</div>
+                              <div class="action-desc">Ask why they haven't returned</div>
+                            </div>
+                          </div>
+                        </div>`
+                    }
+                  </div>
+                </div>`;
+
+              // Render charts
+              setTimeout(() => renderCustomerCharts(c.topCustomers, orders), 100);
+              return html;
+            }
+
+            // ============= CUSTOMER CHARTS =============
+            function renderCustomerCharts(customers, orders) {
+              if (!customers || customers.length === 0) return;
+
+              // === CUSTOMER VALUE DISTRIBUTION (Pie Chart) ===
+              const avgLTV =
+                customers.reduce((s, c) => s + parseFloat(c.totalSpent), 0) /
+                customers.length;
+              const vip = customers.filter(
+                (c) => parseFloat(c.totalSpent) > avgLTV * 2,
+              ).length;
+              const regular = customers.filter(
+                (c) =>
+                  parseFloat(c.totalSpent) >= avgLTV &&
+                  parseFloat(c.totalSpent) <= avgLTV * 2,
+              ).length;
+              const occasional = customers.filter(
+                (c) => parseFloat(c.totalSpent) < avgLTV,
+              ).length;
+
+              const valueCtx = document.getElementById("customerValueChart");
+              if (valueCtx) {
+                new Chart(valueCtx, {
+                  type: "doughnut",
+                  data: {
+                    labels: [
+                      "VIP Customers",
+                      "Regular Customers",
+                      "Occasional Buyers",
+                    ],
+                    datasets: [
+                      {
+                        data: [vip, regular, occasional],
+                        backgroundColor: ["#fbbf24", "#60a5fa", "#9ca7d6"],
+                        borderColor: "#0f172a",
+                        borderWidth: 2,
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                        labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
+                      },
+                      tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#e5ecff",
+                        bodyColor: "#9ca7d6",
+                        borderColor: "rgba(148, 163, 184, 0.2)",
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                          label: (ctx) => `${ctx.label}: ${ctx.parsed} customers`,
+                        },
+                      },
+                    },
+                  },
+                });
+              }
+
+              // === CUSTOMER GROWTH CHART (Last 30 days) ===
+              const dailyCustomers = {};
+              const today = new Date();
+
+              for (let i = 29; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const key = d.toISOString().split("T")[0];
+                dailyCustomers[key] = { new: 0, returning: 0 };
+              }
+
+              const seenCustomers = new Set();
+              orders
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                .forEach((order) => {
+                  if (order.customer && order.customer.id) {
+                    const dateKey = order.created_at.split("T")[0];
+                    const customerId = order.customer.id;
+
+                    if (dailyCustomers.hasOwnProperty(dateKey)) {
+                      if (seenCustomers.has(customerId)) {
+                        dailyCustomers[dateKey].returning++;
+                      } else {
+                        dailyCustomers[dateKey].new++;
+                        seenCustomers.add(customerId);
+                      }
+                    }
+                  }
+                });
+
+              const growthLabels = Object.keys(dailyCustomers).map((d) => {
+                const date = new Date(d);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              });
+
+              const newCustomerData = Object.values(dailyCustomers).map((d) => d.new);
+              const returningCustomerData = Object.values(dailyCustomers).map(
+                (d) => d.returning,
+              );
+
+              const growthCtx = document.getElementById("customerGrowthChart");
+              if (growthCtx) {
+                new Chart(growthCtx, {
+                  type: "bar",
+                  data: {
+                    labels: growthLabels,
+                    datasets: [
+                      {
+                        label: "New Customers",
+                        data: newCustomerData,
+                        backgroundColor: "rgba(52, 211, 153, 0.8)",
+                        borderColor: "#34d399",
+                        borderWidth: 1,
+                      },
+                      {
+                        label: "Returning Customers",
+                        data: returningCustomerData,
+                        backgroundColor: "rgba(96, 165, 250, 0.8)",
+                        borderColor: "#60a5fa",
+                        borderWidth: 1,
+                      },
+                    ],
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: {
+                        position: "bottom",
+                        labels: { color: "#9ca7d6", padding: 15, font: { size: 12 } },
+                      },
+                      tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#e5ecff",
+                        bodyColor: "#9ca7d6",
+                        borderColor: "rgba(148, 163, 184, 0.2)",
+                        borderWidth: 1,
+                        padding: 12,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        stacked: true,
+                        grid: { display: false },
+                        ticks: {
+                          color: "#9ca7d6",
+                          maxRotation: 45,
+                          minRotation: 45,
+                          font: { size: 10 },
+                        },
+                      },
+                      y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        grid: { color: "rgba(148, 163, 184, 0.1)" },
+                        ticks: { color: "#9ca7d6", precision: 0 },
+                      },
+                    },
+                  },
+                });
+              }
+            }
+
+            // ============= CONNECT SHOPIFY =============
+            function renderConnectShopify() {
+              return `
+                <div class="card connect-cta">
+                  <h2>Connect Your Shopify Store</h2>
+                  <p>Aervo needs access to your Shopify data to provide AI-powered insights,<br>
+                  sales analytics, inventory tracking, and smart recommendations.</p>
+                  <button class="btn-primary" onclick="connectShopify()">🛍️ Connect Shopify Store</button>
+                </div>
+                <div class="card" style="margin-top:24px">
+                  <h3 style="margin-bottom:16px;color:#e5ecff">What You'll Get:</h3>
+                  <ul class="action-list">
+                    <li class="action-item"><div class="action-icon">🤖</div><div class="action-content"><div class="action-title">AI-Powered Insights</div><div class="action-desc">Smart recommendations to grow your business</div></div></li>
+                    <li class="action-item"><div class="action-icon">📊</div><div class="action-content"><div class="action-title">Real-Time Analytics</div><div class="action-desc">Track sales, revenue, and performance</div></div></li>
+                    <li class="action-item"><div class="action-icon">📦</div><div class="action-content"><div class="action-title">Inventory Management</div><div class="action-desc">Never run out of your best-sellers</div></div></li>
+                    <li class="action-item"><div class="action-icon">👥</div><div class="action-content"><div class="action-title">Customer Intelligence</div><div class="action-desc">Understand and grow your customer base</div></div></li>
+                  </ul>
+                </div>`;
+            }
+
+            // ============= HELPER: ORDERS TABLE =============
+            function renderOrdersTable(orders) {
+              if (!orders || orders.length === 0)
+                return `<p style="color:#64748b;padding:20px;text-align:center">No orders yet</p>`;
+              return `<div class="table-wrapper"><table class="data-table">
+                <thead><tr><th>Order #</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody>${orders
+                  .map(
+                    (o) => `
+                  <tr>
+                    <td>${o.name || o.order_number}</td>
+                    <td>${o.customer ? (o.customer.first_name || "") + " " + (o.customer.last_name || "").trim() || "Guest" : "Guest"}</td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td>${o.line_items ? o.line_items.length : 0}</td>
+                    <td>$${parseFloat(o.total_price || 0).toFixed(2)}</td>
+                    <td><span class="stat-change positive" style="margin:0">${o.financial_status}</span></td>
+                  </tr>`,
+                  )
+                  .join("")}
+                </tbody>
+              </table></div>`;
+            }
+
+            // ============= HELPER: ACTION ITEMS =============
+            function renderActionItems(inv) {
+              const items = [];
+              if (inv && inv.outOfStock.length > 0)
+                items.push({
+                  icon: "📦",
+                  title: `Restock ${inv.outOfStock.length} out-of-stock items`,
+                  desc: "Preventing potential lost revenue",
+                });
+              if (inv && inv.lowStock.length > 0)
+                items.push({
+                  icon: "💰",
+                  title: `Review ${inv.lowStock.length} low-stock products`,
+                  desc: "Set reorder points to avoid stockouts",
+                });
+              if (items.length === 0)
+                items.push({
+                  icon: "✅",
+                  title: "All caught up!",
+                  desc: "No urgent actions needed right now",
+                });
+              return `<ul class="action-list">${items
+                .map(
+                  (a) => `
+                <li class="action-item">
+                  <div class="action-icon">${a.icon}</div>
+                  <div class="action-content">
+                    <div class="action-title">${a.title}</div>
+                    <div class="action-desc">${a.desc}</div>
+                  </div>
+                </li>`,
+                )
+                .join("")}</ul>`;
+            }
+
+            // ============= HELPER: AI INSIGHTS =============
+            function generateInsights(d, inv) {
+              const insights = [];
+              if (inv && inv.outOfStock.length > 0) {
+                insights.push({
+                  priority: "high",
+                  label: "HIGH PRIORITY",
+                  title: `${inv.outOfStock.length} product${inv.outOfStock.length > 1 ? "s are" : " is"} out of stock`,
+                  desc: `Restock to avoid lost sales. Top priority: ${inv.outOfStock[0]?.productTitle || "unknown"}`,
+                });
+              }
+              if (d && parseFloat(d.revenue.change) > 10) {
+                insights.push({
+                  priority: "medium",
+                  label: "OPPORTUNITY",
+                  title: `Revenue is up ${d.revenue.change}% this month`,
+                  desc: "Great momentum! Consider expanding your marketing to capitalize on this growth.",
+                });
+              }
+              if (d && d.orders.today > d.orders.yesterday) {
+                insights.push({
+                  priority: "low",
+                  label: "INSIGHT",
+                  title: "Orders are trending up today",
+                  desc: `${d.orders.today} orders so far vs ${d.orders.yesterday} yesterday.`,
+                });
+              }
+              insights.push({
+                priority: "low",
+                label: "INSIGHT",
+                title: "Monitor customer retention",
+                desc: "Focus on repeat customers to increase lifetime value and sustainable growth.",
+              });
+              return insights.slice(0, 3);
+            }
+
+            // ============= CONNECT SHOPIFY FUNCTION =============
+
+            function connectShopify() {
+              const shop = prompt(
+                "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
+              );
+              if (!shop) return;
+
+              const normalized = shop.trim().toLowerCase();
+              if (!normalized.includes(".myshopify.com")) {
+                alert("Please enter a valid Shopify domain ending in .myshopify.com");
+                return;
+              }
+
+              window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
+            }
+
+            // ============= CHAT =============
+            let isAIThinking = false;
+
+            async function sendMessage() {
+              if (isAIThinking) return;
+              const input = document.getElementById("chatInput");
+              const messages = document.getElementById("chatMessages");
+              const message = input.value.trim();
+              if (!message) return;
+
+              const userMsg = document.createElement("div");
+              userMsg.className = "chat-message user";
+              userMsg.textContent = message;
+              messages.appendChild(userMsg);
+              input.value = "";
+              messages.scrollTop = messages.scrollHeight;
+
+              isAIThinking = true;
+              const typingEl = document.createElement("div");
+              typingEl.className = "chat-message ai";
+              typingEl.id = "typingIndicator";
+              typingEl.innerHTML =
+                "<em style=\'color:#64748b\'>Aervo is thinking...</em>";
+              messages.appendChild(typingEl);
+              messages.scrollTop = messages.scrollHeight;
+              input.disabled = true;
+              document.querySelector(".btn-send").disabled = true;
+
+              let data;
+              try {
+                const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    message,
+                    shopOrigin: shopData ? shopData.shopOrigin : null,
+                  }),
+                });
+                data = await response.json();
+
+                document.getElementById("typingIndicator")?.remove();
+                if (data.success) {
+                  const aiMsg = document.createElement("div");
+                  aiMsg.className = "chat-message ai";
+                  aiMsg.innerHTML = data.reply
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\n\n/g, "<br><br>")
+                    .replace(/\n/g, "<br>");
+                  messages.appendChild(aiMsg);
+                } else {
+                  throw new Error(data.message || "Failed to get response");
+                }
+              } catch (err) {
+                document.getElementById("typingIndicator")?.remove();
+                const errMsg = document.createElement("div");
+                errMsg.className = "chat-message ai";
+
+                if (data && data.code === "PLAN_LIMIT") {
+                  errMsg.innerHTML = `⚠️ <strong>Message limit reached.</strong><br>${data.message}<br><br>
+            <a href="/pricing" style="color:#60a5fa;text-decoration:underline">Upgrade your plan →</a>`;
+                } else {
+                  errMsg.textContent =
+                    "Sorry, I had trouble responding. Please try again.";
+                }
+
+                messages.appendChild(errMsg);
+              }
+
+              isAIThinking = false;
+              input.disabled = false;
+              document.querySelector(".btn-send").disabled = false;
+              input.focus();
+              messages.scrollTop = messages.scrollHeight;
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+              const chatInput = document.getElementById("chatInput");
+              if (chatInput)
+                chatInput.addEventListener("keypress", (e) => {
+                  if (e.key === "Enter") sendMessage();
+                });
+            });
+
+            // ============= SUGGESTION HELPER =============
+            function askSuggestion(el) {
+              const input = document.getElementById("chatInput");
+              if (input) {
+                input.value = el.textContent;
+                input.focus();
+                sendMessage();
+              }
+            }
+
+            // ============= BILLING =============
+            async function upgradePlan(plan) {
+              const shop = shopData?.shopOrigin;
+              if (!shop) {
+                alert("No shop connected");
+                return;
+              }
+
+              try {
+                const response = await fetch(
+                  `${BACKEND_URL}/auth/shopify/billing/create`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ shop, plan }),
+                  },
+                );
+
+                const data = await response.json();
+                if (data.success && data.confirmationUrl) {
+                  window.top.location.href = data.confirmationUrl;
+                } else {
+                  alert("Failed to create billing charge. Please try again.");
+                }
+              } catch (err) {
+                console.error("Billing error:", err);
+                alert("Something went wrong. Please try again.");
+              }
+            }
+
+            // ============= BOOT =============
+            loadUserData();
+            // ── HEALTH SCORE ───────────────────────────────────────────────
+            async function loadHealthScore() {
+              try {
+                const res = await fetch(`${BACKEND_URL}/api/health-score`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                if (data.success && data.score) {
+                  renderHealthScore(data.score);
+                } else {
+                  calculateHealthScore();
+                }
+              } catch (e) {
+                console.error("Health score error:", e);
+              }
+            }
+
+            fetch(`${BACKEND_URL}/api/user/me`, {
+              headers: { Authorization: `Bearer ${token}` },
             })
-            .join("");
-        }
+              .then((r) => r.json())
+              .then((d) => console.log("USER ME RESPONSE:", JSON.stringify(d)));
 
-        let improvements = [];
-        try {
-          const parsed =
-            typeof score.improvements === "string"
-              ? JSON.parse(score.improvements)
-              : score.improvements;
-          improvements = parsed.improvements || [];
-        } catch (e) {}
-        if (ai?.improvements) improvements = ai.improvements;
+            async function calculateHealthScore() {
+              const shopOrigin =
+                shopData?.shopOrigin || localStorage.getItem("shopify_shop");
+              if (!shopOrigin) return;
+              try {
+                const res = await fetch(`${BACKEND_URL}/api/health-score/calculate`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ shopOrigin }),
+                });
+                const data = await res.json();
+                if (data.success) renderHealthScore(data.score, data.ai);
+              } catch (e) {
+                console.error("Calculate score error:", e);
+              }
+            }
 
-        const impEl = document.getElementById("scoreImprovements");
-        if (impEl) {
-          impEl.innerHTML = improvements
-            .map(
-              (imp) => `
-      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;">
-        <span style="color:#f87171;font-size:12px;margin-top:1px;">→</span>
-        <span style="font-size:12px;color:#9aa8c8;line-height:1.5;">${imp}</span>
-      </div>
-    `,
-            )
-            .join("");
-        }
-      }
+            async function recalculateScore() {
+              const btn = document.getElementById("recalcBtn");
+              if (!btn) return;
+              btn.textContent = "↻ Calculating...";
+              btn.disabled = true;
+              await calculateHealthScore();
+              btn.textContent = "↻ Recalculate";
+              btn.disabled = false;
+            }
+
+            function renderHealthScore(score, ai) {
+              const s = score.score;
+              const color = s >= 70 ? "#23e6a8" : s >= 40 ? "#fbbf24" : "#f87171";
+              const grade =
+                s >= 70
+                  ? "Healthy 💚"
+                  : s >= 40
+                    ? "Needs Attention ⚠️"
+                    : "At Risk 🔴";
+
+              const ring = document.getElementById("scoreRing");
+              const numEl = document.getElementById("scoreNumber");
+              const gradeEl = document.getElementById("scoreGrade");
+              const summaryEl = document.getElementById("scoreSummary");
+              if (!ring || !numEl) return;
+
+              const circumference = 264;
+              const offset = circumference - (s / 100) * circumference;
+              ring.style.stroke = color;
+              setTimeout(() => {
+                ring.style.strokeDashoffset = offset;
+              }, 100);
+
+              numEl.textContent = s;
+              numEl.style.color = color;
+              gradeEl.textContent = grade;
+              gradeEl.style.color = color;
+              summaryEl.textContent = score.summary || "";
+
+              const breakdown = [
+                { label: "Revenue", score: score.revenue_score, max: 25 },
+                { label: "Orders", score: score.orders_score, max: 20 },
+                { label: "Refunds", score: score.refund_score, max: 20 },
+                { label: "Inventory", score: score.inventory_score, max: 20 },
+                { label: "Retention", score: score.retention_score, max: 15 },
+              ];
+
+              const breakdownEl = document.getElementById("scoreBreakdown");
+              if (breakdownEl) {
+                breakdownEl.innerHTML = breakdown
+                  .map((b) => {
+                    const pct = (b.score / b.max) * 100;
+                    const c =
+                      pct >= 70 ? "#23e6a8" : pct >= 40 ? "#fbbf24" : "#f87171";
+                    return `
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div style="font-size:12px;color:#6b7a99;width:65px;">${b.label}</div>
+                <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;">
+                  <div style="width:${pct}%;height:100%;background:${c};border-radius:999px;transition:width 1s;"></div>
+                </div>
+                <div style="font-size:11px;color:#9aa8c8;width:30px;text-align:right;">${b.score}/${b.max}</div>
+              </div>
+            `;
+                  })
+                  .join("");
+              }
+
+              let improvements = [];
+              try {
+                const parsed =
+                  typeof score.improvements === "string"
+                    ? JSON.parse(score.improvements)
+                    : score.improvements;
+                improvements = parsed.improvements || [];
+              } catch (e) {}
+              if (ai?.improvements) improvements = ai.improvements;
+
+              const impEl = document.getElementById("scoreImprovements");
+              if (impEl) {
+                impEl.innerHTML = improvements
+                  .map(
+                    (imp) => `
+            <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;">
+              <span style="color:#f87171;font-size:12px;margin-top:1px;">→</span>
+              <span style="font-size:12px;color:#9aa8c8;line-height:1.5;">${imp}</span>
+            </div>
+          `,
+                  )
+                  .join("");
+              }
+            }
     </script>
   </body>
 </html>
