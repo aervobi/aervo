@@ -1046,7 +1046,11 @@
               <div style="font-size:32px;margin-bottom:12px">📊</div>
               <h3 style="color:#e5ecff;margin-bottom:8px">Business Health Score</h3>
               <p style="color:#9ca7d6;margin-bottom:16px">Upgrade to Essential to unlock your AI-powered business health score.</p>
-              <a href="/pricing" style="color:#60a5fa;text-decoration:underline">Upgrade now →</a>
+              <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+  <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
+  <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
+  <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
+</div>
             </div>
           `
               : `
