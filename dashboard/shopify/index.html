@@ -837,7 +837,11 @@
         <div class="card connect-cta" style="margin-top:40px">
           <h2>⭐ Upgrade to Essential</h2>
           <p>Get access to Analytics, Inventory, and Customer tabs plus full dashboard features for just $19/month.</p>
-          <a href="/pricing" class="btn-primary" style="text-decoration:none;margin-top:16px">View Plans →</a>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
+  <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
+  <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
+  <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
+</div>
         </div>`;
             return;
           }
