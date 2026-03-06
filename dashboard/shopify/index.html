@@ -758,6 +758,17 @@
 
       const token = localStorage.getItem("aervo_token");
       if (!token) window.location.href = "/login";
+
+      // Check for billing result
+      const billingStatus = urlParams.get("billing");
+      const billingPlan = urlParams.get("plan");
+      if (billingStatus === "success") {
+        alert(`🎉 Successfully upgraded to ${billingPlan} plan!`);
+        window.history.replaceState({}, "", window.location.pathname);
+      } else if (billingStatus === "failed") {
+        alert("Billing was not completed. Please try again.");
+        window.history.replaceState({}, "", window.location.pathname);
+      }
       // ─────────────────────────────────────────────────────────────────────────────
       // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
       //
@@ -2127,6 +2138,39 @@
           input.value = el.textContent;
           input.focus();
           sendMessage();
+        }
+      }
+
+      // ============= BILLING =============
+      async function upgradePlan(plan) {
+        const shop = shopData?.shopOrigin;
+        if (!shop) {
+          alert("No shop connected");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${BACKEND_URL}/auth/shopify/billing/create`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ shop, plan }),
+            },
+          );
+
+          const data = await response.json();
+          if (data.success && data.confirmationUrl) {
+            window.top.location.href = data.confirmationUrl;
+          } else {
+            alert("Failed to create billing charge. Please try again.");
+          }
+        } catch (err) {
+          console.error("Billing error:", err);
+          alert("Something went wrong. Please try again.");
         }
       }
 
