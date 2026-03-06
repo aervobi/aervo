@@ -699,18 +699,11 @@
           <span>●</span>
           <span id="shopName">Loading...</span>
         </div>
-        <a
-          href="${userPlan === 'free' ? '/pricing' : '/reports'}"
-          class="btn-logout"
-          style="text-decoration: none"
+        <a href="/reports" class="btn-logout" style="text-decoration: none"
           >📊 Reports</a
         >
-        <a
-          href="${userPlan === 'free' ? '/pricing' : '/intelligence'}"
-          class="btn-logout"
-          style="text-decoration: none"
+        <a href="/intelligence" class="btn-logout" style="text-decoration: none"
           >🧠 Intelligence Center</a
-        >
         >
 
         <a href="/integrations" class="btn-logout" style="text-decoration: none"
@@ -758,17 +751,6 @@
 
       const token = localStorage.getItem("aervo_token");
       if (!token) window.location.href = "/login";
-
-      // Check for billing result
-      const billingStatus = urlParams.get("billing");
-      const billingPlan = urlParams.get("plan");
-      if (billingStatus === "success") {
-        alert(`🎉 Successfully upgraded to ${billingPlan} plan!`);
-        window.history.replaceState({}, "", window.location.pathname);
-      } else if (billingStatus === "failed") {
-        alert("Billing was not completed. Please try again.");
-        window.history.replaceState({}, "", window.location.pathname);
-      }
       // ─────────────────────────────────────────────────────────────────────────────
       // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
       //
@@ -803,7 +785,6 @@
       let currentView = "overview";
       let userData = null;
       let shopData = null;
-      let userPlan = "free";
       let realData = {
         overview: null,
         orders: [],
@@ -829,14 +810,7 @@
       // ============= TAB NAVIGATION =============
       document.querySelectorAll(".nav-tab").forEach((tab) => {
         tab.addEventListener("click", () => {
-          const view = tab.dataset.view;
-          const freeTabs = ["overview"];
-
-          if (userPlan === "free" && !freeTabs.includes(view)) {
-            return;
-          }
-
-          currentView = view;
+          currentView = tab.dataset.view;
           document
             .querySelectorAll(".nav-tab")
             .forEach((t) => t.classList.remove("active"));
@@ -877,27 +851,11 @@
             throw new Error("Failed to fetch user data");
           }
 
-          data = await response.json();
-
+          const data = await response.json();
           if (!data.success)
             throw new Error(data.message || "Failed to load user data");
 
           userData = data.user;
-          userData = data.user;
-          userPlan = data.user.plan || "free";
-          // Gate Reports and Intelligence Center
-          if (userPlan === "free") {
-            document
-              .querySelectorAll('a[href="/reports"], a[href="/intelligence"]')
-              .forEach((link) => {
-                link.href = "/pricing";
-                link.title = "Upgrade to access this feature";
-                link.style.opacity = "0.5";
-              });
-          }
-          shopData = data.shop;
-
-          shopData = data.shop;
           shopData = data.shop;
 
           shopData = data.shop;
@@ -1029,57 +987,40 @@
           </div>
 
           <!-- HEALTH SCORE WIDGET -->
-          ${
-            userPlan === "free"
-              ? `
-            <div class="card" style="margin-bottom:24px;text-align:center;padding:40px;border:1px dashed rgba(148,163,184,0.3)">
-              <div style="font-size:32px;margin-bottom:12px">📊</div>
-              <h3 style="color:#e5ecff;margin-bottom:8px">Business Health Score</h3>
-              <p style="color:#9ca7d6;margin-bottom:16px">Upgrade to Essential to unlock your AI-powered business health score.</p>
-              <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap">
-  <button onclick="upgradePlan('essential')" class="btn-primary">Essential — $19/mo</button>
-  <button onclick="upgradePlan('pro')" class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">Pro — $49/mo</button>
-  <button onclick="upgradePlan('business')" class="btn-primary" style="background:linear-gradient(135deg,#059669,#34d399)">Business — $99/mo</button>
-</div>
-            </div>
-          `
-              : `
-            <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
-                <div style="display:flex;align-items:center;gap:24px;">
-                  <div style="position:relative;width:100px;height:100px;">
-                    <svg width="100" height="100" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                      <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
-                        stroke="#29c8ff" stroke-width="10"
-                        stroke-dasharray="264" stroke-dashoffset="264"
-                        stroke-linecap="round"
-                        transform="rotate(-90 50 50)"
-                        style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
-                    </svg>
-                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                      <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
-                      <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
-                    <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
-                    <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
+          <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+              <div style="display:flex;align-items:center;gap:24px;">
+                <div style="position:relative;width:100px;height:100px;">
+                  <svg width="100" height="100" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                    <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
+                      stroke="#29c8ff" stroke-width="10"
+                      stroke-dasharray="264" stroke-dashoffset="264"
+                      stroke-linecap="round"
+                      transform="rotate(-90 50 50)"
+                      style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
+                  </svg>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
+                    <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
                   </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
-                  <div id="scoreBreakdown"></div>
-                  <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;transition:all .2s;">↻ Recalculate</button>
-                </div>
-                <div style="min-width:200px;">
-                  <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
-                  <div id="scoreImprovements"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
+                  <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
+                  <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
                 </div>
               </div>
+              <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
+                <div id="scoreBreakdown"></div>
+                <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;transition:all .2s;">↻ Recalculate</button>
+              </div>
+              <div style="min-width:200px;">
+                <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
+                <div id="scoreImprovements"></div>
+              </div>
             </div>
-          `
-          }
+          </div>
           <div class="ai-banner">
             <div class="ai-banner-header">
               <div class="ai-icon">🤖</div>
@@ -1157,6 +1098,7 @@
               </div>
             </div>
           </div>`;
+
         // Render quick 7-day chart
         // Render quick 7-day chart
         setTimeout(() => renderOverviewChart(orders), 100);
@@ -2071,7 +2013,6 @@
         input.disabled = true;
         document.querySelector(".btn-send").disabled = true;
 
-        let data;
         try {
           const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
             method: "POST",
@@ -2084,8 +2025,7 @@
               shopOrigin: shopData ? shopData.shopOrigin : null,
             }),
           });
-          data = await response.json();
-
+          const data = await response.json();
           document.getElementById("typingIndicator")?.remove();
           if (data.success) {
             const aiMsg = document.createElement("div");
@@ -2102,15 +2042,8 @@
           document.getElementById("typingIndicator")?.remove();
           const errMsg = document.createElement("div");
           errMsg.className = "chat-message ai";
-
-          if (data && data.code === "PLAN_LIMIT") {
-            errMsg.innerHTML = `⚠️ <strong>Message limit reached.</strong><br>${data.message}<br><br>
-      <a href="/pricing" style="color:#60a5fa;text-decoration:underline">Upgrade your plan →</a>`;
-          } else {
-            errMsg.textContent =
-              "Sorry, I had trouble responding. Please try again.";
-          }
-
+          errMsg.textContent =
+            "Sorry, I had trouble responding. Please try again.";
           messages.appendChild(errMsg);
         }
 
@@ -2139,39 +2072,6 @@
         }
       }
 
-      // ============= BILLING =============
-      async function upgradePlan(plan) {
-        const shop = shopData?.shopOrigin;
-        if (!shop) {
-          alert("No shop connected");
-          return;
-        }
-
-        try {
-          const response = await fetch(
-            `${BACKEND_URL}/auth/shopify/billing/create`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ shop, plan }),
-            },
-          );
-
-          const data = await response.json();
-          if (data.success && data.confirmationUrl) {
-            window.top.location.href = data.confirmationUrl;
-          } else {
-            alert("Failed to create billing charge. Please try again.");
-          }
-        } catch (err) {
-          console.error("Billing error:", err);
-          alert("Something went wrong. Please try again.");
-        }
-      }
-
       // ============= BOOT =============
       loadUserData();
       // ── HEALTH SCORE ───────────────────────────────────────────────
@@ -2190,12 +2090,6 @@
           console.error("Health score error:", e);
         }
       }
-
-      fetch(`${BACKEND_URL}/api/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then((d) => console.log("USER ME RESPONSE:", JSON.stringify(d)));
 
       async function calculateHealthScore() {
         const shopOrigin =
