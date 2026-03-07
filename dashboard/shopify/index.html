@@ -738,6 +738,7 @@
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
 
+      // Get session token from App Bridge or fall back to URL token
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       if (urlToken) {
@@ -749,7 +750,19 @@
         );
       }
 
-      const token = localStorage.getItem("aervo_token");
+      let token = localStorage.getItem("aervo_token");
+
+      // Try to get Shopify session token if App Bridge is available
+      async function getSessionToken() {
+        try {
+          if (window.shopify && window.shopify.idToken) {
+            const sessionToken = await window.shopify.idToken();
+            return sessionToken;
+          }
+        } catch (e) {}
+        return null;
+      }
+
       if (!token) window.location.href = "/login";
       // ─────────────────────────────────────────────────────────────────────────────
       // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
