@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      // If loaded inside Shopify iframe, redirect to OAuth
+      if (window.self !== window.top) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shop = urlParams.get("shop");
+        if (shop) {
+          window.top.location.href =
+            "https://api.aervoapp.com/auth/shopify?shop=" + shop;
+        }
+      }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
