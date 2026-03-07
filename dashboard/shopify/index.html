@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <style>
@@ -737,7 +738,6 @@
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
 
-      // Get session token from App Bridge or fall back to URL token
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       if (urlToken) {
@@ -750,6 +750,37 @@
       }
 
       let token = localStorage.getItem("aervo_token");
+
+      // If inside Shopify iframe, get session token via App Bridge
+      async function initShopifyAuth() {
+        if (window.shopify) {
+          try {
+            const sessionToken = await window.shopify.idToken();
+            const shop =
+              urlParams.get("shop") || localStorage.getItem("shopify_shop");
+            if (sessionToken && shop) {
+              const res = await fetch(
+                `${BACKEND_URL}/auth/shopify/session-token`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ sessionToken, shop }),
+                },
+              );
+              const data = await res.json();
+              if (data.success && data.token) {
+                token = data.token;
+                localStorage.setItem("aervo_token", token);
+              }
+            }
+          } catch (e) {
+            console.log("App Bridge not available, using stored token");
+          }
+        }
+        if (!token) window.location.href = "/login";
+      }
+
+      initShopifyAuth();
 
       // Try to get Shopify session token if App Bridge is available
       async function getSessionToken() {
