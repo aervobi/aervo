@@ -243,7 +243,61 @@
             height="18"
           />
           Continue with Google
+            <!-- Shopify Sign In -->
+        <button
+          type="button"
+          onclick="signInWithShopify()"
+          style="
+            width: 100%;
+            padding: 11px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: #e5ecff;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+          "
+          onmouseover="this.style.background = 'rgba(255,255,255,0.09)'"
+          onmouseout="this.style.background = 'rgba(255,255,255,0.05)'"
+        >
+          <span style="font-size: 18px;">🛍️</span>
+          Continue with Shopify
         </button>
+
+        <!-- Shopify store input (hidden by default) -->
+        <div id="shopify-input-area" style="display:none; margin-bottom: 16px;">
+          <label for="shopify-store">Your store URL</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input
+              id="shopify-store"
+              type="text"
+              placeholder="yourstore"
+              style="margin-bottom: 0; flex: 1;"
+            />
+            <span style="color: #8b94c0; font-size: 13px; white-space: nowrap;">.myshopify.com</span>
+          </div>
+          <button
+            type="button"
+            onclick="goToShopify()"
+            style="
+              width: 100%;
+              margin-top: 10px;
+              padding: 11px 0;
+              border-radius: 10px;
+              border: none;
+              background: #95BF47;
+              color: white;
+              font-size: 15px;
+              cursor: pointer;
+            "
+          >Connect Store</button>
+        </div>
 
         <div
           style="
@@ -259,7 +313,21 @@
           <span style="font-size: 12px; color: #8b94c0"
             >or sign in with email</span
           >
+        </button>
+
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+          "
+        >
           <div
+            style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08)"
+          ></div>
+          <span style="font-size: 12px; color: #8b94c0"
+           
             style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08)"
           ></div>
         </div>
@@ -426,6 +494,25 @@
         } catch (err) {
           console.error("Google sign in error:", err);
         }
+      }
+      function signInWithShopify() {
+        const area = document.getElementById("shopify-input-area");
+        area.style.display = area.style.display === "none" ? "block" : "none";
+      }
+
+      function goToShopify() {
+        const store = document
+          .getElementById("shopify-store")
+          .value.trim()
+          .replace(".myshopify.com", "");
+        if (!store) {
+          alert("Please enter your store name");
+          return;
+        }
+        window.location.href =
+          "https://api.aervoapp.com/auth/shopify?shop=" +
+          store +
+          ".myshopify.com";
       }
     </script>
   </body>
