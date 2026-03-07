@@ -4,12 +4,13 @@
     <script>
   // If loaded inside Shopify admin, redirect to auth
   if (window.self !== window.top) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shop = urlParams.get('shop');
-    if (shop) {
-      window.top.location.href = 'https://api.aervoapp.com/auth/shopify?shop=' + shop;
-    }
+  const urlParams = new URLSearchParams(window.location.search);
+  const shop = urlParams.get("shop");
+  const host = urlParams.get("host");
+  if (shop) {
+    window.location.href = 'https://api.aervoapp.com/auth/shopify?shop=' + shop + (host ? '&host=' + host : '');
   }
+}
 </script>
     <meta charset="UTF-8" />
     <title>Aervo – A higher view of your business</title>
