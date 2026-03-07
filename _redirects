@@ -4,7 +4,7 @@
 /dashboard          /dashboard/shopify/index.html   200
 /onboarding         /onboarding.html                200
 /onboarding/        /onboarding.html                200
-/login              /login.html                     200
-/login/             /login.html                     200
+/login              /login/index.html       200
+/login/             /login/index.html       200
 /signup             /onboarding.html                200
 /signup/            /onboarding.html                200
