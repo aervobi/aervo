@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <script>
-      // If loaded inside Shopify iframe, redirect to OAuth
       if (window.self !== window.top) {
         const urlParams = new URLSearchParams(window.location.search);
         const shop = urlParams.get("shop");
@@ -14,19 +13,6 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
-    <script>
-      // Keep app embedded in Shopify admin
-      const appBridgeParams = new URLSearchParams(window.location.search);
-      const host = appBridgeParams.get("host");
-      if (host && window.shopify) {
-        window.shopify.init({
-          apiKey: "42d18ab94654c48ad51d381269a89bcc",
-          host,
-        });
-      }
-    </script>
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
