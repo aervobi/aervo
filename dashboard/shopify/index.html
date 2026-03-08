@@ -742,6 +742,10 @@
 
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
+      // Disable App Bridge fetch interceptor
+      if (window.shopify) {
+        window.__SHOPIFY_DEV_TOOLS_HOOK__ = null;
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
