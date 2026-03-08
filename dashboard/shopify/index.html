@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
+    <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.shopify) {
+          window.shopify
+            .idToken()
+            .then(function (token) {
+              console.log("App Bridge session token obtained");
+            })
+            .catch(function (err) {
+              console.log("App Bridge not in iframe context");
+            });
+        }
+      });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Aervo – Dashboard</title>
