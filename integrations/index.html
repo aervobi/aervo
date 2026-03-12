@@ -569,7 +569,17 @@
           // Simple redirect with token in URL
           window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
         } else if (name === "square") {
-          alert("Square integration coming soon!");
+          const aervoUser = JSON.parse(
+            localStorage.getItem("aervo_user") || "{}",
+          );
+          const userId = aervoUser.id;
+          if (!userId) {
+            alert(
+              "Could not find your account. Please log out and log back in.",
+            );
+            return;
+          }
+          window.location.href = `${BACKEND_URL}/integrations/square/connect?merchantId=${encodeURIComponent(userId)}`;
         } else {
           alert(`${name} integration coming soon!`);
         }
