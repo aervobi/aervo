@@ -240,6 +240,169 @@
         color: #93c5fd;
       }
 
+      /* ── SECTION TABS ── */
+      .intel-section-tabs {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 28px;
+      }
+      .intel-stab {
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-2);
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        transition: color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .intel-stab:hover { color: var(--text); }
+      .intel-stab.active {
+        color: var(--text);
+        border-bottom-color: var(--blue);
+      }
+      .pb-new-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--amber);
+        flex-shrink: 0;
+        animation: pb-pulse 1.8s ease-in-out infinite;
+      }
+      @keyframes pb-pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+      /* ── PLAYBOOKS PANEL ── */
+      .pb-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .pb-title { font-size: 18px; font-weight: 700; color: var(--text); margin: 0; letter-spacing: -0.3px; }
+      .pb-subtitle { font-size: 13px; color: var(--text-2); margin: 5px 0 0; }
+      .pb-badge-count {
+        font-size: 11px; font-weight: 600; padding: 3px 11px; border-radius: 99px;
+        background: var(--amber-dim); color: var(--amber);
+        border: 1px solid rgba(245,158,11,0.3); white-space: nowrap;
+      }
+      .pb-alert {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2);
+        border-radius: 10px; padding: 11px 15px; margin-bottom: 18px;
+        font-size: 13px; color: var(--amber); line-height: 1.5;
+      }
+      .pb-loading { display: flex; align-items: center; gap: 12px; padding: 48px 0; color: var(--text-2); font-size: 13px; }
+      .pb-spinner {
+        width: 18px; height: 18px;
+        border: 2px solid rgba(59,130,246,0.2); border-top-color: var(--blue);
+        border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0;
+      }
+      .pb-empty { text-align: center; padding: 64px 20px; }
+      .pb-empty-icon { display: flex; justify-content: center; margin-bottom: 16px; }
+      .pb-empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin: 0 0 8px; }
+      .pb-empty-sub { font-size: 13px; color: var(--text-2); max-width: 380px; margin: 0 auto; line-height: 1.6; }
+      .pb-layout { display: grid; grid-template-columns: 268px minmax(0,1fr); gap: 16px; align-items: start; }
+      @media (max-width: 900px) { .pb-layout { grid-template-columns: 1fr; } }
+      .pb-list-col { display: flex; flex-direction: column; gap: 8px; }
+      .pb-section-label {
+        font-size: 11px; font-weight: 600; color: var(--text-3);
+        letter-spacing: 0.8px; text-transform: uppercase; margin: 14px 0 8px;
+      }
+      .pb-card {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: 12px; padding: 13px 15px; cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+      }
+      .pb-card:hover { border-color: var(--border-bright); }
+      .pb-card.pb-card-selected {
+        border-color: rgba(59,130,246,0.5);
+        background: rgba(59,130,246,0.06);
+      }
+      .pb-card.pb-card-completed { opacity: 0.55; cursor: default; }
+      .pb-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 9px; }
+      .pb-card-left { display: flex; align-items: flex-start; gap: 10px; }
+      .pb-card-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+      .pb-iw { background: rgba(245,158,11,0.12); }
+      .pb-ir { background: rgba(239,68,68,0.12); }
+      .pb-ib { background: rgba(59,130,246,0.12); }
+      .pb-ig { background: rgba(16,185,129,0.12); }
+      .pb-card-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+      .pb-card-sub { font-size: 11px; color: var(--text-3); }
+      .pb-bar-row { display: flex; align-items: center; gap: 8px; }
+      .pb-bar { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+      .pb-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#3b82f6,#60a5fa); transition: width 0.4s; }
+      .pb-bar-label { font-size: 10px; color: var(--text-3); white-space: nowrap; font-family: var(--mono); }
+      .pb-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; letter-spacing: 0.4px; text-transform: uppercase; white-space: nowrap; }
+      .pb-pill-warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+      .pb-pill-danger { background: var(--red-dim); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+      .pb-pill-blue { background: var(--blue-dim); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+      .pb-pill-green { background: var(--green-dim); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+      .pb-wizard { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+      .pb-wiz-head { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+      .pb-wiz-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+      .pb-wiz-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+      .pb-wiz-title { font-size: 14px; font-weight: 700; color: var(--text); }
+      .pb-wiz-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+      .pb-dismiss-btn {
+        margin-left: auto; background: none; border: none; color: var(--text-3);
+        cursor: pointer; padding: 5px; border-radius: 6px; display: flex; align-items: center;
+        transition: color 0.15s, background 0.15s;
+      }
+      .pb-dismiss-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+      .pb-step-track { display: flex; align-items: center; gap: 6px; }
+      .pb-sdot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; font-family: var(--mono); }
+      .pb-sdot-done { background: linear-gradient(135deg,#3b82f6,#60a5fa); color: #fff; }
+      .pb-sdot-cur { background: transparent; color: #60a5fa; border: 1.5px solid #3b82f6; }
+      .pb-sdot-idle { background: rgba(255,255,255,0.05); color: var(--text-3); border: 1px solid var(--border-bright); }
+      .pb-sline { flex: 1; height: 1px; background: var(--border); }
+      .pb-sline-done { background: linear-gradient(90deg,#3b82f6,#60a5fa); }
+      .pb-wiz-body { padding: 20px; }
+      .pb-eyebrow { font-size: 10px; font-weight: 700; color: var(--blue); letter-spacing: 0.9px; text-transform: uppercase; margin-bottom: 6px; }
+      .pb-step-h { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 7px; letter-spacing: -0.2px; }
+      .pb-step-desc { font-size: 13px; color: var(--text-2); line-height: 1.65; margin-bottom: 16px; }
+      .pb-ctx-card { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 11px 14px; margin-bottom: 16px; }
+      .pb-ctx-label { font-size: 10px; font-weight: 700; color: #60a5fa; letter-spacing: 0.7px; text-transform: uppercase; margin-bottom: 5px; }
+      .pb-ctx-text { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+      .pb-actions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+      .pb-aitem {
+        display: flex; align-items: flex-start; gap: 11px;
+        background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+        border-radius: 9px; padding: 10px 12px; cursor: pointer; transition: border-color 0.15s;
+      }
+      .pb-aitem:hover { border-color: var(--border-bright); }
+      .pb-cb { width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+      .pb-cb-on { background: linear-gradient(135deg,#3b82f6,#60a5fa); }
+      .pb-cb-off { background: transparent; border: 1px solid var(--border-bright); }
+      .pb-atext { font-size: 13px; color: var(--text); line-height: 1.5; }
+      .pb-atext-done { color: var(--text-3); text-decoration: line-through; }
+      .pb-wiz-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 13px 20px; border-top: 1px solid var(--border);
+        background: rgba(5,8,16,0.4);
+      }
+      .pb-impact { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--green); }
+      .pb-impact-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+      .pb-btn-row { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+      .pb-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: "DM Sans", sans-serif; transition: opacity 0.15s, background 0.15s; }
+      .pb-btn:hover { opacity: 0.85; }
+      .pb-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+      .pb-btn-ghost { background: transparent; color: var(--text-3); }
+      .pb-btn-sec { background: rgba(255,255,255,0.06); border: 1px solid var(--border-bright); color: var(--text-2); }
+      .pb-btn-prim { background: linear-gradient(135deg,#3b82f6,#60a5fa); color: #fff; }
+      .pb-complete-state { text-align: center; padding: 52px 20px; }
+      .pb-complete-icon { width: 54px; height: 54px; border-radius: 50%; background: var(--green-dim); border: 1px solid rgba(16,185,129,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+      .pb-complete-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+      .pb-complete-sub { font-size: 13px; color: var(--text-2); line-height: 1.6; max-width: 320px; margin: 0 auto; }
+
       /* ── MAIN GRID ── */
       .intel-grid {
         display: grid;
@@ -1017,22 +1180,90 @@
         </div>
       </div>
 
-      <!-- Add after your industry pill row, before the card grid -->
+      <!-- SECTION TABS -->
       <div class="intel-section-tabs">
-        <button class="intel-stab act" data-section="dashboard">
-          Dashboard
-        </button>
-        <button class="intel-stab" data-section="goals">Goals</button>
-        <button class="intel-stab" data-section="benchmarks">Benchmarks</button>
-        <button class="intel-stab" data-section="insights">AI Insights</button>
-        <button class="intel-stab" data-section="playbooks">
+        <button class="intel-stab active" data-section="dashboard" onclick="switchSection('dashboard', this)">Dashboard</button>
+        <button class="intel-stab" data-section="playbooks" onclick="switchSection('playbooks', this)">
           Playbooks
-          <span class="pb-new-dot" id="pb-new-dot" style="display: none"></span>
+          <span class="pb-new-dot" id="pb-new-dot" style="display:none"></span>
         </button>
       </div>
 
+      <!-- PLAYBOOKS PANEL -->
+      <div id="section-playbooks" style="display:none;">
+        <div class="pb-header">
+          <div>
+            <h2 class="pb-title">Smart playbooks</h2>
+            <p class="pb-subtitle">Triggered by live store conditions · updated daily</p>
+          </div>
+          <span class="pb-badge-count" id="pb-active-count" style="display:none;"></span>
+        </div>
+        <div class="pb-alert" id="pb-alert" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;"><path d="M7 1.5L13 12.5H1L7 1.5Z" stroke="#f59e0b" stroke-width="1.2" fill="none"/><path d="M7 5.5v3M7 10v.5" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span id="pb-alert-text"></span>
+        </div>
+        <div class="pb-loading" id="pb-loading">
+          <div class="pb-spinner"></div>
+          <span>Analysing your store data...</span>
+        </div>
+        <div class="pb-empty" id="pb-empty" style="display:none;">
+          <div class="pb-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 3L29 26H3L16 3Z" stroke="#3b82f6" stroke-width="1.5" fill="rgba(59,130,246,0.08)"/><path d="M16 12v7M16 21.5v1" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <p class="pb-empty-title">All clear — no issues detected</p>
+          <p class="pb-empty-sub">Aervo checks your store daily. When something needs attention, a playbook will appear here.</p>
+        </div>
+        <div class="pb-layout" id="pb-layout" style="display:none;">
+          <div class="pb-list-col">
+            <div id="pb-active-list"></div>
+            <div id="pb-completed-section" style="display:none;">
+              <div class="pb-section-label">Completed</div>
+              <div id="pb-completed-list"></div>
+            </div>
+          </div>
+          <div class="pb-wizard-col">
+            <div class="pb-wizard" id="pb-wizard">
+              <div class="pb-wiz-head">
+                <div class="pb-wiz-title-row">
+                  <div class="pb-wiz-icon pb-iw" id="wiz-icon"></div>
+                  <div>
+                    <div class="pb-wiz-title" id="wiz-title"></div>
+                    <div class="pb-wiz-sub" id="wiz-sub"></div>
+                  </div>
+                  <button class="pb-dismiss-btn" id="wiz-dismiss-btn" title="Dismiss playbook">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div class="pb-step-track" id="wiz-step-track"></div>
+              </div>
+              <div class="pb-wiz-body">
+                <div class="pb-eyebrow" id="wiz-eyebrow"></div>
+                <div class="pb-step-h" id="wiz-step-title"></div>
+                <div class="pb-step-desc" id="wiz-step-desc"></div>
+                <div class="pb-ctx-card" id="wiz-ctx-card" style="display:none;">
+                  <div class="pb-ctx-label">From your store data</div>
+                  <div class="pb-ctx-text" id="wiz-ctx-text"></div>
+                </div>
+                <div class="pb-actions" id="wiz-actions"></div>
+              </div>
+              <div class="pb-wiz-foot">
+                <div class="pb-impact" id="wiz-impact" style="display:none;">
+                  <div class="pb-impact-dot"></div>
+                  <span id="wiz-impact-text"></span>
+                </div>
+                <div class="pb-btn-row">
+                  <button class="pb-btn pb-btn-ghost" id="wiz-back-btn">Back</button>
+                  <button class="pb-btn pb-btn-sec" id="wiz-skip-btn">Skip</button>
+                  <button class="pb-btn pb-btn-prim" id="wiz-next-btn">Mark complete →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- MAIN INTEL GRID -->
-      <div class="intel-grid">
+      <div class="intel-grid" id="section-dashboard">
         <!-- 1. HEALTH SCORE (col 1) -->
         <div class="card">
           <div class="card-label" style="color: #60a5fa">
@@ -1441,7 +1672,8 @@
           </div>
         </div>
       </div>
-      <!-- /intel-grid -->
+      <!-- /intel-grid / section-dashboard -->
+      </div>
     </div>
     <!-- /page -->
 
@@ -2393,6 +2625,276 @@ Give concise, direct, data-driven advice in 2-4 sentences. Reference specific nu
 
       // ── BOOT ──
       init();
+
+      // ── SECTION TABS ──
+      function switchSection(name, btn) {
+        // Toggle tab active state
+        document.querySelectorAll('.intel-stab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // Show/hide sections
+        document.getElementById('section-dashboard').style.display = name === 'dashboard' ? 'grid' : 'none';
+        document.getElementById('section-playbooks').style.display = name === 'playbooks' ? 'block' : 'none';
+        // Load playbooks on first visit
+        if (name === 'playbooks' && !pbLoaded) loadPlaybooks();
+      }
+
+      // ── PLAYBOOKS ──
+      const TRIGGER_META = {
+        revenue_down:         { icon: '📉', iconClass: 'pb-iw', pill: 'pb-pill-warn',   pillText: 'ACTIVE',  impact: 'Est. impact: +15–25% revenue recovery' },
+        stockout_imminent:    { icon: '📦', iconClass: 'pb-ir', pill: 'pb-pill-danger', pillText: 'URGENT',  impact: 'Est. impact: avoid lost sales from stockouts' },
+        repeat_rate_dropping: { icon: '🔄', iconClass: 'pb-ib', pill: 'pb-pill-blue',   pillText: 'ACTIVE',  impact: 'Est. impact: +5–10pt repeat purchase rate' },
+        vip_customers_quiet:  { icon: '💤', iconClass: 'pb-ib', pill: 'pb-pill-blue',   pillText: 'NEW',     impact: 'Est. impact: recover high-LTV customer spend' },
+        conversion_falling:   { icon: '📊', iconClass: 'pb-iw', pill: 'pb-pill-warn',   pillText: 'ACTIVE',  impact: 'Est. impact: recover lost conversion revenue' },
+        revenue_spike:        { icon: '🚀', iconClass: 'pb-ig', pill: 'pb-pill-green',  pillText: 'NEW',     impact: 'Est. impact: maximise momentum while it lasts' },
+      };
+
+      let pbPlaybooks = [], pbActiveId = null, pbStepIdx = 0, pbLoaded = false;
+
+      const $pbLoading  = document.getElementById('pb-loading');
+      const $pbEmpty    = document.getElementById('pb-empty');
+      const $pbLayout   = document.getElementById('pb-layout');
+      const $pbAlert    = document.getElementById('pb-alert');
+      const $pbAlertTxt = document.getElementById('pb-alert-text');
+      const $pbCount    = document.getElementById('pb-active-count');
+      const $pbActList  = document.getElementById('pb-active-list');
+      const $pbCmpSec   = document.getElementById('pb-completed-section');
+      const $pbCmpList  = document.getElementById('pb-completed-list');
+      const $wizIcon    = document.getElementById('wiz-icon');
+      const $wizTitle   = document.getElementById('wiz-title');
+      const $wizSub     = document.getElementById('wiz-sub');
+      const $wizTrack   = document.getElementById('wiz-step-track');
+      const $wizEyebrow = document.getElementById('wiz-eyebrow');
+      const $wizStepH   = document.getElementById('wiz-step-title');
+      const $wizDesc    = document.getElementById('wiz-step-desc');
+      const $wizCtx     = document.getElementById('wiz-ctx-card');
+      const $wizCtxTxt  = document.getElementById('wiz-ctx-text');
+      const $wizActions = document.getElementById('wiz-actions');
+      const $wizImpact  = document.getElementById('wiz-impact');
+      const $wizImpTxt  = document.getElementById('wiz-impact-text');
+      const $wizBack    = document.getElementById('wiz-back-btn');
+      const $wizSkip    = document.getElementById('wiz-skip-btn');
+      const $wizNext    = document.getElementById('wiz-next-btn');
+      const $wizDismiss = document.getElementById('wiz-dismiss-btn');
+
+      $wizBack.addEventListener('click', pbBack);
+      $wizSkip.addEventListener('click', pbSkip);
+      $wizNext.addEventListener('click', pbNext);
+      $wizDismiss.addEventListener('click', pbDismiss);
+
+      function pbShow(el) { if (el) el.style.display = ''; }
+      function pbHide(el) { if (el) el.style.display = 'none'; }
+
+      async function loadPlaybooks() {
+        pbLoaded = true;
+        pbShow($pbLoading); pbHide($pbEmpty); pbHide($pbLayout); pbHide($pbAlert);
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/playbooks?integration=${currentSource || 'shopify'}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) throw new Error(await res.text());
+          const data = await res.json();
+          pbPlaybooks = data.playbooks || [];
+          pbRender();
+        } catch (err) {
+          console.error('Playbooks error:', err);
+          pbHide($pbLoading);
+          $pbActList.innerHTML = `<p style="color:#f87171;font-size:13px;padding:20px 0;">Failed to load playbooks. Please try again.</p>`;
+          pbShow($pbLayout);
+        }
+      }
+
+      function pbRender() {
+        pbHide($pbLoading);
+        const active    = pbPlaybooks.filter(p => p.status === 'active');
+        const completed = pbPlaybooks.filter(p => p.status === 'completed');
+
+        if (!active.length && !completed.length) { pbShow($pbEmpty); pbHide($pbLayout); return; }
+
+        // Alert banner for new (0 steps done) playbooks
+        const newCount = active.filter(p => (p.steps||[]).filter(s=>s.is_complete).length === 0).length;
+        if (newCount > 0) {
+          $pbAlertTxt.textContent = `${newCount} new playbook${newCount > 1 ? 's' : ''} triggered — check the list for what needs attention.`;
+          pbShow($pbAlert);
+        }
+
+        // Active count badge + nav dot
+        if (active.length > 0) {
+          $pbCount.textContent = `${active.length} active`;
+          pbShow($pbCount);
+          document.getElementById('pb-new-dot').style.display = 'inline-block';
+        }
+
+        $pbActList.innerHTML = active.map(p => pbCardHTML(p, false)).join('');
+        if (completed.length) {
+          $pbCmpList.innerHTML = completed.map(p => pbCardHTML(p, true)).join('');
+          pbShow($pbCmpSec);
+        } else { pbHide($pbCmpSec); }
+
+        $pbActList.querySelectorAll('.pb-card').forEach(el => {
+          el.addEventListener('click', () => pbSelect(parseInt(el.dataset.id)));
+        });
+
+        if (!pbActiveId || !pbPlaybooks.find(p => p.id === pbActiveId && p.status === 'active')) {
+          pbActiveId = active[0]?.id || completed[0]?.id || null;
+          pbStepIdx  = pbFirstIncomplete(pbGetActive());
+        }
+
+        pbShow($pbLayout);
+        pbRenderWizard();
+        pbHighlight();
+      }
+
+      function pbCardHTML(pb, done) {
+        const m    = TRIGGER_META[pb.trigger_type] || {};
+        const steps = pb.steps || [];
+        const doneN = steps.filter(s => s.is_complete).length;
+        const pct   = steps.length ? Math.round((doneN / steps.length) * 100) : 0;
+        const pill  = done ? 'pb-pill-green' : (m.pill || 'pb-pill-blue');
+        const ptxt  = done ? 'DONE' : (m.pillText || 'ACTIVE');
+        return `
+          <div class="pb-card ${done ? 'pb-card-completed' : ''}" data-id="${pb.id}">
+            <div class="pb-card-top">
+              <div class="pb-card-left">
+                <div class="pb-card-icon ${m.iconClass||'pb-ib'}">${m.icon||'📋'}</div>
+                <div>
+                  <div class="pb-card-name">${pb.title}</div>
+                  <div class="pb-card-sub">${pbSubtext(pb.trigger_type, pb.context_snapshot||{})}</div>
+                </div>
+              </div>
+              <span class="pb-pill ${pill}">${ptxt}</span>
+            </div>
+            <div class="pb-bar-row">
+              <div class="pb-bar"><div class="pb-bar-fill" style="width:${pct}%"></div></div>
+              <span class="pb-bar-label">${done ? 'Complete' : (steps.length ? `${doneN}/${steps.length}` : 'Not started')}</span>
+            </div>
+          </div>`;
+      }
+
+      function pbRenderWizard() {
+        const pb = pbGetActive();
+        if (!pb) return;
+        const m = TRIGGER_META[pb.trigger_type] || {};
+        $wizIcon.className = `pb-wiz-icon ${m.iconClass||'pb-ib'}`;
+        $wizIcon.textContent = m.icon || '📋';
+        $wizTitle.textContent = pb.title;
+        $wizSub.textContent = `Triggered · ${pbSubtext(pb.trigger_type, pb.context_snapshot||{})}`;
+        $wizDismiss.style.display = pb.status === 'active' ? 'flex' : 'none';
+
+        if (pb.status === 'completed') { pbRenderComplete(pb); return; }
+
+        const steps = pb.steps || [];
+        const step  = steps[pbStepIdx];
+        pbRenderTrack(steps, pbStepIdx);
+        if (!step) return;
+
+        $wizEyebrow.textContent  = `Step ${pbStepIdx + 1} of ${steps.length}`;
+        $wizStepH.textContent    = step.title;
+        $wizDesc.textContent     = step.description;
+        if (step.context_tip) { $wizCtxTxt.textContent = step.context_tip; pbShow($wizCtx); } else { pbHide($wizCtx); }
+
+        $wizActions.innerHTML = `
+          <div class="pb-aitem" data-step-id="${step.id}" onclick="pbToggleStep(${step.id})">
+            <div class="pb-cb ${step.is_complete ? 'pb-cb-on' : 'pb-cb-off'}">
+              ${step.is_complete ? '<svg width="9" height="9" viewBox="0 0 9 9"><path d="M1.5 4.5l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+            </div>
+            <div class="pb-atext ${step.is_complete ? 'pb-atext-done' : ''}">${step.description}</div>
+          </div>`;
+
+        if (m.impact) { $wizImpTxt.textContent = m.impact; pbShow($wizImpact); } else { pbHide($wizImpact); }
+        $wizBack.disabled = pbStepIdx === 0;
+        $wizNext.textContent = step.is_complete
+          ? (pbStepIdx < steps.length - 1 ? 'Next step →' : 'Finish playbook ✓')
+          : 'Mark complete →';
+        pbShow($wizBack); pbShow($wizSkip); pbShow($wizNext);
+      }
+
+      function pbRenderTrack(steps, cur) {
+        $wizTrack.innerHTML = steps.map((s, i) => {
+          const dc  = s.is_complete ? 'pb-sdot-done' : (i === cur ? 'pb-sdot-cur' : 'pb-sdot-idle');
+          const lc  = (s.is_complete && i < steps.length - 1) ? 'pb-sline-done' : 'pb-sline';
+          return `<div class="pb-sdot ${dc}">${s.is_complete ? '✓' : i+1}</div>${i < steps.length-1 ? `<div class="${lc}"></div>` : ''}`;
+        }).join('');
+      }
+
+      function pbRenderComplete(pb) {
+        pbRenderTrack(pb.steps||[], (pb.steps||[]).length);
+        $wizEyebrow.textContent = ''; $wizStepH.textContent = ''; $wizDesc.textContent = '';
+        pbHide($wizCtx); pbHide($wizImpact);
+        $wizActions.innerHTML = `
+          <div class="pb-complete-state">
+            <div class="pb-complete-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M4 12l5 5 11-9" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <p class="pb-complete-title">Playbook complete</p>
+            <p class="pb-complete-sub">Nice work. Aervo will monitor your store and trigger a new playbook if this condition reappears.</p>
+          </div>`;
+        pbHide($wizBack); pbHide($wizSkip); pbHide($wizNext);
+      }
+
+      function pbSelect(id) { pbActiveId = id; pbStepIdx = pbFirstIncomplete(pbGetActive()); pbHighlight(); pbRenderWizard(); }
+
+      function pbHighlight() {
+        document.querySelectorAll('.pb-card').forEach(el => {
+          el.classList.toggle('pb-card-selected', parseInt(el.dataset.id) === pbActiveId);
+        });
+      }
+
+      async function pbToggleStep(stepId) {
+        const pb   = pbGetActive();
+        const step = (pb?.steps||[]).find(s => s.id === stepId);
+        if (!step) return;
+        step.is_complete = !step.is_complete;
+        if ((pb.steps||[]).every(s => s.is_complete)) { pb.status = 'completed'; pbRender(); }
+        else { if (pb.status === 'completed') pb.status = 'active'; pbRenderWizard(); }
+        try {
+          await fetch(`${BACKEND_URL}/api/playbooks/steps/${stepId}/complete`, {
+            method: 'PATCH',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_complete: step.is_complete })
+          });
+        } catch(e) { step.is_complete = !step.is_complete; pbRenderWizard(); }
+      }
+
+      function pbNext() {
+        const pb = pbGetActive(); const steps = pb?.steps||[]; const step = steps[pbStepIdx];
+        if (!step) return;
+        if (!step.is_complete) { pbToggleStep(step.id); }
+        else if (pbStepIdx < steps.length - 1) { pbStepIdx++; pbRenderWizard(); }
+      }
+      function pbBack() { if (pbStepIdx > 0) { pbStepIdx--; pbRenderWizard(); } }
+      function pbSkip() { const steps = pbGetActive()?.steps||[]; if (pbStepIdx < steps.length-1) { pbStepIdx++; pbRenderWizard(); } }
+
+      async function pbDismiss() {
+        const pb = pbGetActive();
+        if (!pb || !confirm(`Dismiss the "${pb.title}" playbook?`)) return;
+        pbPlaybooks = pbPlaybooks.filter(p => p.id !== pb.id);
+        pbActiveId = null; pbRender();
+        try {
+          await fetch(`${BACKEND_URL}/api/playbooks/${pb.id}/dismiss`, {
+            method: 'PATCH', headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch(e) {}
+      }
+
+      function pbGetActive() { return pbPlaybooks.find(p => p.id === pbActiveId) || null; }
+      function pbFirstIncomplete(pb) {
+        if (!pb) return 0;
+        const i = (pb.steps||[]).findIndex(s => !s.is_complete);
+        return i === -1 ? Math.max(0, (pb.steps||[]).length-1) : i;
+      }
+      function pbSubtext(type, ctx) {
+        switch(type) {
+          case 'revenue_down':         return `Down ${Math.abs(ctx.change_pct||0)}% · High priority`;
+          case 'stockout_imminent':    return `${ctx.product_count||0} products · ≤5 units left`;
+          case 'repeat_rate_dropping': return `Rate dropped ${ctx.drop_points||0}pts`;
+          case 'vip_customers_quiet':  return `${ctx.customer_count||0} high-LTV gone quiet`;
+          case 'conversion_falling':   return `Down ${Math.abs(ctx.change_pct||0)}% vs last week`;
+          case 'revenue_spike':        return `Up ${ctx.change_pct||0}% · Capitalise now`;
+          default: return '';
+        }
+      }
     </script>
   </body>
 </html>
