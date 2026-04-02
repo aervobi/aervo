@@ -6,10 +6,18 @@
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
-    <script
-      src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
-      data-api-key="42d18ab94654c48ad51d381269a89bcc"
-    ></script>
+    <script>
+      // Only load App Bridge when embedded in Shopify admin
+      if (
+        window.self !== window.top ||
+        window.location.ancestorOrigins?.length > 0
+      ) {
+        const script = document.createElement("script");
+        script.src = "https://cdn.shopify.com/shopifycloud/app-bridge.js";
+        script.setAttribute("data-api-key", "42d18ab94654c48ad51d381269a89bcc");
+        document.head.appendChild(script);
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       * {
@@ -762,7 +770,10 @@
 
       // If inside Shopify iframe, get session token via App Bridge
       async function initShopifyAuth() {
-        if (window.shopify) {
+        const isStandalone =
+          urlParams.get("standalone") === "1" || !window.shopify;
+
+        if (!isStandalone && window.shopify) {
           try {
             const sessionToken = await window.shopify.idToken();
             const shop =
