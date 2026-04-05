@@ -1192,7 +1192,7 @@
         });
 
         const labels = Object.keys(dailyRevenue).map((d) => {
-          const date = new Date(d);
+          const date = new Date(d + "T12:00:00");
           return date.toLocaleDateString("en-US", { weekday: "short" });
         });
 
@@ -1337,7 +1337,7 @@
         });
 
         const labels = Object.keys(dailyRevenue).map((d) => {
-          const date = new Date(d);
+          const date = new Date(d + "T12:00:00");
           return date.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
@@ -1842,7 +1842,7 @@
           });
 
         const growthLabels = Object.keys(dailyCustomers).map((d) => {
-          const date = new Date(d);
+          const date = new Date(d + "T12:00:00");
           return date.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
