@@ -937,6 +937,42 @@
         };
       }
 
+      async function loadTopItems() {
+        try {
+          const res = await fetch(
+            `${BACKEND_URL}/integrations/square/top-items?merchantId=${merchantId}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+          const data = await res.json();
+          const el = document.getElementById("topItemsTable");
+          if (!el) return;
+          if (data.success && data.items.length > 0) {
+            const tbody = data.items
+              .map(
+                (item) => `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.orders}</td>
+          <td style="color:#34d399;font-weight:600">$${(parseFloat(item.revenue) / 100).toFixed(2)}</td>
+        </tr>
+      `,
+              )
+              .join("");
+            el.innerHTML = `
+        <table class="data-table">
+          <thead><tr><th>Service</th><th>Orders</th><th>Revenue</th></tr></thead>
+          <tbody>${tbody}</tbody>
+        </table>`;
+          } else {
+            el.innerHTML = '<p class="empty-state">No item data yet</p>';
+          }
+        } catch (err) {
+          console.error("Top items error:", err);
+        }
+      }
+
       function renderView(view) {
         const content = document.getElementById("content");
         switch (view) {
