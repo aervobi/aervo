@@ -642,6 +642,26 @@
           max-width: 100%;
         }
       }
+
+      .filter-btn {
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: transparent;
+        color: #9ca7d6;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .filter-btn:hover {
+        background: rgba(148, 163, 184, 0.1);
+        color: #e5ecff;
+      }
+      .active-filter {
+        background: rgba(96, 165, 250, 0.15);
+        border-color: rgba(96, 165, 250, 0.4);
+        color: #60a5fa;
+      }
     </style>
   </head>
   <body>
@@ -973,6 +993,176 @@
         }
       }
 
+      let currentOrderFilter = "all";
+
+      async function filterOrders(filter) {
+        currentOrderFilter = filter;
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active-filter"));
+        document
+          .getElementById("filter-" + filter)
+          ?.classList.add("active-filter");
+
+        try {
+          const url =
+            filter === "all"
+              ? `${BACKEND_URL}/integrations/square/orders?merchantId=${merchantId}`
+              : `${BACKEND_URL}/integrations/square/orders?merchantId=${merchantId}&filter=${filter}`;
+          const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            squareData.orders = data.orders;
+            document.getElementById("content").innerHTML = renderOrders();
+            setTimeout(initOrderCharts, 100);
+          }
+        } catch (err) {
+          console.error("Filter error:", err);
+        }
+      }
+
+      function exportOrdersCSV() {
+        const orders = squareData.orders;
+        const headers = [
+          "Order ID",
+          "Customer",
+          "Services",
+          "Amount",
+          "Date",
+          "Status",
+        ];
+        const rows = orders.map((o) => [
+          o.square_order_id || "",
+          o.customer_name?.trim() || "Walk-in",
+          o.services || "",
+          ((o.total_amount || 0) / 100).toFixed(2),
+          o.created_at ? new Date(o.created_at).toLocaleDateString() : "",
+          o.state || "",
+        ]);
+        const csv = [headers, ...rows]
+          .map((r) => r.map((v) => `"${v}"`).join(","))
+          .join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "aervo-orders.csv";
+        a.click();
+      }
+
+      function initOrderCharts() {
+        const orders = squareData.orders;
+        if (orders.length === 0) return;
+
+        // Service revenue donut
+        const serviceCtx = document.getElementById("serviceChart");
+        if (serviceCtx) {
+          const serviceRevenue = {};
+          orders.forEach((o) => {
+            if (o.services) {
+              o.services.split(", ").forEach((s) => {
+                if (!serviceRevenue[s]) serviceRevenue[s] = 0;
+                serviceRevenue[s] += (o.total_amount || 0) / 100;
+              });
+            }
+          });
+          const sorted = Object.entries(serviceRevenue)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 6);
+          new Chart(serviceCtx, {
+            type: "doughnut",
+            data: {
+              labels: sorted.map(([name]) => name),
+              datasets: [
+                {
+                  data: sorted.map(([, rev]) => rev.toFixed(2)),
+                  backgroundColor: [
+                    "#34d399",
+                    "#60a5fa",
+                    "#f59e0b",
+                    "#ef4444",
+                    "#a78bfa",
+                    "#fb7185",
+                  ],
+                  borderColor: "#0f172a",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: "#9ca7d6", padding: 10, font: { size: 11 } },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) => `$${parseFloat(ctx.parsed).toFixed(2)}`,
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        // Order volume by day
+        const volCtx = document.getElementById("orderVolumeChart");
+        if (volCtx) {
+          const dailyOrders = {};
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            dailyOrders[d.toLocaleDateString("en-CA")] = 0;
+          }
+          orders.forEach((o) => {
+            const key = new Date(o.created_at).toLocaleDateString("en-CA");
+            if (dailyOrders.hasOwnProperty(key)) dailyOrders[key]++;
+          });
+          new Chart(volCtx, {
+            type: "bar",
+            data: {
+              labels: Object.keys(dailyOrders).map((d) =>
+                new Date(d + "T12:00:00").toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                }),
+              ),
+              datasets: [
+                {
+                  data: Object.values(dailyOrders),
+                  backgroundColor: "rgba(96,165,250,0.6)",
+                  borderColor: "#60a5fa",
+                  borderWidth: 1,
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: "rgba(148,163,184,0.1)" },
+                  ticks: { color: "#9ca7d6" },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: {
+                    color: "#9ca7d6",
+                    maxRotation: 45,
+                    font: { size: 10 },
+                  },
+                },
+              },
+            },
+          });
+        }
+      }
+
       function renderView(view) {
         const content = document.getElementById("content");
         switch (view) {
@@ -984,6 +1174,7 @@
             break;
           case "orders":
             content.innerHTML = renderOrders();
+            setTimeout(initOrderCharts, 100);
             break;
           case "customers":
             content.innerHTML = renderCustomers();
@@ -1279,39 +1470,113 @@
           orders.reduce((s, o) => s + (o.total_amount || 0), 0) / 100;
         const completed = orders.filter((o) => o.state === "COMPLETED").length;
         const canceled = orders.filter((o) => o.state === "CANCELED").length;
+        const open = orders.filter((o) => o.state === "OPEN").length;
+        const avgOrder = orders.length > 0 ? totalRev / orders.length : 0;
+
+        // Build service revenue breakdown
+        const serviceRevenue = {};
+        orders.forEach((o) => {
+          if (o.services) {
+            o.services.split(", ").forEach((s) => {
+              if (!serviceRevenue[s]) serviceRevenue[s] = 0;
+              serviceRevenue[s] += (o.total_amount || 0) / 100;
+            });
+          }
+        });
+        const topServices = Object.entries(serviceRevenue)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
         return `
-          <div class="welcome"><h1>Orders & Transactions</h1><p>All Square POS transactions across your locations</p></div>
-          ${renderLocationSelector()}
-          <div class="grid-4">
-            <div class="card"><h3>Total Orders</h3><div class="stat-large">${orders.length}</div></div>
-            <div class="card"><h3>Total Revenue</h3><div class="stat-large">$${totalRev.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div></div>
-            <div class="card"><h3>Completed</h3><div class="stat-large">${completed}</div><div class="stat-label">${orders.length > 0 ? ((completed / orders.length) * 100).toFixed(1) : 0}% rate</div></div>
-            <div class="card"><h3>Canceled</h3><div class="stat-large red">${canceled}</div></div>
-          </div>
-          <div class="card">
-            <h3 style="margin-bottom:16px">Recent Transactions</h3>
-            ${
-              orders.length === 0
-                ? `<p class="empty-state">No orders synced yet. Create transactions in your Square sandbox to see data here.</p>`
-                : `<div class="table-wrapper"><table class="data-table">
-              <thead><tr><th>Order ID</th><th>Amount</th><th>Source</th><th>Date</th><th>Status</th></tr></thead>
-              <tbody>${orders
-                .slice(0, 50)
-                .map(
-                  (o) => `
-                <tr>
-                  <td style="font-family:monospace;font-size:11px">${o.square_order_id?.slice(-8) || "—"}</td>
-                  <td style="color:#34d399;font-weight:600">$${((o.total_amount || 0) / 100).toFixed(2)}</td>
-                  <td>${o.source_name || "POS"}</td>
-                  <td>${o.created_at ? new Date(o.created_at).toLocaleDateString() : "—"}</td>
-                  <td><span class="badge ${o.state === "COMPLETED" ? "badge-green" : "badge-red"}">${o.state || "—"}</span></td>
-                </tr>`,
-                )
-                .join("")}
-              </tbody>
-            </table></div>`
-            }
-          </div>`;
+    <div class="welcome">
+      <h1>Orders & Transactions</h1>
+      <p>All Square POS transactions across your locations</p>
+    </div>
+    ${renderLocationSelector()}
+
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="card">
+        <h3>Total Orders</h3>
+        <div class="stat-large">${orders.length}</div>
+        <div class="stat-label">${open} open · ${completed} completed · ${canceled} canceled</div>
+      </div>
+      <div class="card">
+        <h3>Total Revenue</h3>
+        <div class="stat-large">$${totalRev.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        <div class="stat-label">From ${orders.length} transactions</div>
+      </div>
+      <div class="card">
+        <h3>Avg Order Value</h3>
+        <div class="stat-large blue">$${avgOrder.toFixed(2)}</div>
+        <div class="stat-label">Per transaction</div>
+      </div>
+      <div class="card">
+        <h3>Top Service</h3>
+        <div class="stat-large" style="font-size:20px;margin-top:12px">${topServices[0]?.[0] || "—"}</div>
+        <div class="stat-label">${topServices[0] ? "$" + topServices[0][1].toFixed(2) + " revenue" : "No data yet"}</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="card">
+        <h3 style="margin-bottom:16px">Revenue by Service</h3>
+        ${
+          topServices.length === 0
+            ? '<p class="empty-state">No service data yet</p>'
+            : `
+          <canvas id="serviceChart" style="max-height:260px"></canvas>
+        `
+        }
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px">Order Volume by Day</h3>
+        <canvas id="orderVolumeChart" style="max-height:260px"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+        <h3>Recent Transactions</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="filterOrders('all')" id="filter-all" class="filter-btn active-filter">All</button>
+          <button onclick="filterOrders('today')" id="filter-today" class="filter-btn">Today</button>
+          <button onclick="filterOrders('7days')" id="filter-7days" class="filter-btn">7 Days</button>
+          <button onclick="filterOrders('30days')" id="filter-30days" class="filter-btn">30 Days</button>
+          <button onclick="exportOrdersCSV()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.1);color:#34d399;font-size:12px;cursor:pointer">⬇ Export CSV</button>
+        </div>
+      </div>
+      ${
+        orders.length === 0
+          ? `<p class="empty-state">No orders synced yet.</p>`
+          : `<div class="table-wrapper"><table class="data-table" id="ordersTable">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Services</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${orders
+            .slice(0, 100)
+            .map(
+              (o) => `
+            <tr>
+              <td style="font-family:monospace;font-size:11px;color:#64748b">${o.square_order_id?.slice(-8) || "—"}</td>
+              <td style="font-weight:500;color:#e5ecff">${o.customer_name?.trim() || "Walk-in"}</td>
+              <td style="color:#9ca7d6;font-size:12px">${o.services || "—"}</td>
+              <td style="color:#34d399;font-weight:600">$${((o.total_amount || 0) / 100).toFixed(2)}</td>
+              <td style="color:#64748b">${o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</td>
+              <td><span class="badge ${o.state === "COMPLETED" ? "badge-green" : o.state === "CANCELED" ? "badge-red" : "badge-blue"}">${o.state || "—"}</span></td>
+            </tr>`,
+            )
+            .join("")}
+          </tbody>
+        </table></div>`
+      }
+    </div>`;
       }
 
       // ── Customers ───────────────────────────────────────────────────────────
