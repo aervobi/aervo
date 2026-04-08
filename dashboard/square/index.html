@@ -944,6 +944,7 @@
             content.innerHTML = renderOverview();
             setTimeout(initOverviewCharts, 100);
             setTimeout(loadHealthScore, 200);
+            setTimeout(loadTopItems, 300);
             break;
           case "orders":
             content.innerHTML = renderOrders();
@@ -1034,7 +1035,7 @@
             <div class="card"><h3>Peak Hours</h3><canvas id="peakChart" style="max-height:240px"></canvas>${isEmpty ? '<p class="empty-state">No order data yet</p>' : ""}</div>
           </div>
           <div class="grid-2">
-            <div class="card"><h3>Top Menu / Catalog Items</h3>${renderTopItems()}</div>
+            <div class="card"><h3>Top Menu / Catalog Items</h3><div id="topItemsTable"><p class="empty-state">Loading...</p></div></div>
             <div class="card"><h3>Ask Aervo Anything</h3>${renderChat()}</div>
           </div>`;
       }
