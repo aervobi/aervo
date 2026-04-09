@@ -1190,6 +1190,34 @@
         }
       }
 
+      function toggleOrderDetail(orderId) {
+        const detail = document.getElementById("detail-" + orderId);
+        const arrow = document.getElementById("arrow-" + orderId);
+        if (!detail) return;
+        const isOpen = detail.style.display !== "none";
+        detail.style.display = isOpen ? "none" : "table-row";
+        if (arrow) arrow.textContent = isOpen ? "▶" : "▼";
+      }
+
+      async function filterByService(service) {
+        try {
+          const url = service
+            ? `${BACKEND_URL}/integrations/square/orders?merchantId=${merchantId}&service=${encodeURIComponent(service)}`
+            : `${BACKEND_URL}/integrations/square/orders?merchantId=${merchantId}`;
+          const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.success) {
+            squareData.orders = data.orders;
+            document.getElementById("content").innerHTML = renderOrders();
+            setTimeout(initOrderCharts, 100);
+          }
+        } catch (err) {
+          console.error("Service filter error:", err);
+        }
+      }
+
       // ── Overview ──────────────────────────────────────────────────────────────
       function renderOverview() {
         const d = getOverviewStats();
@@ -1473,7 +1501,6 @@
         const open = orders.filter((o) => o.state === "OPEN").length;
         const avgOrder = orders.length > 0 ? totalRev / orders.length : 0;
 
-        // Build service revenue breakdown
         const serviceRevenue = {};
         orders.forEach((o) => {
           if (o.services) {
@@ -1485,7 +1512,8 @@
         });
         const topServices = Object.entries(serviceRevenue)
           .sort((a, b) => b[1] - a[1])
-          .slice(0, 5);
+          .slice(0, 6);
+        const allServices = Object.keys(serviceRevenue).sort();
 
         return `
     <div class="welcome">
@@ -1520,16 +1548,10 @@
     <div class="grid-2" style="margin-bottom:24px">
       <div class="card">
         <h3 style="margin-bottom:16px">Revenue by Service</h3>
-        ${
-          topServices.length === 0
-            ? '<p class="empty-state">No service data yet</p>'
-            : `
-          <canvas id="serviceChart" style="max-height:260px"></canvas>
-        `
-        }
+        ${topServices.length === 0 ? '<p class="empty-state">No service data yet</p>' : `<canvas id="serviceChart" style="max-height:260px"></canvas>`}
       </div>
       <div class="card">
-        <h3 style="margin-bottom:16px">Order Volume by Day</h3>
+        <h3 style="margin-bottom:16px">Order Volume (Last 30 Days)</h3>
         <canvas id="orderVolumeChart" style="max-height:260px"></canvas>
       </div>
     </div>
@@ -1537,11 +1559,15 @@
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
         <h3>Recent Transactions</h3>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <button onclick="filterOrders('all')" id="filter-all" class="filter-btn active-filter">All</button>
           <button onclick="filterOrders('today')" id="filter-today" class="filter-btn">Today</button>
           <button onclick="filterOrders('7days')" id="filter-7days" class="filter-btn">7 Days</button>
           <button onclick="filterOrders('30days')" id="filter-30days" class="filter-btn">30 Days</button>
+          <select id="serviceFilter" onchange="filterByService(this.value)" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(148,163,184,0.2);background:#0f172a;color:#9ca7d6;font-size:12px;cursor:pointer">
+            <option value="">All Services</option>
+            ${allServices.map((s) => `<option value="${s}">${s}</option>`).join("")}
+          </select>
           <button onclick="exportOrdersCSV()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.1);color:#34d399;font-size:12px;cursor:pointer">⬇ Export CSV</button>
         </div>
       </div>
@@ -1551,6 +1577,7 @@
           : `<div class="table-wrapper"><table class="data-table" id="ordersTable">
           <thead>
             <tr>
+              <th></th>
               <th>Order ID</th>
               <th>Customer</th>
               <th>Services</th>
@@ -1560,16 +1587,40 @@
             </tr>
           </thead>
           <tbody>${orders
-            .slice(0, 100)
+            .slice(0, 200)
             .map(
               (o) => `
-            <tr>
+            <tr onclick="toggleOrderDetail('${o.square_order_id}')" style="cursor:pointer">
+              <td style="color:#64748b;font-size:10px" id="arrow-${o.square_order_id}">▶</td>
               <td style="font-family:monospace;font-size:11px;color:#64748b">${o.square_order_id?.slice(-8) || "—"}</td>
               <td style="font-weight:500;color:#e5ecff">${o.customer_name?.trim() || "Walk-in"}</td>
               <td style="color:#9ca7d6;font-size:12px">${o.services || "—"}</td>
               <td style="color:#34d399;font-weight:600">$${((o.total_amount || 0) / 100).toFixed(2)}</td>
               <td style="color:#64748b">${o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</td>
-              <td><span class="badge ${o.state === "COMPLETED" ? "badge-green" : o.state === "CANCELED" ? "badge-red" : "badge-blue"}">${o.state || "—"}</span></td>
+              <td><span class="badge ${o.state === "COMPLETED" ? "badge-green" : o.state === "CANCELED" ? "badge-red" : "badge-blue"}">${o.state === "OPEN" ? "PAID" : o.state || "—"}</span></td>
+            </tr>
+            <tr id="detail-${o.square_order_id}" style="display:none;background:rgba(15,23,42,0.5)">
+              <td colspan="7" style="padding:12px 24px">
+                <div style="font-size:12px;color:#9ca7d6;margin-bottom:8px;font-weight:600">LINE ITEMS</div>
+                <table style="width:100%;border-collapse:collapse">
+                  <thead><tr>
+                    <th style="text-align:left;padding:6px 8px;font-size:11px;color:#64748b;border-bottom:1px solid rgba(148,163,184,0.1)">Service</th>
+                    <th style="text-align:left;padding:6px 8px;font-size:11px;color:#64748b;border-bottom:1px solid rgba(148,163,184,0.1)">Qty</th>
+                    <th style="text-align:left;padding:6px 8px;font-size:11px;color:#64748b;border-bottom:1px solid rgba(148,163,184,0.1)">Amount</th>
+                  </tr></thead>
+                  <tbody>${(o.line_items || [])
+                    .map(
+                      (li) => `
+                    <tr>
+                      <td style="padding:6px 8px;font-size:12px;color:#e5ecff">${li.name}</td>
+                      <td style="padding:6px 8px;font-size:12px;color:#9ca7d6">${li.quantity}</td>
+                      <td style="padding:6px 8px;font-size:12px;color:#34d399">$${(parseFloat(li.amount || 0) / 100).toFixed(2)}</td>
+                    </tr>`,
+                    )
+                    .join("")}
+                  </tbody>
+                </table>
+              </td>
             </tr>`,
             )
             .join("")}
