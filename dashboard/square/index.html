@@ -1539,7 +1539,7 @@
         <div class="stat-label">Per transaction</div>
       </div>
       <div class="card">
-        <h3>Top Service</h3>
+        <h3>Top Item</h3>
         <div class="stat-large" style="font-size:20px;margin-top:12px">${topServices[0]?.[0] || "—"}</div>
         <div class="stat-label">${topServices[0] ? "$" + topServices[0][1].toFixed(2) + " revenue" : "No data yet"}</div>
       </div>
@@ -1547,7 +1547,7 @@
 
     <div class="grid-2" style="margin-bottom:24px">
       <div class="card">
-        <h3 style="margin-bottom:16px">Revenue by Service</h3>
+        <h3 style="margin-bottom:16px">Revenue by Item</h3>
         ${topServices.length === 0 ? '<p class="empty-state">No service data yet</p>' : `<canvas id="serviceChart" style="max-height:260px"></canvas>`}
       </div>
       <div class="card">
