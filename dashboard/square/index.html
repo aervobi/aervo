@@ -1322,6 +1322,115 @@
         renderView(currentView);
       }
 
+      function initOverviewCharts() {
+        if (squareData.orders.length === 0) return;
+
+        // Revenue trend chart
+        const revCtx = document.getElementById("revChart");
+        if (revCtx) {
+          const dailyRev = {};
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            dailyRev[d.toLocaleDateString("en-CA")] = 0;
+          }
+          squareData.orders.forEach((o) => {
+            const k = new Date(o.created_at).toLocaleDateString("en-CA");
+            if (dailyRev.hasOwnProperty(k))
+              dailyRev[k] += (o.total_amount || 0) / 100;
+          });
+          new Chart(revCtx, {
+            type: "line",
+            data: {
+              labels: Object.keys(dailyRev).map((d) =>
+                new Date(d + "T12:00:00").toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                }),
+              ),
+              datasets: [
+                {
+                  data: Object.values(dailyRev),
+                  borderColor: "#34d399",
+                  backgroundColor: "rgba(52,211,153,0.1)",
+                  borderWidth: 2,
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: { label: (ctx) => "$" + ctx.parsed.y.toFixed(2) },
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: "rgba(148,163,184,0.1)" },
+                  ticks: { color: "#9ca7d6", callback: (v) => "$" + v },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: { color: "#9ca7d6", maxRotation: 45 },
+                },
+              },
+            },
+          });
+        }
+
+        // Day of week chart
+        const dayCtx = document.getElementById("dayChart");
+        if (dayCtx) {
+          const dayRevenue = Array(7).fill(0);
+          squareData.orders.forEach((o) => {
+            const day = new Date(o.created_at).getDay();
+            dayRevenue[day] += (o.total_amount || 0) / 100;
+          });
+          const maxRev = Math.max(...dayRevenue);
+          new Chart(dayCtx, {
+            type: "bar",
+            data: {
+              labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+              datasets: [
+                {
+                  data: dayRevenue.map((v) => v.toFixed(2)),
+                  backgroundColor: dayRevenue.map((v) =>
+                    v === maxRev
+                      ? "rgba(52,211,153,0.9)"
+                      : "rgba(52,211,153,0.25)",
+                  ),
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: (ctx) => "$" + parseFloat(ctx.parsed.y).toFixed(2),
+                  },
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: "rgba(148,163,184,0.1)" },
+                  ticks: { color: "#9ca7d6", callback: (v) => "$" + v },
+                },
+                x: { grid: { display: false }, ticks: { color: "#9ca7d6" } },
+              },
+            },
+          });
+        }
+      }
+
       function renderView(view) {
         const content = document.getElementById("content");
         switch (view) {
