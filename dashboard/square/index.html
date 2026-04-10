@@ -1305,6 +1305,23 @@
         a.click();
       }
 
+      function renderLocationSelector() {
+        if (squareData.locations.length <= 1) return "";
+        return `<div class="location-selector">${squareData.locations
+          .map(
+            (loc) => `
+    <button class="location-btn ${selectedLocation === loc.square_location_id ? "active" : ""}" onclick="selectLocation('${loc.square_location_id}')">
+      📍 ${loc.name}
+    </button>`,
+          )
+          .join("")}</div>`;
+      }
+
+      function selectLocation(id) {
+        selectedLocation = id;
+        renderView(currentView);
+      }
+
       function renderView(view) {
         const content = document.getElementById("content");
         switch (view) {
