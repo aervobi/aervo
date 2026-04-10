@@ -904,8 +904,7 @@
               { headers: h },
             ),
             fetch(
-              `${BACKEND_URL}/integrations/square/customers?merchantId=${merchantId}`,
-              { headers: h },
+              `${BACKEND_URL}/integrations/square/customers/enriched?merchantId=${merchantId}`,
             ),
             fetch(
               `${BACKEND_URL}/integrations/square/appointments?merchantId=${merchantId}`,
@@ -1161,6 +1160,149 @@
             },
           });
         }
+      }
+
+      let currentCustomerSegment = "all";
+
+      function filterCustomers(segment) {
+        currentCustomerSegment = segment;
+        document
+          .querySelectorAll('[id^="seg-"]')
+          .forEach((b) => b.classList.remove("active-filter"));
+        document
+          .getElementById("seg-" + segment)
+          ?.classList.add("active-filter");
+
+        const now = new Date();
+        let filtered = squareData.customers.map((c) => {
+          const visits = parseInt(c.visit_count || 0);
+          const spend = parseFloat(c.total_spend || 0);
+          const lastVisit = c.last_visit ? new Date(c.last_visit) : null;
+          const daysSinceVisit = lastVisit
+            ? (now - lastVisit) / (1000 * 60 * 60 * 24)
+            : 999;
+          const isNew =
+            new Date(c.created_at) >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+          let seg = "regular";
+          if (visits === 0) seg = "no_visits";
+          else if (daysSinceVisit > 60) seg = "at_risk";
+          else if (visits >= 3) seg = "loyal";
+          else if (isNew) seg = "new";
+          return {
+            ...c,
+            segment: seg,
+            visits,
+            spend,
+            lastVisit,
+            daysSinceVisit,
+          };
+        });
+
+        if (segment !== "all")
+          filtered = filtered.filter((c) => c.segment === segment);
+
+        const wrapper = document.getElementById("customerTableWrapper");
+        const title = document.getElementById("customerListTitle");
+        if (wrapper) wrapper.innerHTML = renderCustomerTable(filtered);
+        if (title) {
+          const labels = {
+            all: "All Customers",
+            loyal: "Loyal Customers",
+            at_risk: "At-Risk Customers",
+            new: "New Customers",
+          };
+          title.textContent = `${labels[segment] || "Customers"} (${filtered.length})`;
+        }
+      }
+
+      function searchCustomers(query) {
+        const now = new Date();
+        let filtered = squareData.customers.map((c) => {
+          const visits = parseInt(c.visit_count || 0);
+          const spend = parseFloat(c.total_spend || 0);
+          const lastVisit = c.last_visit ? new Date(c.last_visit) : null;
+          const daysSinceVisit = lastVisit
+            ? (now - lastVisit) / (1000 * 60 * 60 * 24)
+            : 999;
+          const isNew =
+            new Date(c.created_at) >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+          let seg = "regular";
+          if (visits === 0) seg = "no_visits";
+          else if (daysSinceVisit > 60) seg = "at_risk";
+          else if (visits >= 3) seg = "loyal";
+          else if (isNew) seg = "new";
+          return {
+            ...c,
+            segment: seg,
+            visits,
+            spend,
+            lastVisit,
+            daysSinceVisit,
+          };
+        });
+
+        if (query) {
+          const q = query.toLowerCase();
+          filtered = filtered.filter(
+            (c) =>
+              (c.given_name || "").toLowerCase().includes(q) ||
+              (c.family_name || "").toLowerCase().includes(q) ||
+              (c.email_address || "").toLowerCase().includes(q),
+          );
+        }
+
+        const wrapper = document.getElementById("customerTableWrapper");
+        if (wrapper) wrapper.innerHTML = renderCustomerTable(filtered);
+      }
+
+      function exportCustomersCSV() {
+        const now = new Date();
+        const enriched = squareData.customers.map((c) => {
+          const visits = parseInt(c.visit_count || 0);
+          const spend = parseFloat(c.total_spend || 0);
+          const lastVisit = c.last_visit ? new Date(c.last_visit) : null;
+          const daysSince = lastVisit
+            ? (now - lastVisit) / (1000 * 60 * 60 * 24)
+            : 999;
+          const isNew =
+            new Date(c.created_at) >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+          let seg = "regular";
+          if (visits === 0) seg = "no_visits";
+          else if (daysSince > 60) seg = "at_risk";
+          else if (visits >= 3) seg = "loyal";
+          else if (isNew) seg = "new";
+          return { ...c, segment: seg, visits, spend };
+        });
+
+        const headers = [
+          "Name",
+          "Email",
+          "Phone",
+          "Visits",
+          "Total Spend",
+          "Avg/Visit",
+          "Last Visit",
+          "Segment",
+        ];
+        const rows = enriched.map((c) => [
+          [c.given_name, c.family_name].filter(Boolean).join(" ") || "Guest",
+          c.email_address || "",
+          c.phone_number || "",
+          c.visits,
+          (c.spend / 100).toFixed(2),
+          c.visits > 0 ? (c.spend / 100 / c.visits).toFixed(2) : "0.00",
+          c.last_visit ? new Date(c.last_visit).toLocaleDateString() : "",
+          c.segment,
+        ]);
+        const csv = [headers, ...rows]
+          .map((r) => r.map((v) => `"${v}"`).join(","))
+          .join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "aervo-customers.csv";
+        a.click();
       }
 
       function renderView(view) {
@@ -1633,72 +1775,244 @@
       // ── Customers ───────────────────────────────────────────────────────────
       function renderCustomers() {
         const customers = squareData.customers;
+
+        // Auto-segment based on data
+        const now = new Date();
+        const enriched = customers.map((c) => {
+          const visits = parseInt(c.visit_count || 0);
+          const spend = parseFloat(c.total_spend || 0);
+          const lastVisit = c.last_visit ? new Date(c.last_visit) : null;
+          const daysSinceVisit = lastVisit
+            ? (now - lastVisit) / (1000 * 60 * 60 * 24)
+            : 999;
+          const isNew =
+            new Date(c.created_at) >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+
+          let segment = "regular";
+          if (visits === 0) segment = "no_visits";
+          else if (daysSinceVisit > 60) segment = "at_risk";
+          else if (visits >= 3) segment = "loyal";
+          else if (isNew) segment = "new";
+
+          return { ...c, segment, visits, spend, lastVisit, daysSinceVisit };
+        });
+
+        const loyal = enriched.filter((c) => c.segment === "loyal").length;
+        const atRisk = enriched.filter((c) => c.segment === "at_risk").length;
+        const newC = enriched.filter((c) => c.segment === "new").length;
+        const regular = enriched.filter((c) => c.segment === "regular").length;
         const withEmail = customers.filter((c) => c.email_address).length;
         const withPhone = customers.filter((c) => c.phone_number).length;
+        const totalSpend = enriched.reduce((s, c) => s + c.spend, 0);
+        const avgLTV =
+          enriched.length > 0 ? totalSpend / enriched.length / 100 : 0;
+        const topCustomers = [...enriched]
+          .sort((a, b) => b.spend - a.spend)
+          .slice(0, 5);
+
         return `
-          <div class="welcome"><h1>Customer Directory</h1><p>Your Square customer base and visit intelligence</p></div>
-          <div class="grid-4">
-            <div class="card"><h3>Total Customers</h3><div class="stat-large">${customers.length}</div></div>
-            <div class="card"><h3>Have Email</h3><div class="stat-large">${withEmail}</div><div class="stat-label">${customers.length > 0 ? ((withEmail / customers.length) * 100).toFixed(0) : 0}% reachable by email</div></div>
-            <div class="card"><h3>Have Phone</h3><div class="stat-large blue">${withPhone}</div></div>
-            <div class="card"><h3>Segmented</h3><div class="stat-large yellow">${customers.filter((c) => c.aervo_segment).length}</div></div>
-          </div>
-          <div class="grid-2" style="margin-bottom:24px">
-            <div class="card"><h3>Customer Segments</h3><canvas id="segmentChart" style="max-height:260px"></canvas>${customers.length === 0 ? '<p class="empty-state">No customers synced yet</p>' : ""}</div>
-            <div class="card"><h3>Re-engagement Opportunities</h3>
-              <div style="padding:8px 0">
-                <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px;margin-bottom:10px"><div style="color:#fca5a5;font-weight:600;margin-bottom:4px">⚠ At-Risk</div><div style="color:#9ca7d6;font-size:13px">Customers who haven't visited in 60+ days. Send a "We miss you" offer.</div></div>
-                <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:14px;margin-bottom:10px"><div style="color:#fde047;font-weight:600;margin-bottom:4px">💛 Loyal</div><div style="color:#9ca7d6;font-size:13px">Your top repeat visitors. Reward them with a loyalty perk.</div></div>
-                <div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:14px"><div style="color:#6ee7b7;font-weight:600;margin-bottom:4px">✨ New</div><div style="color:#9ca7d6;font-size:13px">First-time visitors. Follow up with a thank-you and invite them back.</div></div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <h3 style="margin-bottom:16px">Customer List</h3>
-            ${
-              customers.length === 0
-                ? `<p class="empty-state">No customers synced yet.</p>`
-                : `<div class="table-wrapper"><table class="data-table">
-              <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Segment</th><th>Since</th></tr></thead>
-              <tbody>${customers
-                .slice(0, 50)
-                .map(
-                  (c) => `
-                <tr>
-                  <td>${[c.given_name, c.family_name].filter(Boolean).join(" ") || "Guest"}</td>
-                  <td>${c.email_address || "—"}</td>
-                  <td>${c.phone_number || "—"}</td>
-                  <td>${c.aervo_segment ? `<span class="badge badge-green">${c.aervo_segment}</span>` : "—"}</td>
-                  <td>${c.created_at ? new Date(c.created_at).toLocaleDateString() : "—"}</td>
-                </tr>`,
-                )
-                .join("")}
-              </tbody>
-            </table></div>`
-            }
-          </div>`;
+    <div class="welcome">
+      <h1>Customer Directory</h1>
+      <p>Your customer base, visit intelligence and retention insights</p>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="card">
+        <h3>Total Customers</h3>
+        <div class="stat-large">${enriched.length}</div>
+        <div class="stat-label">${withEmail} with email · ${withPhone} with phone</div>
+      </div>
+      <div class="card">
+        <h3>Avg Lifetime Value</h3>
+        <div class="stat-large">$${avgLTV.toFixed(2)}</div>
+        <div class="stat-label">Per customer</div>
+      </div>
+      <div class="card">
+        <h3>Loyal Customers</h3>
+        <div class="stat-large" style="color:#34d399">${loyal}</div>
+        <div class="stat-label">${enriched.length > 0 ? ((loyal / enriched.length) * 100).toFixed(0) : 0}% of base · 3+ visits</div>
+      </div>
+      <div class="card">
+        <h3>At Risk</h3>
+        <div class="stat-large red">${atRisk}</div>
+        <div class="stat-label">${enriched.length > 0 ? ((atRisk / enriched.length) * 100).toFixed(0) : 0}% of base · 60+ days away</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="card">
+        <h3 style="margin-bottom:16px">Customer Segments</h3>
+        <canvas id="segmentChart" style="max-height:240px"></canvas>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px">Top 5 Customers by Spend</h3>
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Visits</th><th>Total Spend</th><th>Avg/Visit</th></tr></thead>
+          <tbody>${topCustomers
+            .map(
+              (c, i) => `
+            <tr>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:28px;height:28px;border-radius:50%;background:rgba(52,211,153,0.2);color:#34d399;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${i + 1}</div>
+                  <div>
+                    <div style="font-weight:600;color:#e5ecff">${[c.given_name, c.family_name].filter(Boolean).join(" ") || "Guest"}</div>
+                    <div style="font-size:11px;color:#64748b">${c.email_address || "—"}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="color:#9ca7d6">${c.visits}</td>
+              <td style="color:#34d399;font-weight:600">$${(c.spend / 100).toFixed(2)}</td>
+              <td style="color:#9ca7d6">$${c.visits > 0 ? (c.spend / 100 / c.visits).toFixed(2) : "0.00"}</td>
+            </tr>`,
+            )
+            .join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:24px">
+      <div class="card" style="background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px">⚠️</span>
+          <h3 style="color:#fca5a5">At-Risk (${atRisk})</h3>
+        </div>
+        <p style="color:#9ca7d6;font-size:13px;line-height:1.6;margin-bottom:12px">Haven't visited in 60+ days. Send a "We miss you" offer with a discount.</p>
+        <button onclick="filterCustomers('at_risk')" class="filter-btn" style="width:100%;justify-content:center">View At-Risk Customers</button>
+      </div>
+      <div class="card" style="background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px">💛</span>
+          <h3 style="color:#fde047">Loyal (${loyal})</h3>
+        </div>
+        <p style="color:#9ca7d6;font-size:13px;line-height:1.6;margin-bottom:12px">3+ visits. Your best customers — reward them with a loyalty perk or VIP offer.</p>
+        <button onclick="filterCustomers('loyal')" class="filter-btn" style="width:100%;justify-content:center">View Loyal Customers</button>
+      </div>
+      <div class="card" style="background:rgba(52,211,153,0.05);border-color:rgba(52,211,153,0.2)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px">✨</span>
+          <h3 style="color:#6ee7b7">New (${newC})</h3>
+        </div>
+        <p style="color:#9ca7d6;font-size:13px;line-height:1.6;margin-bottom:12px">First visit within 30 days. Follow up with a thank-you and invite them back.</p>
+        <button onclick="filterCustomers('new')" class="filter-btn" style="width:100%;justify-content:center">View New Customers</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+        <h3 id="customerListTitle">All Customers</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input type="text" id="customerSearch" placeholder="Search name or email..." 
+            onkeyup="searchCustomers(this.value)"
+            style="padding:6px 12px;border-radius:6px;border:1px solid rgba(148,163,184,0.2);background:#0f172a;color:#e5ecff;font-size:12px;width:200px">
+          <button onclick="filterCustomers('all')" id="seg-all" class="filter-btn active-filter">All</button>
+          <button onclick="filterCustomers('loyal')" id="seg-loyal" class="filter-btn">Loyal</button>
+          <button onclick="filterCustomers('at_risk')" id="seg-at_risk" class="filter-btn">At-Risk</button>
+          <button onclick="filterCustomers('new')" id="seg-new" class="filter-btn">New</button>
+          <button onclick="exportCustomersCSV()" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(52,211,153,0.3);background:rgba(52,211,153,0.1);color:#34d399;font-size:12px;cursor:pointer">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div id="customerTableWrapper">
+        ${renderCustomerTable(enriched)}
+      </div>
+    </div>`;
+      }
+
+      function renderCustomerTable(customers) {
+        if (customers.length === 0)
+          return '<p class="empty-state">No customers found.</p>';
+        return `<div class="table-wrapper"><table class="data-table">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Visits</th>
+        <th>Total Spend</th>
+        <th>Avg/Visit</th>
+        <th>Last Visit</th>
+        <th>Segment</th>
+      </tr>
+    </thead>
+    <tbody>${customers
+      .map((c) => {
+        const segColors = {
+          loyal: {
+            bg: "rgba(52,211,153,0.15)",
+            color: "#6ee7b7",
+            label: "Loyal",
+          },
+          at_risk: {
+            bg: "rgba(239,68,68,0.15)",
+            color: "#fca5a5",
+            label: "At-Risk",
+          },
+          new: { bg: "rgba(96,165,250,0.15)", color: "#93c5fd", label: "New" },
+          regular: {
+            bg: "rgba(148,163,184,0.15)",
+            color: "#cbd5e1",
+            label: "Regular",
+          },
+          no_visits: {
+            bg: "rgba(148,163,184,0.1)",
+            color: "#64748b",
+            label: "No Visits",
+          },
+        };
+        const seg = segColors[c.segment] || segColors.regular;
+        const daysSince = c.lastVisit
+          ? Math.floor(
+              (new Date() - new Date(c.lastVisit)) / (1000 * 60 * 60 * 24),
+            )
+          : null;
+        return `
+        <tr>
+          <td>
+            <div style="font-weight:600;color:#e5ecff">${[c.given_name, c.family_name].filter(Boolean).join(" ") || "Guest"}</div>
+            <div style="font-size:11px;color:#64748b">${c.email_address || "—"}</div>
+          </td>
+          <td style="color:#9ca7d6">${c.visits}</td>
+          <td style="color:#34d399;font-weight:600">$${(c.spend / 100).toFixed(2)}</td>
+          <td style="color:#9ca7d6">$${c.visits > 0 ? (c.spend / 100 / c.visits).toFixed(2) : "0.00"}</td>
+          <td style="color:#64748b;font-size:12px">${c.lastVisit ? new Date(c.lastVisit).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}${daysSince !== null ? `<div style="font-size:10px;color:#475569">${daysSince}d ago</div>` : ""}</td>
+          <td><span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:${seg.bg};color:${seg.color}">${seg.label}</span></td>
+        </tr>`;
+      })
+      .join("")}
+    </tbody>
+  </table></div>`;
       }
 
       function initCustomerCharts() {
         const ctx = document.getElementById("segmentChart");
         if (!ctx || squareData.customers.length === 0) return;
-        const loyal = squareData.customers.filter(
-          (c) => c.aervo_segment === "loyal",
-        ).length;
-        const atRisk = squareData.customers.filter(
-          (c) => c.aervo_segment === "at_risk",
-        ).length;
-        const newC = squareData.customers.filter(
-          (c) => c.aervo_segment === "new",
-        ).length;
-        const unseg = squareData.customers.length - loyal - atRisk - newC;
+
+        const now = new Date();
+        let loyal = 0,
+          atRisk = 0,
+          newC = 0,
+          regular = 0;
+        squareData.customers.forEach((c) => {
+          const visits = parseInt(c.visit_count || 0);
+          const lastVisit = c.last_visit ? new Date(c.last_visit) : null;
+          const daysSince = lastVisit
+            ? (now - lastVisit) / (1000 * 60 * 60 * 24)
+            : 999;
+          const isNew =
+            new Date(c.created_at) >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+          if (visits === 0) regular++;
+          else if (daysSince > 60) atRisk++;
+          else if (visits >= 3) loyal++;
+          else if (isNew) newC++;
+          else regular++;
+        });
+
         new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Loyal", "At Risk", "New", "Unsegmented"],
+            labels: ["Loyal", "At-Risk", "New", "Regular"],
             datasets: [
               {
-                data: [loyal, atRisk, newC, unseg],
+                data: [loyal, atRisk, newC, regular],
                 backgroundColor: ["#34d399", "#ef4444", "#60a5fa", "#475569"],
                 borderColor: "#0f172a",
                 borderWidth: 2,
@@ -1711,6 +2025,11 @@
               legend: {
                 position: "bottom",
                 labels: { color: "#9ca7d6", padding: 12 },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.label}: ${ctx.parsed} customers`,
+                },
               },
             },
           },
