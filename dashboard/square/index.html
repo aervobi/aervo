@@ -1366,251 +1366,330 @@
         const isEmpty =
           squareData.orders.length === 0 && squareData.customers.length === 0;
 
-        return `
-          <div class="welcome">
-            <h1>Welcome back, ${userData?.companyName || "there"} 👋</h1>
-            <p>Here's your Square business performance${isEmpty ? " — add test data in Square sandbox to populate" : ""}</p>
-          </div>
+        // Month over month comparison
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+        const sixtyDaysAgo = new Date(now - 60 * 24 * 60 * 60 * 1000);
+        const currentMonthOrders = squareData.orders.filter(
+          (o) => new Date(o.created_at) >= thirtyDaysAgo,
+        );
+        const prevMonthOrders = squareData.orders.filter(
+          (o) =>
+            new Date(o.created_at) >= sixtyDaysAgo &&
+            new Date(o.created_at) < thirtyDaysAgo,
+        );
+        const currentRev =
+          currentMonthOrders.reduce((s, o) => s + (o.total_amount || 0), 0) /
+          100;
+        const prevRev =
+          prevMonthOrders.reduce((s, o) => s + (o.total_amount || 0), 0) / 100;
+        const revChange =
+          prevRev > 0 ? ((currentRev - prevRev) / prevRev) * 100 : 0;
+        const orderChange =
+          prevMonthOrders.length > 0
+            ? ((currentMonthOrders.length - prevMonthOrders.length) /
+                prevMonthOrders.length) *
+              100
+            : 0;
 
-          <!-- HEALTH SCORE WIDGET -->
-          <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
-              <div style="display:flex;align-items:center;gap:24px;">
-                <div style="position:relative;width:100px;height:100px;">
-                  <svg width="100" height="100" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-                    <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
-                      stroke="#29c8ff" stroke-width="10"
-                      stroke-dasharray="264" stroke-dashoffset="264"
-                      stroke-linecap="round"
-                      transform="rotate(-90 50 50)"
-                      style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
-                  </svg>
-                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
-                    <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
-                  </div>
-                </div>
-                <div>
-                  <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
-                  <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
-                  <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
-                <div id="scoreBreakdown"></div>
-                <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;transition:all .2s;">↻ Recalculate</button>
-              </div>
-              <div style="min-width:200px;">
-                <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
-                <div id="scoreImprovements"></div>
-              </div>
+        // Best day of week
+        const dayRevenue = Array(7).fill(0);
+        const dayCount = Array(7).fill(0);
+        squareData.orders.forEach((o) => {
+          const day = new Date(o.created_at).getDay();
+          dayRevenue[day] += (o.total_amount || 0) / 100;
+          dayCount[day]++;
+        });
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const bestDayIdx = dayRevenue.indexOf(Math.max(...dayRevenue));
+        const bestDay = dayNames[bestDayIdx];
+        const bestDayRevenue = dayRevenue[bestDayIdx];
+
+        // Top items
+        const itemRevenue = {};
+        squareData.orders.forEach((o) => {
+          if (o.services) {
+            o.services.split(", ").forEach((s) => {
+              if (!itemRevenue[s]) itemRevenue[s] = 0;
+              itemRevenue[s] += (o.total_amount || 0) / 100;
+            });
+          }
+        });
+        const topItems = Object.entries(itemRevenue)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
+        return `
+    <div class="welcome">
+      <h1>Welcome back, ${userData?.companyName || "there"} 👋</h1>
+      <p>Here's your business performance${isEmpty ? " — connect your Square account to populate your dashboard" : ""}</p>
+    </div>
+
+    <div id="healthScoreWidget" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,92,255,0.08),rgba(41,200,255,0.04));border:1px solid rgba(124,92,255,0.2);border-radius:18px;padding:28px 32px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div style="position:relative;width:100px;height:100px;">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+              <circle cx="50" cy="50" r="42" fill="none" id="scoreRing"
+                stroke="#29c8ff" stroke-width="10"
+                stroke-dasharray="264" stroke-dashoffset="264"
+                stroke-linecap="round"
+                transform="rotate(-90 50 50)"
+                style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .5s"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div id="scoreNumber" style="font-size:26px;font-weight:800;line-height:1;">--</div>
+              <div style="font-size:10px;color:#6b7a99;margin-top:2px;">/ 100</div>
             </div>
           </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:6px;">Business Health Score</div>
+            <div id="scoreGrade" style="font-size:20px;font-weight:700;margin-bottom:6px;">Calculating...</div>
+            <div id="scoreSummary" style="font-size:13px;color:#9aa8c8;max-width:380px;line-height:1.6;"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:220px;">
+          <div id="scoreBreakdown"></div>
+          <button onclick="recalculateScore()" id="recalcBtn" style="margin-top:4px;padding:7px 16px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9aa8c8;font-size:12px;cursor:pointer;">↻ Recalculate</button>
+        </div>
+        <div style="min-width:200px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:#6b7a99;text-transform:uppercase;margin-bottom:10px;">Top Priorities</div>
+          <div id="scoreImprovements"></div>
+        </div>
+      </div>
+    </div>
 
-          ${renderLocationSelector()}
-          <div class="ai-banner">
-            <div class="ai-banner-header"><div class="ai-icon">🤖</div><h2>AI Insights for Your Business</h2></div>
-            ${generateSquareInsights(d)
-              .map(
-                (i) => `
-              <div class="insight-item">
-                <span class="insight-priority priority-${i.priority}">${i.label}</span>
-                <strong>${i.title}</strong> — ${i.desc}
-              </div>`,
-              )
-              .join("")}
-          </div>
-          <div class="grid-4">
-            <div class="card"><h3>Total Revenue</h3><div class="stat-large">$${d.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div><div class="stat-label">${d.totalOrders} total orders</div></div>
-            <div class="card"><h3>Today's Revenue</h3><div class="stat-large">$${d.todayRevenue.toFixed(2)}</div><div class="stat-label">${d.todayOrders} orders today</div></div>
-            <div class="card"><h3>Avg Order Value</h3><div class="stat-large blue">$${d.avgOrderValue.toFixed(2)}</div><div class="stat-label">Per transaction</div></div>
-            <div class="card"><h3>Total Customers</h3><div class="stat-large">${d.totalCustomers}</div><div class="stat-label">${squareData.customers.filter((c) => c.email_address).length} with email</div></div>
-          </div>
-          <div class="grid-2">
-            <div class="card"><h3>Revenue Trend (Last 30 Days)</h3><canvas id="revChart" style="max-height:240px"></canvas>${isEmpty ? '<p class="empty-state">No order data yet</p>' : ""}</div>
-            <div class="card"><h3>Peak Hours</h3><canvas id="peakChart" style="max-height:240px"></canvas>${isEmpty ? '<p class="empty-state">No order data yet</p>' : ""}</div>
-          </div>
-          <div class="grid-2">
-            <div class="card"><h3>Top Menu / Catalog Items</h3><div id="topItemsTable"><p class="empty-state">Loading...</p></div></div>
-            <div class="card"><h3>Ask Aervo Anything</h3>${renderChat()}</div>
-          </div>`;
+    ${renderLocationSelector()}
+
+    <div class="ai-banner">
+      <div class="ai-banner-header"><div class="ai-icon">🤖</div><h2>AI Insights for Your Business</h2></div>
+      ${generateInsights(
+        d,
+        currentRev,
+        prevRev,
+        revChange,
+        currentMonthOrders,
+        prevMonthOrders,
+      )
+        .map(
+          (i) => `
+        <div class="insight-item">
+          <span class="insight-priority priority-${i.priority}">${i.label}</span>
+          <strong>${i.title}</strong> — ${i.desc}
+        </div>`,
+        )
+        .join("")}
+    </div>
+
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="card">
+        <h3>Total Revenue</h3>
+        <div class="stat-large">$${d.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <span class="stat-change ${revChange >= 0 ? "positive" : "negative"}">${revChange >= 0 ? "↑" : "↓"} ${Math.abs(revChange).toFixed(1)}% vs last 30d</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Today's Revenue</h3>
+        <div class="stat-large">$${d.todayRevenue.toFixed(2)}</div>
+        <div class="stat-label">${d.todayOrders} transactions today</div>
+      </div>
+      <div class="card">
+        <h3>Avg Transaction</h3>
+        <div class="stat-large blue">$${d.avgOrderValue.toFixed(2)}</div>
+        <div class="stat-change ${orderChange >= 0 ? "positive" : "negative"}" style="margin-top:6px">${orderChange >= 0 ? "↑" : "↓"} ${Math.abs(orderChange).toFixed(1)}% orders vs last 30d</div>
+      </div>
+      <div class="card">
+        <h3>Total Customers</h3>
+        <div class="stat-large">${d.totalCustomers}</div>
+        <div class="stat-label">${squareData.customers.filter((c) => c.email_address).length} with email</div>
+      </div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:24px">
+      <div class="card">
+        <h3>Best Day</h3>
+        <div class="stat-large" style="font-size:22px;margin-top:8px">${bestDay}</div>
+        <div class="stat-label">$${bestDayRevenue.toFixed(2)} avg revenue</div>
+      </div>
+      <div class="card">
+        <h3>This Month Orders</h3>
+        <div class="stat-large">${currentMonthOrders.length}</div>
+        <div class="stat-change ${orderChange >= 0 ? "positive" : "negative"}" style="margin-top:6px">${orderChange >= 0 ? "↑" : "↓"} ${Math.abs(orderChange).toFixed(1)}% vs prev month</div>
+      </div>
+      <div class="card">
+        <h3>This Month Revenue</h3>
+        <div class="stat-large" style="font-size:24px">$${currentRev.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+        <div class="stat-change ${revChange >= 0 ? "positive" : "negative"}" style="margin-top:6px">${revChange >= 0 ? "↑" : "↓"} ${Math.abs(revChange).toFixed(1)}% vs prev month</div>
+      </div>
+      <div class="card">
+        <h3>Top Item</h3>
+        <div class="stat-large" style="font-size:18px;margin-top:8px;line-height:1.3">${topItems[0]?.[0] || "—"}</div>
+        <div class="stat-label">${topItems[0] ? "$" + topItems[0][1].toFixed(2) + " revenue" : "No data yet"}</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:24px">
+      <div class="card">
+        <h3>Revenue Trend (Last 30 Days)</h3>
+        <canvas id="revChart" style="max-height:240px"></canvas>
+        ${isEmpty ? '<p class="empty-state">No order data yet</p>' : ""}
+      </div>
+      <div class="card">
+        <h3>Revenue by Day of Week</h3>
+        <canvas id="dayChart" style="max-height:240px"></canvas>
+        ${isEmpty ? '<p class="empty-state">No order data yet</p>' : ""}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Top Items by Revenue</h3>
+        <div id="topItemsTable"><p class="empty-state">Loading...</p></div>
+      </div>
+      <div class="card">
+        <h3>Ask Aervo Anything</h3>
+        ${renderChat()}
+      </div>
+    </div>`;
       }
 
-      function renderLocationSelector() {
-        if (squareData.locations.length <= 1) return "";
-        return `<div class="location-selector">${squareData.locations
-          .map(
-            (loc) => `
-          <button class="location-btn ${selectedLocation === loc.square_location_id ? "active" : ""}" onclick="selectLocation('${loc.square_location_id}')">
-            📍 ${loc.name}
-          </button>`,
-          )
-          .join("")}</div>`;
-      }
-
-      function selectLocation(id) {
-        selectedLocation = id;
-        renderView(currentView);
-      }
-
-      function generateSquareInsights(d) {
+      function generateInsights(
+        d,
+        currentRev,
+        prevRev,
+        revChange,
+        currentOrders,
+        prevOrders,
+      ) {
         const insights = [];
-        if (parseFloat(d.noShowRate) > 15) {
-          insights.push({
-            priority: "high",
-            label: "HIGH PRIORITY",
-            title: `${d.noShowRate}% no-show rate is hurting revenue`,
-            desc: "Send automated reminder texts 24h and 2h before appointments to reduce no-shows by up to 40%.",
-          });
-        } else if (squareData.appointments.length === 0) {
-          insights.push({
-            priority: "low",
-            label: "SETUP",
-            title: "Appointments not synced yet",
-            desc: "Connect Square Appointments to track bookings, no-shows, and staff performance.",
-          });
-        } else {
+        const now = new Date();
+
+        // Revenue insight
+        if (revChange > 10) {
           insights.push({
             priority: "low",
             label: "GREAT",
-            title: `No-show rate is ${d.noShowRate}%`,
-            desc: "Your appointment attendance is healthy. Keep sending reminders to maintain this.",
+            title: `Revenue up ${revChange.toFixed(1)}% this month`,
+            desc: `You made $${currentRev.toFixed(2)} this month vs $${prevRev.toFixed(2)} last month. Keep the momentum going!`,
           });
-        }
-        if (d.totalOrders === 0) {
+        } else if (revChange < -10) {
           insights.push({
-            priority: "medium",
-            label: "SETUP",
-            title: "No orders synced yet",
-            desc: "Add test transactions in your Square sandbox dashboard, then reconnect to sync data.",
+            priority: "high",
+            label: "ALERT",
+            title: `Revenue down ${Math.abs(revChange).toFixed(1)}% this month`,
+            desc: `You made $${currentRev.toFixed(2)} this month vs $${prevRev.toFixed(2)} last month. Consider a promotion to drive more transactions.`,
           });
         } else if (d.todayOrders === 0) {
           insights.push({
             priority: "medium",
             label: "OPPORTUNITY",
-            title: "No orders yet today",
-            desc: "Consider a flash promotion or push notification to drive traffic during slow periods.",
+            title: "No transactions yet today",
+            desc: "Consider a flash promotion or reaching out to loyal customers to drive traffic during slow periods.",
           });
         } else {
           insights.push({
             priority: "low",
             label: "INSIGHT",
-            title: `${d.todayOrders} orders today`,
-            desc: `$${d.todayRevenue.toFixed(2)} in revenue so far. Keep it up!`,
+            title: `${d.todayOrders} transactions today`,
+            desc: `$${d.todayRevenue.toFixed(2)} in revenue so far today. You're on track!`,
           });
         }
+
+        // Customer retention insight
+        const totalCustomers = squareData.customers.length;
+        const customersWithVisits = squareData.customers.filter(
+          (c) => parseInt(c.visit_count || 0) > 1,
+        ).length;
+        const retentionRate =
+          totalCustomers > 0 ? (customersWithVisits / totalCustomers) * 100 : 0;
+        if (retentionRate < 20) {
+          insights.push({
+            priority: "high",
+            label: "RETENTION",
+            title: `Only ${retentionRate.toFixed(0)}% of customers return`,
+            desc: "Focus on follow-up messages, loyalty programs, and personalized offers to bring customers back.",
+          });
+        } else if (retentionRate >= 40) {
+          insights.push({
+            priority: "low",
+            label: "GREAT",
+            title: `${retentionRate.toFixed(0)}% customer retention rate`,
+            desc: "Strong repeat business! Consider a referral program to grow your customer base further.",
+          });
+        } else {
+          insights.push({
+            priority: "medium",
+            label: "OPPORTUNITY",
+            title: `${retentionRate.toFixed(0)}% of customers have returned`,
+            desc: "There is room to improve retention. Try a follow-up message after each visit to bring customers back.",
+          });
+        }
+
+        // Google Reviews tip
         insights.push({
           priority: "low",
           label: "TIP",
-          title: "Check your Google Reviews",
-          desc: "Responding to reviews within 24h increases customer trust and drives repeat visits.",
+          title: "Responding to reviews builds trust",
+          desc: "Businesses that respond to reviews within 24h see higher customer loyalty and more repeat visits.",
         });
+
         return insights;
       }
-
-      function initOverviewCharts() {
-        if (squareData.orders.length === 0) return;
-        // Revenue chart
-        const revCtx = document.getElementById("revChart");
-        if (revCtx) {
-          const dailyRev = {};
-          for (let i = 29; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            dailyRev[d.toISOString().split("T")[0]] = 0;
-          }
-          squareData.orders.forEach((o) => {
-            const k = o.created_at?.split("T")[0];
-            if (k && dailyRev.hasOwnProperty(k))
-              dailyRev[k] += (o.total_amount || 0) / 100;
-          });
-          new Chart(revCtx, {
-            type: "line",
-            data: {
-              labels: Object.keys(dailyRev).map((d) =>
-                new Date(d).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                }),
-              ),
-              datasets: [
-                {
-                  data: Object.values(dailyRev),
-                  borderColor: "#34d399",
-                  backgroundColor: "rgba(52,211,153,0.1)",
-                  borderWidth: 2,
-                  fill: true,
-                  tension: 0.4,
-                  pointRadius: 2,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { display: false },
-                tooltip: {
-                  callbacks: { label: (ctx) => `$${ctx.parsed.y.toFixed(2)}` },
-                },
+      // Day of week chart
+      const dayCtx = document.getElementById("dayChart");
+      if (dayCtx) {
+        const dayRevenue = Array(7).fill(0);
+        squareData.orders.forEach((o) => {
+          const day = new Date(o.created_at).getDay();
+          dayRevenue[day] += (o.total_amount || 0) / 100;
+        });
+        const maxRev = Math.max(...dayRevenue);
+        new Chart(dayCtx, {
+          type: "bar",
+          data: {
+            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            datasets: [
+              {
+                data: dayRevenue.map((v) => v.toFixed(2)),
+                backgroundColor: dayRevenue.map((v) =>
+                  v === maxRev
+                    ? "rgba(52,211,153,0.9)"
+                    : "rgba(52,211,153,0.25)",
+                ),
+                borderRadius: 4,
               },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148,163,184,0.1)" },
-                  ticks: { color: "#9ca7d6", callback: (v) => "$" + v },
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "#9ca7d6", maxRotation: 45 },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => "$" + parseFloat(ctx.parsed.y).toFixed(2),
                 },
               },
             },
-          });
-        }
-        // Peak hours chart
-        const peakCtx = document.getElementById("peakChart");
-        if (peakCtx) {
-          const hours = Array(24).fill(0);
-          squareData.orders.forEach((o) => {
-            if (o.created_at) hours[new Date(o.created_at).getHours()]++;
-          });
-          const maxV = Math.max(...hours);
-          new Chart(peakCtx, {
-            type: "bar",
-            data: {
-              labels: hours.map(
-                (_, i) => `${i % 12 || 12}${i < 12 ? "am" : "pm"}`,
-              ),
-              datasets: [
-                {
-                  data: hours,
-                  backgroundColor: hours.map((v) =>
-                    v === maxV
-                      ? "rgba(52,211,153,0.9)"
-                      : "rgba(52,211,153,0.25)",
-                  ),
-                  borderRadius: 4,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              plugins: { legend: { display: false } },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: "rgba(148,163,184,0.1)" },
-                  ticks: { color: "#9ca7d6" },
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: "#9ca7d6", font: { size: 10 } },
-                },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: "rgba(148,163,184,0.1)" },
+                ticks: { color: "#9ca7d6", callback: (v) => "$" + v },
               },
+              x: { grid: { display: false }, ticks: { color: "#9ca7d6" } },
             },
-          });
-        }
+          },
+        });
       }
 
       function renderTopItems() {
