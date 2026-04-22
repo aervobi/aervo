@@ -9,7 +9,20 @@
     <script
       src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
       data-api-key="42d18ab94654c48ad51d381269a89bcc"
+      data-api-key="42d18ab94654c48ad51d381269a89bcc"
     ></script>
+    <script>
+      if (window.shopify) {
+        window.shopify.idToken().catch(() => {
+          const shop =
+            new URLSearchParams(window.location.search).get("shop") ||
+            localStorage.getItem("shopify_shop");
+          if (shop) {
+            window.top.location.href = `https://api.aervoapp.com/auth/shopify/?shop=${shop}`;
+          }
+        });
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       * {
