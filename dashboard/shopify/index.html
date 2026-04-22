@@ -12,15 +12,21 @@
       data-api-key="42d18ab94654c48ad51d381269a89bcc"
     ></script>
     <script>
-      if (window.shopify) {
-        window.shopify.idToken().catch(() => {
+      // If accounts.shopify.com is trying to load in an iframe, break out immediately
+      if (window.self !== window.top) {
+        try {
           const shop =
             new URLSearchParams(window.location.search).get("shop") ||
             localStorage.getItem("shopify_shop");
           if (shop) {
             window.top.location.href = `https://api.aervoapp.com/auth/shopify/?shop=${shop}`;
           }
-        });
+        } catch (e) {
+          // Cross-origin frame - redirect top window
+          document.write(
+            "<script>window.top.location.href = window.location.href<\/script>",
+          );
+        }
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
