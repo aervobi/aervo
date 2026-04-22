@@ -6,18 +6,10 @@
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
-    <script>
-      // Only load App Bridge when embedded in Shopify admin
-      if (
-        window.self !== window.top ||
-        window.location.ancestorOrigins?.length > 0
-      ) {
-        const script = document.createElement("script");
-        script.src = "https://cdn.shopify.com/shopifycloud/app-bridge.js";
-        script.setAttribute("data-api-key", "42d18ab94654c48ad51d381269a89bcc");
-        document.head.appendChild(script);
-      }
-    </script>
+    <script
+      src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
+      data-api-key="42d18ab94654c48ad51d381269a89bcc"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       * {
@@ -1185,7 +1177,9 @@
         }
 
         orders.forEach((order) => {
-          const dateKey = new Date(order.created_at).toLocaleDateString("en-CA");
+          const dateKey = new Date(order.created_at).toLocaleDateString(
+            "en-CA",
+          );
           if (dailyRevenue.hasOwnProperty(dateKey)) {
             dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
           }
@@ -1330,7 +1324,9 @@
 
         // Aggregate orders by day
         orders.forEach((order) => {
-          const dateKey = new Date(order.created_at).toLocaleDateString("en-CA");
+          const dateKey = new Date(order.created_at).toLocaleDateString(
+            "en-CA",
+          );
           if (dailyRevenue.hasOwnProperty(dateKey)) {
             dailyRevenue[dateKey] += parseFloat(order.total_price || 0);
           }
@@ -1827,7 +1823,9 @@
           .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
           .forEach((order) => {
             if (order.customer && order.customer.id) {
-              const dateKey = new Date(order.created_at).toLocaleDateString("en-CA");
+              const dateKey = new Date(order.created_at).toLocaleDateString(
+                "en-CA",
+              );
               const customerId = order.customer.id;
 
               if (dailyCustomers.hasOwnProperty(dateKey)) {
