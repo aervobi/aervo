@@ -567,7 +567,7 @@
           }
 
           // Simple redirect with token in URL
-          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}`;
+          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}&source=standalone`;
         } else if (name === "square") {
           const aervoUser = JSON.parse(
             localStorage.getItem("aervo_user") || "{}",
