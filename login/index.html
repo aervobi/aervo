@@ -468,8 +468,8 @@
   window.location.href = "/dashboard";
 }  
               } catch (err) {
-                window.location.href = "/dashboard/shopify";
-              }
+  window.location.href = "/dashboard"; // was /dashboard/shopify
+}
             }, 600);
           } catch (err) {
             console.error(err);
