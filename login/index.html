@@ -462,15 +462,11 @@
                 const platform = meData.user && meData.user.platform;
                 const onboarded = meData.user && meData.user.onboarded;
 
-                if (!onboarded) {
-                  window.location.href = "/onboarding";
-                } else if (platform === "csv") {
-                  window.location.href = "/dashboard/csv";
-                } else if (platform === "square") {
-                  window.location.href = "/dashboard/square";
-                } else {
-                  window.location.href = "/dashboard/shopify";
-                }
+              if (!onboarded) {
+  window.location.href = "/onboarding";
+} else {
+  window.location.href = "/dashboard";
+}  
               } catch (err) {
                 window.location.href = "/dashboard/shopify";
               }
