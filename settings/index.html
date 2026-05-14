@@ -1543,22 +1543,36 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <script>
-      const BACKEND_URL = "https://api.aervoapp.com";
-      const token = localStorage.getItem("aervo_token");
-      if (!token) window.location.href = "/login";
+   <script>
+  const BACKEND_URL = "https://api.aervoapp.com";
+  const token = localStorage.getItem("aervo_token");
+  if (!token) window.location.href = "/login";
 
-      // ── SECTION NAVIGATION ──
-      function showSection(name, btn) {
-        document
-          .querySelectorAll(".section-panel")
-          .forEach((s) => s.classList.remove("active"));
-        document
-          .querySelectorAll(".sidebar-item")
-          .forEach((b) => b.classList.remove("active"));
-        document.getElementById("section-" + name).classList.add("active");
-        btn.classList.add("active");
-      }
+  // Hide billing section when accessed from Shopify
+  const isShopifyEmbedded = window.self !== window.top ||
+    new URLSearchParams(window.location.search).get('shop') !== null;
+
+  if (isShopifyEmbedded) {
+    document.addEventListener('DOMContentLoaded', function() {
+      const billingSidebarItem = document.querySelector('[data-section="billing"]');
+      if (billingSidebarItem) billingSidebarItem.style.display = 'none';
+
+      const billingSection = document.getElementById('section-billing');
+      if (billingSection) billingSection.style.display = 'none';
+    });
+  }
+
+  // ── SECTION NAVIGATION ──
+  function showSection(name, btn) {
+    document
+      .querySelectorAll(".section-panel")
+      .forEach((s) => s.classList.remove("active"));
+    document
+      .querySelectorAll(".sidebar-item")
+      .forEach((b) => b.classList.remove("active"));
+    document.getElementById("section-" + name).classList.add("active");
+    btn.classList.add("active");
+  }
 
       // ── TOAST ──
       function showToast(msg, type = "success") {

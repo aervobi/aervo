@@ -759,7 +759,21 @@
       if (window.shopify) {
         window.__SHOPIFY_DEV_TOOLS_HOOK__ = null;
       }
+      // Hide nav links when embedded in Shopify iframe
+      if (window.self !== window.top) {
+        document.addEventListener("DOMContentLoaded", function () {
+          const settingsLink = document.querySelector('a[href="/settings"]');
+          if (settingsLink) settingsLink.style.display = "none";
 
+          const reportsLink = document.querySelector('a[href="/reports"]');
+          if (reportsLink) reportsLink.style.display = "none";
+
+          const intelligenceLink = document.querySelector(
+            'a[href="/intelligence"]',
+          );
+          if (intelligenceLink) intelligenceLink.style.display = "none";
+        });
+      }
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       if (urlToken) {
