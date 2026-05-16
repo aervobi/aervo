@@ -856,7 +856,7 @@
           }
           const data = await res.json();
           userData = data.user;
-          merchantId = String(userData.id);
+          merchantId = userData.squareMerchantId || String(userData.id);
           hasShopify = !!data.shop;
 
           // Show switcher if both integrations connected
