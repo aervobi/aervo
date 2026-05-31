@@ -1535,7 +1535,7 @@
         const role = document.getElementById("s2Role").value;
 
         try {
-          // Upload CSV if present
+          // Upload CSV if present (IMS flow)
           if (selectedPlatform === "csv" && csvFile && !skip) {
             btn.textContent = "Uploading data…";
             const formData = new FormData();
@@ -1548,8 +1548,6 @@
             const upData = await upRes.json();
             if (!upData.success)
               throw new Error(upData.message || "CSV upload failed");
-            window.location.href = "/dashboard/ims.html";
-            return;
           }
 
           // Save onboarding data
@@ -1579,7 +1577,13 @@
           localStorage.setItem("aervo_user", JSON.stringify(user));
           localStorage.removeItem("aervo_onboarding");
 
-          // Show verify email screen
+          // Redirect IMS users directly to IMS dashboard
+          if (selectedPlatform === "csv") {
+            window.location.href = "/dashboard/ims.html";
+            return;
+          }
+
+          // Show verify email screen for other platforms
           document.getElementById("verifyEmail").textContent =
             document.getElementById("s1Email").value;
           goToStep(5);
