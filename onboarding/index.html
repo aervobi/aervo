@@ -742,8 +742,11 @@
     <div class="page">
       <!-- Logo -->
       <div class="logo">
-        <div class="logo-mark">⚡</div>
-        <div class="logo-name">AERVO</div>
+        <img
+          src="/assets/images/aervo-wordmark.png"
+          alt="Aervo"
+          style="height: 36px; object-fit: contain"
+        />
       </div>
 
       <div class="card">
@@ -939,10 +942,12 @@
             id="csvOption"
             style="border-color: rgba(124, 92, 255, 0.2)"
           >
-            <div class="wide-icons">📊</div>
+            <div class="wide-icons">🗂️</div>
             <div class="wide-text">
-              <div class="wide-name">Upload my own data</div>
-              <div class="wide-desc">Use CSV exports from any platform</div>
+              <div class="wide-name">Inventory Management System</div>
+              <div class="wide-desc">
+                Manually manage and track your inventory & sales
+              </div>
             </div>
             <div
               class="wide-badge"
@@ -1439,11 +1444,11 @@
 
         if (selectedPlatform === "csv") {
           document.getElementById("step4Title").innerHTML =
-            "Upload your <span>sales data</span>";
+            "Set up your <span>Inventory Management System</span>";
           document.getElementById("step4Sub").textContent =
-            "Upload a CSV export and Aervo will build your dashboard automatically.";
+            "Upload a CSV export and Aervo will populate your IMS dashboard automatically.";
           document.getElementById("finishBtn").textContent =
-            "Build my dashboard ⚡";
+            "Launch IMS Dashboard ⚡";
         } else {
           document.getElementById("step4Title").innerHTML =
             "Connect your <span>integration</span>";
@@ -1543,7 +1548,8 @@
             const upData = await upRes.json();
             if (!upData.success)
               throw new Error(upData.message || "CSV upload failed");
-            btn.textContent = "Finishing up…";
+            window.location.href = "/dashboard/ims.html";
+            return;
           }
 
           // Save onboarding data
