@@ -724,6 +724,7 @@
         <div class="nav-tab" data-view="sales">Sales</div>
         <div class="nav-tab" data-view="customers">Customers</div>
         <div class="nav-tab" data-view="expenses">Expenses</div>
+        <div class="nav-tab" data-view="import">Import Data</div>
       </div>
       <div class="nav-right">
         <div class="shop-badge"><span>●</span><span>Manual IMS</span></div>
@@ -750,6 +751,7 @@
       <div class="mobile-nav-tab" data-view="sales">🧾 Sales</div>
       <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
       <div class="mobile-nav-tab" data-view="expenses">💸 Expenses</div>
+      <div class="mobile-nav-tab" data-view="import">📂 Import Data</div>
     </div>
 
     <div class="container">
@@ -1161,6 +1163,7 @@
         else if (v === "sales") renderSales(el);
         else if (v === "customers") renderCustomers(el);
         else if (v === "expenses") renderExpenses(el);
+        else if (v === "import") renderImport(el);
       }
 
       function fmt(n) {
@@ -2400,7 +2403,189 @@
         }
       }
 
-      // ── EXPENSE EDIT PATCH ───────────────────────────────────────
+      // ── IMPORT DATA ──────────────────────────────────────────────
+      let importCsvFile = null;
+
+      function renderImport(el) {
+        el.innerHTML = `
+          <div class="welcome">
+            <h1>Import Data 📂</h1>
+            <p>Upload a CSV export from Shopify, Square, WooCommerce, or any platform. Aervo will analyze it and populate your dashboard automatically.</p>
+          </div>
+
+          <div class="card" style="max-width:640px;margin:0 auto;">
+            <div id="importDropZone" style="
+              border: 2px dashed rgba(255,255,255,0.15);
+              border-radius: 12px;
+              padding: 48px 32px;
+              text-align: center;
+              cursor: pointer;
+              transition: border-color 0.2s, background 0.2s;
+            "
+              onclick="document.getElementById('importFileInput').click()"
+              ondragover="event.preventDefault(); this.style.borderColor='#29c8ff'; this.style.background='rgba(41,200,255,0.05)'"
+              ondragleave="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.background=''"
+              ondrop="handleImportDrop(event)"
+            >
+              <input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleImportSelect(event)" />
+              <div style="font-size:2.5rem;margin-bottom:12px">📂</div>
+              <h2 style="margin-bottom:8px;font-size:1.2rem">Drop your file here or click to browse</h2>
+              <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px">Supports CSV, XLSX, and XLS files from any POS or e-commerce platform</p>
+              <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+                ${["CSV", "XLSX", "XLS", "Shopify", "Square", "WooCommerce"].map((f) => `<span style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:6px;font-size:0.75rem;color:var(--muted)">${f}</span>`).join("")}
+              </div>
+              <button style="background:linear-gradient(135deg,#29c8ff,#7c5cff);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600" onclick="event.stopPropagation();document.getElementById('importFileInput').click()">
+                📁 Choose File
+              </button>
+            </div>
+
+            <div id="importFileInfo" style="display:none;margin-top:16px;padding:14px 16px;background:rgba(41,200,255,0.07);border:1px solid rgba(41,200,255,0.2);border-radius:8px;display:flex;align-items:center;gap:10px">
+              <span style="font-size:1.2rem">📄</span>
+              <span id="importFileName" style="flex:1;font-size:0.9rem"></span>
+              <button onclick="clearImportFile()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
+            </div>
+
+            <div style="margin-top:16px">
+              <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px">Period label (optional)</label>
+              <input id="importPeriodLabel" type="text" placeholder="e.g. May 2026" style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem" />
+            </div>
+
+            <button id="importSubmitBtn" onclick="submitImport()" style="margin-top:16px;width:100%;padding:12px;background:linear-gradient(135deg,#29c8ff,#7c5cff);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer">
+              ⚡ Import & Analyze
+            </button>
+            <div id="importError" style="display:none;margin-top:10px;color:#fca5a5;font-size:0.85rem;text-align:center"></div>
+          </div>
+
+          <div id="importHistory" style="max-width:640px;margin:24px auto 0"></div>
+        `;
+        loadImportHistory();
+      }
+
+      function handleImportDrop(e) {
+        e.preventDefault();
+        const dropZone = document.getElementById("importDropZone");
+        if (dropZone) {
+          dropZone.style.borderColor = "rgba(255,255,255,0.15)";
+          dropZone.style.background = "";
+        }
+        const f = e.dataTransfer.files[0];
+        if (f) setImportFile(f);
+      }
+      function handleImportSelect(e) {
+        const f = e.target.files[0];
+        if (f) setImportFile(f);
+      }
+      function setImportFile(f) {
+        importCsvFile = f;
+        const info = document.getElementById("importFileInfo");
+        const name = document.getElementById("importFileName");
+        if (info && name) {
+          name.textContent = f.name;
+          info.style.display = "flex";
+        }
+      }
+      function clearImportFile() {
+        importCsvFile = null;
+        const info = document.getElementById("importFileInfo");
+        if (info) info.style.display = "none";
+        const input = document.getElementById("importFileInput");
+        if (input) input.value = "";
+      }
+
+      async function submitImport() {
+        if (!importCsvFile) {
+          const err = document.getElementById("importError");
+          if (err) {
+            err.textContent = "Please select a file first.";
+            err.style.display = "block";
+          }
+          return;
+        }
+        const btn = document.getElementById("importSubmitBtn");
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = "Uploading…";
+        }
+        const label =
+          document.getElementById("importPeriodLabel")?.value.trim() ||
+          "Upload " +
+            new Date().toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            });
+        const formData = new FormData();
+        formData.append("file", importCsvFile);
+        formData.append("period_label", label);
+        try {
+          const res = await fetch(BACKEND_URL + "/api/csv/upload", {
+            method: "POST",
+            headers: { Authorization: "Bearer " + token },
+            body: formData,
+          });
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message || "Upload failed");
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "⚡ Import & Analyze";
+          }
+          clearImportFile();
+          showToast("✓ " + label + " imported successfully", "success");
+          loadImportHistory();
+        } catch (err) {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = "⚡ Import & Analyze";
+          }
+          const errEl = document.getElementById("importError");
+          if (errEl) {
+            errEl.textContent =
+              err.message || "Upload failed. Please try again.";
+            errEl.style.display = "block";
+          }
+        }
+      }
+
+      async function loadImportHistory() {
+        const container = document.getElementById("importHistory");
+        if (!container) return;
+        try {
+          const res = await fetch(BACKEND_URL + "/api/csv/uploads", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const data = await res.json();
+          if (!data.success || !data.uploads?.length) {
+            container.innerHTML = `<div class="empty-state" style="margin-top:0">No imports yet — upload your first file above.</div>`;
+            return;
+          }
+          container.innerHTML = `
+            <div class="card">
+              <h3 style="margin-bottom:16px">Import History</h3>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead><tr><th>Period</th><th>Uploaded</th><th>Revenue</th><th>Orders</th></tr></thead>
+                  <tbody>
+                    ${data.uploads
+                      .map(
+                        (u) => `
+                      <tr>
+                        <td>${u.period_label || "—"}</td>
+                        <td style="color:#64748b">${new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+                        <td style="color:#34d399;font-weight:600">${u.summary?.totalRevenue ? "$" + parseFloat(u.summary.totalRevenue).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</td>
+                        <td>${u.summary?.totalOrders || "—"}</td>
+                      </tr>
+                    `,
+                      )
+                      .join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          container.innerHTML = `<div class="empty-state" style="color:#fca5a5">Could not load import history.</div>`;
+        }
+      }
+
       // Add PUT for expenses (backend already has DELETE, need PUT)
       const _origSaveExpense = saveExpense;
 
