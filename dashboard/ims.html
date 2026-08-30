@@ -675,7 +675,138 @@
         position: relative;
         height: 220px;
       }
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 12px 18px;
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 12px;
+        font-weight: 600;
+        color: #e5ecff;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+        transform: translateY(90px);
+        opacity: 0;
+        transition:
+          transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.2s;
+        z-index: 300;
+        max-width: 340px;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.success {
+        border-color: rgba(52, 211, 153, 0.4);
+        color: #6ee7b7;
+      }
+      .toast.error {
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+      }
+      /* TABLE TOOLBAR */
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .table-toolbar h3 {
+        margin: 0;
+      }
+      .table-toolbar .spacer {
+        flex: 1;
+      }
+      .table-search {
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: rgba(15, 23, 42, 0.6);
+        color: #e5ecff;
+        font-size: 13px;
+        min-width: 200px;
+        font-family: inherit;
+      }
+      .table-search:focus {
+        outline: none;
+        border-color: #a855f7;
+      }
+      .btn-ghost {
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        background: transparent;
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-ghost:hover {
+        background: rgba(148, 163, 184, 0.12);
+        color: #fff;
+      }
+      .data-table th.sortable {
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+      }
+      .data-table th.sortable:hover {
+        color: #d8b4fe;
+      }
+      .data-table th.sortable .arrow {
+        opacity: 0.4;
+        font-size: 10px;
+        margin-left: 3px;
+      }
+      .data-table th.sortable.sorted .arrow {
+        opacity: 1;
+        color: #a855f7;
+      }
+      .empty-cta {
+        margin-top: 14px;
+      }
+      .range-tabs {
+        display: flex;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 8px;
+        padding: 4px;
+        width: fit-content;
+        margin-bottom: 24px;
+      }
+      .range-tab {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #64748b;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .range-tab.active {
+        background: rgba(168, 85, 247, 0.2);
+        color: #d8b4fe;
+      }
+      .card {
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        border-color: rgba(168, 85, 247, 0.25);
+      }
       @media (max-width: 768px) {
+        .table-search {
+          min-width: 0;
+          width: 100%;
+        }
         .nav-center {
           display: none;
         }
@@ -1055,6 +1186,22 @@
       </div>
     </div>
 
+    <!-- SALE DETAIL MODAL -->
+    <div class="modal-overlay" id="saleDetailModal">
+      <div class="modal modal-wide">
+        <div id="saleDetailContent">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+        <div class="modal-actions" style="margin-top: 16px">
+          <button class="btn-cancel" onclick="closeModal('saleDetailModal')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
       const token = localStorage.getItem("aervo_token");
@@ -1071,6 +1218,110 @@
       };
       let charts = {};
       let salesPeriod = "daily";
+      let dateRange = "all"; // all | 7 | 30 | 90
+      let productSort = { key: "name", dir: 1 };
+
+      // ── HELPERS ──────────────────────────────────────────────────
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        if (!t) return;
+        t.textContent = msg;
+        t.className = "toast " + type + " show";
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => t.classList.remove("show"), 3200);
+      }
+
+      function rangeCutoff() {
+        if (dateRange === "all") return null;
+        const d = new Date();
+        d.setDate(d.getDate() - parseInt(dateRange));
+        return d;
+      }
+
+      function salesInRange() {
+        const cutoff = rangeCutoff();
+        if (!cutoff) return imsData.sales;
+        return imsData.sales.filter((s) => new Date(s.sale_date) >= cutoff);
+      }
+
+      function expensesInRange() {
+        const cutoff = rangeCutoff();
+        if (!cutoff) return imsData.expenses;
+        return imsData.expenses.filter(
+          (e) => new Date(e.expense_date) >= cutoff,
+        );
+      }
+
+      function rangeLabel() {
+        return dateRange === "all"
+          ? "All time"
+          : `Last ${dateRange} days`;
+      }
+
+      function renderRangeTabs(active) {
+        return `
+          <div class="range-tabs">
+            ${[
+              ["all", "All time"],
+              ["7", "7 days"],
+              ["30", "30 days"],
+              ["90", "90 days"],
+            ]
+              .map(
+                ([v, l]) =>
+                  `<button class="range-tab ${dateRange === v ? "active" : ""}" onclick="setDateRange('${v}')">${l}</button>`,
+              )
+              .join("")}
+          </div>`;
+      }
+
+      function setDateRange(v) {
+        dateRange = v;
+        destroyCharts();
+        renderView(currentView);
+      }
+
+      function csvEscape(v) {
+        v = v == null ? "" : String(v);
+        return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }
+
+      function downloadCSV(filename, rows) {
+        const csv = rows.map((r) => r.map(csvEscape).join(",")).join("\r\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast("✓ Exported " + filename);
+      }
+
+      function filterTable(input, tableId) {
+        const q = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll(
+          `#${tableId} tbody tr`,
+        );
+        let visible = 0;
+        rows.forEach((tr) => {
+          if (tr.querySelector(".empty-state")) return;
+          const match = tr.textContent.toLowerCase().includes(q);
+          tr.style.display = match ? "" : "none";
+          if (match) visible++;
+        });
+      }
+
+      // Close any open modal with Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          document
+            .querySelectorAll(".modal-overlay.active")
+            .forEach((m) => m.classList.remove("active"));
+        }
+      });
 
       // ── NAV ──────────────────────────────────────────────────────
       document.getElementById("logoutBtn").addEventListener("click", () => {
@@ -1186,12 +1437,26 @@
       // ── OVERVIEW ─────────────────────────────────────────────────
       function renderOverview(el) {
         const s = imsData.summary || {};
-        const revenue = parseFloat(s.total_revenue) || 0,
+        let revenue, cogs, grossProfit, expenses, netProfit, orders;
+        if (dateRange === "all") {
+          revenue = parseFloat(s.total_revenue) || 0;
           cogs = parseFloat(s.total_cogs) || 0;
-        const grossProfit = parseFloat(s.gross_profit) || 0,
+          grossProfit = parseFloat(s.gross_profit) || 0;
           expenses = parseFloat(s.total_expenses) || 0;
-        const netProfit = parseFloat(s.net_profit) || 0,
+          netProfit = parseFloat(s.net_profit) || 0;
           orders = parseInt(s.total_orders) || 0;
+        } else {
+          const rs = salesInRange();
+          revenue = rs.reduce((a, x) => a + (parseFloat(x.total_amount) || 0), 0);
+          cogs = rs.reduce((a, x) => a + (parseFloat(x.total_cost) || 0), 0);
+          grossProfit = revenue - cogs;
+          expenses = expensesInRange().reduce(
+            (a, x) => a + (parseFloat(x.amount) || 0),
+            0,
+          );
+          netProfit = grossProfit - expenses;
+          orders = rs.length;
+        }
         const lowStock = imsData.products.filter(
           (p) =>
             !p.is_service &&
@@ -1199,8 +1464,10 @@
         );
         const insights = generateInsights(s, lowStock);
 
+        const recentSales = salesInRange();
         el.innerHTML = `
-          <div class="welcome"><h1>Business Overview 📦</h1><p>Your manual IMS dashboard — all data in one place.</p></div>
+          <div class="welcome"><h1>Business Overview 📦</h1><p>Your manual IMS dashboard — showing <strong style="color:#d8b4fe">${rangeLabel().toLowerCase()}</strong>.</p></div>
+          ${renderRangeTabs()}
           <div class="ai-banner">
             <div class="ai-banner-header"><div class="ai-icon">🤖</div><h2>AI Insights</h2></div>
             <div>${insights.length ? insights.map((i) => `<div class="insight-item"><span class="insight-priority priority-${i.priority}">${i.label}</span><strong>${i.title}</strong> — ${i.desc}</div>`).join("") : `<div class="insight-item">Add products and log sales to unlock AI insights.</div>`}</div>
@@ -1209,7 +1476,7 @@
             <div class="card"><h3>Total Revenue</h3><div class="stat-large green">${fmt(revenue)}</div><div class="stat-label">${orders} sales logged</div></div>
             <div class="card"><h3>Gross Profit</h3><div class="stat-large ${grossProfit >= 0 ? "green" : "red"}">${fmt(grossProfit)}</div><div class="stat-label">Margin: ${pct(grossProfit, revenue)}</div></div>
             <div class="card"><h3>Net Profit</h3><div class="stat-large ${netProfit >= 0 ? "green" : "red"}">${fmt(netProfit)}</div><div class="stat-label">After all expenses</div></div>
-            <div class="card"><h3>Total Expenses</h3><div class="stat-large yellow">${fmt(expenses)}</div><div class="stat-label">${imsData.expenses.length} entries</div></div>
+            <div class="card"><h3>Total Expenses</h3><div class="stat-large yellow">${fmt(expenses)}</div><div class="stat-label">${(dateRange === "all" ? imsData.expenses : expensesInRange()).length} entries</div></div>
           </div>
           <div class="grid-3">
             <div class="card"><h3>Products</h3><div class="stat-large blue">${imsData.products.length}</div><div class="stat-label">${lowStock.length > 0 ? `⚠️ ${lowStock.length} low stock` : "All levels OK"}</div></div>
@@ -1220,14 +1487,14 @@
             <div class="card"><h3>Recent Sales</h3>
               <div class="table-wrapper"><table class="data-table"><thead><tr><th>Date</th><th>Customer</th><th>Total</th></tr></thead><tbody>
                 ${
-                  imsData.sales
-                    .slice(0, 5)
+                  recentSales
+                    .slice(0, 6)
                     .map(
                       (s) =>
                         `<tr><td style="color:#64748b">${fmtDate(s.sale_date)}</td><td>${s.first_name ? s.first_name + " " + s.last_name : "Walk-in"}</td><td style="color:#34d399;font-weight:600">${fmt(s.total_amount)}</td></tr>`,
                     )
                     .join("") ||
-                  `<tr><td colspan="3" class="empty-state">No sales yet</td></tr>`
+                  `<tr><td colspan="3" class="empty-state">No sales in this period</td></tr>`
                 }
               </tbody></table></div>
             </div>
@@ -1299,29 +1566,6 @@
 
       // ── PRODUCTS TAB ─────────────────────────────────────────────
       function renderProducts(el) {
-        const products = imsData.products;
-        const topRevProd = [...products].sort((a, b) => {
-          const ra = imsData.sales.reduce((s, sale) => {
-            const items = Array.isArray(sale.items) ? sale.items : [];
-            return (
-              s +
-              items
-                .filter((i) => i.product_id === a.id)
-                .reduce((x, i) => x + (parseFloat(i.line_total) || 0), 0)
-            );
-          }, 0);
-          const rb = imsData.sales.reduce((s, sale) => {
-            const items = Array.isArray(sale.items) ? sale.items : [];
-            return (
-              s +
-              items
-                .filter((i) => i.product_id === b.id)
-                .reduce((x, i) => x + (parseFloat(i.line_total) || 0), 0)
-            );
-          }, 0);
-          return rb - ra;
-        });
-
         // compute per-product stats
         const prodStats = {};
         imsData.sales.forEach((sale) => {
@@ -1335,6 +1579,35 @@
           });
         });
 
+        const marginOf = (p) =>
+          p.sale_price > 0
+            ? ((p.sale_price - p.cost_price) / p.sale_price) * 100
+            : -1;
+        const sortVal = {
+          name: (p) => (p.name || "").toLowerCase(),
+          category: (p) => (p.category || "").toLowerCase(),
+          sale_price: (p) => parseFloat(p.sale_price) || 0,
+          cost_price: (p) => parseFloat(p.cost_price) || 0,
+          margin: (p) => marginOf(p),
+          units: (p) => (prodStats[p.id] || { units: 0 }).units,
+          revenue: (p) => (prodStats[p.id] || { revenue: 0 }).revenue,
+          stock: (p) => (p.is_service ? -1 : parseFloat(p.quantity) || 0),
+        };
+        const products = [...imsData.products].sort((a, b) => {
+          const va = sortVal[productSort.key](a),
+            vb = sortVal[productSort.key](b);
+          if (va < vb) return -1 * productSort.dir;
+          if (va > vb) return 1 * productSort.dir;
+          return 0;
+        });
+
+        const arrow = (key) =>
+          productSort.key === key
+            ? `<span class="arrow">${productSort.dir === 1 ? "▲" : "▼"}</span>`
+            : `<span class="arrow">▲</span>`;
+        const th = (key, label, extra = "") =>
+          `<th class="sortable ${productSort.key === key ? "sorted" : ""}" ${extra} onclick="sortProducts('${key}')">${label}${arrow(key)}</th>`;
+
         el.innerHTML = `
           <div class="page-header">
             <div><h1>Products & Inventory 📦</h1><p>Manage your catalog, stock levels, and performance.</p></div>
@@ -1347,12 +1620,15 @@
           </div>
 
           <div class="card" style="margin-bottom:24px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-              <h3 style="margin:0">All Products <span style="color:#64748b;font-weight:400;font-size:12px">(click to edit)</span></h3>
+            <div class="table-toolbar">
+              <h3>All Products <span style="color:#64748b;font-weight:400;font-size:12px">(click a row to edit)</span></h3>
+              <div class="spacer"></div>
+              <input class="table-search" placeholder="Search products…" oninput="filterTable(this,'productsTable')" />
+              <button class="btn-ghost" onclick="exportProducts()">⬇ Export CSV</button>
             </div>
             <div class="table-wrapper">
-              <table class="data-table">
-                <thead><tr><th>Product</th><th>Category</th><th>Sale Price</th><th>Cost</th><th>Margin</th><th>Units Sold</th><th>Revenue</th><th>Stock</th></tr></thead>
+              <table class="data-table" id="productsTable">
+                <thead><tr>${th("name", "Product")}${th("category", "Category")}${th("sale_price", "Sale Price")}${th("cost_price", "Cost")}${th("margin", "Margin")}${th("units", "Units Sold")}${th("revenue", "Revenue")}${th("stock", "Stock")}<th></th></tr></thead>
                 <tbody>
                   ${
                     products.length
@@ -1381,9 +1657,7 @@
                               units: 0,
                             };
                             return `<tr class="clickable" onclick="openEditProduct(${p.id})">
-                      <td style="color:#e5ecff;font-weight:500">${p.name}${p.sku ? `<div style="font-size:11px;color:#64748b">${p.sku}</div>` : ""}
-                        <div style="font-size:11px;color:#a855f7;margin-top:2px">✏️ click to edit</div>
-                      </td>
+                      <td style="color:#e5ecff;font-weight:500">${p.name}${p.sku ? `<div style="font-size:11px;color:#64748b">${p.sku}</div>` : ""}</td>
                       <td style="color:#9ca7d6">${p.category || "—"}</td>
                       <td style="color:#34d399;font-weight:600">${fmt(p.sale_price)}</td>
                       <td style="color:#9ca7d6">${fmt(p.cost_price)}</td>
@@ -1391,10 +1665,11 @@
                       <td style="color:#9ca7d6">${ps.units.toFixed(0)}</td>
                       <td style="color:#d8b4fe;font-weight:600">${fmt(ps.revenue)}</td>
                       <td>${stockBadge}</td>
+                      <td style="text-align:right"><button class="btn-ghost" style="padding:4px 10px" title="Delete product" onclick="event.stopPropagation();deleteProduct(${p.id},'${(p.name || "").replace(/'/g, "\\'")}')">✕</button></td>
                     </tr>`;
                           })
                           .join("")
-                      : `<tr><td colspan="8" class="empty-state">No products yet. Add your first product above.</td></tr>`
+                      : `<tr><td colspan="9" class="empty-state">No products yet.<div class="empty-cta"><button class="btn-add" onclick="openAddProduct()">+ Add your first product</button></div></td></tr>`
                   }
                 </tbody>
               </table>
@@ -1492,11 +1767,13 @@
 
       // ── SALES TAB ─────────────────────────────────────────────
       function renderSales(el) {
+        const sales = salesInRange();
         el.innerHTML = `
           <div class="page-header">
-            <div><h1>Sales 🧾</h1><p>All transactions, analytics, and trends.</p></div>
+            <div><h1>Sales 🧾</h1><p>Transactions, analytics, and trends — ${rangeLabel().toLowerCase()}.</p></div>
             <button class="btn-add" onclick="openLogSale()">+ Log Sale</button>
           </div>
+          ${renderRangeTabs()}
           <div class="period-tabs">
             <div class="period-tab ${salesPeriod === "daily" ? "active" : ""}" onclick="setSalesPeriod('daily')">Daily</div>
             <div class="period-tab ${salesPeriod === "weekly" ? "active" : ""}" onclick="setSalesPeriod('weekly')">Weekly</div>
@@ -1513,12 +1790,18 @@
                 <tbody id="bestSellerBody"></tbody>
               </table></div>
             </div>
-            <div class="card"><h3>Sales Log <span style="color:#64748b;font-weight:400;font-size:11px">(click to view)</span></h3>
-              <div class="table-wrapper"><table class="data-table">
+            <div class="card">
+              <div class="table-toolbar">
+                <h3>Sales Log <span style="color:#64748b;font-weight:400;font-size:11px">(click a row)</span></h3>
+                <div class="spacer"></div>
+                <input class="table-search" placeholder="Search…" oninput="filterTable(this,'salesTable')" />
+                <button class="btn-ghost" onclick="exportSales()">⬇ CSV</button>
+              </div>
+              <div class="table-wrapper"><table class="data-table" id="salesTable">
                 <thead><tr><th>Date</th><th>Customer</th><th>Payment</th><th>Revenue</th><th>Profit</th></tr></thead>
                 <tbody>
                   ${
-                    imsData.sales
+                    sales
                       .map((s) => {
                         const profit =
                           parseFloat(s.total_amount) - parseFloat(s.total_cost);
@@ -1531,7 +1814,7 @@
                     </tr>`;
                       })
                       .join("") ||
-                    `<tr><td colspan="5" class="empty-state">No sales yet</td></tr>`
+                    `<tr><td colspan="5" class="empty-state">No sales in this period.<div class="empty-cta"><button class="btn-add" onclick="openLogSale()">+ Log a sale</button></div></td></tr>`
                   }
                 </tbody>
               </table></div>
@@ -1547,10 +1830,11 @@
       }
 
       function buildSalesCharts() {
+        const rangeSales = salesInRange();
         requestAnimationFrame(() => {
           // Revenue over time
           const grouped = {};
-          imsData.sales.forEach((s) => {
+          rangeSales.forEach((s) => {
             const d = new Date(s.sale_date);
             let key;
             if (salesPeriod === "daily")
@@ -1611,7 +1895,7 @@
 
           // Payment methods
           const paymentMap = {};
-          imsData.sales.forEach((s) => {
+          rangeSales.forEach((s) => {
             paymentMap[s.payment_method] =
               (paymentMap[s.payment_method] || 0) + 1;
           });
@@ -1645,7 +1929,7 @@
 
           // Best sellers
           const prodStats = {};
-          imsData.sales.forEach((sale) => {
+          rangeSales.forEach((sale) => {
             (Array.isArray(sale.items) ? sale.items : []).forEach((item) => {
               if (!item.product_name) return;
               if (!prodStats[item.product_name])
@@ -1682,11 +1966,62 @@
         const items = Array.isArray(sale.items)
           ? sale.items.filter((i) => i.product_name)
           : [];
-        const profit =
-          parseFloat(sale.total_amount) - parseFloat(sale.total_cost);
-        alert(
-          `Sale on ${fmtDate(sale.sale_date)}\nCustomer: ${sale.first_name ? sale.first_name + " " + sale.last_name : "Walk-in"}\nPayment: ${sale.payment_method}\nItems: ${items.map((i) => `${i.product_name} x${i.quantity}`).join(", ") || "—"}\nRevenue: ${fmt(sale.total_amount)}\nCost: ${fmt(sale.total_cost)}\nProfit: ${fmt(profit)}`,
-        );
+        const revenue = parseFloat(sale.total_amount) || 0;
+        const cost = parseFloat(sale.total_cost) || 0;
+        const profit = revenue - cost;
+        const customer = sale.first_name
+          ? `${sale.first_name} ${sale.last_name || ""}`.trim()
+          : "Walk-in";
+        document.getElementById("saleDetailContent").innerHTML = `
+          <h3 style="margin-bottom:6px">Sale · ${fmtDate(sale.sale_date)}</h3>
+          <p style="color:#9ca7d6;font-size:13px;margin-bottom:20px">${customer} · <span class="badge badge-purple">${sale.payment_method}</span></p>
+          <div class="table-wrapper" style="margin:0 0 20px">
+            <table class="data-table">
+              <thead><tr><th>Item</th><th>Qty</th><th>Line Total</th></tr></thead>
+              <tbody>
+                ${
+                  items.length
+                    ? items
+                        .map(
+                          (i) =>
+                            `<tr><td style="color:#e5ecff">${i.product_name}</td><td>${i.quantity}</td><td style="color:#34d399;font-weight:600">${fmt(i.line_total)}</td></tr>`,
+                        )
+                        .join("")
+                    : `<tr><td colspan="3" class="empty-state">No line items recorded</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="profile-stats">
+            <div class="profile-stat"><div class="profile-stat-val" style="color:#34d399">${fmt(revenue)}</div><div class="profile-stat-label">Revenue</div></div>
+            <div class="profile-stat"><div class="profile-stat-val" style="color:#fbbf24">${fmt(cost)}</div><div class="profile-stat-label">Cost</div></div>
+            <div class="profile-stat"><div class="profile-stat-val" style="color:${profit >= 0 ? "#34d399" : "#fca5a5"}">${fmt(profit)}</div><div class="profile-stat-label">Profit</div></div>
+          </div>`;
+        openModal("saleDetailModal");
+      }
+
+      function exportSales() {
+        const rows = [
+          ["Date", "Customer", "Payment", "Items", "Revenue", "Cost", "Profit"],
+        ];
+        salesInRange().forEach((s) => {
+          const items = (Array.isArray(s.items) ? s.items : [])
+            .filter((i) => i.product_name)
+            .map((i) => `${i.product_name} x${i.quantity}`)
+            .join("; ");
+          const rev = parseFloat(s.total_amount) || 0;
+          const cost = parseFloat(s.total_cost) || 0;
+          rows.push([
+            new Date(s.sale_date).toISOString().slice(0, 10),
+            s.first_name ? `${s.first_name} ${s.last_name || ""}`.trim() : "Walk-in",
+            s.payment_method,
+            items,
+            rev.toFixed(2),
+            cost.toFixed(2),
+            (rev - cost).toFixed(2),
+          ]);
+        });
+        downloadCSV("aervo-sales.csv", rows);
       }
 
       // ── CUSTOMERS TAB ─────────────────────────────────────────────
@@ -1705,8 +2040,14 @@
             </div>
           </div>
           <div class="card">
-            <div class="table-wrapper"><table class="data-table">
-              <thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Visits</th><th>Total Spent</th><th>Since</th></tr></thead>
+            <div class="table-toolbar">
+              <h3>All Customers</h3>
+              <div class="spacer"></div>
+              <input class="table-search" placeholder="Search customers…" oninput="filterTable(this,'customersTable')" />
+              <button class="btn-ghost" onclick="exportCustomers()">⬇ Export CSV</button>
+            </div>
+            <div class="table-wrapper"><table class="data-table" id="customersTable">
+              <thead><tr><th>Customer</th><th>Email</th><th>Phone</th><th>Visits</th><th>Total Spent</th><th>Since</th><th></th></tr></thead>
               <tbody>
                 ${
                   imsData.customers.length
@@ -1728,10 +2069,11 @@
                     <td><span class="badge badge-purple">${c.total_orders || 0}</span></td>
                     <td style="color:#34d399;font-weight:600">${fmt(c.total_spent)}</td>
                     <td style="color:#64748b">${fmtDate(c.created_at)}</td>
+                    <td style="text-align:right"><button class="btn-ghost" style="padding:4px 10px" title="Delete customer" onclick="event.stopPropagation();deleteCustomer(${c.id},'${[c.first_name, c.last_name].filter(Boolean).join(" ").replace(/'/g, "\\'")}')">✕</button></td>
                   </tr>`,
                         )
                         .join("")
-                    : `<tr><td colspan="6" class="empty-state">No customers yet.</td></tr>`
+                    : `<tr><td colspan="7" class="empty-state">No customers yet.<div class="empty-cta"><button class="btn-add" onclick="openAddCustomer()">+ Add your first customer</button></div></td></tr>`
                 }
               </tbody>
             </table></div>
@@ -1936,8 +2278,14 @@
           </div>
           <div class="grid-2">
             <div class="card"><h3>Expenses by Category</h3><div class="chart-wrap"><canvas id="chartExpCat"></canvas></div></div>
-            <div class="card"><h3>Expense Log <span style="color:#64748b;font-weight:400;font-size:11px">(click to edit)</span></h3>
-              <div class="table-wrapper"><table class="data-table">
+            <div class="card">
+              <div class="table-toolbar">
+                <h3>Expense Log <span style="color:#64748b;font-weight:400;font-size:11px">(click to edit)</span></h3>
+                <div class="spacer"></div>
+                <input class="table-search" placeholder="Search…" oninput="filterTable(this,'expensesTable')" />
+                <button class="btn-ghost" onclick="exportExpenses()">⬇ CSV</button>
+              </div>
+              <div class="table-wrapper"><table class="data-table" id="expensesTable">
                 <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead>
                 <tbody>
                   ${
@@ -1953,7 +2301,7 @@
                     </tr>`,
                           )
                           .join("")
-                      : `<tr><td colspan="4" class="empty-state">No expenses yet.</td></tr>`
+                      : `<tr><td colspan="4" class="empty-state">No expenses yet.<div class="empty-cta"><button class="btn-add" onclick="openAddExpense()">+ Log your first expense</button></div></td></tr>`
                   }
                 </tbody>
               </table></div>
@@ -2053,7 +2401,7 @@
         const name = document.getElementById("pName").value.trim();
         const sale_price = document.getElementById("pSalePrice").value;
         if (!name || !sale_price) {
-          alert("Product name and sale price are required.");
+          showToast("Product name and sale price are required.", "error");
           return;
         }
         const body = {
@@ -2094,11 +2442,75 @@
           }
           if (!res.ok) throw new Error();
           closeModal("productModal");
+          showToast(id ? "✓ Product updated" : "✓ Product added");
           await loadAllData();
           destroyCharts();
           renderView("products");
         } catch {
-          alert("Error saving product. Please try again.");
+          showToast("Error saving product. Please try again.", "error");
+        }
+      }
+
+      function sortProducts(key) {
+        if (productSort.key === key) productSort.dir *= -1;
+        else productSort = { key, dir: 1 };
+        renderView("products");
+      }
+
+      function exportProducts() {
+        const stats = {};
+        imsData.sales.forEach((sale) =>
+          (Array.isArray(sale.items) ? sale.items : []).forEach((i) => {
+            if (!i.product_id) return;
+            stats[i.product_id] = stats[i.product_id] || { u: 0, r: 0 };
+            stats[i.product_id].u += parseFloat(i.quantity) || 0;
+            stats[i.product_id].r += parseFloat(i.line_total) || 0;
+          }),
+        );
+        const rows = [
+          [
+            "Name",
+            "SKU",
+            "Category",
+            "Sale Price",
+            "Cost Price",
+            "Units Sold",
+            "Revenue",
+            "Stock",
+            "Is Service",
+          ],
+        ];
+        imsData.products.forEach((p) => {
+          const st = stats[p.id] || { u: 0, r: 0 };
+          rows.push([
+            p.name,
+            p.sku || "",
+            p.category || "",
+            p.sale_price,
+            p.cost_price,
+            st.u,
+            st.r.toFixed(2),
+            p.is_service ? "" : parseFloat(p.quantity) || 0,
+            p.is_service ? "yes" : "no",
+          ]);
+        });
+        downloadCSV("aervo-products.csv", rows);
+      }
+
+      async function deleteProduct(id, name) {
+        if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/ims/products/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) throw new Error();
+          showToast("✓ Product deleted");
+          await loadAllData();
+          destroyCharts();
+          renderView("products");
+        } catch {
+          showToast("Could not delete product.", "error");
         }
       }
 
@@ -2171,7 +2583,7 @@
           (r) => r.product_id && r.quantity > 0,
         );
         if (!items.length) {
-          alert("Add at least one item.");
+          showToast("Add at least one item.", "error");
           return;
         }
         try {
@@ -2191,11 +2603,12 @@
           });
           if (!res.ok) throw new Error();
           closeModal("saleModal");
+          showToast("✓ Sale logged");
           await loadAllData();
           destroyCharts();
           renderView("sales");
         } catch {
-          alert("Error logging sale. Please try again.");
+          showToast("Error logging sale. Please try again.", "error");
         }
       }
 
@@ -2250,11 +2663,48 @@
           );
           if (!res.ok) throw new Error();
           closeModal("customerModal");
+          showToast(id ? "✓ Customer updated" : "✓ Customer added");
           await loadAllData();
           destroyCharts();
           renderView("customers");
         } catch {
-          alert("Error saving customer. Please try again.");
+          showToast("Error saving customer. Please try again.", "error");
+        }
+      }
+
+      function exportCustomers() {
+        const rows = [
+          ["First Name", "Last Name", "Email", "Phone", "Visits", "Total Spent", "Since", "Notes"],
+        ];
+        imsData.customers.forEach((c) => {
+          rows.push([
+            c.first_name || "",
+            c.last_name || "",
+            c.email || "",
+            c.phone || "",
+            c.total_orders || 0,
+            parseFloat(c.total_spent || 0).toFixed(2),
+            c.created_at ? new Date(c.created_at).toISOString().slice(0, 10) : "",
+            c.notes || "",
+          ]);
+        });
+        downloadCSV("aervo-customers.csv", rows);
+      }
+
+      async function deleteCustomer(id, name) {
+        if (!confirm(`Delete customer "${name}"? This cannot be undone.`)) return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/ims/customers/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) throw new Error();
+          showToast("✓ Customer deleted");
+          await loadAllData();
+          destroyCharts();
+          renderView("customers");
+        } catch {
+          showToast("Could not delete customer.", "error");
         }
       }
 
@@ -2292,7 +2742,7 @@
         const id = document.getElementById("eId").value;
         const amount = document.getElementById("eAmount").value;
         if (!amount) {
-          alert("Amount is required.");
+          showToast("Amount is required.", "error");
           return;
         }
         const body = {
@@ -2308,7 +2758,7 @@
               ? `${BACKEND_URL}/api/ims/expenses/${id}`
               : `${BACKEND_URL}/api/ims/expenses`,
             {
-              method: id ? "PUT" : "DELETE" === "PUT" ? "PUT" : "POST",
+              method: id ? "PUT" : "POST",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -2318,11 +2768,12 @@
           );
           if (!res.ok) throw new Error();
           closeModal("expenseModal");
+          showToast(id ? "✓ Expense updated" : "✓ Expense logged");
           await loadAllData();
           destroyCharts();
           renderView("expenses");
         } catch {
-          alert("Error saving expense. Please try again.");
+          showToast("Error saving expense. Please try again.", "error");
         }
       }
 
@@ -2335,12 +2786,28 @@
             headers: { Authorization: `Bearer ${token}` },
           });
           closeModal("expenseModal");
+          showToast("✓ Expense deleted");
           await loadAllData();
           destroyCharts();
           renderView("expenses");
         } catch {
-          alert("Error deleting expense.");
+          showToast("Error deleting expense.", "error");
         }
+      }
+
+      function exportExpenses() {
+        const rows = [["Date", "Category", "Description", "Amount"]];
+        imsData.expenses.forEach((e) => {
+          rows.push([
+            e.expense_date
+              ? new Date(e.expense_date).toISOString().slice(0, 10)
+              : "",
+            e.category || "",
+            e.description || "",
+            parseFloat(e.amount || 0).toFixed(2),
+          ]);
+        });
+        downloadCSV("aervo-expenses.csv", rows);
       }
 
       // ── CHAT ─────────────────────────────────────────────────────
@@ -2423,34 +2890,34 @@
               transition: border-color 0.2s, background 0.2s;
             "
               onclick="document.getElementById('importFileInput').click()"
-              ondragover="event.preventDefault(); this.style.borderColor='#29c8ff'; this.style.background='rgba(41,200,255,0.05)'"
+              ondragover="event.preventDefault(); this.style.borderColor='#a855f7'; this.style.background='rgba(168,85,247,0.06)'"
               ondragleave="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.background=''"
               ondrop="handleImportDrop(event)"
             >
               <input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleImportSelect(event)" />
               <div style="font-size:2.5rem;margin-bottom:12px">📂</div>
               <h2 style="margin-bottom:8px;font-size:1.2rem">Drop your file here or click to browse</h2>
-              <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px">Supports CSV, XLSX, and XLS files from any POS or e-commerce platform</p>
+              <p style="color:#9ca7d6;font-size:0.9rem;margin-bottom:20px">Supports CSV, XLSX, and XLS files from any POS or e-commerce platform</p>
               <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
-                ${["CSV", "XLSX", "XLS", "Shopify", "Square", "WooCommerce"].map((f) => `<span style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:6px;font-size:0.75rem;color:var(--muted)">${f}</span>`).join("")}
+                ${["CSV", "XLSX", "XLS", "Shopify", "Square", "WooCommerce"].map((f) => `<span style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:6px;font-size:0.75rem;color:#9ca7d6">${f}</span>`).join("")}
               </div>
-              <button style="background:linear-gradient(135deg,#29c8ff,#7c5cff);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600" onclick="event.stopPropagation();document.getElementById('importFileInput').click()">
+              <button style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600" onclick="event.stopPropagation();document.getElementById('importFileInput').click()">
                 📁 Choose File
               </button>
             </div>
 
-            <div id="importFileInfo" style="display:none;margin-top:16px;padding:14px 16px;background:rgba(41,200,255,0.07);border:1px solid rgba(41,200,255,0.2);border-radius:8px;display:flex;align-items:center;gap:10px">
+            <div id="importFileInfo" style="display:none;margin-top:16px;padding:14px 16px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);border-radius:8px;display:flex;align-items:center;gap:10px">
               <span style="font-size:1.2rem">📄</span>
               <span id="importFileName" style="flex:1;font-size:0.9rem"></span>
-              <button onclick="clearImportFile()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem">✕</button>
+              <button onclick="clearImportFile()" style="background:none;border:none;color:#9ca7d6;cursor:pointer;font-size:1rem">✕</button>
             </div>
 
             <div style="margin-top:16px">
-              <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px">Period label (optional)</label>
+              <label style="font-size:0.85rem;color:#9ca7d6;display:block;margin-bottom:6px">Period label (optional)</label>
               <input id="importPeriodLabel" type="text" placeholder="e.g. May 2026" style="width:100%;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem" />
             </div>
 
-            <button id="importSubmitBtn" onclick="submitImport()" style="margin-top:16px;width:100%;padding:12px;background:linear-gradient(135deg,#29c8ff,#7c5cff);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer">
+            <button id="importSubmitBtn" onclick="submitImport()" style="margin-top:16px;width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer">
               ⚡ Import & Analyze
             </button>
             <div id="importError" style="display:none;margin-top:10px;color:#fca5a5;font-size:0.85rem;text-align:center"></div>
@@ -2585,9 +3052,6 @@
           container.innerHTML = `<div class="empty-state" style="color:#fca5a5">Could not load import history.</div>`;
         }
       }
-
-      // Add PUT for expenses (backend already has DELETE, need PUT)
-      const _origSaveExpense = saveExpense;
 
       init();
     </script>
