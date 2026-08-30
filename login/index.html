@@ -462,14 +462,17 @@
                 const platform = meData.user && meData.user.platform;
                 const onboarded = meData.user && meData.user.onboarded;
 
-              if (!onboarded) {
-  window.location.href = "/onboarding";
-} else {
-  window.location.href = "/dashboard";
-}  
+                if (!onboarded) {
+                  window.location.href = "/onboarding";
+                } else if (platform === "csv" || platform === "ims") {
+                  // Manual Inventory Management System users
+                  window.location.href = "/dashboard/ims";
+                } else {
+                  window.location.href = "/dashboard";
+                }
               } catch (err) {
-  window.location.href = "/dashboard"; // was /dashboard/shopify
-}
+                window.location.href = "/dashboard"; // was /dashboard/shopify
+              }
             }, 600);
           } catch (err) {
             console.error(err);

@@ -844,7 +844,9 @@
       // Add the block below IMMEDIATELY AFTER those two lines:
       // ─────────────────────────────────────────────────────────────────────────────
 
-      // Redirect CSV/Square users to their correct dashboard
+      // Redirect users to their correct dashboard based on the platform
+      // chosen at onboarding. "csv" and "ims" both mean the manual
+      // Inventory Management System dashboard.
       (async () => {
         try {
           const res = await fetch("https://api.aervoapp.com/api/user/me", {
@@ -852,8 +854,8 @@
           });
           const data = await res.json();
           const platform = data.user && data.user.platform;
-          if (platform === "csv") {
-            window.location.href = "/dashboard/csv";
+          if (platform === "csv" || platform === "ims") {
+            window.location.href = "/dashboard/ims";
           } else if (platform === "square") {
             window.location.href = "/dashboard/square";
           }
