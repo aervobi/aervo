@@ -406,24 +406,30 @@
 
       let availableIntegrations = [];
       let connectedStores = [];
+      let quickbooksStatus = { connected: false };
 
       async function loadIntegrations() {
         try {
-          const [integrationsRes, storesRes] = await Promise.all([
+          const [integrationsRes, storesRes, quickbooksRes] = await Promise.all([
             fetch(`${BACKEND_URL}/api/integrations`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
             fetch(`${BACKEND_URL}/api/integrations/connected`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
+            fetch(`${BACKEND_URL}/api/quickbooks/status`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
           ]);
 
           const integrationsData = await integrationsRes.json();
           const storesData = await storesRes.json();
+          const quickbooksData = await quickbooksRes.json();
 
           if (integrationsData.success)
             availableIntegrations = integrationsData.integrations;
           if (storesData.success) connectedStores = storesData.stores;
+          if (quickbooksData.success) quickbooksStatus = quickbooksData;
 
           renderIntegrations();
         } catch (err) {
@@ -436,12 +442,17 @@
         }
       }
 
+      function isIntegrationConnected(integration) {
+        if (integration.name === "quickbooks") return quickbooksStatus.connected;
+        return connectedStores.some((s) => s.integration_name === integration.name);
+      }
+
       function renderIntegrations() {
         const connected = availableIntegrations.filter((i) =>
-          connectedStores.some((s) => s.integration_name === i.name),
+          isIntegrationConnected(i),
         );
         const available = availableIntegrations.filter(
-          (i) => !connectedStores.some((s) => s.integration_name === i.name),
+          (i) => !isIntegrationConnected(i),
         );
 
         let html = "";
@@ -494,7 +505,35 @@
               ${isConnected ? "● Connected" : "Available"}
             </div>
             
-            ${isConnected ? renderConnectedStores(stores, integration.name) : renderConnectButton(integration.name)}
+            ${
+              integration.name === "quickbooks"
+                ? isConnected
+                  ? renderQuickbooksConnected()
+                  : renderConnectButton(integration.name)
+                : isConnected
+                  ? renderConnectedStores(stores, integration.name)
+                  : renderConnectButton(integration.name)
+            }
+          </div>`;
+      }
+
+      function renderQuickbooksConnected() {
+        const connectedDate = quickbooksStatus.connectedAt
+          ? new Date(quickbooksStatus.connectedAt).toLocaleDateString()
+          : "";
+        return `
+          <div class="connected-stores">
+            <div class="store-item">
+              <div class="store-info">
+                <div class="store-name">${quickbooksStatus.environment === "production" ? "Production" : "Sandbox"} company</div>
+                <div class="store-origin">Connected ${connectedDate}</div>
+              </div>
+              <div class="store-actions">
+                <button class="btn-small btn-danger" onclick="disconnectQuickbooks()">
+                  Disconnect
+                </button>
+              </div>
+            </div>
           </div>`;
       }
 
@@ -530,7 +569,7 @@
       function renderConnectButton(integrationName) {
         return `
           <button class="btn-connect" onclick="connectIntegration('${integrationName}')">
-            Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : "Account"}
+            Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : integrationName === "quickbooks" ? "QuickBooks" : "Account"}
           </button>`;
       }
 
@@ -580,8 +619,53 @@
             return;
           }
           window.location.href = `${BACKEND_URL}/integrations/square/connect?merchantId=${encodeURIComponent(userId)}`;
+        } else if (name === "quickbooks") {
+          connectQuickbooks();
         } else {
           alert(`${name} integration coming soon!`);
+        }
+      }
+
+      async function connectQuickbooks() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/quickbooks/connect`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            alert(data.message || "Could not start QuickBooks connection.");
+            return;
+          }
+
+          window.location.href = data.url;
+        } catch (err) {
+          alert("Error connecting to QuickBooks");
+        }
+      }
+
+      async function disconnectQuickbooks() {
+        if (
+          !confirm(
+            "Are you sure you want to disconnect QuickBooks?\n\nThis will remove access to your financial data.",
+          )
+        )
+          return;
+
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/quickbooks/disconnect`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (res.ok) {
+            alert("✓ QuickBooks disconnected successfully");
+            loadIntegrations();
+          } else {
+            alert("Failed to disconnect QuickBooks");
+          }
+        } catch (err) {
+          alert("Error disconnecting QuickBooks");
         }
       }
 
