@@ -3,7 +3,7 @@
 /dashboard/square   /dashboard/square/index.html    200
 /dashboard/shopify  /dashboard/shopify/index.html   200
 /dashboard          /dashboard/shopify/index.html   200
-/dashboard/         /dashboard/shopify/index.html   200
+/dashboard/         /dashboard/shopify/             302
 /onboarding         /onboarding/index.html          200
 /onboarding/        /onboarding/index.html          200
 /login              /login/index.html               200
