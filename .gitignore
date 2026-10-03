@@ -2,3 +2,6 @@
 
 
 preview-ims-local.html
+
+# Local-only pages kept out of the public deploy
+_private/

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reports — Aervo</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <style>
       *,
       *::before,
@@ -37,59 +38,14 @@
           "SF Pro Text",
           sans-serif;
         min-height: 100vh;
-      }
-
-      /* ── NAV ── */
-      .nav {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 24px;
-        height: 52px;
-        background: rgba(2, 3, 10, 0.92);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid var(--border);
-      }
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        min-width: 180px;
-      }
-      .nav-brand img {
-        height: 28px;
-        width: auto;
-        display: block;
-      }
-      .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .btn-nav {
-        padding: 6px 14px;
-        border-radius: 999px;
-        border: 1px solid var(--border2);
-        background: rgba(255, 255, 255, 0.04);
-        color: #9aa8c8;
-        font-size: 13px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s;
-      }
-      .btn-nav:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--text);
+        padding-top: 64px; /* shared fixed nav */
       }
 
       /* ── LAYOUT ── */
       .layout {
         display: grid;
         grid-template-columns: 240px 1fr;
-        min-height: calc(100vh - 52px);
+        min-height: calc(100vh - 64px);
       }
 
       /* ── SIDEBAR ── */
@@ -98,8 +54,8 @@
         padding: 24px 16px;
         background: var(--surface);
         position: sticky;
-        top: 52px;
-        height: calc(100vh - 52px);
+        top: 64px;
+        height: calc(100vh - 64px);
         overflow-y: auto;
       }
 
@@ -737,19 +693,11 @@
 .chat-send { padding:10px 20px;border-radius:10px;background:linear-gradient(135deg,var(--a2),var(--a1));border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap; }
 .chat-send:disabled { opacity:.5;cursor:not-allowed; }
     </style>
+      <link rel="stylesheet" href="/assets/css/app-nav.css" />
   </head>
   <body>
     <!-- NAV -->
-    <nav class="nav">
-      <a href="/dashboard/shopify" class="nav-brand" style="display:flex;align-items:center;text-decoration:none;">
-  <img src="/assets/images/logo.png" alt="Aervo" style="height:38px;width:auto;display:block;" />
-</a>
-      <div class="nav-right">
-        <a href="/dashboard/shopify" class="btn-nav">← Dashboard</a>
-        <a href="/settings" class="btn-nav">Settings</a>
-        <button class="btn-nav" id="logoutBtn">Log out</button>
-      </div>
-    </nav>
+    <script src="/assets/js/app-nav.js" data-active="reports"></script>
 
     <div class="layout">
       <!-- SIDEBAR -->
@@ -978,10 +926,7 @@
 
       if (!token) window.location.href = "/login";
 
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "/login";
-      });
+      // Logout lives in /assets/js/app-nav.js
 
       // ── TAB SWITCHING ──────────────────────────────────────────
       function switchTab(tab) {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aervo – Intelligence Center</title>
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
@@ -43,78 +43,6 @@
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
-      }
-
-      /* ── NAV ── */
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 32px;
-        background: rgba(5, 8, 16, 0.92);
-        backdrop-filter: blur(20px);
-        border-bottom: 1px solid var(--border);
-        z-index: 100;
-      }
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-      }
-      .nav-brand img {
-        height: 32px;
-      }
-      .nav-links {
-        display: flex;
-        gap: 4px;
-      }
-      .nav-link {
-        padding: 6px 14px;
-        border-radius: 7px;
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--text-2);
-        text-decoration: none;
-        cursor: pointer;
-        transition: all 0.15s;
-        border: 1px solid transparent;
-      }
-      .nav-link:hover {
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.05);
-      }
-      .nav-link.active {
-        color: var(--text);
-        background: rgba(59, 130, 246, 0.12);
-        border-color: rgba(59, 130, 246, 0.25);
-      }
-      .nav-right {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .nav-btn {
-        padding: 6px 14px;
-        border-radius: 7px;
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--text-2);
-        background: transparent;
-        border: 1px solid var(--border-bright);
-        cursor: pointer;
-        transition: all 0.15s;
-        text-decoration: none;
-        font-family: inherit;
-      }
-      .nav-btn:hover {
-        background: var(--bg-hover);
-        color: var(--text);
       }
 
       /* ── LAYOUT ── */
@@ -1065,6 +993,7 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="/assets/css/app-nav.css" />
   </head>
   <body>
     <div class="page-loading" id="pageLoading">
@@ -1073,22 +1002,7 @@
     </div>
 
     <!-- NAV -->
-    <nav class="nav">
-      <a href="/dashboard/shopify" class="nav-brand">
-        <img src="/assets/images/logo.png" alt="Aervo" />
-      </a>
-      <div class="nav-links">
-        <a href="/dashboard/shopify" class="nav-link">Overview</a>
-        <a href="/dashboard/shopify" class="nav-link">Analytics</a>
-        <span class="nav-link active">Intelligence</span>
-        <a href="/reports" class="nav-link">Reports</a>
-      </div>
-      <div class="nav-right">
-        <a href="/integrations" class="nav-btn">⚙️ Integrations</a>
-        <a href="/settings" class="nav-btn">👤 Settings</a>
-        <button class="nav-btn" id="logoutBtn">Log out</button>
-      </div>
-    </nav>
+    <script src="/assets/js/app-nav.js" data-active="intelligence"></script>
 
     <div class="page" id="mainPage" style="display: none">
       <!-- HERO -->
@@ -1780,10 +1694,7 @@
       };
 
       // ── INIT ──
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("aervo_token");
-        window.location.href = "/login";
-      });
+      // Logout lives in /assets/js/app-nav.js
 
       async function init() {
         try {

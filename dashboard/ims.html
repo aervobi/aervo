@@ -23,55 +23,6 @@
         color: #e5e7eb;
         min-height: 100vh;
       }
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 32px;
-        background: rgba(5, 8, 23, 0.96);
-        backdrop-filter: blur(14px);
-        z-index: 100;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        min-width: 140px;
-        flex-shrink: 0;
-      }
-      .nav-center {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-      .nav-tab {
-        padding: 8px 16px;
-        border-radius: 8px;
-        color: #9ca7d6;
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border: 1px solid transparent;
-      }
-      .nav-tab:hover {
-        background: rgba(168, 85, 247, 0.08);
-        color: #e5ecff;
-      }
-      .nav-tab.active {
-        background: rgba(168, 85, 247, 0.15);
-        border-color: rgba(168, 85, 247, 0.3);
-        color: #e5ecff;
-      }
-      .nav-right {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
       .shop-badge {
         display: flex;
         align-items: center;
@@ -82,58 +33,6 @@
         color: #d8b4fe;
         font-size: 11px;
         border: 1px solid rgba(168, 85, 247, 0.3);
-      }
-      .btn-logout {
-        padding: 8px 16px;
-        border-radius: 999px;
-        border: 1px solid #3a4a7c;
-        background: transparent;
-        color: #dfe7ff;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-      }
-      .btn-logout:hover {
-        background: #1a2237;
-      }
-      .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        color: #e5ecff;
-        font-size: 24px;
-        cursor: pointer;
-        padding: 8px;
-      }
-      .mobile-menu {
-        display: none;
-        position: fixed;
-        top: 64px;
-        left: 0;
-        right: 0;
-        background: rgba(5, 8, 23, 0.98);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        z-index: 99;
-        padding: 16px;
-      }
-      .mobile-menu.active {
-        display: block;
-      }
-      .mobile-nav-tab {
-        padding: 14px 16px;
-        font-size: 14px;
-        color: #9ca7d6;
-        cursor: pointer;
-        border-radius: 8px;
-        margin-bottom: 4px;
-      }
-      .mobile-nav-tab.active {
-        background: rgba(168, 85, 247, 0.15);
-        color: #d8b4fe;
       }
       .container {
         padding: 88px 32px 48px;
@@ -808,12 +707,6 @@
           min-width: 0;
           width: 100%;
         }
-        .nav-center {
-          display: none;
-        }
-        .mobile-menu-btn {
-          display: block;
-        }
         .container {
           padding: 80px 16px 32px;
         }
@@ -840,51 +733,35 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="/assets/css/app-nav.css" />
   </head>
   <body>
-    <nav class="nav">
-      <a href="/dashboard" class="nav-brand" style="text-decoration: none">
-        <img
-          src="/assets/images/logo.png"
-          alt="Aervo"
-          style="height: 38px; width: auto"
-        />
-      </a>
-      <div class="nav-center">
-        <div class="nav-tab active" data-view="overview">Overview</div>
-        <div class="nav-tab" data-view="products">Products</div>
-        <div class="nav-tab" data-view="sales">Sales</div>
-        <div class="nav-tab" data-view="customers">Customers</div>
-        <div class="nav-tab" data-view="expenses">Expenses</div>
-        <div class="nav-tab" data-view="import">Import Data</div>
-      </div>
-      <div class="nav-right">
-        <div class="shop-badge"><span>●</span><span>Manual IMS</span></div>
-        <a href="/reports" class="btn-logout" style="text-decoration: none"
-          >📊 Reports</a
-        >
-        <a href="/intelligence" class="btn-logout" style="text-decoration: none"
-          >🧠 Intelligence</a
-        >
-        <a href="/integrations" class="btn-logout" style="text-decoration: none"
-          >⚙️ Integrations</a
-        >
-        <a href="/settings" class="btn-logout" style="text-decoration: none"
-          >👤 Settings</a
-        >
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        <button class="btn-logout" id="logoutBtn">Log out</button>
-      </div>
-    </nav>
-
-    <div class="mobile-menu" id="mobileMenu">
+    <template id="appNavCenter">
+      <div class="nav-tab active" data-view="overview">Overview</div>
+      <div class="nav-tab" data-view="products">Products</div>
+      <div class="nav-tab" data-view="sales">Sales</div>
+      <div class="nav-tab" data-view="customers">Customers</div>
+      <div class="nav-tab" data-view="expenses">Expenses</div>
+      <div class="nav-tab" data-view="import">Import Data</div>
+    </template>
+    <template id="appNavRightExtra">
+      <div class="shop-badge"><span>●</span><span>Manual IMS</span></div>
+    </template>
+    <template id="appNavMobile">
       <div class="mobile-nav-tab active" data-view="overview">📊 Overview</div>
       <div class="mobile-nav-tab" data-view="products">📦 Products</div>
       <div class="mobile-nav-tab" data-view="sales">🧾 Sales</div>
       <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
       <div class="mobile-nav-tab" data-view="expenses">💸 Expenses</div>
       <div class="mobile-nav-tab" data-view="import">📂 Import Data</div>
-    </div>
+    </template>
+    <script
+      src="/assets/js/app-nav.js"
+      data-home="/dashboard/ims"
+      data-accent="168,85,247"
+    ></script>
+
+    
 
     <div class="container">
       <div id="content">
@@ -1325,16 +1202,7 @@
       });
 
       // ── NAV ──────────────────────────────────────────────────────
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("aervo_token");
-        localStorage.removeItem("aervo_user");
-        window.location.href = "/login";
-      });
-      document
-        .getElementById("mobileMenuBtn")
-        .addEventListener("click", () =>
-          document.getElementById("mobileMenu").classList.toggle("active"),
-        );
+      // Logout and the mobile drawer toggle live in /assets/js/app-nav.js
 
       document.querySelectorAll(".nav-tab").forEach((tab) => {
         tab.addEventListener("click", () => {

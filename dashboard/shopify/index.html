@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aervo – Dashboard</title>
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
     <script
       src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
@@ -41,55 +41,6 @@
         color: #e5e7eb;
         min-height: 100vh;
       }
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 32px;
-        background: rgba(5, 8, 23, 0.96);
-        backdrop-filter: blur(14px);
-        z-index: 100;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        min-width: 200px;
-      }
-      .nav-center {
-        display: flex;
-        gap: 24px;
-        align-items: center;
-      }
-      .nav-tab {
-        padding: 8px 16px;
-        border-radius: 8px;
-        color: #9ca7d6;
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-      }
-      .nav-tab:hover {
-        background: rgba(143, 191, 255, 0.08);
-        color: #e5ecff;
-      }
-      .nav-tab.active {
-        background: rgba(143, 191, 255, 0.15);
-        border-color: rgba(143, 191, 255, 0.3);
-        color: #e5ecff;
-      }
-      .nav-right {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
       .shop-badge {
         display: flex;
         align-items: center;
@@ -100,20 +51,6 @@
         color: #6ee7b7;
         font-size: 11px;
         border: 1px solid rgba(34, 197, 94, 0.3);
-      }
-      .btn-logout {
-        padding: 8px 16px;
-        border-radius: 999px;
-        border: 1px solid #3a4a7c;
-        background: transparent;
-        color: #dfe7ff;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .btn-logout:hover {
-        background: #1a2237;
-        border-color: #4a5a8c;
       }
       .container {
         padding: 88px 32px 48px;
@@ -449,87 +386,11 @@
         transform: translateY(-2px);
         box-shadow: 0 14px 40px rgba(59, 130, 246, 0.6);
       }
-      /* Mobile Menu */
-      .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        color: #e5ecff;
-        font-size: 24px;
-        cursor: pointer;
-        padding: 8px;
-      }
-      .mobile-menu {
-        display: none;
-        position: fixed;
-        top: 64px;
-        left: 0;
-        right: 0;
-        background: rgba(5, 8, 23, 0.98);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        z-index: 99;
-        padding: 16px;
-      }
-      .mobile-menu.active {
-        display: block;
-      }
-      .mobile-nav-tab {
-        display: block;
-        width: 100%;
-        padding: 14px 16px;
-        margin-bottom: 8px;
-        border-radius: 8px;
-        color: #9ca7d6;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-        text-align: left;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-      }
-      .mobile-nav-tab.active {
-        background: rgba(143, 191, 255, 0.15);
-        border-color: rgba(143, 191, 255, 0.3);
-        color: #e5ecff;
-      }
-
       @media (max-width: 768px) {
         /* keep nav clean */
-        .nav-right a.btn-logout,
         .nav-right #shopBadge,
         .nav-right #integrationSwitcher {
           display: none !important;
-        }
-
-        /* keep logout + hamburger visible */
-        #logoutBtn {
-          padding: 8px 12px;
-          font-size: 12px;
-          min-height: 44px;
-          min-width: 44px;
-        }
-
-        .mobile-menu-btn {
-          display: block;
-          min-height: 44px;
-          min-width: 44px;
-        }
-
-        .nav-brand {
-          font-size: 12px;
-          letter-spacing: 3px;
-          min-width: auto;
-          flex-shrink: 0;
-          gap: 0;
-        }
-        .nav-center {
-          display: none;
-        }
-        .mobile-menu-btn {
-          display: block;
         }
         .container {
           padding: 72px 12px 24px;
@@ -571,10 +432,6 @@
           font-size: 10px;
           padding: 4px 8px;
         }
-        .btn-logout {
-          padding: 6px 12px;
-          font-size: 11px;
-        }
         .data-table {
           font-size: 12px;
         }
@@ -605,14 +462,6 @@
       }
 
       @media (max-width: 480px) {
-        .nav {
-          height: 52px;
-          padding: 0 8px;
-        }
-        .nav-brand {
-          font-size: 11px;
-          gap: 0;
-        }
         .container {
           padding: 60px 8px 20px;
         }
@@ -643,106 +492,80 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="/assets/css/app-nav.css" />
   </head>
   <body>
-    <nav class="nav">
-      <a
-        href="/dashboard/shopify"
-        class="nav-brand"
+    <template id="appNavBrandExtra">
+      <div
+        id="companyLogoContainer"
         style="
-          display: flex;
+          display: none;
           align-items: center;
-          gap: 0;
-          text-decoration: none;
+          gap: 10px;
+          margin-left: 14px;
+          padding-left: 14px;
+          border-left: 1px solid rgba(255, 255, 255, 0.2);
         "
       >
         <img
-          src="/assets/images/logo.png"
-          alt="Aervo"
-          style="height: 38px; width: auto"
+          id="companyLogo"
+          src=""
+          alt=""
+          style="
+            height: 32px;
+            width: auto;
+            border-radius: 6px;
+            object-fit: contain;
+          "
         />
-        <div
-          id="companyLogoContainer"
-          style="
-            display: none;
-            align-items: center;
-            gap: 10px;
-            margin-left: 14px;
-            padding-left: 14px;
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-          "
-        >
-          <img
-            id="companyLogo"
-            src=""
-            alt=""
-            style="
-              height: 32px;
-              width: auto;
-              border-radius: 6px;
-              object-fit: contain;
-            "
-          />
-          <span
-            id="companyLogoName"
-            style="font-size: 14px; color: #e5e7eb; font-weight: 600"
-          ></span>
-        </div>
+        <span
+          id="companyLogoName"
+          style="font-size: 14px; color: #e5e7eb; font-weight: 600"
+        ></span>
+      </div>
+    </template>
+    <template id="appNavCenter">
+      <div class="nav-tab active" data-view="overview">Overview</div>
+      <div class="nav-tab" data-view="analytics">Analytics</div>
+      <div class="nav-tab" data-view="inventory">Inventory</div>
+      <div class="nav-tab" data-view="customers">Customers</div>
+    </template>
+    <template id="appNavRightExtra">
+      <a
+        href="/dashboard/square"
+        id="integrationSwitcher"
+        style="
+          display: none;
+          text-decoration: none;
+          padding: 6px 14px;
+          border-radius: 999px;
+          background: rgba(52, 211, 153, 0.1);
+          border: 1px solid rgba(52, 211, 153, 0.25);
+          color: #34d399;
+          font-size: 12px;
+          font-weight: 600;
+        "
+      >
+        ⬛ Switch to Square
       </a>
-      <div class="nav-center">
-        <div class="nav-tab active" data-view="overview">Overview</div>
-        <div class="nav-tab" data-view="analytics">Analytics</div>
-        <div class="nav-tab" data-view="inventory">Inventory</div>
-        <div class="nav-tab" data-view="customers">Customers</div>
+      <div class="shop-badge" id="shopBadge" style="display: none">
+        <span>●</span>
+        <span id="shopName">Loading...</span>
       </div>
-      <div class="nav-right">
-        <a
-          href="/dashboard/square"
-          id="integrationSwitcher"
-          style="
-            display: none;
-            text-decoration: none;
-            padding: 6px 14px;
-            border-radius: 999px;
-            background: rgba(52, 211, 153, 0.1);
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            color: #34d399;
-            font-size: 12px;
-            font-weight: 600;
-          "
-        >
-          ⬛ Switch to Square
-        </a>
-        <div class="shop-badge" id="shopBadge" style="display: none">
-          <span>●</span>
-          <span id="shopName">Loading...</span>
-        </div>
-        <a href="/reports" class="btn-logout" style="text-decoration: none"
-          >📊 Reports</a
-        >
-        <a href="/intelligence" class="btn-logout" style="text-decoration: none"
-          >🧠 Intelligence Center</a
-        >
-
-        <a href="/integrations" class="btn-logout" style="text-decoration: none"
-          >⚙️ Integrations</a
-        >
-        <a href="/settings" class="btn-logout" style="text-decoration: none"
-          >👤 Settings</a
-        >
-
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-        <button class="btn-logout" id="logoutBtn">Log out</button>
-      </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
+    </template>
+    <template id="appNavMobile">
       <div class="mobile-nav-tab active" data-view="overview">📊 Overview</div>
       <div class="mobile-nav-tab" data-view="analytics">📈 Analytics</div>
       <div class="mobile-nav-tab" data-view="inventory">📦 Inventory</div>
       <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
-    </div>
+    </template>
+    <script
+      src="/assets/js/app-nav.js"
+      data-home="/dashboard/shopify"
+      data-accent="143,191,255"
+    ></script>
+
+    
 
     <div class="container">
       <div id="content">
@@ -876,20 +699,8 @@
         customers: null,
       };
 
-      // ============= LOGOUT =============
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        localStorage.removeItem("aervo_token");
-        localStorage.removeItem("aervo_user");
-        window.location.href = "/login";
-      });
-
-      // ============= MOBILE MENU TOGGLE =============
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      // Logout and the mobile drawer toggle live in /assets/js/app-nav.js
       const mobileMenu = document.getElementById("mobileMenu");
-
-      mobileMenuBtn.addEventListener("click", () => {
-        mobileMenu.classList.toggle("active");
-      });
 
       // ============= TAB NAVIGATION =============
       document.querySelectorAll(".nav-tab").forEach((tab) => {

@@ -8,7 +8,7 @@
       name="description"
       content="Simple, transparent pricing for every stage of your business. Start free, upgrade when you're ready."
     />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <style>
       :root {
         --bg: #02030a;
@@ -743,7 +743,7 @@
 
     <header>
       <div class="header-inner">
-        <a class="brand" href="index.html">
+        <a class="brand" href="/">
           <img src="/assets/images/logo.png" alt="Aervo" />
           <div class="name">AERVO</div>
         </a>
@@ -754,7 +754,7 @@
         </nav>
         <div style="display: flex; gap: 10px">
           <a href="/login" class="btn btn-ghost">Log in</a>
-          <a href="/signup" class="btn btn-primary">Get started</a>
+          <a href="/onboarding" class="btn btn-primary">Get started</a>
         </div>
       </div>
     </header>
@@ -802,7 +802,7 @@
             <div class="price-period">Forever free</div>
             <div class="price-annual">&nbsp;</div>
           </div>
-          <a href="/signup" class="tier-cta ghost-cta">Get started free</a>
+          <a href="/onboarding" class="tier-cta ghost-cta">Get started free</a>
           <div class="tier-divider"></div>
           <div class="features-label">What's included</div>
           <ul class="feature-list">
@@ -845,8 +845,6 @@
             <div class="price-annual" id="essentialAnnual">&nbsp;</div>
           </div>
 <a href="javascript:void(0)" onclick="startCheckout('essential_monthly')" class="tier-cta ghost-cta">Start Essential</a>
-            >Start Essential</a
-          >
           <div class="tier-divider"></div>
           <div class="features-label">Everything in Starter, plus</div>
           <ul class="feature-list">
@@ -886,9 +884,7 @@
             <div class="price-period" id="proPeriod">per month</div>
             <div class="price-annual" id="proAnnual">&nbsp;</div>
           </div>
-          <a
-            <a href="javascript:void(0)" onclick="startCheckout('pro_monthly')" class="tier-cta trial-cta" id="proCta">Start 14-day free trial</a>
-          >
+          <a href="javascript:void(0)" onclick="startCheckout('pro_monthly')" class="tier-cta trial-cta" id="proCta">Start 14-day free trial</a>
           <div class="tier-divider"></div>
           <div class="features-label">Everything in Essential, plus</div>
           <ul class="feature-list">
@@ -929,7 +925,6 @@
             <div class="price-annual" id="businessAnnual">&nbsp;</div>
           </div>
           <a href="javascript:void(0)" onclick="startCheckout('business_monthly')" class="tier-cta ghost-cta">Start Business</a>
-          >
           <div class="tier-divider"></div>
           <div class="features-label">Everything in Pro, plus</div>
           <ul class="feature-list">
@@ -955,7 +950,7 @@
       <div class="pricing-note">
         All plans include SSL-encrypted connections, read-only data access, and
         GDPR-compliant storage.<br />
-        Questions? <a href="index.html#contact">Talk to us</a> — we're happy to
+        Questions? <a href="/#contact">Talk to us</a> — we're happy to
         help you pick the right plan.
       </div>
 
@@ -1022,8 +1017,8 @@
       <div class="footer-inner">
         <div>© <span id="year"></span> Aervo. All rights reserved.</div>
         <div class="footer-links">
-          <a href="index.html#services">Capabilities</a>
-          <a href="index.html#about">About</a>
+          <a href="/#services">Capabilities</a>
+          <a href="/#about">About</a>
           <a href="/pricing">Pricing</a>
           <a href="/privacy">Privacy</a>
         </div>
@@ -1150,7 +1145,7 @@
 
         // If not logged in, send to signup first
         if (!token) {
-          window.location.href = `/signup?plan=${planId}`;
+          window.location.href = `/onboarding?plan=${planId}`;
           return;
         }
 

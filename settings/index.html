@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aervo – Account Settings</title>
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <style>
       :root {
         --bg: #02030a;
@@ -88,52 +88,6 @@
         text-decoration: none;
       }
 
-      /* ── HEADER ── */
-      header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        backdrop-filter: blur(22px);
-        background: linear-gradient(
-          to bottom,
-          rgba(2, 3, 10, 0.92),
-          rgba(2, 3, 10, 0.62),
-          rgba(2, 3, 10, 0.22)
-        );
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      header::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -1px;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(41, 200, 255, 0.35),
-          rgba(124, 92, 255, 0.25),
-          transparent
-        );
-        opacity: 0.7;
-      }
-
-      .header-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 14px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        position: relative;
-        z-index: 1;
-      }
-
       .brand {
         display: flex;
         align-items: center;
@@ -147,34 +101,6 @@
       .brand img {
         height: 28px;
         filter: drop-shadow(0 0 12px rgba(124, 92, 255, 0.4));
-      }
-
-      .header-nav {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .nav-link {
-        padding: 8px 14px;
-        border-radius: 12px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--muted);
-        transition: all 0.2s;
-        border: 1px solid transparent;
-      }
-
-      .nav-link:hover {
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
-        border-color: rgba(255, 255, 255, 0.08);
-      }
-
-      .nav-link.active {
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.1);
       }
 
       .btn {
@@ -963,24 +889,11 @@
         }
       }
     </style>
+      <link rel="stylesheet" href="/assets/css/app-nav.css" />
   </head>
   <body>
     <!-- Header -->
-    <header>
-      <div class="header-inner">
-        <a href="/dashboard/shopify" class="nav-brand" style="display:flex;align-items:center;text-decoration:none;">
-  <img src="/assets/images/logo.png" alt="Aervo" style="height:38px;width:auto;display:block;" />
-</a>
-        <nav class="header-nav">
-          <a href="/dashboard" class="nav-link">Dashboard</a>
-          <a href="/integrations" class="nav-link">Integrations</a>
-          <a href="/settings" class="nav-link active">Settings</a>
-        </nav>
-        <a href="/dashboard" class="btn btn-ghost btn-sm"
-          >← Back to Dashboard</a
-        >
-      </div>
-    </header>
+    <script src="/assets/js/app-nav.js" data-active="settings"></script>
 
     <!-- Page -->
     <div class="page">
