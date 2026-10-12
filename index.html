@@ -2,3395 +2,1863 @@
 <html lang="en">
   <head>
     <script>
-  // If loaded inside Shopify admin, redirect to auth
-  if (window.self !== window.top) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const shop = urlParams.get("shop");
-  const host = urlParams.get("host");
-  if (shop) {
-    window.location.href = 'https://api.aervoapp.com/auth/shopify?shop=' + shop + (host ? '&host=' + host : '');
-  }
-}
-</script>
+      // If loaded inside Shopify admin, redirect to auth
+      if (window.self !== window.top) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shop = urlParams.get("shop");
+        const host = urlParams.get("host");
+        if (shop) {
+          window.location.href =
+            "https://api.aervoapp.com/auth/shopify?shop=" +
+            shop +
+            (host ? "&host=" + host : "");
+        }
+      }
+    </script>
     <meta charset="UTF-8" />
     <title>Aervo – A higher view of your business</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#02030a" />
     <meta
       name="description"
       content="Aervo pulls in sales, inventory, and customer data to give modern businesses one live, AI-powered view."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Aervo – A higher view of your business" />
+    <meta
+      property="og:description"
+      content="One live, AI-powered view of your sales, inventory, and customers."
+    />
+    <meta property="og:image" content="https://aervoapp.com/assets/images/logo.png" />
 
     <link rel="stylesheet" href="/assets/css/tokens.css" />
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
     <style>
-      /* Page-local names mapped onto the shared tokens */
+      /* Homepage layout + marketing visuals. Everything else comes from the
+         shared tokens/components. */
       :root {
-        --bg2: var(--bg-elevated);
-        --card: var(--surface);
-        --card2: var(--surface-raised);
-        --borderSoft: var(--border-soft);
-        --bordersoft: var(--border-soft);
-        --muted: var(--text-secondary);
-        --a1: var(--primary-from);
-        --a2: var(--primary-to);
-        --a3: var(--success);
-        --max: var(--container-marketing);
-        --r: var(--radius-lg);
-        --r-lg: var(--radius-lg);
-        --r-xl: var(--radius-xl);
-        --r-pill: var(--radius-pill);
-        --shadow: var(--shadow-lg);
+        --fs-hero: clamp(2.5rem, 6vw, 4.5rem); /* hero headline only */
+        --fs-display: clamp(1.75rem, 3.6vw, 2.75rem); /* section headings */
+        --section-y: var(--space-11);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      p,
+      ul,
+      ol,
+      figure,
+      blockquote {
+        margin: 0;
+      }
+      ul,
+      ol {
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 88px;
       }
       body {
         font-size: var(--fs-16);
-      }
-
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      html,
-      body {
-        height: 100%;
-      }
-
-      body { /* uniform */
-        color: var(--text);
         line-height: var(--lh-relaxed);
         overflow-x: hidden;
-        scroll-padding-top: 76px;
       }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      /* Section divider */
-      .section-divider {
-        position: relative;
-        width: 100%;
-        max-width: var(--max); /* <-- FIXED */
-        margin: 72px auto; /* a bit tighter and cleaner */
-        height: 1px;
-        opacity: 0.9;
-      }
-
-      .section-divider::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to right,
-          transparent,
-          var(--surface-hover),
-          transparent
-        );
-        opacity: 0.75;
-      }
-
-      /* optional soft glow */
-      .section-divider::after {
-        content: "";
-        position: absolute;
-        inset: -8px 0;
-        background: radial-gradient(
-          circle at center,
-          rgba(var(--primary-to-rgb), 0.18),
-          transparent 70%
-        );
-        opacity: 0.35;
-      }
-
-      img {
-        display: block;
-        max-width: 100%;
-      }
-
       .container {
         width: 100%;
-        max-width: var(--max);
+        max-width: var(--container-marketing);
         margin: 0 auto;
-        padding: 0 var(--space-5);
+        padding: 0 var(--space-6);
+      }
+      .grad {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
 
-      /* subtle animated dots across whole site */
-
-      .global-dots {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
+      /* ── Ambient background (static, no canvas) ─────────────── */
+      .page-glow {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 900px;
         z-index: 0;
-        background-image:
+        pointer-events: none;
+        background:
           radial-gradient(
-            2px 2px at 12% 18%,
-            rgba(180, 210, 255, 0.2),
-            transparent
+            55% 60% at 50% 0%,
+            rgba(var(--primary-to-rgb), 0.28),
+            transparent 70%
           ),
           radial-gradient(
-            2px 2px at 78% 28%,
-            rgba(var(--info-rgb), 0.16),
-            transparent
+            35% 45% at 12% 8%,
+            rgba(var(--primary-rgb), 0.16),
+            transparent 70%
           ),
           radial-gradient(
-            2px 2px at 22% 76%,
-            rgba(var(--info-rgb), 0.14),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 62% 82%,
-            rgba(var(--info-rgb), 0.12),
-            transparent
-          ),
-          radial-gradient(
-            2px 2px at 40% 40%,
-            var(--surface-hover),
-            transparent
+            30% 40% at 90% 12%,
+            rgba(var(--primary-to-rgb), 0.12),
+            transparent 70%
           );
-        background-repeat: no-repeat;
-        background-size: 100% 100%;
-        opacity: 0.85;
-        filter: drop-shadow(0 0 10px rgba(124, 92, 255, 0.18));
-        animation: floatDots 18s ease-in-out infinite alternate;
       }
-      /* Full-page animated particle layer */
-
-      .site-canvas {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
+      .page-grid {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 720px;
         z-index: 0;
-
-        /* brighter + more presence */
-        opacity: 0.95;
-
-        /* soft glow so dots feel illuminated */
-        filter: drop-shadow(0 0 12px rgba(41, 200, 255, 0.22))
-          drop-shadow(0 0 28px rgba(124, 92, 255, 0.18));
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--border-soft) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+        background-size: 64px 64px;
+        -webkit-mask-image: radial-gradient(
+          60% 70% at 50% 0%,
+          #000,
+          transparent 75%
+        );
+        mask-image: radial-gradient(60% 70% at 50% 0%, #000, transparent 75%);
+        opacity: 0.6;
       }
-
-      /* ensure content is above background layers */
-      header,
-      .hero,
-      .section,
+      main,
       footer {
         position: relative;
-        z-index: 1;
+        z-index: var(--z-raised);
       }
 
-      @keyframes floatDots {
-        0% {
-          transform: translate3d(0, 0, 0);
-        }
-        50% {
-          transform: translate3d(0, -10px, 0);
-        }
-        100% {
-          transform: translate3d(0, 0, 0);
-        }
+      /* ── Header ─────────────────────────────────────────────── */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: var(--z-nav);
+        border-bottom: 1px solid transparent;
+        transition:
+          background var(--dur-slow) var(--ease),
+          border-color var(--dur-slow) var(--ease),
+          backdrop-filter var(--dur-slow) var(--ease);
       }
-
-      /* Header */
-/* Header (Pinned, always visible) */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  width: 100%;
-  z-index: var(--z-modal);
-
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-
-  background: linear-gradient(
-    to bottom,
-    var(--overlay),
-    var(--overlay),
-    rgba(2, 3, 10, 0.22)
-  );
-
-  border-bottom: 1px solid var(--border-soft);
-  transform: translateZ(0);
-}
-
-/* subtle texture */
-header::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(var(--surface-raised) 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.04;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
-  pointer-events: none;
-}
-
-/* animated glow line */
-header::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3), var(--a2), var(--a1));
-  background-size: 220% 100%;
-  opacity: 0.55;
-  filter: drop-shadow(0 0 10px rgba(124, 92, 255, 0.25));
-  animation: headerGlow 7s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes headerGlow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 220% 50%; }
-}
-
-/* scroll progress bar (positioned inside header, not in the flex row) */
-.scroll-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--surface-raised);
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.scroll-progress > i {
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
-  filter: drop-shadow(0 0 10px rgba(41, 200, 255, 0.25));
-}
-
-/* make header content sit above effects */
-.header-inner {
-  position: relative;
-  z-index: 1;
-}
-
+      .site-header.scrolled {
+        background: rgba(2, 3, 10, 0.72);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+        backdrop-filter: blur(16px) saturate(140%);
+        border-color: var(--border-soft);
+      }
       .header-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--space-4);
-        padding: var(--space-4) 0;
+        gap: var(--space-6);
+        height: var(--nav-h);
       }
-
       .brand {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        min-width: 220px;
-      }
-
-     .brand img {
-  height: 30px;
-  width: auto;
-  filter: drop-shadow(0 0 18px rgba(124, 92, 255, 0.35))
-    drop-shadow(0 0 10px rgba(41, 200, 255, 0.22));
-}
-
-      .brand .wordmark {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-     .brand {
-  gap: var(--space-3);
-  min-width: auto;
-}
-
-.brand .wordmark {
-  display: flex;
-  align-items: center;
-}
-
-.brand .name {
-  font-size: var(--fs-16);
-  font-weight: var(--fw-heavy);
-  letter-spacing: var(--ls-label);
-  text-transform: uppercase;
-  line-height: var(--lh-none);
-  color: var(--text);
-  text-shadow:
-    0 0 18px rgba(var(--primary-to-rgb), 0.18),
-    0 0 10px rgba(var(--primary-rgb), 0.14);
-}
-
-/* taglines no longer used */
-.brand .tagline {
-  display: none;
-}
-
-  nav {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);               /* more breathing room */
-  color: rgba(215, 220, 240, 0.8);
-  font-size: var(--fs-14);
-}
-
-nav a {
-  position: relative;
-  padding: var(--space-3) var(--space-3);
-  border-radius: var(--radius-lg);
-
-  text-transform: uppercase;
-  letter-spacing: var(--ls-label);
-  font-weight: var(--fw-heavy);
-  font-size: var(--fs-12);
-
-  color: var(--text-secondary);
-  transition: color var(--dur) ease, background var(--dur) ease, border-color var(--dur) ease;
-  border: 1px solid transparent;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  nav a:hover {
-    color: var(--text);
-    background: var(--surface);
-    border-color: var(--border-soft);
-  }
-  nav a.active {
-  color: var(--text);
-}
-nav a.active::after {
-  opacity: 0.9;
-  transform: scaleX(1);
-}
-}
-
-/* slimmer, cleaner underline */
-nav a::after {
-  content: "";
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 6px;
-  height: 2px;
-  border-radius: var(--radius-pill);
-  background: linear-gradient(90deg, var(--a1), var(--a2));
-  opacity: 0;
-  transform: scaleX(0.6);
-  transition: opacity var(--dur) ease, transform var(--dur) ease;
-}
-
-nav a:hover::after {
-  opacity: 0.9;
-  transform: scaleX(1);
-}
-      nav a::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        width: 0;
-        height: 1px;
-        background: linear-gradient(120deg, var(--a1), var(--a2));
-        transition: width var(--dur) ease;
-      }
-      nav a:hover {
-        color: var(--text);
-      }
-      nav a:hover::after {
-        width: 100%;
-      }
-
-      .actions {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-        min-width: 220px;
-        justify-content: flex-end;
-      }
-
-      .btn {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: var(--space-3);
+        font-size: var(--fs-18);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-tight);
+      }
+      .brand img {
+        height: 32px;
+        width: auto;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+      }
+      .nav-links a {
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-pill);
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+        font-weight: var(--fw-medium);
+        transition:
+          color var(--dur) var(--ease),
+          background var(--dur) var(--ease);
+      }
+      .nav-links a:hover {
+        color: var(--text);
+        background: var(--surface);
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
         gap: var(--space-2);
       }
-
-      .btn-primary {
-  position: relative;
-  overflow: hidden;
-}
-
-@keyframes btnSheen {
-  0%,
-  55% {
-    transform: translateX(-140%);
-  }
-  100% {
-    transform: translateX(140%);
-  }
-}
-
-      /* Mobile menu */
       .menu-btn {
         display: none;
-        border-radius: var(--radius-md);
-        padding: var(--space-3) var(--space-3);
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
         border: 1px solid var(--border);
+        border-radius: var(--radius-md);
         background: var(--surface);
-        color: var(--text);
-        cursor: pointer;
       }
-
       .mobile-nav {
         display: none;
-        padding: var(--space-3) 0 var(--space-5);
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: linear-gradient(
-          to bottom,
-          var(--overlay),
-          var(--overlay)
-        );
         border-top: 1px solid var(--border-soft);
-        z-index: var(--z-modal);
+        background: var(--bg-elevated);
+        padding: var(--space-4) 0 var(--space-6);
       }
-
       .mobile-nav.open {
         display: block;
       }
-
-      .mobile-nav .container {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-      }
-
-      .mobile-nav a {
+      .mobile-nav a:not(.btn) {
         display: block;
-        padding: var(--space-3) var(--space-3);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-soft);
-        background: var(--surface);
-        margin-top: var(--space-3);
-        color: var(--text);
-        text-decoration: none;
-        cursor: pointer;
+        padding: var(--space-3) 0;
+        color: var(--text-secondary);
+        font-weight: var(--fw-medium);
       }
-      .mobile-nav a:hover {
-        color: var(--text);
-        border-color: rgba(var(--primary-to-rgb), 0.35);
-      }
-      
       .mobile-nav .btn {
-        display: block !important;
         width: 100%;
-        padding: var(--space-3) var(--space-4) !important;
-        text-align: center;
-        border-radius: var(--radius-md);
-        text-decoration: none;
-        cursor: pointer;
-        pointer-events: auto;
-      }
-      
-      .mobile-nav .btn-ghost {
-        background: var(--surface-raised) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text) !important;
-      }
-      
-      .mobile-nav .btn-primary {
-        background: linear-gradient(90deg, var(--a1), var(--a2)) !important;
-        color: var(--text-on-primary) !important;
-        border: none !important;
-        box-shadow: var(--glow) !important;
+        margin-top: var(--space-2);
       }
 
-      /* HERO */
+      /* ── Hero ───────────────────────────────────────────────── */
       .hero {
-        position: relative;
-        z-index: 1;
-        min-height: 92vh;
-        display: grid;
-        align-items: center;
-        overflow: hidden;
-        padding: var(--space-10) 0 var(--space-7);
+        padding: var(--space-11) 0 var(--space-10);
+        text-align: center;
       }
-
-      .hero-canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        background-image:
-          radial-gradient(
-            1px 1px at 12% 22%,
-            rgba(255, 255, 255, 0.16),
-            transparent
-          ),
-          radial-gradient(
-            1px 1px at 76% 30%,
-            var(--surface-hover),
-            transparent
-          ),
-          radial-gradient(
-            1px 1px at 22% 78%,
-            var(--surface-hover),
-            transparent
-          ),
-          radial-gradient(
-            1px 1px at 62% 74%,
-            var(--surface-hover),
-            transparent
-          );
-        opacity: 0.35;
-      }
-
-      .hero-glow {
-  position: absolute;
-  left: 50%;
-  top: 28%;
-  transform: translate(-50%, -50%);
-  width: 660px;
-  height: 660px;
-  border-radius: 50%;
-
-  background: radial-gradient(
-    circle,
-    rgba(var(--primary-to-rgb), 0.55) 0%,
-    rgba(var(--primary-rgb), 0.35) 32%,
-    transparent 65%
-  );
-
-  filter: blur(28px);
-  opacity: 0.9;
-  z-index: 1;
-  pointer-events: none;
-
-  animation: heroGlowPulse 9s ease-in-out infinite;
-}
-      .hero-orbs {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.9;
-}
-
-.orb {
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  border-radius: 50%;
-  filter: blur(28px);
-  opacity: 0.35;
-  transform: translate3d(0, 0, 0);
-  animation: orbFloat 10s ease-in-out infinite alternate;
-}
-
-.orb.o1 {
-  left: -140px;
-  top: 40%;
-  background: radial-gradient(circle, rgba(var(--primary-rgb), 0.55), transparent 60%);
-}
-.orb.o2 {
-  right: -160px;
-  top: 18%;
-  background: radial-gradient(circle, rgba(var(--primary-to-rgb), 0.55), transparent 60%);
-  animation-duration: 12s;
-}
-.orb.o3 {
-  left: 38%;
-  top: -180px;
-  background: radial-gradient(circle, rgba(var(--success-rgb), 0.45), transparent 60%);
-  animation-duration: 14s;
-}
-
-@keyframes orbFloat {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(18px, -14px, 0) scale(1.03); }
-}
-
-    .hero-mark {
-  position: absolute;
-  left: 50%;
-  top: 24%;
-  transform: translate(-50%, -50%);
-  width: 260px;
-  max-width: 54vw;
-  z-index: 2;
-  pointer-events: none;
-
-  opacity: 0.95;
-
-  filter:
-    brightness(1.3)
-    contrast(1.1)
-    drop-shadow(0 0 28px rgba(124, 92, 255, 0.65))
-    drop-shadow(0 0 60px rgba(41, 200, 255, 0.45))
-    drop-shadow(0 0 100px rgba(124, 92, 255, 0.3));
-
-  animation: logoPulse 9s ease-in-out infinite;
-}
-
-      .hero-inner {
-        position: relative;
-        z-index: 3;
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: var(--space-7);
-        align-items: center;
-      }
-
-      .kicker {
+      .eyebrow {
         display: inline-flex;
         align-items: center;
-        gap: var(--space-3);
-        border-radius: var(--r-pill);
+        gap: var(--space-2);
+        padding: var(--space-1) var(--space-4) var(--space-1) var(--space-1);
         border: 1px solid var(--border);
-        background: rgba(0, 0, 0, 0.34);
-        backdrop-filter: blur(10px);
-        padding: var(--space-2) var(--space-3);
-        box-shadow: var(--shadow-lg);
-        width: fit-content;
+        border-radius: var(--radius-pill);
+        background: var(--surface);
+        color: var(--text-secondary);
+        font-size: var(--fs-13);
+      }
+      .eyebrow b {
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-pill);
+        background: var(--gradient-primary);
+        color: var(--text-on-primary);
+        font-size: var(--fs-11);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        max-width: 16ch;
+        margin: var(--space-6) auto var(--space-5);
+        font-size: var(--fs-hero);
+        font-weight: var(--fw-heavy);
+        line-height: 1.04;
+        letter-spacing: -0.028em;
+        text-wrap: balance;
+      }
+      .hero-sub {
+        max-width: 58ch;
+        margin: 0 auto;
+        color: var(--text-secondary);
+        font-size: var(--fs-18);
+        line-height: var(--lh-relaxed);
+      }
+      .hero-cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-3);
+        margin-top: var(--space-8);
+      }
+      .trust {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-2) var(--space-6);
+        margin-top: var(--space-7);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+      }
+      .trust span {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .trust svg {
+        color: var(--success);
+        flex-shrink: 0;
+      }
+      .hero > .container > * {
+        animation: rise 0.7s var(--ease) both;
+      }
+      .hero > .container > :nth-child(2) { animation-delay: 0.06s; }
+      .hero > .container > :nth-child(3) { animation-delay: 0.12s; }
+      .hero > .container > :nth-child(4) { animation-delay: 0.18s; }
+      .hero > .container > :nth-child(5) { animation-delay: 0.24s; }
+      .hero > .container > :nth-child(6) { animation-delay: 0.36s; }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
       }
 
-      .kicker .label {
-        padding: 2px var(--space-3);
-        border-radius: var(--r-pill);
+      /* ── Product window (hero visual) ───────────────────────── */
+      .window-wrap {
+        position: relative;
+        max-width: 1000px;
+        margin: var(--space-10) auto 0;
+      }
+      .window-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -40px -20px auto;
+        height: 70%;
+        background: radial-gradient(
+          50% 60% at 50% 40%,
+          rgba(var(--primary-to-rgb), 0.35),
+          transparent 70%
+        );
+        filter: blur(40px);
+        pointer-events: none;
+      }
+      .window {
+        position: relative;
+        overflow: hidden;
+        text-align: left;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.05),
+          var(--bg-elevated) 38%
+        );
+        box-shadow:
+          var(--shadow-lg),
+          0 0 0 1px rgba(var(--primary-rgb), 0.06);
+        -webkit-mask-image: linear-gradient(#000 82%, transparent);
+        mask-image: linear-gradient(#000 82%, transparent);
+      }
+      .window-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-3) var(--space-5);
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .window-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .window-dots i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border-strong);
+      }
+      .window-url {
+        flex: 1;
+        max-width: 280px;
+        margin: 0 auto;
+        padding: var(--space-1) var(--space-4);
+        border-radius: var(--radius-pill);
+        background: var(--surface);
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+        text-align: center;
+      }
+      .window-body {
+        padding: var(--space-6);
+      }
+      .window-tabs {
+        display: flex;
+        gap: var(--space-2);
+        margin-bottom: var(--space-5);
+      }
+      .window-tabs span {
+        padding: var(--space-1) var(--space-4);
+        border-radius: var(--radius-pill);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+        font-weight: var(--fw-medium);
+      }
+      .window-tabs .on {
+        border: 1px solid var(--border);
+        background: var(--surface-raised);
+        color: var(--text);
+      }
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-4);
+      }
+      .kpi {
+        padding: var(--space-4);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+      .kpi-label {
+        color: var(--text-secondary);
+        font-size: var(--fs-12);
+      }
+      .kpi-value {
+        margin-top: var(--space-1);
+        font-size: var(--fs-24);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-tight);
+      }
+      .kpi-sub {
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+      }
+      .spark {
+        --c: var(--primary-to);
+        margin-top: var(--space-3);
+        height: 30px;
+      }
+      .spark.good { --c: var(--success); }
+      .spark.warn { --c: var(--warning); }
+      .spark svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .spark path {
+        fill: none;
+        stroke: var(--c);
+        stroke-width: 2;
+        stroke-linecap: round;
+        vector-effect: non-scaling-stroke;
+      }
+      .spark .fill {
+        fill: var(--c);
+        stroke: none;
+        opacity: 0.12;
+      }
+      .window-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: var(--space-4);
+        margin-top: var(--space-4);
+      }
+      .panel-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-3);
+        font-size: var(--fs-13);
+        font-weight: var(--fw-semibold);
+      }
+      .panel-title span {
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+        font-weight: var(--fw-regular);
+      }
+      .chart-panel,
+      .insight-panel {
+        padding: var(--space-5);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+      .chart-panel svg {
+        display: block;
+        width: 100%;
+        height: 150px;
+      }
+      .insight {
+        display: flex;
+        gap: var(--space-3);
+        padding: var(--space-3) 0;
+        border-top: 1px solid var(--border-soft);
+        color: var(--text-secondary);
+        font-size: var(--fs-13);
+        line-height: var(--lh-normal);
+      }
+      .insight:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .insight b {
+        color: var(--text);
+        font-weight: var(--fw-semibold);
+      }
+      .dot {
+        flex-shrink: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: 6px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 4px rgba(var(--success-rgb), 0.15);
+      }
+      .dot.warn {
+        background: var(--warning);
+        box-shadow: 0 0 0 4px rgba(var(--warning-rgb), 0.15);
+      }
+      .dot.info {
+        background: var(--info);
+        box-shadow: 0 0 0 4px rgba(var(--info-rgb), 0.15);
+      }
+
+      /* ── "Works with" strip ─────────────────────────────────── */
+      .works-with {
+        padding: var(--space-8) 0;
+        border-block: 1px solid var(--border-soft);
+        text-align: center;
+      }
+      .works-with p {
+        margin-bottom: var(--space-5);
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+      }
+      .works-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-3) var(--space-8);
+        color: var(--text-secondary);
+        font-size: var(--fs-18);
+        font-weight: var(--fw-semibold);
+        letter-spacing: var(--ls-tight);
+      }
+
+      /* ── Sections ───────────────────────────────────────────── */
+      .section {
+        padding: var(--section-y) 0;
+      }
+      .section-head {
+        max-width: 640px;
+        margin-bottom: var(--space-10);
+      }
+      .section-head.center {
+        margin-inline: auto;
+        text-align: center;
+      }
+      .kicker {
+        display: inline-block;
+        margin-bottom: var(--space-4);
+        color: var(--primary-from);
         font-size: var(--fs-12);
         font-weight: var(--fw-heavy);
         letter-spacing: var(--ls-label);
         text-transform: uppercase;
-        background: linear-gradient(
-          120deg,
-          rgba(var(--primary-rgb), 0.35),
-          rgba(var(--primary-to-rgb), 0.35)
-        );
-        border: 1px solid var(--border);
-        color: var(--text);
       }
-
-      .kicker .text {
-        color: var(--text-secondary);
-        font-size: var(--fs-14);
-      }
-
-      .hero h1 {
-        margin-top: var(--space-4);
-        font-size: clamp(2.6rem, 4.8vw, 4.1rem);
-        line-height: var(--lh-none);
-        letter-spacing: var(--ls-label);
+      .section-head h2 {
+        font-size: var(--fs-display);
         font-weight: var(--fw-heavy);
+        line-height: var(--lh-tight);
+        letter-spacing: var(--ls-tight);
+        text-wrap: balance;
       }
-
-      .hero h1 span {
-        background-image: linear-gradient(120deg, var(--a1), var(--a2));
-        -webkit-background-clip: text;
-        color: transparent;
-      }
-
-      .hero p {
-        margin-top: var(--space-3);
-        font-size: var(--fs-16);
-        color: var(--text);
-        max-width: 54ch;
-      }
-
-      .hero-cta {
-        margin-top: var(--space-6);
-        display: flex;
-        gap: var(--space-3);
-        flex-wrap: wrap;
-        align-items: center;
-      }
-
-      .trust {
+      .section-head p {
         margin-top: var(--space-4);
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-3);
         color: var(--text-secondary);
-        font-size: var(--fs-14);
+        font-size: var(--fs-18);
       }
 
-      .trust span {
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--r-pill);
+      /* ── Capabilities (bento) ───────────────────────────────── */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: var(--space-4);
+      }
+      .bento-card {
+        --mx: 50%;
+        --my: 0%;
+        position: relative;
+        grid-column: span 2;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: var(--space-7);
         border: 1px solid var(--border-soft);
-        background: rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(10px);
-      }
-
-      /* Hero side panel (Apple-ish “product glimpse” without a screenshot) */
-      .preview {
-        border-radius: var(--r-xl);
-        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
         background: linear-gradient(
           180deg,
           var(--surface-raised),
           var(--surface)
         );
-        box-shadow: var(--shadow);
-        padding: var(--space-4);
-        position: relative;
-        overflow: hidden;
+        transition:
+          border-color var(--dur-slow) var(--ease),
+          transform var(--dur-slow) var(--ease);
       }
-
-      .preview::before {
+      .bento-card::before {
         content: "";
         position: absolute;
-        inset: -40px -40px auto -40px;
-        height: 220px;
+        inset: 0;
         background: radial-gradient(
-          circle at 30% 30%,
-          rgba(var(--primary-rgb), 0.18),
-          transparent 60%
+          320px circle at var(--mx) var(--my),
+          rgba(var(--primary-rgb), 0.12),
+          transparent 70%
         );
+        opacity: 0;
+        transition: opacity var(--dur-slow) var(--ease);
         pointer-events: none;
       }
-
-      .preview-top {
-        display: flex;
+      .bento-card:hover {
+        border-color: var(--border-strong);
+        transform: translateY(-3px);
+      }
+      .bento-card:hover::before {
+        opacity: 1;
+      }
+      .bento-card > * {
+        position: relative;
+      }
+      .bento-card.wide {
+        grid-column: span 3;
+      }
+      .bento-card.full {
+        grid-column: span 6;
+        flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        gap: var(--space-3);
-        margin-bottom: var(--space-4);
+        gap: var(--space-7);
       }
-
-      .dots {
-        display: flex;
-        gap: var(--space-2);
-      }
-      .dots i {
-        width: 9px;
-        height: 9px;
-        border-radius: var(--radius-pill);
-        background: rgba(255, 255, 255, 0.16);
-      }
-
-      .metric-grid {
+      .icon-tile {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-3);
-      }
-
-      .metric {
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-soft);
-        background: rgba(0, 0, 0, 0.22);
-        padding: var(--space-3);
-      }
-
-      .metric .m-label {
-        font-size: var(--fs-13);
-        color: var(--text-secondary);
-        margin-bottom: var(--space-2);
-      }
-
-      .metric .m-value {
-        font-size: var(--fs-20);
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-      }
-      .metric .m-value {
-  position: relative;
-}
-
-.metric .m-value::after {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: var(--glow);
-  opacity: 0.7;
-}
-
-.metric:has(.spark.good) .m-value::after {
-  background: rgba(var(--success-rgb), 0.7);
-  box-shadow: var(--glow);
-}
-.metric:has(.spark.warn) .m-value::after {
-  background: rgba(var(--warning-rgb), 0.75);
-  box-shadow: var(--glow);
-}
-.metric:has(.spark.bad) .m-value::after {
-  background: rgba(var(--danger-rgb), 0.75);
-  box-shadow: var(--glow);
-}
-
-      .metric .m-sub {
-        font-size: var(--fs-13);
-        color: var(--text-secondary);
-        margin-top: var(--space-1);
-      }
-
-      /* ---------- Spark (chart well) + status colors ---------- */
-
-      .spark {
-        height: 38px;
-        margin-top: var(--space-3);
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        margin-bottom: var(--space-5);
+        border: 1px solid rgba(var(--primary-rgb), 0.25);
         border-radius: var(--radius-md);
-
-        /* chart-well, not button */
         background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.035),
-          rgba(255, 255, 255, 0.015)
+          135deg,
+          rgba(var(--primary-rgb), 0.16),
+          rgba(var(--primary-to-rgb), 0.16)
         );
-
-        /* remove “button border” look */
-        border: 0;
-
-        /* subtle inset edge instead */
-        box-shadow:
-          inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-          inset 0 10px 24px rgba(0, 0, 0, 0.45);
-
-        position: relative;
-        overflow: hidden;
+        color: var(--primary-from);
       }
-
-      .spark::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        opacity: 0.55;
-        background:
-    /* horizontal grid lines */ repeating-linear-gradient(
-          to bottom,
-          var(--surface-raised) 0px,
-          var(--surface-raised) 1px,
-          transparent 1px,
-          transparent 10px
-        );
+      .bento-card h3 {
+        font-size: var(--fs-20);
+        font-weight: var(--fw-bold);
+        letter-spacing: var(--ls-tight);
       }
-
-      .spark::after {
-        content: "";
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        bottom: 11px;
-        height: 1px;
-        background: var(--surface-hover);
-        opacity: 0.6;
-      }
-
-      .spark svg {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-
-      /* Base sparkline defaults (NEUTRAL) */
-      .spark .sparkline {
-        fill: none;
-        stroke: var(--neutral, var(--text-muted));
-        stroke-width: 2.2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-
-        /* draw animation */
-        stroke-dasharray: 220;
-        stroke-dashoffset: 220;
-        animation: lineDraw 2.2s ease forwards;
-      }
-
-      /* Optional filled area under line (if your SVG includes it) */
-      .spark .sparkfill {
-        fill: rgba(var(--primary-to-rgb), 0.22); /* neutral fallback */
-        opacity: 0.9;
-      }
-
-      /* make it feel “alive” */
-      .reveal-visible .spark .sparkline {
-        animation:
-          lineDraw 2.2s ease forwards,
-          linePulse 3.4s ease-in-out infinite;
-      }
-
-      /* ---------- Status color states ---------- */
-
-      /* GOOD */
-      .spark.good .sparkline {
-        stroke: var(--good, var(--success));
-        filter: drop-shadow(0 0 6px rgba(35, 230, 168, 0.35));
-      }
-      .spark.good .sparkfill {
-        fill: rgba(var(--success-rgb), 0.26);
-      }
-
-      /* WARNING */
-      .spark.warn .sparkline {
-        stroke: var(--warn, var(--warning));
-        filter: drop-shadow(0 0 6px rgba(245, 194, 107, 0.35));
-      }
-      .spark.warn .sparkfill {
-        fill: rgba(var(--warning-rgb), 0.26);
-      }
-
-      /* BAD */
-      .spark.bad .sparkline {
-        stroke: var(--bad, var(--danger));
-        filter: drop-shadow(0 0 6px rgba(255, 107, 107, 0.35));
-      }
-      .spark.bad .sparkfill {
-        fill: rgba(var(--danger-rgb), 0.24);
-      }
-
-      /* NEUTRAL */
-      .spark.neutral .sparkline {
-        stroke: var(--neutral, var(--primary-to));
-        filter: drop-shadow(0 0 6px rgba(124, 92, 255, 0.3));
-      }
-      .spark.neutral .sparkfill {
-        fill: rgba(var(--primary-to-rgb), 0.22);
-      }
-
-      /* Animations */
-      @keyframes lineDraw {
-        to {
-          stroke-dashoffset: 0;
-        }
-      }
-
-      @keyframes linePulse {
-        0% {
-          opacity: 0.85;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.85;
-        }
-      }
-
-      @keyframes linePulse {
-        0%,
-        100% {
-          opacity: 0.55;
-        }
-        50% {
-          opacity: 0.95;
-        }
-      }
-
-      .spark::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.14),
-          transparent
-        );
-        transform: translateX(-60%);
-        animation: shimmer 2.6s ease-in-out infinite;
-        opacity: 0.6;
-      }
-
-     @keyframes shimmer {
-  0% { transform: translateX(-60%); }
-  100% { transform: translateX(60%); }
-}
-
-@keyframes heroGlowPulse {
-  0% { transform: translate(-50%, -50%) scale(0.96); opacity: 0.75; }
-  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(0.96); opacity: 0.75; }
-}
-
-@keyframes logoPulse {
-  0% {
-    filter: brightness(1.15) contrast(1.05)
-      drop-shadow(0 0 22px rgba(124, 92, 255, 0.45))
-      drop-shadow(0 0 48px rgba(41, 200, 255, 0.35));
-  }
-  50% {
-    filter: brightness(1.45) contrast(1.15)
-      drop-shadow(0 0 36px rgba(124, 92, 255, 0.8))
-      drop-shadow(0 0 78px rgba(41, 200, 255, 0.6));
-  }
-  100% {
-    filter: brightness(1.15) contrast(1.05)
-      drop-shadow(0 0 22px rgba(124, 92, 255, 0.45))
-      drop-shadow(0 0 48px rgba(41, 200, 255, 0.35));
-  }
-}
-
-      /* Section defaults */
-      .section {
-        position: relative;
-        z-index: 2;
-        padding: 92px 0;
-      }
-
-      /* Scroll reveal (smooth + premium) */
-      .reveal {
-        opacity: 0;
-        transform: translateY(18px);
-        transition:
-          opacity 700ms ease,
-          transform 700ms ease;
-        will-change: opacity, transform;
-      }
-
-      .reveal-visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      /* Stagger cards inside revealed sections */
-      .reveal .card {
-        opacity: 0;
-        transform: translateY(14px);
-        transition:
-          opacity 700ms ease,
-          transform 700ms ease;
-      }
-
-      .reveal-visible .card {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      /* Card stagger timing */
-      .reveal-visible .card:nth-child(1) {
-        transition-delay: 80ms;
-      }
-      .reveal-visible .card:nth-child(2) {
-        transition-delay: 140ms;
-      }
-      .reveal-visible .card:nth-child(3) {
-        transition-delay: 200ms;
-      }
-      .reveal-visible .card:nth-child(4) {
-        transition-delay: 260ms;
-      }
-      .reveal-visible .card:nth-child(5) {
-        transition-delay: 320ms;
-      }
-      .reveal-visible .card:nth-child(6) {
-        transition-delay: 380ms;
-      }
-
-      .section-head {
-        max-width: 58ch;
-        margin-bottom: var(--space-6);
-      }
-
-      .section-kicker {
-        font-size: var(--fs-12);
-        letter-spacing: var(--ls-label);
-        text-transform: uppercase;
-        font-weight: var(--fw-heavy);
-        color: var(--text-secondary);
-        margin-bottom: var(--space-3);
-      }
-
-      .section h2 {
-        font-size: var(--fs-32);
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-        line-height: var(--lh-tight);
-      }
-
-      .section .sub {
-        margin-top: var(--space-3);
-        color: var(--text-secondary);
-        font-size: var(--fs-16);
-        line-height: var(--lh-relaxed);
-      }
-
-      /* “Services” grid (like the template you linked) */
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-
-        /* gap: [row] [column] */
-        gap: 10px 14px;
-      }
-
-      .card h3 {
-        font-size: var(--fs-16);
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-      }
-
-      .card p {
+      .bento-card p {
         margin-top: var(--space-2);
         color: var(--text-secondary);
-        font-size: var(--fs-16);
+        font-size: var(--fs-14);
         line-height: var(--lh-relaxed);
       }
-      /* Spotlight overlay (works for hover + touch press) */
-.card, .preview, .about-visual {
-  position: relative;
-  overflow: hidden;
-}
-
-.spotlight {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--dur) ease;
-  background: radial-gradient(
-    420px 280px at var(--sx, 50%) var(--sy, 50%),
-    rgba(var(--primary-rgb), 0.16),
-    rgba(var(--primary-to-rgb), 0.1) 35%,
-    transparent 70%
-  );
-}
-
-/* Hover for mouse devices */
-@media (hover: hover) and (pointer: fine) {
-  .card:hover .spotlight,
-  .preview:hover .spotlight,
-  .about-visual:hover .spotlight {
-    opacity: 1;
-  }
-}
-
-/* Touch press state */
-.is-pressed .spotlight {
-  opacity: 1;
-}
-
-/* Button glow using CSS vars --mx/--my */
-.btn {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Hover on mouse */
-/* Press on touch */
-
-      .price {
-        margin-top: var(--space-3);
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        font-size: var(--fs-14);
-        color: var(--text-secondary);
+      .bento-tag {
+        margin-top: auto;
+        padding-top: var(--space-5);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
       }
-
-      .price strong {
+      .bento-tag b {
         color: var(--text);
+        font-weight: var(--fw-semibold);
+      }
+      .bento-visual {
+        margin-top: var(--space-6);
+        display: grid;
+        gap: var(--space-2);
+      }
+      .conn,
+      .bubble {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-md);
+        background: rgba(2, 3, 10, 0.5);
+        font-size: var(--fs-13);
+      }
+      .conn span:first-child {
+        font-weight: var(--fw-semibold);
+      }
+      .conn .badge {
+        margin-left: auto;
+      }
+      .bubble {
+        align-items: flex-start;
+        color: var(--text-secondary);
+        line-height: var(--lh-normal);
+      }
+      .bubble b {
+        color: var(--text);
+        font-weight: var(--fw-semibold);
+      }
+      .bubble svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: var(--primary-from);
+      }
+      .full-copy {
+        max-width: 520px;
       }
 
-      /* About split (aligned + filled visual) */
+      /* ── How it works ───────────────────────────────────────── */
       .split {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: var(--space-10);
+        align-items: center;
+      }
+      .steps {
+        display: grid;
         gap: var(--space-6);
-        align-items: start; /* FIX: stops misalignment */
+        margin-top: var(--space-8);
+        counter-reset: step;
+        list-style: none;
       }
-
-      .about-box {
-        border-radius: var(--r-xl);
+      .steps li {
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: var(--space-4);
+        counter-increment: step;
+      }
+      .steps li::before {
+        content: counter(step);
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
         border: 1px solid var(--border);
-        background: rgba(0, 0, 0, 0.22);
-        padding: var(--space-5);
+        border-radius: 50%;
+        background: var(--surface-raised);
+        font-weight: var(--fw-bold);
       }
-
-      .about-box .mini {
-        font-size: var(--fs-16);
+      .steps h3 {
+        font-size: var(--fs-18);
+        font-weight: var(--fw-bold);
+      }
+      .steps p {
+        margin-top: var(--space-1);
         color: var(--text-secondary);
-        line-height: var(--lh-relaxed);
+        font-size: var(--fs-14);
       }
-
-      /* replaces the empty window with a real "product preview" */
-      .about-visual {
-        border-radius: var(--r-xl);
+      .about-cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-top: var(--space-8);
+      }
+      .feed {
+        padding: var(--space-6);
         border: 1px solid var(--border);
-        background: rgba(0, 0, 0, 0.22);
-        box-shadow: var(--shadow);
-        padding: var(--space-4);
-        min-height: 320px;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .about-visual::before {
-        content: "";
-        position: absolute;
-        inset: -60px -60px auto -60px;
-        height: 220px;
-        background: radial-gradient(
-          circle at 30% 30%,
-          rgba(var(--primary-rgb), 0.16),
-          transparent 60%
+        border-radius: var(--radius-xl);
+        background: linear-gradient(
+          180deg,
+          var(--surface-raised),
+          var(--surface)
         );
-        pointer-events: none;
+        box-shadow: var(--shadow-md);
       }
-
-      /* visual top bar */
-      .about-visual .viz-top {
+      .feed-top {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--space-3);
-        padding-bottom: var(--space-3);
-        margin-bottom: var(--space-3);
-        border-bottom: 1px solid var(--border-soft);
-        position: relative;
-        z-index: 1;
+        margin-bottom: var(--space-5);
+        font-weight: var(--fw-bold);
+      }
+      .feed-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-4);
+        margin-top: var(--space-2);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-md);
+        background: rgba(2, 3, 10, 0.45);
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+      }
+      .feed-item .dot {
+        margin-top: 0;
+      }
+      .feed-item b {
+        color: var(--text);
+        font-weight: var(--fw-semibold);
+      }
+      .feed-note {
+        margin-top: var(--space-5);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+        text-align: center;
       }
 
-      .about-visual .viz-title {
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-        font-size: var(--fs-16);
+      /* ── Results ────────────────────────────────────────────── */
+      .quotes {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: var(--space-4);
+      }
+      .quote-main {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--space-8);
+        padding: var(--space-8);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        background:
+          radial-gradient(
+            70% 80% at 0% 0%,
+            rgba(var(--primary-to-rgb), 0.18),
+            transparent 70%
+          ),
+          var(--surface);
+      }
+      .quote-main p {
+        font-size: var(--fs-24);
+        font-weight: var(--fw-medium);
+        line-height: 1.4;
+        letter-spacing: var(--ls-tight);
+      }
+      .quote-by {
+        color: var(--text-muted);
+        font-size: var(--fs-14);
+      }
+      .quote-list {
+        display: grid;
+        gap: var(--space-4);
+      }
+      .quote-mini {
+        padding: var(--space-6);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        color: var(--text-secondary);
+      }
+
+      /* ── Pricing ────────────────────────────────────────────── */
+      .billing {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+      }
+      .billing .lbl {
+        color: var(--text-muted);
+        font-size: var(--fs-14);
+        font-weight: var(--fw-semibold);
+        transition: color var(--dur) var(--ease);
+      }
+      .billing .lbl.on {
         color: var(--text);
       }
-
-      .about-visual .viz-pill {
-        font-size: var(--fs-12);
-        color: var(--text-secondary);
+      .switch {
+        position: relative;
+        width: 52px;
+        height: 28px;
+        padding: 0;
         border: 1px solid var(--border);
-        background: var(--surface);
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--r-pill);
-        backdrop-filter: blur(10px);
+        border-radius: var(--radius-pill);
+        background: var(--surface-hover);
+        transition: background var(--dur) var(--ease);
       }
-
-      /* KPI cards */
-      .about-visual .viz-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-3);
-        position: relative;
-        z-index: 1;
-      }
-
-      .about-visual .viz-card {
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-soft);
-        background: var(--surface);
-        padding: var(--space-3);
-      }
-
-      .about-visual .kpi-label {
-        font-size: var(--fs-13);
-        color: var(--text-secondary);
-        margin-bottom: var(--space-2);
-      }
-
-      .about-visual .kpi-value {
-        font-size: var(--fs-20);
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-      }
-
-      .about-visual .kpi-sub {
-        margin-top: var(--space-1);
-        font-size: var(--fs-13);
-        color: var(--text-secondary);
-      }
-
-      .about-visual .mini-chart {
-        height: 44px;
-        margin-top: var(--space-3);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-soft);
-        background: linear-gradient(
-          90deg,
-          rgba(var(--primary-rgb), 0.12),
-          rgba(var(--primary-to-rgb), 0.12)
-        );
-        position: relative;
-        overflow: hidden;
-      }
-
-      .about-visual .mini-chart::after {
+      .switch::after {
         content: "";
         position: absolute;
-        inset: 0;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--text);
+        box-shadow: var(--shadow-sm);
+        transition: transform var(--dur) var(--ease);
+      }
+      .switch[aria-checked="true"] {
         background: linear-gradient(
           90deg,
-          transparent,
-          rgba(255, 255, 255, 0.12),
-          transparent
+          rgba(var(--primary-rgb), 0.45),
+          rgba(var(--primary-to-rgb), 0.45)
         );
-        transform: translateX(-70%);
-        animation: shimmer 2.8s ease-in-out infinite;
-        opacity: 0.65;
       }
-
-      /* highlights list */
-      .about-visual .alerts {
-        margin-top: var(--space-3);
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-soft);
-        background: var(--surface);
-        padding: var(--space-3);
-        position: relative;
-        z-index: 1;
+      .switch[aria-checked="true"]::after {
+        transform: translateX(24px);
       }
-
-      .about-visual .alerts h4 {
-        font-size: var(--fs-14);
-        font-weight: var(--fw-heavy);
-        color: var(--text);
-        margin-bottom: var(--space-3);
-      }
-
-      .about-visual .alert {
-        display: flex;
-        gap: var(--space-3);
-        align-items: flex-start;
-        padding: var(--space-3) 0;
-        border-top: 1px solid var(--border-soft);
-      }
-
-      .about-visual .alert:first-of-type {
-        border-top: none;
-        padding-top: 0;
-      }
-
-      .about-visual .dot {
-        width: 10px;
-        height: 10px;
+      .savings {
+        display: none;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0 auto var(--space-7);
+        padding: var(--space-3) var(--space-6);
+        border: 1px solid var(--success-border);
         border-radius: var(--radius-pill);
-        margin-top: var(--space-1);
-        background: rgba(var(--primary-rgb), 0.55);
-        box-shadow: var(--glow);
+        background: var(--success-bg);
+        font-size: var(--fs-14);
+        text-align: center;
       }
-
-      .about-visual .alert p {
-        margin: 0;
+      .savings.show {
+        display: block;
+      }
+      .plans {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-4);
+        margin-top: var(--space-7);
+      }
+      .plan {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: var(--space-7);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-xl);
+        background: linear-gradient(
+          180deg,
+          var(--surface-raised),
+          var(--surface)
+        );
+        transition:
+          transform var(--dur-slow) var(--ease),
+          border-color var(--dur-slow) var(--ease);
+      }
+      .plan:hover {
+        transform: translateY(-4px);
+        border-color: var(--border-strong);
+      }
+      .plan.featured {
+        border-color: rgba(var(--primary-rgb), 0.4);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(var(--primary-rgb), 0.1),
+            rgba(var(--primary-to-rgb), 0.07) 50%,
+            var(--surface)
+          );
+        box-shadow:
+          0 0 0 1px rgba(var(--primary-rgb), 0.18),
+          0 24px 70px rgba(var(--primary-rgb), 0.14);
+      }
+      .plan-flag {
+        align-self: flex-start;
+        margin-bottom: var(--space-4);
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-pill);
+        background: var(--gradient-primary);
+        color: var(--text-on-primary);
+        font-size: var(--fs-11);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+      }
+      .plan h3 {
+        font-size: var(--fs-18);
+        font-weight: var(--fw-heavy);
+      }
+      .plan-desc {
+        min-height: 44px;
+        margin-top: var(--space-1);
         color: var(--text-secondary);
         font-size: var(--fs-14);
-        line-height: var(--lh-normal);
       }
-
-      .about-visual .alert b {
-        color: var(--text);
+      .plan-price {
+        display: flex;
+        align-items: flex-start;
+        gap: 2px;
+        margin-top: var(--space-5);
+        font-size: var(--fs-40);
         font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-tight);
+        line-height: var(--lh-none);
       }
-      /* About insight feed animation */
-      .feed .alert {
+      .plan-price small {
+        margin-top: var(--space-1);
+        color: var(--text-secondary);
+        font-size: var(--fs-20);
+        font-weight: var(--fw-semibold);
+      }
+      .plan-period {
+        margin-top: var(--space-2);
+        color: var(--text-secondary);
+        font-size: var(--fs-13);
+      }
+      .plan-annual {
+        min-height: 20px;
+        margin-top: 2px;
+        color: var(--success);
+        font-size: var(--fs-12);
+      }
+      .plan .btn {
+        margin: var(--space-5) 0 var(--space-6);
+      }
+      .plan-incl {
+        padding-top: var(--space-5);
+        border-top: 1px solid var(--border-soft);
+        color: var(--text-secondary);
+        font-size: var(--fs-12);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+      }
+      .plan ul {
+        display: grid;
+        gap: var(--space-3);
+        margin-top: var(--space-4);
+        list-style: none;
+        color: var(--text);
+        font-size: var(--fs-13);
+      }
+      .plan li {
+        display: flex;
+        gap: var(--space-2);
+      }
+      .plan li svg {
+        flex-shrink: 0;
+        margin-top: 3px;
+        color: var(--success);
+      }
+      .pricing-more {
+        margin-top: var(--space-8);
+        text-align: center;
+        font-size: var(--fs-14);
+      }
+      .pricing-more a {
+        padding-bottom: 2px;
+        border-bottom: 1px solid rgba(var(--primary-rgb), 0.35);
+        color: var(--primary-from);
+      }
+
+      /* ── Final CTA ──────────────────────────────────────────── */
+      .cta-card {
+        position: relative;
+        overflow: hidden;
+        padding: var(--space-11) var(--space-7);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        background:
+          radial-gradient(
+            60% 90% at 50% 0%,
+            rgba(var(--primary-to-rgb), 0.32),
+            transparent 70%
+          ),
+          radial-gradient(
+            40% 60% at 0% 100%,
+            rgba(var(--primary-rgb), 0.16),
+            transparent 70%
+          ),
+          var(--bg-elevated);
+        text-align: center;
+      }
+      .cta-card h2 {
+        max-width: 18ch;
+        margin: 0 auto;
+        font-size: var(--fs-display);
+        font-weight: var(--fw-heavy);
+        line-height: var(--lh-tight);
+        letter-spacing: var(--ls-tight);
+        text-wrap: balance;
+      }
+      .cta-card p {
+        max-width: 52ch;
+        margin: var(--space-4) auto 0;
+        color: var(--text-secondary);
+        font-size: var(--fs-18);
+      }
+      .cta-card .hero-cta {
+        margin-top: var(--space-7);
+      }
+      .cta-note {
+        margin-top: var(--space-5);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+      }
+
+      /* ── Footer ─────────────────────────────────────────────── */
+      .site-footer {
+        padding: var(--space-10) 0 var(--space-8);
+        border-top: 1px solid var(--border-soft);
+      }
+      .footer-top {
+        display: grid;
+        grid-template-columns: 1.6fr repeat(3, 1fr);
+        gap: var(--space-8);
+      }
+      .footer-brand p {
+        max-width: 32ch;
+        margin-top: var(--space-4);
+        color: var(--text-muted);
+        font-size: var(--fs-14);
+      }
+      .footer-col h4 {
+        margin-bottom: var(--space-4);
+        color: var(--text);
+        font-size: var(--fs-13);
+        font-weight: var(--fw-semibold);
+      }
+      .footer-col a {
+        display: block;
+        padding: var(--space-1) 0;
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+        transition: color var(--dur) var(--ease);
+      }
+      .footer-col a:hover {
+        color: var(--text);
+      }
+      .footer-bottom {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: var(--space-3);
+        margin-top: var(--space-10);
+        padding-top: var(--space-6);
+        border-top: 1px solid var(--border-soft);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+      }
+
+      /* ── Scroll reveal (only when JS is on) ─────────────────── */
+      .js .reveal {
         opacity: 0;
-        transform: translateY(8px);
-        animation: feedIn 6s ease-in-out infinite;
+        transform: translateY(20px);
+        transition:
+          opacity 0.7s var(--ease),
+          transform 0.7s var(--ease);
+        transition-delay: calc(var(--d, 0) * 80ms);
+      }
+      .js .reveal.in {
+        opacity: 1;
+        transform: none;
       }
 
-      .feed .alert:nth-child(1) {
-        animation-delay: 0s;
-      }
-      .feed .alert:nth-child(2) {
-        animation-delay: 1.5s;
-      }
-      .feed .alert:nth-child(3) {
-        animation-delay: 3s;
-      }
-      .feed .alert:nth-child(4) {
-        animation-delay: 4.5s;
-      }
-
-      @keyframes feedIn {
-        0% {
-          opacity: 0;
-          transform: translateY(8px);
+      /* ── Responsive ─────────────────────────────────────────── */
+      @media (max-width: 1024px) {
+        .plans {
+          grid-template-columns: repeat(2, 1fr);
         }
-        10% {
-          opacity: 1;
-          transform: translateY(0);
+        .bento-card {
+          grid-column: span 3;
         }
-        70% {
-          opacity: 1;
+        .bento-card.full {
+          grid-column: span 6;
         }
-        100% {
-          opacity: 0;
-        }
-      }
-
-      @media (max-width: 980px) {
         .split {
           grid-template-columns: 1fr;
+          gap: var(--space-9);
         }
-        .about-visual {
-          min-height: 300px;
+        .footer-top {
+          grid-template-columns: 1fr 1fr;
+        }
+        .footer-brand {
+          grid-column: 1 / -1;
         }
       }
-
+      @media (max-width: 768px) {
+        :root {
+          --section-y: var(--space-10);
+        }
+        .nav-links,
+        .header-actions .btn {
+          display: none;
+        }
+        .menu-btn {
+          display: inline-flex;
+        }
+        .hero {
+          padding-top: var(--space-9);
+        }
+        .kpis {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .window-grid {
+          grid-template-columns: 1fr;
+        }
+        .window-tabs span:nth-child(n + 3),
+        .chart-panel {
+          display: none;
+        }
+        .window-url {
+          display: none;
+        }
+        .bento-card,
+        .bento-card.wide,
+        .bento-card.full {
+          grid-column: 1 / -1;
+        }
+        .bento-card.full {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .quotes {
+          grid-template-columns: 1fr;
+        }
+        .quote-main {
+          padding: var(--space-7);
+        }
+        .quote-main p {
+          font-size: var(--fs-20);
+        }
+        .cta-card {
+          padding: var(--space-10) var(--space-5);
+        }
+      }
+      @media (max-width: 560px) {
+        .plans {
+          grid-template-columns: 1fr;
+        }
+        .footer-top {
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-7);
+        }
+        .hero-cta .btn,
+        .about-cta .btn {
+          width: 100%;
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
-        .global-dots {
+        html {
+          scroll-behavior: auto;
+        }
+        .hero > .container > * {
           animation: none;
         }
-        .spark::after {
-          animation: none;
-        }
-        .reveal {
+        .js .reveal {
           opacity: 1;
           transform: none;
           transition: none;
         }
-      }
-      /* --- Bottom CTA + Newsletter upgrade --- */
-      .section-bottom {
-        padding-top: var(--space-10);
-        padding-bottom: 90px;
-      }
-      /* =========================
-   PRIMARY CTA CARD (CONTACT)
-========================= */
-
-.cta-card {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: var(--space-7);
-
-  padding: var(--space-7);
-  border-radius: var(--radius-xl);
-
-  border: 1px solid var(--border);
-  background: linear-gradient(
-    180deg,
-    var(--surface-raised),
-    var(--surface)
-  );
-
-  box-shadow:
-    var(--shadow-lg);
-
-  overflow: hidden;
-}
-
-/* ambient glow */
-.cta-card::before {
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background:
-    radial-gradient(circle at 25% 35%, rgba(var(--primary-rgb), 0.22), transparent 55%),
-    radial-gradient(circle at 75% 45%, rgba(var(--primary-to-rgb), 0.26), transparent 60%);
-  filter: blur(32px);
-  opacity:.85;
-  animation: ctaFloat 10s ease-in-out infinite alternate;
-  pointer-events:none;
-}
-
-@keyframes ctaFloat {
-  0% { transform: translate(-2%, -2%) scale(1); }
-  100% { transform: translate(2%, 2%) scale(1.04); }
-}
-
-/* content above glow */
-.cta-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* LEFT */
-.cta-kicker {
-  font-size: var(--fs-12);
-  font-weight: var(--fw-heavy);
-  letter-spacing: var(--ls-label);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-3);
-}
-
-.cta-card h3 {
-  font-size: var(--fs-32);
-  font-weight: var(--fw-heavy);
-  letter-spacing: var(--ls-label);
-  line-height: var(--lh-tight);
-}
-
-.cta-card p {
-  margin-top: var(--space-3);
-  color: var(--text);
-  max-width: 52ch;
-}
-
-/* trust pills */
-.cta-points {
-  margin-top: var(--space-4);
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-.cta-points span {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-soft);
-  background: rgba(0,0,0,.28);
-  font-size: var(--fs-14);
-  color: var(--text-secondary);
-}
-
-/* RIGHT */
-.cta-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-
-.cta-btn {
-  width: 100%;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-.cta-note {
-  font-size: var(--fs-13);
-  color: var(--text-secondary);
-}
-
-/* mobile */
-@media (max-width: 900px) {
-  .cta-card {
-    grid-template-columns: 1fr;
-    padding: var(--space-6);
-  }
-
-  .cta-right {
-    align-items: flex-start;
-  }
-}
-
-      .bottom-wrap {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--space-5);
-      }
-
-      /* Big premium cards */
-      .luxe-card {
-        position: relative;
-        border-radius: var(--radius-xl);
-        border: 1px solid var(--border);
-        background: linear-gradient(
-          180deg,
-          var(--surface-raised),
-          var(--surface)
-        );
-        box-shadow: var(--shadow-lg);
-        overflow: hidden;
-        padding: var(--space-6);
-      }
-
-      /* Subtle animated aurora behind the cards */
-      .luxe-card::before {
-        content: "";
-        position: absolute;
-        inset: -40%;
-        background:
-          radial-gradient(
-            circle at 25% 35%,
-            rgba(var(--primary-rgb), 0.18),
-            transparent 52%
-          ),
-          radial-gradient(
-            circle at 70% 35%,
-            rgba(var(--primary-to-rgb), 0.2),
-            transparent 55%
-          ),
-          radial-gradient(
-            circle at 55% 80%,
-            rgba(var(--success-rgb), 0.1),
-            transparent 58%
-          );
-        filter: blur(28px);
-        opacity: 0.85;
-        transform: translate3d(0, 0, 0);
-        animation: auroraFloat 9s ease-in-out infinite alternate;
-        pointer-events: none;
-      }
-
-      /* Sheen sweep (premium feel) */
-      .luxe-card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          110deg,
-          transparent 0%,
-          var(--surface-raised) 45%,
-          transparent 70%
-        );
-        transform: translateX(-140%);
-        animation: sheen 6.5s ease-in-out infinite;
-        opacity: 0.65;
-        pointer-events: none;
-      }
-
-      /* Keep text above effects */
-      .luxe-card > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      @keyframes auroraFloat {
-        0% {
-          transform: translate3d(-2%, -2%, 0) scale(1);
+        .bento-card,
+        .plan {
+          transition: none;
         }
-        100% {
-          transform: translate3d(2%, 2%, 0) scale(1.02);
-        }
-      }
-
-      @keyframes sheen {
-        0% {
-          transform: translateX(-140%);
-        }
-        55% {
-          transform: translateX(-140%);
-        }
-        100% {
-          transform: translateX(140%);
-        }
-      }
-
-      /* Layout inside the big cards */
-      .luxe-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--space-4);
-        flex-wrap: wrap;
-      }
-
-      .luxe-title {
-        font-size: var(--fs-20);
-        font-weight: var(--fw-heavy);
-        letter-spacing: var(--ls-label);
-      }
-
-      .luxe-body {
-        margin-top: var(--space-2);
-        color: var(--text-secondary);
-        max-width: 70ch;
-      }
-
-      .news-row {
-        display: flex;
-        gap: var(--space-3);
-        align-items: center;
-        flex-wrap: wrap;
-        margin-top: var(--space-4);
-      }
-
-      /* Nicer input */
-      .input {
-        height: 46px;
-        min-width: 260px;
-      }
-
-      /* Respect reduced motion */
-      @media (prefers-reduced-motion: reduce) {
-        .luxe-card::before,
-        .luxe-card::after {
-          animation: none;
-        }
-      }
-      /* =========================
-   FUTURISTIC UPGRADE PACK
-   Paste at end of <style>
-========================= */
-
-:root{
-  --glow1: rgba(var(--primary-rgb), 0.22);
-  --glow2: rgba(var(--primary-to-rgb), 0.22);
-  --glow3: rgba(var(--success-rgb), 0.14);
-
-  --glass: var(--surface-raised);
-  --glass2: var(--surface);
-  --stroke: var(--border);
-  --strokeSoft: var(--border-soft);
-}
-
-/* Background: aurora + faint grid */
-body::before{
-  content:"";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(900px 520px at 20% 20%, rgba(var(--primary-rgb), 0.16), transparent 60%),
-    radial-gradient(800px 520px at 75% 25%, rgba(var(--primary-to-rgb), 0.18), transparent 62%),
-    radial-gradient(820px 620px at 60% 85%, rgba(var(--success-rgb), 0.12), transparent 60%),
-    radial-gradient(1100px 700px at 50% 50%, var(--surface), transparent 60%);
-  filter: blur(8px);
-  opacity: .9;
-}
-
-body::after{
-  content:"";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--surface) 1px, transparent 1px),
-    linear-gradient(90deg, var(--surface) 1px, transparent 1px);
-  background-size: 54px 54px;
-  opacity: .10;
-  mask-image: radial-gradient(circle at 50% 30%, rgba(0,0,0,1), rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 75%);
-}
-
-/* Header gets a sharper glass edge */
-header{
-  border-bottom: 1px solid var(--border-soft);
-}
-header::after{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:-1px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), 0.35), rgba(var(--primary-to-rgb), 0.25), transparent);
-  opacity:.7;
-}
-
-/* Buttons: magnetic glow + soft inner sheen */
-.btn{
-  position: relative;
-  overflow: hidden;
-  transform: translateZ(0);
-}
-
-/* Cards: better depth + subtle border glow */
-.card, .about-box, .about-visual, .preview, .metric{
-  position: relative;
-}
-.card::before,
-.about-box::before,
-.about-visual::before,
-.preview::before,
-.metric::before{
-  content:"";
-  position:absolute;
-  inset:-1px;
-  border-radius: inherit;
-  pointer-events:none;
-  background: linear-gradient(120deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-to-rgb), 0.1), rgba(var(--success-rgb), 0.06));
-  opacity: 0;
-  transition: opacity var(--dur) ease;
-  mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000);
-  -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000);
-  padding: 1px;
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
-.card:hover::before,
-.about-visual:hover::before,
-.preview:hover::before{
-  opacity: .9;
-}
-
-/* Preview panel: 3D tilt stage */
-.preview{
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-.preview .metric{
-  background: rgba(0,0,0,.26);
-  border: 1px solid var(--border-soft);
-}
-
-/* KPI spark: give the well a subtle neon rim */
-.spark{
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.07),
-    inset 0 10px 24px rgba(0,0,0,.55),
-    0 0 0 1px rgba(41,200,255,.03);
-}
-
-/* Cursor spotlight layer (applied via JS) */
-.spotlight{
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: radial-gradient(240px 160px at var(--sx,50%) var(--sy,50%), var(--surface-hover), transparent 60%);
-  opacity: 0;
-  transition: opacity var(--dur-fast) ease;
-}
-.card:hover .spotlight,
-.preview:hover .spotlight,
-.about-visual:hover .spotlight{
-  opacity: 1;
-}
-
-/* Hero headline: add a tiny “scanline shimmer” feel */
-.hero h1{
-  text-shadow: 0 0 18px rgba(var(--primary-to-rgb), 0.16);
-}
-.hero h1 span{
-  filter: drop-shadow(0 0 16px rgba(41,200,255,.18));
-}
-
-/* Make sections feel more separated without heavy dividers */
-.section{
-  position: relative;
-}
-.section::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:-40px;
-  transform: translateX(-50%);
-  width: min(920px, 92vw);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--surface-hover), transparent);
-  opacity: .45;
-}
-
-/* Media queries for responsive design */
-@media (max-width: 980px){
-  nav{ display:none; }
-  .menu-btn{ display:inline-flex; }
-  .actions .btn { display: none; }
-  .hero-inner{ grid-template-columns: 1fr; }
-  .preview{ max-width: 520px; margin: var(--space-6) auto 0; }
-  .actions{ min-width: auto; }
-}
-
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce){
-  body::after{ opacity:.05; }
-}
-/* =========================
-   MOBILE FIX PACK (cramped -> clean)
-   Paste at END of <style>
-========================= */
-
-@media (max-width: 520px) {
-  /* Give the page breathing room under your fixed header */
-  body {
-    scroll-padding-top: 92px;
-  }
-
-  header .header-inner {
-    padding: var(--space-3) 0;
-    gap: var(--space-3);
-  }
-
-  /* Brand: smaller + tighter */
-  .brand img {
-    height: 26px;
-  }
-  .brand .name {
-    font-size: var(--fs-14);
-    letter-spacing: var(--ls-label);
-  }
-
-  /* Actions: stop forcing width */
-  .actions {
-    min-width: auto;
-    gap: var(--space-2);
-  }
-
-  /* Buttons in header: slimmer so they fit */
-  .actions .btn,
-  .menu-btn {
-    padding: var(--space-3) var(--space-3);
-    font-size: var(--fs-14);
-  }
-
-  /* HERO: more top padding so nothing is covered by header */
-  .hero {
-    padding-top: 110px;
-    min-height: auto;
-  }
-
-  /* Stack hero content and tighten spacing */
-  .hero-inner {
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-  }
-
-  .kicker {
-    transform: scale(0.96);
-    transform-origin: left center;
-  }
-
-  /* Headline + paragraph scale down a touch */
-  .hero h1 {
-    font-size: var(--fs-40);
-    line-height: var(--lh-none);
-  }
-  .hero p {
-    font-size: var(--fs-16);
-    max-width: 60ch;
-  }
-
-  /* Big logo behind text is what makes it feel busy */
-  .hero-mark {
-    top: 20%;
-    width: 210px;
-    opacity: 0.18; /* key change */
-    filter:
-      brightness(1.2)
-      contrast(1.05)
-      drop-shadow(0 0 20px rgba(124, 92, 255, 0.35))
-      drop-shadow(0 0 40px rgba(41, 200, 255, 0.25));
-  }
-
-  .hero-glow {
-    top: 22%;
-    width: 520px;
-    height: 520px;
-    opacity: 0.75;
-  }
-
-  /* CTA buttons: full width stack (more tappable) */
-  .hero-cta {
-    gap: var(--space-3);
-  }
-  .hero-cta .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Trust chips: make them wrap clean + smaller */
-  .trust span {
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--fs-13);
-  }
-
-  /* Preview card: keep it from feeling jammed */
-  .preview {
-    padding: var(--space-4);
-    margin-top: var(--space-3);
-  }
-}
-
-/* Slightly larger phones (gives you a nice middle state) */
-@media (min-width: 521px) and (max-width: 820px) {
-  .hero {
-    padding-top: 96px;
-  }
-  .hero-inner {
-    grid-template-columns: 1fr;
-  }
-  .hero-cta .btn {
-    width: auto;
-  }
-  .hero-mark {
-    opacity: 0.22;
-    width: 240px;
-  }
-}
-
-/* =========================
-   Capabilities grid fix on mobile
-   Paste near the very end of <style>
-========================= */
-
-@media (max-width: 520px) {
-  /* The big fix: 1 column on phones */
-  #services .grid {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-3) !important;
-  }
-
-  /* Make cards feel less like tall pills */
-  #services .card {
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-  }
-}
-
-@media (min-width: 521px) and (max-width: 900px) {
-  /* 2 columns on larger phones/small tablets */
-  #services .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: var(--space-3) !important;
-  }
-}
-/* Hero logo should be a real element, not an absolute layer */
-.hero-logo{
-  display: inline-block;
-  width: 120px;
-  height: auto;
-  margin-bottom: var(--space-4);
-  filter:
-    drop-shadow(0 0 18px rgba(124, 92, 255, 0.35))
-    drop-shadow(0 0 10px rgba(41, 200, 255, 0.22));
-}
-
-/* Mobile sizing */
-@media (max-width: 520px){
-  .hero-logo{
-    width: 96px;
-    margin-bottom: var(--space-3);
-  }
-}
-/* Footer styling */
-footer {
-  margin-top: var(--space-10);
-  padding-top: var(--space-7);
-  border-top: 1px solid var(--border-soft);
-}
-
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-  color: var(--text-secondary);
-  font-size: var(--fs-14);
-}
-
-.footer-links {
-  display: flex;
-  gap: var(--space-6);
-  flex-wrap: wrap;
-}
-
-.footer-links a {
-  color: var(--text-secondary);
-  transition: color var(--dur) ease;
-}
-
-.footer-links a:hover {
-  color: var(--a1);
-}
-
-@media (max-width: 640px) {
-  .footer-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .footer-links {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .home-pricing-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* ---------- additional mobile tweaks ---------- */
-@media (max-width: 768px) {
-  /* page padding for small tablets/large phones */
-  body {
-    padding: 0 var(--space-3);
-  }
-
-  /* collapse any multi‑column grids */
-  .grid,
-  .home-pricing-grid,
-  .bottom-wrap {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-3) !important;
-  }
-
-  /* cards should span full width */
-  .card,
-  .luxe-card,
-  .preview,
-  .about-box {
-    width: 100% !important;
-  }
-
-  /* hero text scaling for readability */
-  .hero h1 {
-    font-size: var(--fs-28) !important;
-  }
-  .hero p {
-    font-size: var(--fs-16) !important;
-  }
-
-  /* sections need extra bottom space */
-  .section {
-    padding-bottom: var(--space-8);
-  }
-
-  /* tables scroll horizontally on narrow viewports */
-  table {
-    width: 100%;
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* charts respect container width */
-  canvas {
-    max-width: 100% !important;
-    height: auto !important;
-  }
-
-  /* default interactive elements sized for touch */
-  .btn,
-  input,
-  select,
-  textarea {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 480px) {
-  /* tighter padding on phones */
-  body {
-    padding: 0 var(--space-2);
-  }
-
-  .hero h1 {
-    font-size: var(--fs-24) !important;
-  }
-  .hero-inner {
-    grid-template-columns: 1fr;
-  }
-
-  /* centre call‑to‑action components */
-  .cta-card,
-  .cta-right,
-  .cta-note {
-    text-align: center;
-  }
-
-  /* compress header buttons further */
-  .actions .btn {
-    font-size: var(--fs-14);
-  }
-
-  /* footer elements stack vertically */
-  footer .footer-inner {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-      /* restored: decorative pseudo-element rules for shared components */
-      .btn-primary::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.22) 45%,
-    transparent 70%
-  );
-  transform: translateX(-140%);
-  animation: btnSheen 6s ease-in-out infinite;
-  opacity: 0.6;
-  pointer-events: none;
-}
-      .btn::before{
-  content: "";
-  position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--dur) ease;
-  background: radial-gradient(
-    260px 180px at var(--mx, 50%) var(--my, 50%),
-    rgba(255, 255, 255, 0.14),
-    transparent 60%
-  );
-}
-      .input::placeholder{
-        color: var(--text-secondary);
-      }
-      .btn::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background: radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 60%);
-  opacity: 0;
-  transition: opacity var(--dur) ease;
-  pointer-events:none;
-}
-      .btn-primary::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.12) 45%, transparent 70%);
-  transform: translateX(-140%);
-  transition: transform var(--dur-slow) ease;
-  opacity:.6;
-  pointer-events:none;
-}
-          /* feature list rows (were repeated inline styles) */
-      .row-start {
-        display: flex;
-        gap: var(--space-2);
-        align-items: flex-start;
-      }
-      .check-icon {
-        color: var(--success);
-        flex-shrink: 0;
-        margin-top: 1px;
       }
     </style>
-      <script src="/assets/js/ui.js"></script>
   </head>
 
   <body>
-    <canvas id="siteCanvas" class="site-canvas" aria-hidden="true"></canvas>
-    <div class="global-dots" aria-hidden="true"></div>
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <div class="page-glow" aria-hidden="true"></div>
+    <div class="page-grid" aria-hidden="true"></div>
 
-    <header>
+    <header class="site-header" id="siteHeader">
       <div class="container">
         <div class="header-inner">
-          <div class="scroll-progress" aria-label="true"><i id="scrollBar"></i></div>
-          <a class="brand" href="/dashboard/shopify" aria-label="Aervo home">
-            <img src="/assets/images/logo.png" alt="Aervo" style="height:36px;width:auto;" />
+          <a class="brand" href="/" aria-label="Aervo home">
+            <img src="/assets/images/logo.png" alt="" />
+            Aervo
           </a>
 
-          <nav aria-label="Main navigation">
-            <a href="#services">Capabilities</a>
-            <a href="#about">About</a>
-            <a href="#proof">Results</a>
-            <a href="/pricing">Pricing</a>
-
-            <a href="#contact">Contact</a>
+          <nav class="nav-links" aria-label="Main navigation">
+            <a href="#capabilities">Capabilities</a>
+            <a href="#how">How it works</a>
+            <a href="#results">Results</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/demo">Demo</a>
           </nav>
 
-          <div class="actions">
-            <button class="menu-btn" id="menuBtn" type="button">Menu</button>
-            <a href="https://aervoapp.com/login" class="btn btn-ghost">Log in</a>
-            <a href="https://aervoapp.com/onboarding" class="btn btn-primary">Sign up</a>
+          <div class="header-actions">
+            <a href="/login" class="btn btn-ghost">Log in</a>
+            <a href="/onboarding" class="btn btn-primary">Start free</a>
+            <button
+              class="menu-btn"
+              id="menuBtn"
+              type="button"
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls="mobileNav"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </button>
           </div>
         </div>
-
-        <div class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-          <div class="container">
-            <a href="#services">Capabilities</a>
-            <a href="#about">About</a>
-            <a href="#proof">Results</a>
-            <a href="/pricing">Pricing</a>
-
-            <a href="#contact">Contact</a>
-            <hr style="margin: var(--space-3) 0; border: none; border-top: 1px solid var(--border);">
-            <a href="https://aervoapp.com/login" class="btn btn-ghost mt-3">Log in</a>
-            <a href="https://aervoapp.com/onboarding" class="btn btn-primary mt-2">Sign up</a>
-          </div>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <div class="container">
+          <a href="#capabilities">Capabilities</a>
+          <a href="#how">How it works</a>
+          <a href="#results">Results</a>
+          <a href="#pricing">Pricing</a>
+          <a href="/demo">Demo</a>
+          <a href="/login" class="btn btn-secondary">Log in</a>
+          <a href="/onboarding" class="btn btn-primary">Start free</a>
         </div>
       </div>
     </header>
 
-    <section class="hero">
-      <canvas id="dataCanvas" class="hero-canvas" aria-hidden="true"></canvas>
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="hero-orbs" aria-hidden="true">
-  <span class="orb o1"></span>
-  <span class="orb o2"></span>
-  <span class="orb o3"></span>
-</div>
-      <img src="/assets/images/logo.png" alt="" class="hero-mark" aria-hidden="true" />
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div class="container">
+          <div class="eyebrow">
+            <b>Product</b>
+            <span>Your business, in one live view</span>
+          </div>
 
-      <div class="container">
-        <div class="hero-inner reveal">
-          <div>
-            <div class="kicker">
-              <span class="label">Product</span>
-              <span class="text">Your business, in one live view</span>
+          <h1>Intelligent visibility for <span class="grad">modern businesses</span>.</h1>
+
+          <p class="hero-sub">
+            Aervo pulls live data from your tools and turns it into one clear,
+            AI-powered view so you can spot issues, opportunities, and next
+            steps at a glance.
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="/onboarding">Start free</a>
+            <a class="btn btn-secondary btn-lg" href="/demo">Request a demo</a>
+          </div>
+
+          <div class="trust" aria-label="Trust signals">
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Read-only connections</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Encrypted</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>No data team needed</span>
+          </div>
+
+          <div class="window-wrap" aria-label="Aervo dashboard preview">
+            <div class="window">
+              <div class="window-bar">
+                <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+                <div class="window-url">aervoapp.com/dashboard</div>
+                <div style="width: 42px" aria-hidden="true"></div>
+              </div>
+              <div class="window-body">
+                <div class="window-tabs" aria-hidden="true">
+                  <span class="on">Overview</span>
+                  <span>Analytics</span>
+                  <span>Inventory</span>
+                  <span>Customers</span>
+                </div>
+
+                <div class="kpis">
+                  <div class="kpi">
+                    <div class="kpi-label">Revenue</div>
+                    <div class="kpi-value">$42,780</div>
+                    <div class="kpi-sub">Last 30 days</div>
+                    <div class="spark" aria-hidden="true">
+                      <svg viewBox="0 0 100 38" preserveAspectRatio="none"><path class="fill" d="M0 34 L0 26 C14 26, 26 24, 38 22 C54 20, 70 18, 100 16 L100 34 Z" /><path d="M0 26 C14 26, 26 24, 38 22 C54 20, 70 18, 100 16" /></svg>
+                    </div>
+                  </div>
+                  <div class="kpi">
+                    <div class="kpi-label">Conversion</div>
+                    <div class="kpi-value">3.8%</div>
+                    <div class="kpi-sub">Up 0.4%</div>
+                    <div class="spark good" aria-hidden="true">
+                      <svg viewBox="0 0 100 38" preserveAspectRatio="none"><path class="fill" d="M0 34 L0 28 C18 26, 30 25, 44 23 C60 21, 80 20, 100 18 L100 34 Z" /><path d="M0 28 C18 26, 30 25, 44 23 C60 21, 80 20, 100 18" /></svg>
+                    </div>
+                  </div>
+                  <div class="kpi">
+                    <div class="kpi-label">Orders</div>
+                    <div class="kpi-value">1,240</div>
+                    <div class="kpi-sub">Avg. $34.50</div>
+                    <div class="spark" aria-hidden="true">
+                      <svg viewBox="0 0 100 38" preserveAspectRatio="none"><path class="fill" d="M0 34 L0 29 C16 30, 30 28, 46 26 C62 24, 78 24, 100 22 L100 34 Z" /><path d="M0 29 C16 30, 30 28, 46 26 C62 24, 78 24, 100 22" /></svg>
+                    </div>
+                  </div>
+                  <div class="kpi">
+                    <div class="kpi-label">Inventory risk</div>
+                    <div class="kpi-value">Low</div>
+                    <div class="kpi-sub">2 items trending down</div>
+                    <div class="spark warn" aria-hidden="true">
+                      <svg viewBox="0 0 100 38" preserveAspectRatio="none"><path class="fill" d="M0 34 L0 18 C20 20, 34 22, 50 26 C68 29, 84 30, 100 31 L100 34 Z" /><path d="M0 18 C20 20, 34 22, 50 26 C68 29, 84 30, 100 31" /></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="window-grid">
+                  <div class="chart-panel" aria-hidden="true">
+                    <div class="panel-title">Revenue <span>Last 30 days</span></div>
+                    <svg viewBox="0 0 400 150" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="#7c5cff" stop-opacity="0.35" />
+                          <stop offset="1" stop-color="#7c5cff" stop-opacity="0" />
+                        </linearGradient>
+                        <linearGradient id="areaLine" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0" stop-color="#29c8ff" />
+                          <stop offset="1" stop-color="#7c5cff" />
+                        </linearGradient>
+                      </defs>
+                      <g stroke="rgba(255,255,255,0.06)">
+                        <path d="M0 30H400M0 70H400M0 110H400" />
+                      </g>
+                      <path d="M0 120 C30 112, 50 100, 80 104 C110 108, 130 84, 165 80 C200 76, 215 92, 250 66 C285 40, 310 52, 340 34 C365 22, 385 26, 400 18 L400 150 L0 150 Z" fill="url(#areaFill)" />
+                      <path d="M0 120 C30 112, 50 100, 80 104 C110 108, 130 84, 165 80 C200 76, 215 92, 250 66 C285 40, 310 52, 340 34 C365 22, 385 26, 400 18" fill="none" stroke="url(#areaLine)" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+                    </svg>
+                  </div>
+                  <div class="insight-panel">
+                    <div class="panel-title">AI insights <span>Updated just now</span></div>
+                    <div class="insight"><i class="dot warn"></i><span><b>Inventory risk</b> detected on 2 SKUs</span></div>
+                    <div class="insight"><i class="dot"></i><span><b>Conversion up</b> 0.4% week over week</span></div>
+                    <div class="insight"><i class="dot info"></i><span><b>Margin leak</b> found in shipping rules</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Works with -->
+      <section class="works-with reveal" aria-label="Integrations">
+        <div class="container">
+          <p>Connects with the tools you already use</p>
+          <div class="works-list">
+            <span>Shopify</span>
+            <span>Square</span>
+            <span>QuickBooks</span>
+            <span>Google Reviews</span>
+            <span>CSV &amp; Excel</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Capabilities -->
+      <section class="section" id="capabilities">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="kicker">Capabilities</div>
+            <h2>From scattered tools to a clear control center.</h2>
+            <p>
+              Clean surfaces, confident answers, and a focus on outcomes.
+              Connect data, understand it fast, and act with confidence.
+            </p>
+          </div>
+
+          <div class="bento">
+            <article class="bento-card wide reveal">
+              <div class="icon-tile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1" /><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" /></svg>
+              </div>
+              <h3>Connect your tools</h3>
+              <p>
+                Bring sales, inventory, and customer signals into one live view.
+                No messy exports.
+              </p>
+              <div class="bento-visual" aria-hidden="true">
+                <div class="conn"><span>Shopify</span><span class="badge badge-success">Connected</span></div>
+                <div class="conn"><span>Square</span><span class="badge badge-success">Connected</span></div>
+                <div class="conn"><span>QuickBooks</span><span class="badge badge-success">Connected</span></div>
+              </div>
+              <div class="bento-tag"><b>Fast setup</b> · guided connections</div>
+            </article>
+
+            <article class="bento-card wide reveal" style="--d: 1">
+              <div class="icon-tile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="M19 17l.7 1.8 1.8.7-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7z" /></svg>
+              </div>
+              <h3>AI insights that explain</h3>
+              <p>
+                Get short summaries that tell you what changed, why it matters,
+                and what to do next.
+              </p>
+              <div class="bento-visual" aria-hidden="true">
+                <div class="bubble">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /></svg>
+                  <span><b>Orders are up this week.</b> Two best sellers are running low, so reorder before the weekend.</span>
+                </div>
+                <div class="bubble">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /></svg>
+                  <span><b>Shipping rules</b> are eating into margin on small orders.</span>
+                </div>
+              </div>
+              <div class="bento-tag"><b>Actionable</b> · not “AI fluff”</div>
+            </article>
+
+            <article class="bento-card reveal">
+              <div class="icon-tile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>
+              </div>
+              <h3>Alerts you can trust</h3>
+              <p>
+                Catch margin drops, stockouts, conversion swings, and
+                returning-customer shifts before they hurt.
+              </p>
+              <div class="bento-tag"><b>Proactive</b> · configurable signals</div>
+            </article>
+
+            <article class="bento-card reveal" style="--d: 1">
+              <div class="icon-tile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" /><path d="M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.7 7 6.8c0 4.7 10 2.4 10 7.4 0 2.2-2.2 3.3-5 3.3s-5-1.2-5-3.3" /></svg>
+              </div>
+              <h3>Profitability clarity</h3>
+              <p>
+                Understand real product profit after discounts, shipping,
+                returns, and fees.
+              </p>
+              <div class="bento-tag"><b>Built for operators</b> · not analysts</div>
+            </article>
+
+            <article class="bento-card reveal" style="--d: 2">
+              <div class="icon-tile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" /></svg>
+              </div>
+              <h3>Inventory health</h3>
+              <p>
+                Spot slow movers and low-stock risk early so you can plan, not
+                scramble.
+              </p>
+              <div class="bento-tag"><b>Better ordering</b> · fewer surprises</div>
+            </article>
+
+            <article class="bento-card full reveal">
+              <div class="full-copy">
+                <div class="icon-tile">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z" /><path d="M3 13l9 5 9-5" /><path d="M3 17l9 5 9-5" /></svg>
+                </div>
+                <h3>One source of truth</h3>
+                <p>
+                  Replace ten tabs with one dashboard that stays current across
+                  your business.
+                </p>
+                <div class="bento-tag"><b>Always live</b> · no spreadsheets</div>
+              </div>
+              <a class="btn btn-secondary btn-lg" href="/demo">See it in action</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works / about -->
+      <section class="section" id="how">
+        <div class="container">
+          <div class="split">
+            <div class="reveal">
+              <div class="kicker">How it works</div>
+              <div class="section-head" style="margin-bottom: 0">
+                <h2>Clarity in minutes, not new busywork.</h2>
+                <p>
+                  Aervo is designed for owners and operators. You shouldn’t need
+                  a data team to understand your business.
+                </p>
+              </div>
+
+              <ol class="steps">
+                <li>
+                  <div>
+                    <h3>Connect what you already use</h3>
+                    <p>Your tools already have the truth, but it’s scattered. Link them with read-only access.</p>
+                  </div>
+                </li>
+                <li>
+                  <div>
+                    <h3>See it all in one place</h3>
+                    <p>Aervo pulls it together and highlights what matters, in clear dashboards.</p>
+                  </div>
+                </li>
+                <li>
+                  <div>
+                    <h3>Act on plain-language insights</h3>
+                    <p>Know what changed, why it matters, and what to do next.</p>
+                  </div>
+                </li>
+              </ol>
+
+              <div class="about-cta">
+                <a class="btn btn-primary" href="/onboarding">Start free</a>
+                <a class="btn btn-secondary" href="/demo">Talk to us</a>
+              </div>
             </div>
 
-            <h1>Intelligent visibility for <span>modern businesses</span>.</h1>
+            <div class="feed reveal" style="--d: 1">
+              <div class="feed-top">
+                <span>Live insights</span>
+                <span class="badge badge-success">Auto-updated</span>
+              </div>
+              <div class="feed-item"><i class="dot warn"></i><span><b>Inventory risk</b> detected on 2 SKUs</span></div>
+              <div class="feed-item"><i class="dot"></i><span><b>Conversion up</b> 0.4% week over week</span></div>
+              <div class="feed-item"><i class="dot info"></i><span><b>Margin leak</b> found in shipping rules</span></div>
+              <div class="feed-item"><i class="dot"></i><span><b>All connections</b> healthy</span></div>
+              <p class="feed-note">Secure by design. Read-only connections. A higher view of your business.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      <!-- Results -->
+      <section class="section" id="results">
+        <div class="container">
+          <div class="section-head reveal">
+            <div class="kicker">Results</div>
+            <h2>Built for real business decisions.</h2>
             <p>
-              Aervo pulls live data from your tools and turns it into one clear,
-              AI-powered view so you can spot issues, opportunities, and next
-              steps at a glance.
+              Aervo is made to feel premium, but it’s built to be useful.
+              Here’s the kind of impact we aim for.
             </p>
+          </div>
 
+          <div class="quotes">
+            <figure class="quote-main reveal">
+              <p>
+                “Aervo showed us where margin was leaking in less than 10
+                minutes. We fixed pricing and shipping rules and immediately saw
+                a cleaner profit picture.”
+              </p>
+              <figcaption class="quote-by">— Early user</figcaption>
+            </figure>
+
+            <div class="quote-list">
+              <blockquote class="quote-mini reveal" style="--d: 1">
+                “The alerts feel smart, not noisy. It catches issues before we
+                notice them.”
+              </blockquote>
+              <blockquote class="quote-mini reveal" style="--d: 2">
+                “Finally, a dashboard that explains what changed and what to do
+                next.”
+              </blockquote>
+              <blockquote class="quote-mini reveal" style="--d: 3">
+                “It’s like a control center, not a spreadsheet replacement.”
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="section" id="pricing">
+        <div class="container">
+          <div class="section-head center reveal">
+            <div class="kicker">Pricing</div>
+            <h2>Plans that grow <span class="grad">with you</span></h2>
+            <p>Start free. Upgrade when your business is ready. No hidden fees.</p>
+          </div>
+
+          <div class="billing reveal">
+            <span class="lbl on" id="moLabel">Monthly</span>
+            <button class="switch" id="billingToggle" type="button" role="switch" aria-checked="false" aria-label="Bill annually"></button>
+            <span class="lbl" id="anLabel">Annual</span>
+            <span class="badge badge-success">2 months free</span>
+          </div>
+          <div class="savings" id="annualCallout">You’re saving up to <strong class="text-success">$198/year</strong> with annual billing.</div>
+
+          <div class="plans">
+            <!-- Starter -->
+            <div class="plan reveal">
+              <h3>Starter</h3>
+              <div class="plan-desc">Try Aervo free. No credit card needed.</div>
+              <div class="plan-price">Free</div>
+              <div class="plan-period">Forever free</div>
+              <div class="plan-annual"></div>
+              <a class="btn btn-secondary btn-block" href="/onboarding">Get started free</a>
+              <div class="plan-incl">Includes</div>
+              <ul>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>1 integration</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Basic dashboard</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>7 days data history</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>3 Ask Aervo messages/mo</li>
+              </ul>
+            </div>
+
+            <!-- Essential -->
+            <div class="plan reveal" style="--d: 1">
+              <h3>Essential</h3>
+              <div class="plan-desc">For small businesses getting serious.</div>
+              <div class="plan-price"><small>$</small><span data-price="ess">19</span></div>
+              <div class="plan-period" data-period="ess">per month</div>
+              <div class="plan-annual" data-annual="ess"></div>
+              <a class="btn btn-secondary btn-block" href="/onboarding?plan=essential">Start Essential</a>
+              <div class="plan-incl">Starter +</div>
+              <ul>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Full dashboard — all tabs</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>90 days data history</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Unlimited Ask Aervo</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Google Reviews (50)</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Customer segmentation</li>
+              </ul>
+            </div>
+
+            <!-- Pro -->
+            <div class="plan featured reveal" style="--d: 2">
+              <span class="plan-flag">Most popular</span>
+              <h3>Pro</h3>
+              <div class="plan-desc">The full Aervo experience.</div>
+              <div class="plan-price"><small>$</small><span data-price="pro">49</span></div>
+              <div class="plan-period" data-period="pro">per month</div>
+              <div class="plan-annual" data-annual="pro"></div>
+              <a class="btn btn-primary btn-block" href="/onboarding?plan=pro&amp;trial=true">Start 14-day free trial</a>
+              <div class="plan-incl">Essential +</div>
+              <ul>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Both integrations</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Unified customer view</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>2 years data history</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>AI Revenue Forecasting</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Win-back campaigns</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>AI Marketing Copy</li>
+              </ul>
+            </div>
+
+            <!-- Business -->
+            <div class="plan reveal" style="--d: 3">
+              <h3>Business</h3>
+              <div class="plan-desc">For multi-location businesses.</div>
+              <div class="plan-price"><small>$</small><span data-price="biz">99</span></div>
+              <div class="plan-period" data-period="biz">per month</div>
+              <div class="plan-annual" data-annual="biz"></div>
+              <a class="btn btn-secondary btn-block" href="/onboarding?plan=business">Start Business</a>
+              <div class="plan-incl">Pro +</div>
+              <ul>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Up to 5 locations</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Unlimited data history</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>White-label reports</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Competitor benchmarking</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Priority support</li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>Dedicated onboarding</li>
+              </ul>
+            </div>
+          </div>
+
+          <p class="pricing-more"><a href="/pricing">View full pricing details &amp; FAQ →</a></p>
+        </div>
+      </section>
+
+      <!-- Final CTA -->
+      <section class="section" id="contact" style="padding-top: 0">
+        <div class="container">
+          <div class="cta-card reveal">
+            <h2>Ready for a higher view of your business?</h2>
+            <p>
+              Start free in minutes, or tell us what tools you use and we’ll
+              set up a tailored preview of Aervo for your business.
+            </p>
             <div class="hero-cta">
-              <a class="btn btn-primary" href="#contact">Request a demo ↗</a>
-              <a class="btn btn-secondary" href="#services"
-                >Explore capabilities</a
-              >
+              <a class="btn btn-primary btn-lg" href="/onboarding">Start free</a>
+              <a class="btn btn-secondary btn-lg" href="/demo">Request a demo</a>
             </div>
-
-            <div class="trust" aria-label="Trust signals">
-              <span>Read-only connections</span>
-              <span>Encrypted</span>
-              <span>No data team needed</span>
+            <div class="cta-note">
+              Read-only connections · Encrypted · No spam, no sales pressure.
             </div>
           </div>
-
-          <aside class="preview" aria-label="Aervo preview panel">
-            <div class="preview-top">
-              <div class="pill">Live overview</div>
-              <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            </div>
-
-            <div class="metric-grid">
-              <div class="metric">
-                <div class="m-label">Revenue</div>
-                <div class="m-value">$42,780</div>
-                <div class="m-sub">Last 30 days</div>
-
-                <div class="spark neutral" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 100 38"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      class="sparkfill"
-                      d="M0 34 L0 26 C14 26, 26 24, 38 22 C54 20, 70 18, 100 16 L100 34 Z"
-                    ></path>
-                    <path
-                      class="sparkline"
-                      d="M0 26 C14 26, 26 24, 38 22 C54 20, 70 18, 100 16"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="metric">
-                <div class="m-label">Conversion</div>
-                <div class="m-value">3.8%</div>
-                <div class="m-sub">Up 0.4%</div>
-
-                <div class="spark good" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 100 38"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      class="sparkfill"
-                      d="M0 34 L0 28 C18 26, 30 25, 44 23 C60 21, 80 20, 100 18 L100 34 Z"
-                    ></path>
-                    <path
-                      class="sparkline"
-                      d="M0 28 C18 26, 30 25, 44 23 C60 21, 80 20, 100 18"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="metric">
-                <div class="m-label">Orders</div>
-                <div class="m-value">1,240</div>
-                <div class="m-sub">Avg. $34.50</div>
-
-                <div class="spark warn" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 100 38"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      class="sparkfill"
-                      d="M0 34 L0 29 C16 30, 30 28, 46 26 C62 24, 78 24, 100 22 L100 34 Z"
-                    ></path>
-                    <path
-                      class="sparkline"
-                      d="M0 29 C16 30, 30 28, 46 26 C62 24, 78 24, 100 22"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="metric">
-                <div class="m-label">Inventory risk</div>
-                <div class="m-value">Low</div>
-                <div class="m-sub">2 items trending down</div>
-
-                <div class="spark good" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 100 38"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      class="sparkfill"
-                      d="M0 34 L0 30 C20 30, 34 30, 50 30 C68 30, 84 30, 100 30 L100 34 Z"
-                    ></path>
-                    <path
-                      class="sparkline"
-                      d="M0 30 C20 30, 34 30, 50 30 C68 30, 84 30, 100 30"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <!-- Capabilities / Services -->
-    <section class="section reveal" id="services">
+    <footer class="site-footer">
       <div class="container">
-        <div class="section-head">
-          <div class="section-kicker">Capabilities</div>
-          <h2>From scattered tools to a clear control center.</h2>
-          <p class="sub">
-            The Aervo theme: clean surfaces, confident typography, and a focus
-            on outcomes. Connect data, understand it fast, and act with
-            confidence.
-          </p>
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a class="brand" href="/" aria-label="Aervo home">
+              <img src="/assets/images/logo.png" alt="" />
+              Aervo
+            </a>
+            <p>One live, AI-powered view of your sales, inventory, and customers.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Product</h4>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#how">How it works</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/demo">Demo</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="/about">About</a>
+            <a href="#results">Results</a>
+            <a href="/privacy">Privacy</a>
+          </div>
+          <div class="footer-col">
+            <h4>Account</h4>
+            <a href="/login">Log in</a>
+            <a href="/onboarding">Sign up</a>
+          </div>
         </div>
-
-        <div class="grid">
-          <div class="card">
-            <h3>Connect your tools</h3>
-            <p>
-              Bring sales, inventory, and customer signals into one live view.
-              No messy exports.
-            </p>
-            <div class="price">
-              <strong>Fast setup</strong> · guided connections
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>AI insights that explain</h3>
-            <p>
-              Get short summaries that tell you what changed, why it matters,
-              and what to do next.
-            </p>
-            <div class="price">
-              <strong>Actionable</strong> · not “AI fluff”
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Alerts you can trust</h3>
-            <p>
-              Catch margin drops, stockouts, conversion swings, and
-              returning-customer shifts before they hurt.
-            </p>
-            <div class="price">
-              <strong>Proactive</strong> · configurable signals
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Profitability clarity</h3>
-            <p>
-              Understand real product profit after discounts, shipping, returns,
-              and fees.
-            </p>
-            <div class="price">
-              <strong>Built for operators</strong> · not analysts
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>Inventory health</h3>
-            <p>
-              Spot slow movers and low-stock risk early so you can plan, not
-              scramble.
-            </p>
-            <div class="price">
-              <strong>Better ordering</strong> · fewer surprises
-            </div>
-          </div>
-
-          <div class="card">
-            <h3>One source of truth</h3>
-            <p>
-              Replace ten tabs with one dashboard that stays current across your
-              business.
-            </p>
-            <div class="price">
-              <strong>Always live</strong> · no spreadsheets
-            </div>
-          </div>
+        <div class="footer-bottom">
+          <div>© <span id="year"></span> Aervo. All rights reserved.</div>
+          <div>A higher view of your business.</div>
         </div>
       </div>
-    </section>
-
-    <div class="section-divider" aria-hidden="true"></div>
-
-    <!-- About -->
-    <section class="section reveal" id="about">
-      <div class="container">
-        <div class="section-head">
-          <div class="section-kicker">About</div>
-          <h2>Clarity in minutes, not new busywork.</h2>
-          <p class="sub">
-            Aervo is designed for owners and operators. You shouldn’t need a
-            data team to understand your business.
-          </p>
-        </div>
-
-        <div class="split">
-          <div class="about-box">
-            <p class="mini">
-              We built Aervo around a simple idea: your tools already have the
-              truth, but it’s scattered. Aervo pulls it together, highlights
-              what matters, and explains it in plain language so you can take
-              action.
-              <br /><br />
-              Secure by design. Read-only connections. Clear dashboards. A
-              higher view of your business.
-            </p>
-
-            <div
-              style="
-                margin-top: var(--space-4);
-                display: flex;
-                gap: var(--space-3);
-                flex-wrap: wrap;
-              "
-            >
-              <a class="btn btn-secondary" href="#contact">Talk to us</a>
-              <a class="btn btn-ghost" href="/onboarding">Join the waitlist</a>
-            </div>
-          </div>
-
-          <div class="about-visual">
-            <div class="viz-top">
-              <div class="viz-title">Live insights</div>
-              <div class="viz-pill">Auto-updated</div>
-            </div>
-
-            <div class="alerts feed">
-              <div class="alert">
-                <div class="dot"></div>
-                <p><b>Inventory risk</b> detected on 2 SKUs</p>
-              </div>
-
-              <div class="alert">
-                <div class="dot"></div>
-                <p><b>Conversion up</b> 0.4% week over week</p>
-              </div>
-
-              <div class="alert">
-                <div class="dot"></div>
-                <p><b>Margin leak</b> found in shipping rules</p>
-              </div>
-
-              <div class="alert">
-                <div class="dot"></div>
-                <p><b>All connections</b> healthy</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="section-divider" aria-hidden="true"></div>
-
-    <!-- Proof / Testimonials -->
-    <section class="section reveal" id="proof">
-      <div class="container">
-        <div class="section-head">
-          <div class="section-kicker">Results</div>
-          <h2>Built for real business decisions.</h2>
-          <p class="sub">
-            Aervo is made to feel premium, but it’s built to be useful. Here’s
-            the kind of impact we aim for.
-          </p>
-        </div>
-
-        <div class="testimonials">
-          <div class="quote">
-            <p>
-              “Aervo showed us where margin was leaking in less than 10 minutes.
-              We fixed pricing and shipping rules and immediately saw a cleaner
-              profit picture.”
-            </p>
-            <div class="by">— early user</div>
-          </div>
-
-          <div class="quote-list">
-            <div class="quote-mini">
-              “The alerts feel smart, not noisy. It catches issues before we
-              notice them.”
-            </div>
-            <div class="quote-mini">
-              “Finally, a dashboard that explains what changed and what to do
-              next.”
-            </div>
-            <div class="quote-mini">
-              “It’s like a control center, not a spreadsheet replacement.”
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-<!-- =============================================
-  AERVO PRICING SECTION
-  Paste this into index.html between the 
-  "Results" section and the Contact section.
-  Also add "Pricing" to your nav links.
-============================================= -->
-
-<!-- Add this to your nav links: -->
-<!-- <a href="#pricing">Pricing</a> -->
-<!-- And in mobile nav: -->
-<!-- <a href="#pricing">Pricing</a> -->
-
-<div class="section-divider" aria-hidden="true"></div>
-
-<section class="section reveal" id="pricing">
-  <div class="container">
-    <div class="section-head" style="text-align:center;max-width:100%;margin-bottom:var(--space-2);">
-      <div class="section-kicker">Pricing</div>
-      <h2>Plans that grow <span style="background:var(--gradient-primary);-webkit-background-clip:text;color:transparent;">with you</span></h2>
-      <p class="sub" style="margin:0 auto;max-width:52ch;">
-        Start free. Upgrade when your business is ready. No hidden fees.
-      </p>
-    </div>
-
-    <!-- Billing toggle -->
-    <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-4);margin:var(--space-7) 0 var(--space-5);">
-      <span style="font-size:var(--fs-14);color:var(--text-secondary);font-weight:var(--fw-semibold);" id="homeMoLabel" class="home-toggle-active">Monthly</span>
-      <div id="homeBillingToggle" role="switch" aria-checked="false"
-        style="position:relative;width:52px;height:28px;border-radius:var(--radius-pill);
-               background:var(--surface-hover);border:1px solid var(--border);
-               cursor:pointer;transition:background var(--dur);">
-        <div id="homeToggleThumb"
-          style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
-                 background:#f7f7ff;transition:transform var(--dur) ease;box-shadow:var(--shadow-sm);">
-        </div>
-      </div>
-      <span style="font-size:var(--fs-14);color:var(--text-secondary);font-weight:var(--fw-semibold);" id="homeAnLabel">Annual</span>
-      <span style="display:inline-flex;align-items:center;
-                   background:rgba(var(--success-rgb), 0.15);border:1px solid rgba(var(--success-rgb), 0.3);
-                   color:var(--success);font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);
-                   text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);">
-        ✦ 2 months free
-      </span>
-    </div>
-
-    <!-- Annual savings callout -->
-    <div id="homeAnnualCallout"
-      style="display:none;align-items:center;justify-content:center;gap:var(--space-3);
-             background:rgba(var(--success-rgb), 0.08);border:1px solid rgba(var(--success-rgb), 0.2);
-             border-radius:var(--radius-lg);padding:var(--space-3) var(--space-6);margin:0 auto var(--space-7);max-width:480px;
-             font-size:var(--fs-14);color:var(--text);">
-      🎉 You're saving up to <strong class="text-success">$198/year</strong> with annual billing!
-    </div>
-
-    <!-- Cards grid -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);margin-bottom:var(--space-6);" class="home-pricing-grid">
-
-      <!-- Starter -->
-      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
-                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
-                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
-           onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
-           onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Starter</div>
-        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">Try Aervo free. No credit card needed.</div>
-        <div class="mb-5">
-          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);">Free</div>
-          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);">Forever free</div>
-          <div style="height:18px;"></div>
-        </div>
-        <a href="/onboarding"
-          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
-                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
-                 background:var(--surface-raised);border:1px solid var(--border);
-                 color:var(--text);text-decoration:none;transition:background var(--dur);"
-          onmouseover="this.style.background='rgba(255,255,255,.09)'"
-          onmouseout="this.style.background='rgba(255,255,255,.05)'">
-          Get started free
-        </a>
-        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
-        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Includes</div>
-        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
-          <div class="row-start"><span class="check-icon">✓</span>1 integration</div>
-          <div class="row-start"><span class="check-icon">✓</span>Basic dashboard</div>
-          <div class="row-start"><span class="check-icon">✓</span>7 days data history</div>
-          <div class="row-start"><span class="check-icon">✓</span>3 Ask Aervo messages/mo</div>
-        </div>
-      </div>
-
-      <!-- Essential -->
-      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
-                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
-                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
-           onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
-           onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Essential</div>
-        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">For small businesses getting serious.</div>
-        <div class="mb-5">
-          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
-            <span id="hEssPrice">19</span>
-          </div>
-          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hEssPeriod">per month</div>
-          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hEssAnnual"></div>
-        </div>
-        <a href="/onboarding?plan=essential"
-          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
-                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
-                 background:var(--surface-raised);border:1px solid var(--border);
-                 color:var(--text);text-decoration:none;transition:background var(--dur);"
-          onmouseover="this.style.background='rgba(255,255,255,.09)'"
-          onmouseout="this.style.background='rgba(255,255,255,.05)'">
-          Start Essential
-        </a>
-        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
-        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Starter +</div>
-        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
-          <div class="row-start"><span class="check-icon">✓</span>Full dashboard — all tabs</div>
-          <div class="row-start"><span class="check-icon">✓</span>90 days data history</div>
-          <div class="row-start"><span class="check-icon">✓</span>Unlimited Ask Aervo</div>
-          <div class="row-start"><span class="check-icon">✓</span>Google Reviews (50)</div>
-          <div class="row-start"><span class="check-icon">✓</span>Customer segmentation</div>
-        </div>
-      </div>
-
-      <!-- Pro — Featured -->
-      <div style="border-radius:var(--radius-xl);
-                  border:1px solid rgba(var(--primary-rgb), 0.35);
-                  background:linear-gradient(180deg,rgba(var(--primary-rgb), 0.08),rgba(var(--primary-to-rgb), 0.06),var(--surface));
-                  box-shadow:0 0 0 1px rgba(41,200,255,.18),0 20px 60px rgba(41,200,255,.12);
-                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
-           onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 0 0 1px rgba(41,200,255,.3),0 36px 100px rgba(41,200,255,.2)'"
-           onmouseout="this.style.transform='';this.style.boxShadow='0 0 0 1px rgba(41,200,255,.18),0 20px 60px rgba(41,200,255,.12)'">
-        <div style="display:inline-flex;align-items:center;gap:var(--space-2);
-                    background:var(--gradient-primary);
-                    color:var(--text-on-primary);font-size:var(--fs-11);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);
-                    text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);margin-bottom:var(--space-4);">
-          ⚡ Most Popular
-        </div>
-        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Pro</div>
-        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">The full Aervo experience.</div>
-        <div class="mb-5">
-          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
-            <span id="hProPrice">49</span>
-          </div>
-          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hProPeriod">per month</div>
-          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hProAnnual"></div>
-        </div>
-        <a href="/onboarding?plan=pro&trial=true"
-          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
-                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
-                 background:var(--gradient-primary);
-                 color:var(--text-on-primary);text-decoration:none;transition:opacity var(--dur);
-                 box-shadow:var(--glow);"
-          onmouseover="this.style.opacity='.9'"
-          onmouseout="this.style.opacity='1'">
-          Start 14-day free trial
-        </a>
-        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
-        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Essential +</div>
-        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
-          <div class="row-start"><span class="check-icon">✓</span>Both integrations</div>
-          <div class="row-start"><span class="check-icon">✓</span>Unified customer view</div>
-          <div class="row-start"><span class="check-icon">✓</span>2 years data history</div>
-          <div class="row-start"><span class="check-icon">✓</span>AI Revenue Forecasting</div>
-          <div class="row-start"><span class="check-icon">✓</span>Win-back campaigns</div>
-          <div class="row-start"><span class="check-icon">✓</span>AI Marketing Copy</div>
-        </div>
-      </div>
-
-      <!-- Business -->
-      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
-                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
-                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
-           onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
-           onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Business</div>
-        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">For multi-location businesses.</div>
-        <div class="mb-5">
-          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
-            <span id="hBizPrice">99</span>
-          </div>
-          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hBizPeriod">per month</div>
-          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hBizAnnual"></div>
-        </div>
-        <a href="/onboarding?plan=business"
-          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
-                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
-                 background:var(--surface-raised);border:1px solid var(--border);
-                 color:var(--text);text-decoration:none;transition:background var(--dur);"
-          onmouseover="this.style.background='rgba(255,255,255,.09)'"
-          onmouseout="this.style.background='rgba(255,255,255,.05)'">
-          Start Business
-        </a>
-        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
-        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Pro +</div>
-        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
-          <div class="row-start"><span class="check-icon">✓</span>Up to 5 locations</div>
-          <div class="row-start"><span class="check-icon">✓</span>Unlimited data history</div>
-          <div class="row-start"><span class="check-icon">✓</span>White-label reports</div>
-          <div class="row-start"><span class="check-icon">✓</span>Competitor benchmarking</div>
-          <div class="row-start"><span class="check-icon">✓</span>Priority support</div>
-          <div class="row-start"><span class="check-icon">✓</span>Dedicated onboarding</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- See full pricing link -->
-    <div style="text-align:center;margin-top:var(--space-5);">
-      <a href="/pricing"
-        style="font-size:var(--fs-14);color:rgba(var(--primary-rgb), 0.8);
-               border-bottom:1px solid rgba(var(--primary-rgb), 0.3);
-               padding-bottom:2px;transition:color var(--dur);"
-        onmouseover="this.style.color='#29c8ff'"
-        onmouseout="this.style.color='rgba(41,200,255,.8)'">
-        View full pricing details & FAQ →
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Pricing toggle script — paste before closing </script> in index.html -->
-<script>
-(function(){
-  const toggle = document.getElementById("homeBillingToggle");
-  const thumb  = document.getElementById("homeToggleThumb");
-  const callout = document.getElementById("homeAnnualCallout");
-  const moLabel = document.getElementById("homeMoLabel");
-  const anLabel = document.getElementById("homeAnLabel");
-  if(!toggle) return;
-  let annual = false;
-
-  const plans = {
-    ess: {mo:19, yr:190, pm:15.83},
-    pro: {mo:49, yr:490, pm:40.83},
-    biz: {mo:99, yr:990, pm:82.50},
-  };
-
-  function update(){
-    // Essential
-    document.getElementById("hEssPrice").textContent  = annual ? plans.ess.pm.toFixed(2) : plans.ess.mo;
-    document.getElementById("hEssPeriod").textContent = annual ? "per month, billed annually" : "per month";
-    document.getElementById("hEssAnnual").textContent = annual ? `$${plans.ess.yr}/yr — save $${plans.ess.mo*12-plans.ess.yr}` : "";
-    // Pro
-    document.getElementById("hProPrice").textContent  = annual ? plans.pro.pm.toFixed(2) : plans.pro.mo;
-    document.getElementById("hProPeriod").textContent = annual ? "per month, billed annually" : "per month";
-    document.getElementById("hProAnnual").textContent = annual ? `$${plans.pro.yr}/yr — save $${plans.pro.mo*12-plans.pro.yr}` : "";
-    // Business
-    document.getElementById("hBizPrice").textContent  = annual ? plans.biz.pm.toFixed(2) : plans.biz.mo;
-    document.getElementById("hBizPeriod").textContent = annual ? "per month, billed annually" : "per month";
-    document.getElementById("hBizAnnual").textContent = annual ? `$${plans.biz.yr}/yr — save $${plans.biz.mo*12-plans.biz.yr}` : "";
-    // Toggle UI
-    toggle.style.background = annual ? "linear-gradient(90deg,rgba(41,200,255,.4),rgba(124,92,255,.4))" : "rgba(255,255,255,.08)";
-    thumb.style.transform = annual ? "translateX(24px)" : "";
-    callout.style.display = annual ? "flex" : "none";
-    moLabel.style.color = annual ? "rgba(215,220,240,.55)" : "#f7f7ff";
-    anLabel.style.color = annual ? "#f7f7ff" : "rgba(215,220,240,.55)";
-  }
-
-  toggle.addEventListener("click",()=>{ annual=!annual; update(); });
-})();
-</script>
-
-
-    <div class="section-divider" aria-hidden="true"></div>
-
-    <!-- Contact / CTA -->
-    <section class="section reveal" id="contact">
-      <div class="container">
-       <div class="cta-card">
-  <div class="cta-left">
-    <div class="cta-kicker">Next step</div>
-    <h3>Ready for a higher view of your business?</h3>
-    <p>
-      Tell us what tools you use and we’ll set up a tailored preview of Aervo for your business.
-    </p>
-
-    <div class="cta-points" aria-label="Trust signals">
-      <span>Read-only connections</span>
-      <span>Encrypted</span>
-      <span>No setup headache</span>
-    </div>
-  </div>
-
- <div class="cta-right">
-  <a class="btn btn-primary cta-btn" href="/demo">Request a demo ↗</a>
-  <a class="btn btn-ghost cta-btn" href="https://aervoapp.com/login">Log in</a>
-  <div class="cta-note">No spam. No sales pressure. Just a clean preview.</div>
-</div>
-    </section>
-
-    <div class="section-divider" aria-hidden="true"></div>
-
-    
-
-    <!-- Mailing list -->
-    <section class="section reveal" id="newsletter" style="display:none">
-
-      <div class="container">
-        <div class="luxe-card">
-          <div class="section-kicker">Stay in the loop</div>
-          <div class="luxe-title mt-2">
-            Join the Aervo mailing list.
-          </div>
-          <div class="luxe-body">
-            Product updates, insights, and early access invites. No spam.
-          </div>
-
-          <form class="mt-4"
-            onsubmit="
-              event.preventDefault();
-              showToast('Thanks! You’re on the list.');
-            "
-          >
-            <div class="news-row">
-              <input
-                class="input"
-                type="email"
-                placeholder="Email address"
-                required
-              />
-              <button class="btn btn-primary" type="submit">Sign up</button>
-            </div>
-          </form>
-        </div>
-
-       <footer>
-  <div class="footer-inner">
-    <div>© <span id="year"></span> Aervo. All rights reserved.</div>
-    <div class="footer-links">
-      <a href="#services">Capabilities</a>
-      <a href="#about">About</a>
-      <a href="#proof">Results</a>
-      <a href="/pricing">Pricing</a>
-
-      <a href="/privacy">Privacy</a>
-    </div>
-  </div>
-</footer>
-      </div>
-    </section>
+    </footer>
 
     <script>
-      // footer year
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      // header gains a blurred background once the page scrolls
+      const header = document.getElementById("siteHeader");
+      const onScroll = () =>
+        header.classList.toggle("scrolled", window.scrollY > 8);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
 
       // mobile menu
       const menuBtn = document.getElementById("menuBtn");
       const mobileNav = document.getElementById("mobileNav");
-      if (menuBtn) {
-        menuBtn.addEventListener("click", () => {
-          mobileNav.classList.toggle("open");
-          menuBtn.textContent = mobileNav.classList.contains("open")
-            ? "Close"
-            : "Menu";
-        });
-        
-        // Close menu when a link is clicked (but allow navigation)
-        mobileNav.querySelectorAll("a").forEach((link) => {
-          link.addEventListener("click", (e) => {
-            // Check if it's an external link or has a full href
-            const href = link.getAttribute("href");
-            if (href && href.startsWith("/")) {
-              // Allow internal navigation to proceed
-              mobileNav.classList.remove("open");
-              menuBtn.textContent = "Menu";
-            }
-          });
-        });
+      function setMenu(open) {
+        mobileNav.classList.toggle("open", open);
+        menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
       }
-
-      // reveal animations
-      const revealEls = document.querySelectorAll(".reveal");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("reveal-visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.16 },
+      menuBtn.addEventListener("click", () =>
+        setMenu(!mobileNav.classList.contains("open")),
       );
-      revealEls.forEach((el) => observer.observe(el));
+      mobileNav.querySelectorAll("a").forEach((a) =>
+        a.addEventListener("click", () => setMenu(false)),
+      );
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setMenu(false);
+      });
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 768) setMenu(false);
+      });
 
-      // particle canvas (subtle, calm)
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-
-      const canvas = document.getElementById("dataCanvas");
-      const ctx = canvas ? canvas.getContext("2d") : null;
-
-      let particles = [];
-      const PARTICLE_COUNT = prefersReducedMotion ? 0 : 80;
-
-      function resizeCanvas() {
-        if (!canvas || !ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * window.devicePixelRatio;
-        canvas.height = rect.height * window.devicePixelRatio;
-        ctx.setTransform(
-          window.devicePixelRatio,
-          0,
-          0,
-          window.devicePixelRatio,
-          0,
-          0,
+      // scroll reveal
+      const revealEls = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
         );
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add("in"));
       }
 
-      function createParticle() {
-        const rect = canvas.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
+      // soft spotlight that follows the pointer on capability cards
+      document.querySelectorAll(".bento-card").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--mx", e.clientX - r.left + "px");
+          card.style.setProperty("--my", e.clientY - r.top + "px");
+        });
+      });
 
-        const edge = Math.floor(Math.random() * 4);
-        let x, y;
-
-        if (edge === 0) {
-          x = Math.random() * w;
-          y = -10;
-        } else if (edge === 1) {
-          x = w + 10;
-          y = Math.random() * h;
-        } else if (edge === 2) {
-          x = Math.random() * w;
-          y = h + 10;
-        } else {
-          x = -10;
-          y = Math.random() * h;
-        }
-
-        // target = the logo area (upper third)
-        const cx = w / 2;
-        const cy = h * 0.24;
-
-        const dx = cx - x;
-        const dy = cy - y;
-        const dist = Math.hypot(dx, dy) || 1;
-        const speed = 0.45 + Math.random() * 0.55;
-
-        return {
-          x,
-          y,
-          vx: (dx / dist) * speed,
-          vy: (dy / dist) * speed,
-          size: 1 + Math.random() * 1.6,
-          alpha: 0.18 + Math.random() * 0.22,
+      // pricing: monthly / annual
+      (function () {
+        const toggle = document.getElementById("billingToggle");
+        const callout = document.getElementById("annualCallout");
+        const moLabel = document.getElementById("moLabel");
+        const anLabel = document.getElementById("anLabel");
+        const plans = {
+          ess: { mo: 19, yr: 190, pm: 15.83 },
+          pro: { mo: 49, yr: 490, pm: 40.83 },
+          biz: { mo: 99, yr: 990, pm: 82.5 },
         };
-      }
+        let annual = false;
 
-      function initParticles() {
-        particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++)
-          particles.push(createParticle());
-      }
-
-      function tick() {
-        if (prefersReducedMotion || !canvas || !ctx) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const w = rect.width;
-        const h = rect.height;
-
-        const cx = w / 2;
-        const cy = h * 0.24;
-
-        ctx.clearRect(0, 0, w, h);
-
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-
-          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
-          g.addColorStop(0, `rgba(180, 230, 255, ${p.alpha})`);
-          g.addColorStop(1, "rgba(180, 230, 255, 0)");
-          ctx.fillStyle = g;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (Math.hypot(p.x - cx, p.y - cy) < 34) {
-            particles[i] = createParticle();
-          }
+        function update() {
+          Object.keys(plans).forEach((key) => {
+            const p = plans[key];
+            document.querySelector(`[data-price="${key}"]`).textContent = annual
+              ? p.pm.toFixed(2)
+              : p.mo;
+            document.querySelector(`[data-period="${key}"]`).textContent =
+              annual ? "per month, billed annually" : "per month";
+            document.querySelector(`[data-annual="${key}"]`).textContent =
+              annual ? `$${p.yr}/yr — save $${p.mo * 12 - p.yr}` : "";
+          });
+          toggle.setAttribute("aria-checked", annual ? "true" : "false");
+          callout.classList.toggle("show", annual);
+          moLabel.classList.toggle("on", !annual);
+          anLabel.classList.toggle("on", annual);
         }
-
-        requestAnimationFrame(tick);
-      }
-
-      function handleResize() {
-        resizeCanvas();
-        initParticles();
-      }
-
-      window.addEventListener("resize", handleResize);
-      resizeCanvas();
-      initParticles();
-      requestAnimationFrame(tick);
-      // ---- full page ambient particles (subtle, everywhere) ----
-      const siteCanvas = document.getElementById("siteCanvas");
-      const siteCtx = siteCanvas ? siteCanvas.getContext("2d") : null;
-
-      let siteParticles = [];
-      const SITE_COUNT = prefersReducedMotion ? 0 : 120;
-
-      function resizeSiteCanvas() {
-        if (!siteCanvas || !siteCtx) return;
-        siteCanvas.width = window.innerWidth * window.devicePixelRatio;
-        siteCanvas.height = window.innerHeight * window.devicePixelRatio;
-        siteCtx.setTransform(
-          window.devicePixelRatio,
-          0,
-          0,
-          window.devicePixelRatio,
-          0,
-          0,
-        );
-      }
-
-      function makeSiteParticle() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        return {
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: 0.8 + Math.random() * 1.8,
-          a: 0.06 + Math.random() * 0.16, // subtle alpha
-          vx: -0.12 + Math.random() * 0.24, // slow drift
-          vy: -0.08 + Math.random() * 0.2,
-        };
-      }
-
-      function initSiteParticles() {
-        siteParticles = [];
-        for (let i = 0; i < SITE_COUNT; i++)
-          siteParticles.push(makeSiteParticle());
-      }
-
-      function drawSiteParticles() {
-        if (prefersReducedMotion || !siteCanvas || !siteCtx) return;
-
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        siteCtx.clearRect(0, 0, w, h);
-
-        for (let i = 0; i < siteParticles.length; i++) {
-          const p = siteParticles[i];
-
-          p.x += p.vx;
-          p.y += p.vy;
-
-          // wrap edges
-          if (p.x < -10) p.x = w + 10;
-          if (p.x > w + 10) p.x = -10;
-          if (p.y < -10) p.y = h + 10;
-          if (p.y > h + 10) p.y = -10;
-
-          // soft glow dot
-          const g = siteCtx.createRadialGradient(
-            p.x,
-            p.y,
-            0,
-            p.x,
-            p.y,
-            p.r * 6,
-          );
-          g.addColorStop(0, `rgba(180, 230, 255, ${p.a})`);
-          g.addColorStop(0.55, `rgba(124, 92, 255, ${p.a * 0.35})`);
-          g.addColorStop(1, "rgba(180, 230, 255, 0)");
-          siteCtx.fillStyle = g;
-
-          siteCtx.beginPath();
-          siteCtx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
-          siteCtx.fill();
-        }
-
-        requestAnimationFrame(drawSiteParticles);
-      }
-
-      // hook into your existing resize handler
-      const _oldHandleResize = handleResize;
-      function handleResizeAll() {
-        _oldHandleResize();
-        resizeSiteCanvas();
-        initSiteParticles();
-      }
-      window.addEventListener("resize", handleResizeAll);
-
-      // init site canvas
-      resizeSiteCanvas();
-      initSiteParticles();
-      requestAnimationFrame(drawSiteParticles);
-      // ---------- Auto color sparklines based on KPI trend text ----------
-      function applySparkStatus(metricEl) {
-        const spark = metricEl.querySelector(".spark");
-        if (!spark) return;
-
-        // remove any prior status
-        spark.classList.remove("good", "warn", "bad", "neutral");
-
-        const valueText = (
-          metricEl.querySelector(".m-value")?.textContent || ""
-        ).toLowerCase();
-        const subText = (
-          metricEl.querySelector(".m-sub")?.textContent || ""
-        ).toLowerCase();
-
-        // Rules you can tweak:
-        // 1) If it literally says "down" => bad, "up" => good
-        if (subText.includes("down")) {
-          spark.classList.add("bad");
-          return;
-        }
-        if (subText.includes("up")) {
-          spark.classList.add("good");
-          return;
-        }
-
-        // 2) Inventory risk labels
-        if (valueText.includes("high")) {
-          spark.classList.add("bad");
-          return;
-        }
-        if (valueText.includes("medium")) {
-          spark.classList.add("warn");
-          return;
-        }
-        if (valueText.includes("low")) {
-          spark.classList.add("good");
-          return;
-        }
-
-        // 3) Default
-        spark.classList.add("neutral");
-      }
-
-     // Apply to all metrics on load
-document.querySelectorAll(".metric").forEach(applySparkStatus);
-
-/* =========================
-   Futuristic interactions (mouse + touch):
-   - button glow follows pointer
-   - spotlight hover/press on cards
-   - subtle 3D tilt on preview (only when a pointer is fine)
-========================= */
-
-const prefersReducedMotion2 = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const hasFinePointer = window.matchMedia("(pointer: fine)").matches; // mouse/trackpad
-const isTouchOnly = window.matchMedia("(hover: none)").matches;
-
-function setXYVars(el, clientX, clientY, varX, varY) {
-  const r = el.getBoundingClientRect();
-  const x = ((clientX - r.left) / r.width) * 100;
-  const y = ((clientY - r.top) / r.height) * 100;
-  el.style.setProperty(varX, `${x}%`);
-  el.style.setProperty(varY, `${y}%`);
-}
-
-/* Button glow follows pointer (works on touch too) */
-document.querySelectorAll(".btn").forEach((btn) => {
-  // Pointer move (mouse/touch/pen)
-  btn.addEventListener("pointermove", (e) => {
-    setXYVars(btn, e.clientX, e.clientY, "--mx", "--my");
-  });
-
-  // Touch press gives a “pop” even without moving
-  btn.addEventListener("pointerdown", (e) => {
-    setXYVars(btn, e.clientX, e.clientY, "--mx", "--my");
-  });
-});
-
-/* Spotlight overlay (cards/panels) */
-const spotlightTargets = document.querySelectorAll(".card, .preview, .about-visual");
-
-spotlightTargets.forEach((el) => {
-  // Ensure overlay exists once
-  if (!el.querySelector(".spotlight")) {
-    const s = document.createElement("div");
-    s.className = "spotlight";
-    el.appendChild(s);
-  }
-
-  // Move spotlight with pointer
-  el.addEventListener("pointermove", (e) => {
-    setXYVars(el, e.clientX, e.clientY, "--sx", "--sy");
-  });
-
-  // On touch: show spotlight when pressed
-  el.addEventListener("pointerdown", (e) => {
-    el.classList.add("is-pressed");
-    setXYVars(el, e.clientX, e.clientY, "--sx", "--sy");
-  });
-
-  // Remove pressed state
-  el.addEventListener("pointerup", () => el.classList.remove("is-pressed"));
-  el.addEventListener("pointercancel", () => el.classList.remove("is-pressed"));
-  el.addEventListener("pointerleave", () => el.classList.remove("is-pressed"));
-});
-
-/* 3D tilt: only for fine pointers (mouse/trackpad). Touch gets no tilt (avoids jitter). */
-const preview = document.querySelector(".preview");
-if (preview && hasFinePointer && !prefersReducedMotion2) {
-  preview.addEventListener("pointermove", (e) => {
-    const r = preview.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-
-    const rotY = (px - 0.5) * 10;
-    const rotX = (0.5 - py) * 8;
-
-    preview.style.transform =
-      `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2px)`;
-  });
-
-  preview.addEventListener("pointerleave", () => {
-    preview.style.transform = "";
-  });
-}
-// Header scroll progress (touch safe)
-const scrollBar = document.getElementById("scrollBar");
-function updateScrollBar() {
-  const doc = document.documentElement;
-  const scrollTop = doc.scrollTop || document.body.scrollTop;
-  const scrollHeight = doc.scrollHeight - doc.clientHeight;
-  const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-  if (scrollBar) scrollBar.style.width = `${pct}%`;
-}
-window.addEventListener("scroll", updateScrollBar, { passive: true });
-updateScrollBar();
-// Soft parallax for hero glow + mark (touch safe)
-const heroGlow = document.querySelector(".hero-glow");
-const heroMark = document.querySelector(".hero-mark");
-
-window.addEventListener(
-  "scroll",
-  () => {
-    const y = window.scrollY || 0;
-    const t = Math.min(y / 900, 1);
-    if (heroGlow) heroGlow.style.transform = `translate(-50%, -50%) translateY(${t * 18}px)`;
-    if (heroMark) heroMark.style.transform = `translate(-50%, -50%) translateY(${t * 10}px)`;
-  },
-  { passive: true },
-);
+        toggle.addEventListener("click", () => {
+          annual = !annual;
+          update();
+        });
+      })();
     </script>
   </body>
 </html>
