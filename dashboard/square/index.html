@@ -1176,6 +1176,7 @@
             break;
           case "reviews":
             content.innerHTML = renderReviews();
+            loadGoogleReviews();
             break;
         }
       }
@@ -2086,79 +2087,171 @@
           </div>`;
       }
 
+      const escHtml = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      let reviewsConnectHtml = null; // the "connect" card, restored when not connected
+      let sentimentChart = null;
+
+      async function reviewsApi(path, options = {}) {
+        const res = await fetch(`${BACKEND_URL}${path}`, {
+          ...options,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+        return { ok: res.ok && data.success !== false, status: res.status, data };
+      }
+
+      function reviewsMessage(html) {
+        document.getElementById("reviewsContent").innerHTML =
+          `<div class="card" style="text-align:center;padding:var(--space-8)">${html}</div>`;
+      }
+
+      // Opens with the saved connection (if any), otherwise shows the connect card
+      async function loadGoogleReviews(refresh = false) {
+        const box = document.getElementById("reviewsContent");
+        if (!box) return;
+        if (reviewsConnectHtml === null) reviewsConnectHtml = box.innerHTML;
+        box.innerHTML = `<div class="loading"><div class="spinner"></div><div>Loading your Google Reviews...</div></div>`;
+        try {
+          const { ok, status, data } = await reviewsApi(
+            `/api/google-reviews${refresh ? "?refresh=1" : ""}`,
+          );
+          if (status === 403 && data.code === "PLAN_LIMIT") {
+            return reviewsMessage(`
+              <div style="font-size:var(--fs-48);margin-bottom:var(--space-4)">⭐</div>
+              <h2 class="mb-3">Google Reviews is on the Essential plan and up</h2>
+              <p class="text-secondary mb-6">Upgrade to see your rating, sentiment and AI-suggested replies.</p>
+              <a class="btn-primary" href="/pricing">View plans</a>`);
+          }
+          if (!ok) throw new Error(data.message || "Failed to load reviews");
+          if (!data.connected) {
+            box.innerHTML = reviewsConnectHtml;
+            return;
+          }
+          renderReviewsData(data);
+        } catch (err) {
+          reviewsMessage(`
+            <p class="text-danger-soft mb-4">${escHtml(err.message)}</p>
+            <button class="btn-primary" onclick="loadGoogleReviews()">Try Again</button>`);
+        }
+      }
+
       async function connectGoogleReviews() {
         const placeId = await uiPrompt(
           "Enter your Google Place ID.\n\nFind yours at: https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder",
         );
-        if (!placeId) return;
-        fetchGoogleReviews(placeId.trim());
-      }
-
-      async function fetchGoogleReviews(placeId) {
-        document.getElementById("reviewsContent").innerHTML =
-          `<div class="loading"><div class="spinner"></div><div>Fetching your Google Reviews...</div></div>`;
+        if (!placeId || !placeId.trim()) return;
+        const box = document.getElementById("reviewsContent");
+        const previous = box.innerHTML;
+        box.innerHTML = `<div class="loading"><div class="spinner"></div><div>Connecting to Google...</div></div>`;
         try {
-          const res = await fetch(
-            `${BACKEND_URL}/api/square/google-reviews?placeId=${encodeURIComponent(placeId)}&merchantId=${merchantId}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          const data = await res.json();
-          if (data.success) renderReviewsData(data);
-          else throw new Error(data.message || "Failed to fetch reviews");
+          const { ok, data } = await reviewsApi("/api/google-reviews/connect", {
+            method: "POST",
+            body: JSON.stringify({ placeId: placeId.trim() }),
+          });
+          if (!ok) throw new Error(data.message || "Couldn't connect to Google");
+          renderReviewsData(data);
+          showToast("Google Business connected");
         } catch (err) {
-          document.getElementById("reviewsContent").innerHTML =
-            `<div style="text-align:center;padding:var(--space-8);color:var(--danger-text)">Failed to load reviews: ${err.message}<br><br><button class="btn-primary" onclick="renderView('reviews')">Try Again</button></div>`;
+          box.innerHTML = previous; // keep the connect card so they can retry
+          showToast(err.message, "error");
         }
       }
 
+      async function disconnectGoogleReviews() {
+        if (
+          !(await uiConfirm(
+            "Disconnect Google Reviews? You can reconnect any time.",
+          ))
+        )
+          return;
+        const { ok, data } = await reviewsApi("/api/google-reviews", {
+          method: "DELETE",
+        });
+        if (!ok) return showToast(data.message || "Couldn't disconnect", "error");
+        document.getElementById("reviewsContent").innerHTML = reviewsConnectHtml;
+        showToast("Google Reviews disconnected");
+      }
+
       function renderReviewsData(data) {
-        const { rating, totalReviews, reviews, aiAnalysis } = data;
+        const { rating, totalReviews, reviews, aiAnalysis, placeName, mapsUrl } = data;
+        const stars = (n) => {
+          const k = Math.max(0, Math.min(5, Math.round(Number(n) || 0)));
+          return "⭐".repeat(k) + "☆".repeat(5 - k);
+        };
+        const shown = (reviews || []).length;
+        const note =
+          totalReviews > shown
+            ? `Google shares the ${shown} most relevant reviews. Your rating and total cover all ${totalReviews}.`
+            : "";
         document.getElementById("reviewsContent").innerHTML = `
-          <div class="grid-4 mb-6">
-            <div class="card" style="text-align:center"><h3>Overall Rating</h3><div class="stat-large yellow">${rating}</div><div class="fs-20">⭐⭐⭐⭐⭐</div><div class="stat-label">${totalReviews} reviews</div></div>
-            <div class="card"><h3>Sentiment</h3><canvas id="sentimentChart" style="max-height:120px"></canvas></div>
-            <div class="card"><h3>Common Themes</h3>${(aiAnalysis?.themes || []).map((t) => `<div style="padding:var(--space-2) 0;border-bottom:1px solid var(--border);font-size:var(--fs-13);color:var(--text-secondary)">${t}</div>`).join("") || "<p class='text-muted'>Analyzing...</p>"}</div>
-            <div class="card"><h3>Top Recommendation</h3><p style="color:var(--text-secondary);font-size:var(--fs-13);line-height:var(--lh-relaxed)">${aiAnalysis?.topRecommendation || "Analyzing..."}</p></div>
+          <div class="flex-between mb-4" style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap">
+            <div>
+              <strong>${escHtml(placeName)}</strong>
+              ${mapsUrl ? `<a class="link" href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="margin-left:var(--space-3);font-size:var(--fs-13)">View on Google Maps</a>` : ""}
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <button class="btn-secondary btn-sm" onclick="loadGoogleReviews(true)">Refresh</button>
+              <button class="btn-ghost btn-sm" onclick="disconnectGoogleReviews()">Disconnect</button>
+            </div>
           </div>
-          <div class="card"><h3 class="mb-4">Recent Reviews with AI Responses</h3>${(
-            reviews || []
-          )
-            .slice(0, 10)
-            .map(
-              (r) => `
+          <div class="grid-4 mb-6">
+            <div class="card" style="text-align:center"><h3>Overall Rating</h3><div class="stat-large yellow">${escHtml(rating ?? "–")}</div><div class="fs-20">${stars(rating)}</div><div class="stat-label">${escHtml(totalReviews)} reviews</div></div>
+            <div class="card"><h3>Sentiment</h3>${shown ? `<canvas id="sentimentChart" style="max-height:120px"></canvas>` : "<p class='text-muted'>No reviews to analyze yet.</p>"}</div>
+            <div class="card"><h3>Common Themes</h3>${(aiAnalysis?.themes || []).map((t) => `<div style="padding:var(--space-2) 0;border-bottom:1px solid var(--border);font-size:var(--fs-13);color:var(--text-secondary)">${escHtml(t)}</div>`).join("") || "<p class='text-muted'>Not enough written reviews yet.</p>"}</div>
+            <div class="card"><h3>Top Recommendation</h3><p style="color:var(--text-secondary);font-size:var(--fs-13);line-height:var(--lh-relaxed)">${escHtml(aiAnalysis?.topRecommendation || "No recommendation yet.")}</p></div>
+          </div>
+          <div class="card"><h3 class="mb-4">Recent Reviews with AI Responses</h3>
+            ${note ? `<p class="text-muted mb-4" style="font-size:var(--fs-12)">${escHtml(note)}</p>` : ""}
+            ${
+              shown
+                ? reviews
+                    .map(
+                      (r) => `
             <div class="review-card">
-              <div class="review-header"><div class="review-name">${r.authorName}</div><div class="review-date">${r.relativeTime}</div></div>
-              <div class="mb-2">${"⭐".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
-              <div class="review-text">"${r.text}"</div>
-              ${r.aiResponse ? `<div class="review-ai"><strong>🤖 Suggested response:</strong> ${r.aiResponse}</div>` : ""}
+              <div class="review-header"><div class="review-name">${escHtml(r.authorName)}</div><div class="review-date">${escHtml(r.relativeTime)}</div></div>
+              <div class="mb-2">${stars(r.rating)}</div>
+              ${r.text ? `<div class="review-text">"${escHtml(r.text)}"</div>` : ""}
+              ${r.aiResponse ? `<div class="review-ai"><strong>🤖 Suggested response:</strong> ${escHtml(r.aiResponse)}</div>` : ""}
             </div>`,
-            )
-            .join("")}</div>`;
+                    )
+                    .join("")
+                : "<p class='text-muted'>Google hasn't shared any reviews for this place yet.</p>"
+            }
+          </div>`;
         setTimeout(() => {
           const ctx = document.getElementById("sentimentChart");
-          if (ctx && aiAnalysis)
-            new Chart(ctx, {
-              type: "doughnut",
-              data: {
-                labels: ["Positive", "Neutral", "Negative"],
-                datasets: [
-                  {
-                    data: [
-                      aiAnalysis.positive || 0,
-                      aiAnalysis.neutral || 0,
-                      aiAnalysis.negative || 0,
-                    ],
-                    backgroundColor: ["#34d399", "#60a5fa", "#ef4444"],
-                    borderColor: "#0f172a",
-                    borderWidth: 2,
-                  },
-                ],
-              },
-              options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-              },
-            });
+          if (!ctx || !aiAnalysis) return;
+          if (sentimentChart) sentimentChart.destroy();
+          sentimentChart = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+              labels: ["Positive", "Neutral", "Negative"],
+              datasets: [
+                {
+                  data: [
+                    aiAnalysis.positive || 0,
+                    aiAnalysis.neutral || 0,
+                    aiAnalysis.negative || 0,
+                  ],
+                  backgroundColor: ["#34d399", "#60a5fa", "#ef4444"],
+                  borderColor: "#0f172a",
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+            },
+          });
         }, 100);
       }
 
