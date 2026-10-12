@@ -1,187 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>About AERVO</title>
-  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
   <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aervo – Dashboard</title>
-
-  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #0f172a, #020617);
-      color: #e5e7eb;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 20px;
-    }
-
-    /* NAV / HAMBURGER (same as home) */
-    .nav {
-      position: fixed;
-      top: 18px;
-      right: 22px;
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-    }
-
-    .menu-toggle {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0;
-      gap: 3px;
-    }
-
-    .menu-toggle span {
-      display: block;
-      width: 14px;
-      height: 2px;
-      background: #e5e7eb;
-      border-radius: 999px;
-    }
-
-    .menu {
-      display: none;
-      flex-direction: column;
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 10px 12px;
-      min-width: 180px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    .menu.open {
-      display: flex;
-    }
-
-    .menu a {
-      color: #e5e7eb;
-      text-decoration: none;
-      padding: 6px 4px;
-      border-radius: 8px;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-
-    .menu a:hover {
-      background: rgba(56, 189, 248, 0.14);
-      color: #f9fafb;
-    }
-
-    .content {
-      max-width: 720px;
-      width: 100%;
-      text-align: left;
-    }
-
-    .kicker {
-      font-size: 13px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      font-size: 26px;
-      margin-bottom: 14px;
-      color: #e5e7eb;
-    }
-
-    p {
-      font-size: 15px;
-      line-height: 1.7;
-      color: #cbd5f5;
-      margin-bottom: 12px;
-    }
-
-    .footer {
-      margin-top: 18px;
-      font-size: 13px;
-      color: #9ca3af;
-      text-align: right;
-    }
-
-    @media (max-width: 640px) {
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About AERVO</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <style>
+      /* Layout only — look comes from tokens.css / components.css */
       body {
-        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-7) var(--space-5);
+        background-image: radial-gradient(
+          ellipse at top,
+          rgba(var(--primary-to-rgb), 0.12),
+          transparent 60%
+        );
+      }
+
+      /* Floating menu */
+      .nav {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-5);
+        z-index: var(--z-nav);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--space-2);
+      }
+      .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-1);
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-pill);
+        background: var(--bg-elevated);
+      }
+      .menu-toggle span {
+        display: block;
+        width: 14px;
+        height: 2px;
+        border-radius: var(--radius-pill);
+        background: var(--text);
+      }
+      .menu {
+        display: none;
+        flex-direction: column;
+        min-width: 180px;
+        padding: var(--space-3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--bg-elevated);
+        box-shadow: var(--shadow-md);
+      }
+      .menu.open {
+        display: flex;
+      }
+      .menu a {
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        transition: background var(--dur) var(--ease);
+      }
+      .menu a:hover {
+        background: var(--surface-hover);
+      }
+
+      /* Content */
+      .content {
+        width: 100%;
+        max-width: var(--container-narrow);
+      }
+      .kicker {
+        margin-bottom: var(--space-3);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
       }
       h1 {
-        font-size: 22px;
+        margin-bottom: var(--space-4);
+        font-size: var(--fs-28);
+        font-weight: var(--fw-bold);
+        line-height: var(--lh-tight);
+        letter-spacing: var(--ls-tight);
       }
-    }
-  </style>
-</head>
-<body>
-  <nav class="nav">
-    <button class="menu-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="menu" id="menu">
-      <a href="/">Home</a>
-      <a href="/about">About AERVO</a>
-      <a href="/pricing">Pricing</a>
-      <a href="/login">Log in</a>
-    </div>
-  </nav>
+      p {
+        margin-bottom: var(--space-3);
+        color: var(--text-secondary);
+        font-size: var(--fs-16);
+        line-height: var(--lh-relaxed);
+      }
+      .footer {
+        margin-top: var(--space-5);
+        color: var(--text-muted);
+        font-size: var(--fs-13);
+        text-align: right;
+      }
 
-  <main class="content">
-    <div class="kicker">AERVO</div>
-    <h1>About AERVO</h1>
+      @media (max-width: 640px) {
+        body {
+          padding: var(--space-6) var(--space-4);
+        }
+        h1 {
+          font-size: var(--fs-24);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <button
+        class="menu-toggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+        aria-controls="menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+      <div class="menu" id="menu">
+        <a href="/">Home</a>
+        <a href="/about">About AERVO</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/login">Log in</a>
+      </div>
+    </nav>
 
-    <p>
-      AERVO was created for small business owners who don’t have time to become
-      data experts. Most tools flood people with charts and dashboards, then
-      leave them to figure out what it all means.
-    </p>
-    <p>
-      AERVO’s vision is simple: turn real business activity into calm, clear
-      answers. Instead of guessing how things are going, owners should be able
-      to ask, “How did I do today?” and get a straight, human answer.
-    </p>
-    <p>
-      Over time, AERVO is meant to feel less like software and more like a
-      quiet partner that watches the numbers, spots patterns, and highlights
-      what matters—so decisions feel lighter, not heavier.
-    </p>
+    <main class="content">
+      <div class="kicker">AERVO</div>
+      <h1>About AERVO</h1>
 
-    <div class="footer">
-      A higher view of your business.
-    </div>
-  </main>
+      <p>
+        AERVO was created for small business owners who don’t have time to
+        become data experts. Most tools flood people with charts and dashboards,
+        then leave them to figure out what it all means.
+      </p>
+      <p>
+        AERVO’s vision is simple: turn real business activity into calm, clear
+        answers. Instead of guessing how things are going, owners should be able
+        to ask, “How did I do today?” and get a straight, human answer.
+      </p>
+      <p>
+        Over time, AERVO is meant to feel less like software and more like a
+        quiet partner that watches the numbers, spots patterns, and highlights
+        what matters—so decisions feel lighter, not heavier.
+      </p>
 
-  <script>
-    const toggle = document.querySelector(".menu-toggle");
-    const menu = document.getElementById("menu");
-    toggle.addEventListener("click", () => {
-      menu.classList.toggle("open");
-    });
-  </script>
-</body>
+      <div class="footer">A higher view of your business.</div>
+    </main>
+
+    <script>
+      const toggle = document.querySelector(".menu-toggle");
+      const menu = document.getElementById("menu");
+      toggle.addEventListener("click", () => {
+        const open = menu.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    </script>
+  </body>
 </html>

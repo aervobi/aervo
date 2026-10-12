@@ -3,12 +3,13 @@
  * script tag where the old <nav> used to be, so the markup exists before the
  * page's own scripts run:
  *
- *   <script src="/assets/js/app-nav.js" data-active="reports" data-accent="143,191,255"></script>
+ *   <script src="/assets/js/app-nav.js" data-active="reports"></script>
  *
  * data-active  Optional. Which link is current: reports | intelligence |
  *              integrations | settings. Setting it also adds a "Dashboard"
  *              link (sub-pages need a way back; dashboards use their tabs).
- * data-accent  Optional "r,g,b" used for active tabs/links.
+ * data-accent  Optional "r,g,b" override. Normally omitted: the bar follows the
+ *              page's --accent-rgb token (see tokens.css).
  * data-home    Optional. Override the home/dashboard URL.
  *
  * Page-specific pieces are supplied as <template> elements placed before the
@@ -25,7 +26,8 @@
   if (!script) return;
 
   var active = script.getAttribute("data-active") || "";
-  var accent = script.getAttribute("data-accent") || "143,191,255";
+  var accent = script.getAttribute("data-accent") || "";
+  var accentStyle = accent ? ' style="--nav-accent:' + accent + '"' : "";
 
   function slot(id) {
     var t = document.getElementById(id);
@@ -81,7 +83,7 @@
   var center = slot("appNavCenter");
 
   var navHtml =
-    '<nav class="nav" id="appNav" style="--nav-accent:' + accent + '">' +
+    '<nav class="nav" id="appNav"' + accentStyle + ">" +
     '<a class="nav-brand" data-home href="' + home + '" aria-label="Aervo dashboard">' +
     '<img class="nav-logo" src="/assets/images/logo.png" alt="Aervo">' +
     slot("appNavBrandExtra") +
@@ -93,7 +95,7 @@
     '<button type="button" class="nav-menu-btn" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">☰</button>' +
     '<button type="button" class="nav-link" id="logoutBtn" data-logout>Log out</button>' +
     "</div></nav>" +
-    '<div class="mobile-menu" id="mobileMenu" style="--nav-accent:' + accent + '">' +
+    '<div class="mobile-menu" id="mobileMenu"' + accentStyle + ">" +
     slot("appNavMobile") +
     '<div class="mobile-links">' + mobileLinks +
     '<button type="button" class="mobile-link" data-logout>Log out</button></div></div>';
@@ -138,11 +140,17 @@
     });
   }
   function fit() {
+    // Links animate `all`, so without this the measurements below would read
+    // mid-transition (compact) sizes and the bar would grow past its box later.
+    nav.classList.add("nav-measuring");
     setStep(0);
-    if (window.innerWidth <= 768) return; // CSS collapses everything
-    for (var n = 1; n <= steps.length && needed() > nav.clientWidth; n++) {
-      setStep(n);
+    if (window.innerWidth > 768) { // CSS collapses everything below this
+      for (var n = 1; n <= steps.length && needed() > nav.clientWidth; n++) {
+        setStep(n);
+      }
     }
+    void nav.offsetWidth; // commit the final state before transitions return
+    nav.classList.remove("nav-measuring");
   }
   var fitQueued = false;
   function queueFit() {
@@ -166,6 +174,16 @@
     attributes: true,
     attributeFilter: ["style", "src"],
   });
+  // Content can also grow without a DOM change (late font swap, image decode),
+  // so refit whenever one of the bar's parts changes size.
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(queueFit);
+    nav.querySelectorAll(".nav-brand, .nav-center, .nav-right").forEach(function (el) {
+      Array.prototype.forEach.call(el.children, function (child) {
+        ro.observe(child);
+      });
+    });
+  }
 
   function logout() {
     try {

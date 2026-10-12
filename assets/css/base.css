@@ -1,0 +1,130 @@
+/*
+ * Aervo base styles — reset, document defaults, focus and motion handling.
+ * Depends on tokens.css. Contains no component styling (see components.css).
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0; /* typographic margins are set by each page / component */
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-14);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+canvas,
+video {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+}
+
+::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+::selection {
+  background: rgba(var(--primary-rgb), 0.3);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/*
+ * Keyboard focus. Components that remove the native outline must supply the
+ * input focus treatment from components.css; everything else gets this ring.
+ */
+:focus-visible {
+  outline: 2px solid var(--primary-from);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * Utilities — replace the most repeated inline styles. They use !important so
+ * they behave exactly like the inline declarations they replaced (inline styles
+ * beat component rules; utilities must too).
+ */
+.mt-1 { margin-top: var(--space-1) !important; }
+.mt-2 { margin-top: var(--space-2) !important; }
+.mt-3 { margin-top: var(--space-3) !important; }
+.mt-4 { margin-top: var(--space-4) !important; }
+.mb-2 { margin-bottom: var(--space-2) !important; }
+.mb-4 { margin-bottom: var(--space-4) !important; }
+.mb-5 { margin-bottom: var(--space-5) !important; }
+.mb-6 { margin-bottom: var(--space-6) !important; }
+.text-primary { color: var(--text) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-info { color: var(--info) !important; }
+.text-danger-soft { color: var(--danger-text) !important; }
+.text-info-soft { color: var(--info-text) !important; }
+.fw-semibold { font-weight: var(--fw-semibold) !important; }
+.fs-20 { font-size: var(--fs-20) !important; }
+.fs-24 { font-size: var(--fs-24) !important; }
+.font-mono { font-family: var(--font-mono) !important; }
+.cursor-pointer { cursor: pointer !important; }
+.flex-1 { flex: 1 !important; }

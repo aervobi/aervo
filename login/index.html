@@ -5,360 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aervo - Login</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
-    <style>
-      body {
-        margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        background: #050817;
-        color: #d6def8;
-      }
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 40px;
-        background: rgba(5, 8, 23, 0.92);
-        backdrop-filter: blur(14px);
-        z-index: 10;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-      }
-      .nav-brand {
-        font-weight: 600;
-        letter-spacing: 4px;
-        font-size: 14px;
-        color: #8fbfff;
-        text-decoration: none;
-      }
-      .nav-links a {
-        margin: 0 12px;
-        font-size: 14px;
-        text-decoration: none;
-        color: #a6b3dd;
-      }
-      .nav-links a:hover {
-        color: #dfe7ff;
-      }
-      main {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding-top: 64px;
-      }
-      .card {
-        background: radial-gradient(circle at top left, #1a2237, #050817);
-        border-radius: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-        padding: 32px 28px 28px;
-        width: 100%;
-        max-width: 380px;
-      }
-      .card h1 {
-        margin: 0 0 4px;
-        font-size: 24px;
-        color: #e5ecff;
-      }
-      .card p {
-        margin: 0 0 24px;
-        font-size: 14px;
-        color: #9ca7d6;
-      }
-      label {
-        display: block;
-        font-size: 13px;
-        margin-bottom: 6px;
-        color: #c5cff6;
-      }
-      input {
-        width: 100%;
-        padding: 10px 11px;
-        margin-bottom: 14px;
-        border-radius: 8px;
-        border: 1px solid #323a5c;
-        background: #050817;
-        color: #e5ecff;
-        font-size: 14px;
-        box-sizing: border-box;
-      }
-      input:focus {
-        outline: none;
-        border-color: #6e9bff;
-        box-shadow: 0 0 0 1px rgba(110, 155, 255, 0.5);
-      }
-      button[type="submit"] {
-        width: 100%;
-        padding: 11px 0;
-        border-radius: 10px;
-        border: none;
-        background: #1a243d;
-        color: #b4cdff;
-        font-size: 15px;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-        box-shadow:
-          0 0 12px rgba(137, 180, 255, 0.4),
-          0 0 26px rgba(80, 130, 255, 0.3);
-        transition: all 0.2s ease;
-      }
-      button[type="submit"]:hover {
-        background: #222c48;
-        transform: translateY(-1px);
-        box-shadow:
-          0 0 16px rgba(137, 180, 255, 0.8),
-          0 0 40px rgba(80, 130, 255, 0.6);
-      }
-      .helper {
-        font-size: 12px;
-        color: #8b94c0;
-        margin-top: 10px;
-        line-height: 1.5;
-      }
-      .error {
-        margin-top: 8px;
-        font-size: 13px;
-        color: #ff7b7b;
-        min-height: 18px;
-      }
-      .forgot-row {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: -4px;
-        margin-bottom: 14px;
-      }
-      .forgot-link {
-        font-size: 12px;
-        color: #a6b3dd;
-        text-decoration: none;
-      }
-      .forgot-link:hover {
-        color: #dfe7ff;
-        text-decoration: underline;
-      }
-      .verified-banner {
-        background: rgba(35, 230, 168, 0.08);
-        border: 1px solid rgba(35, 230, 168, 0.3);
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 13px;
-        color: #23e6a8;
-        line-height: 1.5;
-      }
-      .verified-icon {
-        width: 32px;
-        height: 32px;
-        flex-shrink: 0;
-        background: rgba(35, 230, 168, 0.15);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-      }
-      @media (max-width: 768px) {
-        .nav {
-          padding: 0 16px;
-          height: 56px;
-        }
-        .nav-links {
-          display: none;
-        }
-        main {
-          padding: 80px 16px 24px;
-        }
-        .card {
-          padding: 24px 20px 20px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <script src="/assets/js/ui.js"></script>
   </head>
   <body>
-    <div
-      id="authMsg"
-      style="display: none; margin: 16px auto 0; max-width: 520px"
-    ></div>
-    <header class="nav">
-      <a href="/" class="nav-brand">Back to Aervo</a>
-      <nav class="nav-links">
+    <div class="auth-msg alert" id="authMsg" role="status" hidden></div>
+    <header class="auth-header">
+      <a href="/" class="auth-brand" aria-label="Aervo home">
+        <img src="/assets/images/logo.png" alt="Aervo" />
+      </a>
+      <nav class="auth-links">
         <a href="/#services">Product</a>
         <a href="/pricing">Pricing</a>
       </nav>
       <div></div>
     </header>
 
-    <main>
-      <div class="card">
+    <main class="auth-main">
+      <div class="card card-hero auth-card">
         <h1>Sign in</h1>
-        <p>Use your Aervo login to access the dashboard.</p>
+        <p class="auth-lead">Use your Aervo login to access the dashboard.</p>
 
         <!-- Shown when user arrives after clicking verification email -->
-        <div class="verified-banner" id="verifiedBanner" style="display: none">
-          <div class="verified-icon">&#10003;</div>
+        <div class="alert alert-success auth-notice" id="verifiedBanner" hidden>
+          <div class="auth-notice-icon">&#10003;</div>
           <div>
             <strong>Email verified!</strong><br />
             Your account is confirmed. Please log in below.
           </div>
         </div>
 
-        <!-- Google Sign In -->
         <button
           type="button"
+          class="btn btn-secondary btn-block btn-form auth-provider"
           onclick="signInWithGoogle()"
-          style="
-            width: 100%;
-            padding: 11px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.05);
-            color: #e5ecff;
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            transition: background 0.2s;
-          "
-          onmouseover="this.style.background = 'rgba(255,255,255,0.09)'"
-          onmouseout="this.style.background = 'rgba(255,255,255,0.05)'"
         >
           <img
             src="https://www.google.com/favicon.ico"
             width="18"
             height="18"
+            alt=""
           />
           Continue with Google
-            <!-- Shopify Sign In -->
+        </button>
+
         <button
           type="button"
+          class="btn btn-secondary btn-block btn-form auth-provider"
           onclick="signInWithShopify()"
-          style="
-            width: 100%;
-            padding: 11px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.05);
-            color: #e5ecff;
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            transition: background 0.2s;
-          "
-          onmouseover="this.style.background = 'rgba(255,255,255,0.09)'"
-          onmouseout="this.style.background = 'rgba(255,255,255,0.05)'"
         >
-          <span style="font-size: 18px;">🛍️</span>
+          <span aria-hidden="true">🛍️</span>
           Continue with Shopify
         </button>
 
         <!-- Shopify store input (hidden by default) -->
-        <div id="shopify-input-area" style="display:none; margin-bottom: 16px;">
-          <label for="shopify-store">Your store URL</label>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <input
-              id="shopify-store"
-              type="text"
-              placeholder="yourstore"
-              style="margin-bottom: 0; flex: 1;"
-            />
-            <span style="color: #8b94c0; font-size: 13px; white-space: nowrap;">.myshopify.com</span>
+        <div id="shopify-input-area" class="form-group" hidden>
+          <label class="field-label" for="shopify-store">Your store URL</label>
+          <div style="display: flex; gap: var(--space-2); align-items: center">
+            <input id="shopify-store" type="text" placeholder="yourstore" />
+            <span class="field-help" style="white-space: nowrap; margin: 0"
+              >.myshopify.com</span
+            >
           </div>
           <button
             type="button"
+            class="btn btn-primary btn-block btn-form mt-3"
             onclick="goToShopify()"
-            style="
-              width: 100%;
-              margin-top: 10px;
-              padding: 11px 0;
-              border-radius: 10px;
-              border: none;
-              background: #95BF47;
-              color: white;
-              font-size: 15px;
-              cursor: pointer;
-            "
-          >Connect Store</button>
-        </div>
-
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-          "
-        >
-          <div
-            style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08)"
-          ></div>
-          <span style="font-size: 12px; color: #8b94c0"
-            >or sign in with email</span
           >
-        </button>
-
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-          "
-        >
-          <div
-            style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08)"
-          ></div>
-          <span style="font-size: 12px; color: #8b94c0"
-           
-            style="flex: 1; height: 1px; background: rgba(255, 255, 255, 0.08)"
-          ></div>
+            Connect Store
+          </button>
         </div>
+
+        <div class="auth-divider"><span>or sign in with email</span></div>
 
         <form id="login-form">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@business.com"
-            required
-          />
-          <label for="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            required
-          />
-          <div class="forgot-row">
-            <a href="/forgot-password" class="forgot-link"
-              >Forgot your password?</a
-            >
+          <div class="form-group">
+            <label class="field-label" for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="you@business.com"
+              required
+            />
           </div>
-          <button type="submit">Login</button>
-          <div class="error" id="error"></div>
-          <div class="helper">
+          <div class="form-group">
+            <label class="field-label" for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <div class="auth-row">
+            <a href="/forgot-password">Forgot your password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-form">
+            Login
+          </button>
+          <div class="form-error" id="error" role="alert"></div>
+          <div class="auth-helper">
             Don't have an account?
-            <a href="/onboarding" style="color: #93c5fd; text-decoration: none"
-              >Sign up free</a
-            >
+            <a href="/onboarding" class="link">Sign up free</a>
           </div>
         </form>
       </div>
@@ -369,7 +119,7 @@
 
       // Show verified banner if coming from email verification link
       if (new URLSearchParams(window.location.search).get("verified") === "1") {
-        document.getElementById("verifiedBanner").style.display = "flex";
+        document.getElementById("verifiedBanner").hidden = false;
       }
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -388,25 +138,18 @@
             clearTimeout(authMsgTimer);
             authMsgTimer = null;
           }
-          banner.style.cssText =
-            "display:block;position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:99999;max-width:520px;width:calc(100% - 32px);padding:12px 14px;border-radius:14px;font-size:13px;background:rgba(15,23,42,0.92);color:#e5ecff;box-shadow:0 16px 50px rgba(0,0,0,0.55);border:1px solid " +
-            (type === "error"
-              ? "rgba(248,113,113,0.55)"
-              : "rgba(96,165,250,0.55)");
+          banner.className =
+            "auth-msg alert " +
+            (type === "error" ? "alert-error" : "alert-info");
           banner.innerHTML =
-            "<div style='font-weight:600;margin-bottom:" +
-            (hint ? "6px" : "0") +
-            "'>" +
+            "<div class='auth-msg-title'>" +
             text +
             "</div>" +
-            (hint
-              ? "<div style='font-size:12px;color:#9ca3af;line-height:1.5'>" +
-                hint +
-                "</div>"
-              : "");
+            (hint ? "<div class='auth-msg-hint'>" + hint + "</div>" : "");
+          banner.hidden = false;
           authMsgTimer = setTimeout(
             () => {
-              banner.style.display = "none";
+              banner.hidden = true;
             },
             type === "error" ? 9000 : 3500,
           );
@@ -418,7 +161,7 @@
           isSubmitting = true;
           submitBtn.disabled = true;
           errorEl.textContent = "";
-          banner.style.display = "none";
+          banner.hidden = true;
 
           try {
             const response = await fetch(BACKEND_URL + "/api/login", {
@@ -496,7 +239,7 @@
       }
       function signInWithShopify() {
         const area = document.getElementById("shopify-input-area");
-        area.style.display = area.style.display === "none" ? "block" : "none";
+        area.hidden = !area.hidden;
       }
 
       function goToShopify() {
@@ -505,7 +248,7 @@
           .value.trim()
           .replace(".myshopify.com", "");
         if (!store) {
-          alert("Please enter your store name");
+          showToast("Please enter your store name");
           return;
         }
         window.location.href =

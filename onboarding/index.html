@@ -5,16 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Aervo – Get Started</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
     <style>
+      /* Page-local names mapped onto the shared tokens */
       :root {
-        --bg: #02030a;
-        --text: #f7f7ff;
-        --muted: rgba(215, 220, 240, 0.65);
-        --a1: #29c8ff;
-        --a2: #7c5cff;
-        --a3: #23e6a8;
-        --r: 18px;
-        --r-pill: 999px;
+        --bg2: var(--bg-elevated);
+        --card: var(--surface);
+        --card2: var(--surface-raised);
+        --borderSoft: var(--border-soft);
+        --bordersoft: var(--border-soft);
+        --muted: var(--text-secondary);
+        --a1: var(--primary-from);
+        --a2: var(--primary-to);
+        --a3: var(--success);
+        --max: var(--container-marketing);
+        --r: var(--radius-lg);
+        --r-lg: var(--radius-lg);
+        --r-xl: var(--radius-xl);
+        --r-pill: var(--radius-pill);
+        --shadow: var(--shadow-lg);
+      }
+      body {
+        font-size: var(--fs-16);
       }
       * {
         box-sizing: border-box;
@@ -26,16 +40,7 @@
         height: 100%;
       }
       body {
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "SF Pro Text",
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
         min-height: 100vh;
-        -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
       body::before {
@@ -47,17 +52,17 @@
         background:
           radial-gradient(
             900px 600px at 15% 15%,
-            rgba(41, 200, 255, 0.13),
+            rgba(var(--primary-rgb), 0.13),
             transparent 60%
           ),
           radial-gradient(
             700px 500px at 80% 20%,
-            rgba(124, 92, 255, 0.15),
+            rgba(var(--primary-to-rgb), 0.15),
             transparent 60%
           ),
           radial-gradient(
             800px 600px at 50% 90%,
-            rgba(35, 230, 168, 0.09),
+            rgba(var(--success-rgb), 0.09),
             transparent 60%
           );
         filter: blur(10px);
@@ -69,8 +74,8 @@
         z-index: 0;
         pointer-events: none;
         background:
-          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+          linear-gradient(var(--surface) 1px, transparent 1px),
+          linear-gradient(90deg, var(--surface) 1px, transparent 1px);
         background-size: 48px 48px;
         opacity: 0.06;
       }
@@ -82,45 +87,35 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
+        padding: var(--space-8) var(--space-5);
       }
       .logo {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 48px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-9);
         animation: fadeDown 0.5s ease both;
       }
       .logo-mark {
         width: 36px;
         height: 36px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         background: linear-gradient(135deg, var(--a1), var(--a2));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-        box-shadow: 0 0 24px rgba(41, 200, 255, 0.35);
+        font-size: var(--fs-18);
+        box-shadow: var(--glow);
       }
       .logo-name {
-        font-size: 1rem;
-        font-weight: 950;
-        letter-spacing: 0.22em;
+        font-size: var(--fs-16);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
         text-transform: uppercase;
       }
       .card {
         width: 100%;
         max-width: 520px;
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.06),
-          rgba(255, 255, 255, 0.03)
-        );
-        border: 1px solid rgba(255, 255, 255, 0.09);
-        border-radius: 28px;
-        padding: 40px;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-        animation: fadeUp 0.5s ease 0.1s both;
       }
       @keyframes fadeDown {
         from {
@@ -148,7 +143,7 @@
         display: flex;
         align-items: center;
         gap: 0;
-        margin-bottom: 36px;
+        margin-bottom: var(--space-8);
       }
       .step-dot {
         width: 28px;
@@ -157,32 +152,32 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.75rem;
-        font-weight: 800;
-        border: 2px solid rgba(255, 255, 255, 0.12);
+        font-size: var(--fs-12);
+        font-weight: var(--fw-heavy);
+        border: 2px solid var(--border);
         color: var(--muted);
-        transition: all 0.3s ease;
+        transition: all var(--dur-slow) ease;
         flex-shrink: 0;
       }
       .step-dot.active {
         background: linear-gradient(135deg, var(--a1), var(--a2));
         border-color: transparent;
-        color: #050816;
-        box-shadow: 0 0 16px rgba(41, 200, 255, 0.4);
+        color: var(--text-on-primary);
+        box-shadow: var(--glow);
       }
       .step-dot.done {
-        background: rgba(35, 230, 168, 0.15);
-        border-color: rgba(35, 230, 168, 0.4);
+        background: rgba(var(--success-rgb), 0.15);
+        border-color: rgba(var(--success-rgb), 0.4);
         color: var(--a3);
       }
       .step-line {
         flex: 1;
         height: 2px;
-        background: rgba(255, 255, 255, 0.08);
-        transition: background 0.3s ease;
+        background: var(--surface-hover);
+        transition: background var(--dur-slow) ease;
       }
       .step-line.done {
-        background: rgba(35, 230, 168, 0.3);
+        background: rgba(var(--success-rgb), 0.3);
       }
 
       /* Step panels */
@@ -194,19 +189,19 @@
         animation: fadeUp 0.3s ease both;
       }
       .step-kicker {
-        font-size: 0.75rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
+        font-size: var(--fs-12);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
         text-transform: uppercase;
         color: var(--a1);
-        margin-bottom: 8px;
+        margin-bottom: var(--space-2);
       }
       .step-title {
-        font-size: 1.6rem;
-        font-weight: 950;
-        letter-spacing: -0.02em;
-        line-height: 1.15;
-        margin-bottom: 8px;
+        font-size: var(--fs-24);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-tight);
+        margin-bottom: var(--space-2);
       }
       .step-title span {
         background: linear-gradient(120deg, var(--a1), var(--a2));
@@ -214,56 +209,56 @@
         color: transparent;
       }
       .step-sub {
-        font-size: 0.9rem;
+        font-size: var(--fs-14);
         color: var(--muted);
-        margin-bottom: 28px;
-        line-height: 1.6;
+        margin-bottom: var(--space-7);
+        line-height: var(--lh-relaxed);
       }
 
       /* Form fields */
       .field {
-        margin-bottom: 18px;
+        margin-bottom: var(--space-5);
       }
       .field label {
         display: block;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: rgba(215, 220, 240, 0.8);
-        margin-bottom: 7px;
-        letter-spacing: 0.04em;
+        font-size: var(--fs-13);
+        font-weight: var(--fw-bold);
+        color: var(--text);
+        margin-bottom: var(--space-2);
+        letter-spacing: var(--ls-label);
       }
       .field input,
       .field select {
         width: 100%;
-        padding: 12px 14px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
+        padding: var(--space-3) var(--space-4);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
         color: var(--text);
-        font-size: 0.95rem;
+        font-size: var(--fs-16);
         font-family: inherit;
         outline: none;
         transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
+          border-color var(--dur),
+          box-shadow var(--dur);
         -webkit-appearance: none;
       }
       .field input:focus,
       .field select:focus {
-        border-color: rgba(41, 200, 255, 0.5);
-        box-shadow: 0 0 0 3px rgba(41, 200, 255, 0.1);
+        border-color: rgba(var(--primary-rgb), 0.5);
+        box-shadow: var(--focus-ring);
       }
       .field input::placeholder {
-        color: rgba(215, 220, 240, 0.3);
+        color: var(--text-muted);
       }
       .field select option {
-        background: #0d1124;
+        background: var(--bg-elevated);
         color: var(--text);
       }
       .field-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: var(--space-3);
       }
 
       /* Password field with toggle */
@@ -271,7 +266,7 @@
         position: relative;
       }
       .pw-wrap input {
-        padding-right: 44px;
+        padding-right: var(--space-9);
       }
       .pw-toggle {
         position: absolute;
@@ -281,125 +276,100 @@
         background: transparent;
         border: none;
         cursor: pointer;
-        font-size: 16px;
-        color: rgba(215, 220, 240, 0.5);
-        padding: 4px;
+        font-size: var(--fs-16);
+        color: var(--text-muted);
+        padding: var(--space-1);
       }
       .pw-toggle:hover {
-        color: rgba(215, 220, 240, 0.9);
+        color: var(--text);
       }
 
       /* Password strength */
       .strength-bar {
         height: 4px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 2px;
-        margin-top: 6px;
+        background: var(--surface-hover);
+        border-radius: var(--radius-xs);
+        margin-top: var(--space-2);
         overflow: hidden;
       }
       .strength-fill {
         height: 100%;
         width: 0%;
-        border-radius: 2px;
+        border-radius: var(--radius-xs);
         transition:
-          width 0.2s,
-          background 0.2s;
+          width var(--dur),
+          background var(--dur);
       }
       .hint {
-        font-size: 0.75rem;
+        font-size: var(--fs-12);
         color: var(--muted);
-        margin-top: 4px;
+        margin-top: var(--space-1);
         min-height: 16px;
       }
       .hint.good {
-        color: #bbf7d0;
+        color: var(--text-secondary);
       }
       .hint.bad {
-        color: #fecaca;
+        color: var(--text);
       }
 
       /* Google button */
       .btn-google {
         width: 100%;
-        padding: 11px;
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.05);
-        color: #e5ecff;
-        font-size: 0.95rem;
-        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        margin-bottom: 16px;
-        transition: background 0.2s;
-      }
-      .btn-google:hover {
-        background: rgba(255, 255, 255, 0.09);
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
       }
 
       /* Divider */
       .divider {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 16px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
       }
       .divider-line {
         flex: 1;
         height: 1px;
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--surface-hover);
       }
       .divider-text {
-        font-size: 0.75rem;
-        color: rgba(139, 148, 192, 1);
+        font-size: var(--fs-12);
+        color: var(--text-secondary);
       }
 
       /* Platform cards */
       .platform-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-      .platform-card {
-        border: 2px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 20px 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: rgba(255, 255, 255, 0.03);
-        text-align: center;
-      }
-      .platform-card:hover {
-        border-color: rgba(255, 255, 255, 0.18);
-        background: rgba(255, 255, 255, 0.06);
-        transform: translateY(-2px);
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
       }
       .platform-card.selected {
         border-color: var(--a1);
-        background: rgba(41, 200, 255, 0.08);
-        box-shadow: 0 0 20px rgba(41, 200, 255, 0.15);
+        background: rgba(var(--primary-rgb), 0.08);
+        box-shadow: var(--glow);
       }
       .platform-card.selected.square-card {
         border-color: var(--a3);
-        background: rgba(35, 230, 168, 0.08);
-        box-shadow: 0 0 20px rgba(35, 230, 168, 0.15);
+        background: rgba(var(--success-rgb), 0.08);
+        box-shadow: var(--glow);
       }
       .platform-icon {
-        font-size: 2rem;
-        margin-bottom: 8px;
+        font-size: var(--fs-32);
+        margin-bottom: var(--space-2);
       }
       .platform-name {
-        font-size: 0.9rem;
-        font-weight: 800;
-        margin-bottom: 4px;
+        font-size: var(--fs-14);
+        font-weight: var(--fw-heavy);
+        margin-bottom: var(--space-1);
       }
       .platform-desc {
-        font-size: 0.75rem;
+        font-size: var(--fs-12);
         color: var(--muted);
-        line-height: 1.4;
+        line-height: var(--lh-normal);
       }
       .platform-check {
         width: 20px;
@@ -409,8 +379,8 @@
         display: none;
         align-items: center;
         justify-content: center;
-        font-size: 10px;
-        margin: 8px auto 0;
+        font-size: var(--fs-11);
+        margin: var(--space-2) auto 0;
       }
       .platform-card.selected .platform-check {
         display: flex;
@@ -421,265 +391,180 @@
 
       /* Both / CSV option */
       .wide-option {
-        border: 2px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 16px 20px;
+        border: 2px solid var(--border-soft);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4) var(--space-5);
         cursor: pointer;
-        transition: all 0.2s ease;
-        background: rgba(255, 255, 255, 0.03);
+        transition: all var(--dur) ease;
+        background: var(--surface);
         display: flex;
         align-items: center;
-        gap: 14px;
-        margin-bottom: 12px;
+        gap: var(--space-4);
+        margin-bottom: var(--space-3);
       }
       .wide-option:hover {
-        border-color: rgba(255, 255, 255, 0.18);
-        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--border-strong);
+        background: var(--surface-raised);
       }
       .wide-option.selected {
         border-color: var(--a2);
-        background: rgba(124, 92, 255, 0.08);
-        box-shadow: 0 0 20px rgba(124, 92, 255, 0.15);
+        background: rgba(var(--primary-to-rgb), 0.08);
+        box-shadow: var(--glow);
       }
       #csvOption.selected {
-        border-color: #a855f7;
-        background: rgba(168, 85, 247, 0.08);
-        box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.08);
+        box-shadow: var(--glow);
       }
       .wide-icons {
-        font-size: 1.4rem;
+        font-size: var(--fs-24);
       }
       .wide-text {
         flex: 1;
       }
       .wide-name {
-        font-size: 0.9rem;
-        font-weight: 800;
+        font-size: var(--fs-14);
+        font-weight: var(--fw-heavy);
       }
       .wide-desc {
-        font-size: 0.75rem;
+        font-size: var(--fs-12);
         color: var(--muted);
-      }
-      .wide-badge {
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        background: linear-gradient(90deg, var(--a1), var(--a2));
-        color: #050816;
-        padding: 3px 8px;
-        border-radius: var(--r-pill);
-        text-transform: uppercase;
-        white-space: nowrap;
       }
 
       /* Business type grid */
       .type-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 24px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-6);
       }
       .type-card {
-        border: 2px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 14px;
-        cursor: pointer;
-        transition: all 0.2s;
-        background: rgba(255, 255, 255, 0.03);
         display: flex;
         align-items: center;
-        gap: 10px;
-      }
-      .type-card:hover {
-        border-color: rgba(255, 255, 255, 0.15);
-        background: rgba(255, 255, 255, 0.05);
+        gap: var(--space-3);
       }
       .type-card.selected {
         border-color: var(--a1);
-        background: rgba(41, 200, 255, 0.07);
+        background: rgba(var(--primary-rgb), 0.07);
       }
       .type-icon {
-        font-size: 1.4rem;
+        font-size: var(--fs-24);
         flex-shrink: 0;
       }
       .type-name {
-        font-size: 0.85rem;
-        font-weight: 700;
+        font-size: var(--fs-14);
+        font-weight: var(--fw-bold);
       }
 
       /* CSV drop zone */
       .csv-drop {
-        border: 2px dashed rgba(124, 92, 255, 0.4);
-        border-radius: 14px;
-        padding: 28px 20px;
+        border: 2px dashed rgba(var(--primary-to-rgb), 0.4);
+        border-radius: var(--radius-lg);
+        padding: var(--space-7) var(--space-5);
         text-align: center;
         cursor: pointer;
-        transition: all 0.2s;
-        background: rgba(124, 92, 255, 0.04);
-        margin-bottom: 12px;
+        transition: all var(--dur);
+        background: rgba(var(--primary-to-rgb), 0.04);
+        margin-bottom: var(--space-3);
       }
       .csv-drop:hover,
       .csv-drop.dragging {
-        border-color: rgba(124, 92, 255, 0.8);
-        background: rgba(124, 92, 255, 0.1);
+        border-color: rgba(var(--primary-to-rgb), 0.8);
+        background: rgba(var(--primary-to-rgb), 0.1);
       }
       .csv-drop-icon {
-        font-size: 1.8rem;
-        margin-bottom: 8px;
+        font-size: var(--fs-28);
+        margin-bottom: var(--space-2);
       }
       .csv-drop-title {
-        font-size: 0.9rem;
-        font-weight: 700;
-        margin-bottom: 4px;
+        font-size: var(--fs-14);
+        font-weight: var(--fw-bold);
+        margin-bottom: var(--space-1);
       }
       .csv-drop-sub {
-        font-size: 0.75rem;
+        font-size: var(--fs-12);
         color: var(--muted);
       }
       .csv-selected {
         display: none;
-        background: rgba(35, 230, 168, 0.08);
-        border: 1px solid rgba(35, 230, 168, 0.25);
-        border-radius: 10px;
-        padding: 10px 14px;
-        font-size: 0.82rem;
-        color: #23e6a8;
-        margin-bottom: 12px;
+        background: rgba(var(--success-rgb), 0.08);
+        border: 1px solid rgba(var(--success-rgb), 0.25);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--fs-13);
+        color: var(--success);
+        margin-bottom: var(--space-3);
       }
 
       /* Connect boxes */
       .connect-box {
-        border-radius: 18px;
-        padding: 22px;
-        margin-bottom: 14px;
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+        margin-bottom: var(--space-4);
       }
       .connect-box-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
       }
       .connect-box-icon {
         width: 44px;
         height: 44px;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: var(--fs-24);
         flex-shrink: 0;
       }
       .connect-box-title {
-        font-size: 0.95rem;
-        font-weight: 800;
+        font-size: var(--fs-16);
+        font-weight: var(--fw-heavy);
       }
       .connect-box-sub {
-        font-size: 0.78rem;
+        font-size: var(--fs-12);
         color: var(--muted);
       }
       .connect-status {
         margin-left: auto;
         display: none;
-        background: rgba(35, 230, 168, 0.12);
-        border: 1px solid rgba(35, 230, 168, 0.3);
-        color: #23e6a8;
-        font-size: 0.72rem;
-        font-weight: 800;
-        padding: 3px 10px;
-        border-radius: 999px;
       }
       .connect-desc {
-        font-size: 0.82rem;
+        font-size: var(--fs-13);
         color: var(--muted);
-        margin-bottom: 14px;
-        line-height: 1.6;
+        margin-bottom: var(--space-4);
+        line-height: var(--lh-relaxed);
       }
 
       /* Buttons */
       .btn-next {
         width: 100%;
-        padding: 14px;
-        background: linear-gradient(90deg, var(--a1), var(--a2));
-        color: #050816;
-        font-size: 1rem;
-        font-weight: 800;
-        border: none;
-        border-radius: 14px;
-        cursor: pointer;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
-        box-shadow: 0 0 20px rgba(41, 200, 255, 0.3);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-      }
-      .btn-next:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 32px rgba(41, 200, 255, 0.5);
-      }
-      .btn-next:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
+        gap: var(--space-2);
       }
       .btn-back {
         width: 100%;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--muted);
-        font-size: 0.9rem;
-        font-weight: 600;
-        border-radius: 14px;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: background 0.15s;
-      }
-      .btn-back:hover {
-        background: rgba(255, 255, 255, 0.07);
+        margin-top: var(--space-3);
       }
       .btn-connect-shopify {
         width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: none;
-        cursor: pointer;
-        background: linear-gradient(90deg, #96bf48, #5a8a1f);
-        color: #fff;
-        font-size: 0.9rem;
-        font-weight: 800;
-        transition: transform 0.15s;
-      }
-      .btn-connect-shopify:hover {
-        transform: translateY(-2px);
       }
       .btn-connect-square {
         width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: none;
-        cursor: pointer;
-        background: linear-gradient(90deg, #23e6a8, #1aad80);
-        color: #050816;
-        font-size: 0.9rem;
-        font-weight: 800;
-        transition: transform 0.15s;
-      }
-      .btn-connect-square:hover {
-        transform: translateY(-2px);
       }
 
       /* Error */
       .error-msg {
-        font-size: 0.82rem;
-        color: #ff6464;
-        background: rgba(255, 100, 100, 0.08);
-        border: 1px solid rgba(255, 100, 100, 0.2);
-        border-radius: 10px;
-        padding: 10px 14px;
-        margin-top: 12px;
+        font-size: var(--fs-13);
+        color: var(--danger);
+        background: rgba(var(--danger-rgb), 0.08);
+        border: 1px solid rgba(var(--danger-rgb), 0.2);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        margin-top: var(--space-3);
         display: none;
       }
 
@@ -687,14 +572,14 @@
       .success-icon {
         width: 64px;
         height: 64px;
-        border-radius: 20px;
+        border-radius: var(--radius-xl);
         background: linear-gradient(135deg, var(--a3), var(--a1));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 30px;
-        margin: 0 auto 20px;
-        box-shadow: 0 0 40px rgba(35, 230, 168, 0.4);
+        font-size: var(--fs-32);
+        margin: 0 auto var(--space-5);
+        box-shadow: var(--glow);
         animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
       }
       @keyframes popIn {
@@ -709,20 +594,17 @@
       }
 
       .helper {
-        margin-top: 14px;
-        font-size: 0.8rem;
+        margin-top: var(--space-4);
+        font-size: var(--fs-13);
         color: var(--muted);
         text-align: center;
       }
       .helper a {
-        color: #93c5fd;
+        color: var(--info-text);
         text-decoration: none;
       }
 
       @media (max-width: 560px) {
-        .card {
-          padding: 28px 20px;
-        }
         .platform-grid {
           grid-template-columns: 1fr 1fr;
         }
@@ -730,13 +612,14 @@
           grid-template-columns: 1fr 1fr;
         }
         .step-title {
-          font-size: 1.3rem;
+          font-size: var(--fs-20);
         }
         .field-row {
           grid-template-columns: 1fr;
         }
       }
     </style>
+      <script src="/assets/js/ui.js"></script>
   </head>
   <body>
     <div class="page">
@@ -821,7 +704,7 @@
           <div class="hint" id="strengthHint"></div>
           <div class="hint" id="matchHint"></div>
 
-          <button class="btn-next" style="margin-top: 16px" onclick="goStep1()">
+          <button class="btn-next mt-4" onclick="goStep1()">
             Continue →
           </button>
           <div class="error-msg" id="err1"></div>
@@ -940,7 +823,7 @@
             class="wide-option"
             onclick="selectPlatform(this, 'csv')"
             id="csvOption"
-            style="border-color: rgba(124, 92, 255, 0.2)"
+            style="border-color: rgba(var(--primary-to-rgb), 0.2)"
           >
             <div class="wide-icons">🗂️</div>
             <div class="wide-text">
@@ -951,7 +834,7 @@
             </div>
             <div
               class="wide-badge"
-              style="background: linear-gradient(90deg, var(--a2), #a855f7)"
+              style="background: linear-gradient(90deg, var(--a2), var(--accent))"
             >
               No integration needed
             </div>
@@ -977,16 +860,16 @@
             <div
               class="connect-box"
               style="
-                background: rgba(150, 191, 72, 0.07);
-                border: 1px solid rgba(150, 191, 72, 0.2);
+                background: rgba(var(--success-rgb), 0.07);
+                border: 1px solid rgba(var(--success-rgb), 0.2);
               "
             >
               <div class="connect-box-header">
                 <div
                   class="connect-box-icon"
                   style="
-                    background: rgba(150, 191, 72, 0.15);
-                    border: 1px solid rgba(150, 191, 72, 0.3);
+                    background: rgba(var(--success-rgb), 0.15);
+                    border: 1px solid rgba(var(--success-rgb), 0.3);
                   "
                 >
                   🛍️
@@ -1014,16 +897,16 @@
             <div
               class="connect-box"
               style="
-                background: rgba(35, 230, 168, 0.06);
-                border: 1px solid rgba(35, 230, 168, 0.2);
+                background: rgba(var(--success-rgb), 0.06);
+                border: 1px solid rgba(var(--success-rgb), 0.2);
               "
             >
               <div class="connect-box-header">
                 <div
                   class="connect-box-icon"
                   style="
-                    background: rgba(35, 230, 168, 0.1);
-                    border: 1px solid rgba(35, 230, 168, 0.25);
+                    background: rgba(var(--success-rgb), 0.1);
+                    border: 1px solid rgba(var(--success-rgb), 0.25);
                   "
                 >
                   ⬛
@@ -1051,13 +934,13 @@
             <div
               class="connect-box"
               style="
-                background: rgba(150, 191, 72, 0.07);
-                border: 1px solid rgba(150, 191, 72, 0.2);
+                background: rgba(var(--success-rgb), 0.07);
+                border: 1px solid rgba(var(--success-rgb), 0.2);
               "
             >
               <div class="connect-box-header">
-                <div style="font-size: 22px">🛍️</div>
-                <div style="flex: 1">
+                <div class="fs-24">🛍️</div>
+                <div class="flex-1">
                   <div class="connect-box-title">Shopify</div>
                   <div class="connect-box-sub">Online store</div>
                 </div>
@@ -1072,13 +955,13 @@
             <div
               class="connect-box"
               style="
-                background: rgba(35, 230, 168, 0.06);
-                border: 1px solid rgba(35, 230, 168, 0.2);
+                background: rgba(var(--success-rgb), 0.06);
+                border: 1px solid rgba(var(--success-rgb), 0.2);
               "
             >
               <div class="connect-box-header">
-                <div style="font-size: 22px">⬛</div>
-                <div style="flex: 1">
+                <div class="fs-24">⬛</div>
+                <div class="flex-1">
                   <div class="connect-box-title">Square</div>
                   <div class="connect-box-sub">POS &amp; appointments</div>
                 </div>
@@ -1097,16 +980,16 @@
             <div
               class="connect-box"
               style="
-                background: rgba(124, 92, 255, 0.07);
-                border: 1px solid rgba(124, 92, 255, 0.25);
+                background: rgba(var(--primary-to-rgb), 0.07);
+                border: 1px solid rgba(var(--primary-to-rgb), 0.25);
               "
             >
               <div class="connect-box-header">
                 <div
                   class="connect-box-icon"
                   style="
-                    background: rgba(124, 92, 255, 0.15);
-                    border: 1px solid rgba(124, 92, 255, 0.3);
+                    background: rgba(var(--primary-to-rgb), 0.15);
+                    border: 1px solid rgba(var(--primary-to-rgb), 0.3);
                   "
                 >
                   📊
@@ -1149,7 +1032,7 @@
               </div>
               <div
                 style="
-                  font-size: 0.75rem;
+                  font-size: var(--fs-12);
                   color: var(--muted);
                   text-align: center;
                 "
@@ -1160,17 +1043,17 @@
           </div>
 
           <!-- Skip -->
-          <div style="text-align: center; margin-bottom: 16px">
-            <span style="font-size: 0.8rem; color: var(--muted)"
+          <div style="text-align: center; margin-bottom: var(--space-4)">
+            <span style="font-size: var(--fs-13); color: var(--muted)"
               >Not ready yet?
             </span>
             <span
               onclick="finishOnboarding(true)"
               style="
-                font-size: 0.8rem;
+                font-size: var(--fs-13);
                 color: var(--a1);
                 cursor: pointer;
-                font-weight: 700;
+                font-weight: var(--fw-bold);
               "
               >Skip for now →</span
             >
@@ -1189,40 +1072,40 @@
 
         <!-- ── STEP 5: Verify Email ── -->
         <div class="step-panel" id="step5">
-          <div style="text-align: center; padding: 20px 0">
+          <div style="text-align: center; padding: var(--space-5) 0">
             <div class="success-icon">📬</div>
             <div class="step-title" style="text-align: center">
               Check your <span>inbox</span>
             </div>
-            <div class="step-sub" style="text-align: center; margin-top: 8px">
+            <div class="step-sub" style="text-align: center; margin-top: var(--space-2)">
               We sent a verification link to<br />
-              <strong id="verifyEmail" style="color: #93c5fd"></strong>
+              <strong id="verifyEmail" style="color: var(--info-text)"></strong>
             </div>
             <div
               style="
-                margin-top: 24px;
-                padding: 16px;
-                background: rgba(35, 230, 168, 0.07);
-                border: 1px solid rgba(35, 230, 168, 0.2);
-                border-radius: 14px;
+                margin-top: var(--space-6);
+                padding: var(--space-4);
+                background: rgba(var(--success-rgb), 0.07);
+                border: 1px solid rgba(var(--success-rgb), 0.2);
+                border-radius: var(--radius-lg);
                 text-align: left;
               "
             >
               <div
                 style="
-                  font-size: 0.8rem;
-                  font-weight: 800;
+                  font-size: var(--fs-13);
+                  font-weight: var(--fw-heavy);
                   color: var(--a3);
-                  margin-bottom: 8px;
+                  margin-bottom: var(--space-2);
                 "
               >
                 What happens next?
               </div>
               <div
                 style="
-                  font-size: 0.82rem;
+                  font-size: var(--fs-13);
                   color: var(--muted);
-                  line-height: 1.7;
+                  line-height: var(--lh-relaxed);
                 "
               >
                 1. Click the link in your email to verify your account<br />
@@ -1231,12 +1114,12 @@
               </div>
             </div>
             <div
-              style="margin-top: 16px; font-size: 0.8rem; color: var(--muted)"
+              style="margin-top: var(--space-4); font-size: var(--fs-13); color: var(--muted)"
             >
               Didn't get it? Check your spam folder or
               <span
                 onclick="resendVerification()"
-                style="color: var(--a1); cursor: pointer; font-weight: 700"
+                style="color: var(--a1); cursor: pointer; font-weight: var(--fw-bold)"
                 >resend the email</span
               >
             </div>
@@ -1244,8 +1127,8 @@
               href="/login"
               style="
                 display: inline-block;
-                margin-top: 20px;
-                font-size: 0.85rem;
+                margin-top: var(--space-5);
+                font-size: var(--fs-14);
                 color: var(--muted);
                 text-decoration: none;
               "
@@ -1622,9 +1505,9 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email }),
           });
-          alert("Verification email resent to " + email);
+          showToast("Verification email resent to " + email);
         } catch (e) {
-          alert("Could not resend. Please try again.");
+          showToast("Could not resend. Please try again.");
         }
       }
 

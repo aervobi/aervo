@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Privacy Policy - Aervo</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
     <style>
+      /* Page-local names mapped onto the shared tokens */
       :root {
-        --bg-dark: #0a1628;
-        --bg-darker: #050d1a;
-        --card-bg: rgba(15, 30, 50, 0.6);
-        --card-border: rgba(80, 120, 180, 0.15);
-        --text-primary: #ffffff;
-        --text-secondary: #b8c5d6;
-        --text-muted: #7a8ba0;
-        --accent-blue: #5b9cf5;
-        --accent-cyan: #4dd4d4;
-        --accent-purple: #7b68ee;
+        --bg-dark: var(--bg);
+        --bg-darker: var(--bg);
+        --card-bg: var(--surface);
+        --card-border: var(--border);
+        --text-primary: var(--text);
+        --accent-blue: var(--info);
+        --accent-cyan: var(--primary-from);
+        --accent-purple: var(--primary-to);
       }
 
       * {
@@ -26,19 +28,8 @@
       }
 
       body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-        line-height: 1.7;
+        line-height: var(--lh-relaxed);
         color: var(--text-secondary);
-        background: linear-gradient(
-          135deg,
-          #0a1628 0%,
-          #0d1f35 50%,
-          #0a1628 100%
-        );
-        background-attachment: fixed;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         min-height: 100vh;
       }
 
@@ -52,7 +43,7 @@
         height: 100%;
         background-image: radial-gradient(
           circle,
-          rgba(255, 255, 255, 0.05) 1px,
+          var(--surface-raised) 1px,
           transparent 1px
         );
         background-size: 40px 40px;
@@ -63,86 +54,86 @@
       .container {
         max-width: 900px;
         margin: 0 auto;
-        padding: 60px 32px 100px;
+        padding: var(--space-10) var(--space-7) 100px;
         position: relative;
         z-index: 1;
       }
 
       .header {
-        margin-bottom: 56px;
-        padding-bottom: 32px;
+        margin-bottom: var(--space-10);
+        padding-bottom: var(--space-7);
         border-bottom: 1px solid var(--card-border);
       }
 
       .logo {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: var(--fs-16);
+        font-weight: var(--fw-semibold);
         color: var(--text-primary);
-        margin-bottom: 12px;
-        letter-spacing: 2px;
+        margin-bottom: var(--space-3);
+        letter-spacing: var(--ls-label);
         text-transform: uppercase;
       }
 
       .last-updated {
-        font-size: 13px;
+        font-size: var(--fs-13);
         color: var(--text-muted);
-        font-weight: 400;
+        font-weight: var(--fw-regular);
       }
 
       h1 {
-        font-size: 52px;
-        font-weight: 600;
+        font-size: var(--fs-56);
+        font-weight: var(--fw-semibold);
         color: var(--text-primary);
-        margin-bottom: 24px;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
+        margin-bottom: var(--space-6);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-tight);
       }
 
       h2 {
-        font-size: 28px;
-        font-weight: 600;
+        font-size: var(--fs-28);
+        font-weight: var(--fw-semibold);
         color: var(--text-primary);
-        margin-top: 64px;
-        margin-bottom: 20px;
-        letter-spacing: -0.01em;
+        margin-top: var(--space-10);
+        margin-bottom: var(--space-5);
+        letter-spacing: var(--ls-label);
       }
 
       h3 {
-        font-size: 20px;
-        font-weight: 600;
+        font-size: var(--fs-20);
+        font-weight: var(--fw-semibold);
         color: var(--text-primary);
-        margin-top: 32px;
-        margin-bottom: 16px;
+        margin-top: var(--space-7);
+        margin-bottom: var(--space-4);
       }
 
       p {
-        margin-bottom: 20px;
+        margin-bottom: var(--space-5);
         color: var(--text-secondary);
-        font-size: 16px;
-        line-height: 1.8;
+        font-size: var(--fs-16);
+        line-height: var(--lh-relaxed);
       }
 
       ul,
       ol {
-        margin-left: 24px;
-        margin-bottom: 24px;
+        margin-left: var(--space-6);
+        margin-bottom: var(--space-6);
       }
 
       li {
-        margin-bottom: 12px;
+        margin-bottom: var(--space-3);
         color: var(--text-secondary);
-        line-height: 1.7;
+        line-height: var(--lh-relaxed);
       }
 
       strong {
-        font-weight: 600;
+        font-weight: var(--fw-semibold);
         color: var(--text-primary);
       }
 
       a {
         color: var(--accent-cyan);
         text-decoration: none;
-        transition: color 0.2s ease;
+        transition: color var(--dur) ease;
       }
 
       a:hover {
@@ -150,23 +141,23 @@
       }
 
       .intro {
-        font-size: 18px;
+        font-size: var(--fs-18);
         color: var(--text-secondary);
-        line-height: 1.8;
-        margin-bottom: 24px;
+        line-height: var(--lh-relaxed);
+        margin-bottom: var(--space-6);
       }
 
       .contact-box {
         background: var(--card-bg);
         backdrop-filter: blur(10px);
         border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 32px;
-        margin: 48px 0;
+        border-radius: var(--radius-md);
+        padding: var(--space-7);
+        margin: var(--space-9) 0;
       }
 
       .contact-box p {
-        margin-bottom: 8px;
+        margin-bottom: var(--space-2);
         color: var(--text-secondary);
       }
 
@@ -175,30 +166,30 @@
       }
 
       .important-note {
-        background: rgba(77, 212, 212, 0.08);
+        background: rgba(var(--primary-rgb), 0.08);
         border-left: 3px solid var(--accent-cyan);
-        padding: 20px 24px;
-        margin: 32px 0;
-        border-radius: 8px;
+        padding: var(--space-5) var(--space-6);
+        margin: var(--space-7) 0;
+        border-radius: var(--radius-sm);
       }
 
       .important-note p {
         margin: 0;
         color: var(--text-primary);
-        font-size: 15px;
+        font-size: var(--fs-16);
       }
 
       .section-highlight {
         background: var(--card-bg);
         backdrop-filter: blur(10px);
-        padding: 32px;
-        border-radius: 12px;
-        margin: 32px 0;
+        padding: var(--space-7);
+        border-radius: var(--radius-md);
+        margin: var(--space-7) 0;
         border: 1px solid var(--card-border);
       }
 
       .section-highlight h3 {
-        margin-top: 24px;
+        margin-top: var(--space-6);
       }
 
       .section-highlight h3:first-child {
@@ -209,29 +200,29 @@
         background: var(--card-bg);
         backdrop-filter: blur(10px);
         border: 1px solid var(--card-border);
-        border-radius: 12px;
-        padding: 40px;
-        margin: 56px 0;
+        border-radius: var(--radius-md);
+        padding: var(--space-8);
+        margin: var(--space-10) 0;
       }
 
       .toc h2 {
         margin-top: 0;
-        font-size: 24px;
-        margin-bottom: 24px;
+        font-size: var(--fs-24);
+        margin-bottom: var(--space-6);
         color: var(--text-primary);
       }
 
       .toc ol {
-        margin-left: 20px;
+        margin-left: var(--space-5);
       }
 
       .toc li {
-        margin-bottom: 10px;
+        margin-bottom: var(--space-3);
       }
 
       .toc a {
         color: var(--text-secondary);
-        transition: color 0.2s ease;
+        transition: color var(--dur) ease;
       }
 
       .toc a:hover {
@@ -240,11 +231,11 @@
 
       .footer-section {
         margin-top: 100px;
-        padding-top: 32px;
+        padding-top: var(--space-7);
         border-top: 1px solid var(--card-border);
         text-align: center;
         color: var(--text-muted);
-        font-size: 13px;
+        font-size: var(--fs-13);
       }
 
       .footer-section p {
@@ -253,24 +244,24 @@
 
       @media (max-width: 640px) {
         .container {
-          padding: 40px 24px 72px;
+          padding: var(--space-8) var(--space-6) var(--space-11);
         }
 
         h1 {
-          font-size: 36px;
+          font-size: var(--fs-40);
         }
 
         h2 {
-          font-size: 24px;
-          margin-top: 48px;
+          font-size: var(--fs-24);
+          margin-top: var(--space-9);
         }
 
         .toc {
-          padding: 28px 24px;
+          padding: var(--space-7) var(--space-6);
         }
 
         .contact-box {
-          padding: 24px;
+          padding: var(--space-6);
         }
       }
     </style>
@@ -282,7 +273,7 @@
         <div class="last-updated">Last Updated: February 15, 2026</div>
       </div>
 
-      <p style="margin-bottom:8px"><a href="/">← Back to Aervo</a></p>
+      <p class="mb-2"><a href="/">← Back to Aervo</a></p>
 
       <h1>Privacy Policy</h1>
 
@@ -305,7 +296,7 @@
           <strong>Email:</strong>
           <a href="mailto:aervoadmin@aervoapp.com">aervoadmin@aervoapp.com</a>
         </p>
-        <p style="margin-top: 16px; font-size: 14px; color: var(--text-muted)">
+        <p style="margin-top: var(--space-4); font-size: var(--fs-14); color: var(--text-muted)">
           For privacy-related questions or requests, please contact us at the
           email address above.
         </p>
@@ -760,7 +751,7 @@
         <li>All applicable Shopify App Store requirements</li>
       </ul>
 
-      <div class="contact-box" style="margin-top: 56px">
+      <div class="contact-box" style="margin-top: var(--space-10)">
         <h3 style="margin-top: 0">Questions or Concerns?</h3>
         <p>
           If you have any questions, concerns, or requests regarding this
@@ -778,10 +769,10 @@
 
       <div class="footer-section">
         <p><strong>Effective Date:</strong> February 15, 2026</p>
-        <p style="margin-top: 8px">
+        <p class="mt-2">
           This Privacy Policy applies to all users of the Aervo app for Shopify.
         </p>
-        <p style="margin-top: 24px">© 2026 Aervo LLC. All rights reserved.</p>
+        <p style="margin-top: var(--space-6)">© 2026 Aervo LLC. All rights reserved.</p>
       </div>
     </div>
   </body>

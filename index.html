@@ -21,29 +21,30 @@
       content="Aervo pulls in sales, inventory, and customer data to give modern businesses one live, AI-powered view."
     />
 
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
     <style>
+      /* Page-local names mapped onto the shared tokens */
       :root {
-        --bg: #02030a;
-        --bg2: #070b17;
-
-        --card: rgba(255, 255, 255, 0.04);
-        --card2: rgba(255, 255, 255, 0.06);
-        --border: rgba(255, 255, 255, 0.1);
-        --borderSoft: rgba(255, 255, 255, 0.07);
-
-        --text: #f7f7ff;
-        --muted: rgba(215, 220, 240, 0.7);
-
-        --a1: #29c8ff;
-        --a2: #7c5cff;
-        --a3: #23e6a8;
-
-        --max: 1120px;
-        --r-lg: 18px;
-        --r-xl: 28px;
-        --r-pill: 999px;
-
-        --shadow: 0 24px 90px rgba(0, 0, 0, 0.75);
+        --bg2: var(--bg-elevated);
+        --card: var(--surface);
+        --card2: var(--surface-raised);
+        --borderSoft: var(--border-soft);
+        --bordersoft: var(--border-soft);
+        --muted: var(--text-secondary);
+        --a1: var(--primary-from);
+        --a2: var(--primary-to);
+        --a3: var(--success);
+        --max: var(--container-marketing);
+        --r: var(--radius-lg);
+        --r-lg: var(--radius-lg);
+        --r-xl: var(--radius-xl);
+        --r-pill: var(--radius-pill);
+        --shadow: var(--shadow-lg);
+      }
+      body {
+        font-size: var(--fs-16);
       }
 
       * {
@@ -57,18 +58,9 @@
         height: 100%;
       }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "SF Pro Text",
-          "Inter",
-          sans-serif;
-        background: var(--bg); /* uniform */
+      body { /* uniform */
         color: var(--text);
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
+        line-height: var(--lh-relaxed);
         overflow-x: hidden;
         scroll-padding-top: 76px;
       }
@@ -95,7 +87,7 @@
         background: linear-gradient(
           to right,
           transparent,
-          rgba(255, 255, 255, 0.1),
+          var(--surface-hover),
           transparent
         );
         opacity: 0.75;
@@ -108,7 +100,7 @@
         inset: -8px 0;
         background: radial-gradient(
           circle at center,
-          rgba(124, 92, 255, 0.18),
+          rgba(var(--primary-to-rgb), 0.18),
           transparent 70%
         );
         opacity: 0.35;
@@ -123,7 +115,7 @@
         width: 100%;
         max-width: var(--max);
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 var(--space-5);
       }
 
       /* subtle animated dots across whole site */
@@ -141,22 +133,22 @@
           ),
           radial-gradient(
             2px 2px at 78% 28%,
-            rgba(160, 200, 255, 0.16),
+            rgba(var(--info-rgb), 0.16),
             transparent
           ),
           radial-gradient(
             2px 2px at 22% 76%,
-            rgba(150, 195, 255, 0.14),
+            rgba(var(--info-rgb), 0.14),
             transparent
           ),
           radial-gradient(
             2px 2px at 62% 82%,
-            rgba(140, 190, 255, 0.12),
+            rgba(var(--info-rgb), 0.12),
             transparent
           ),
           radial-gradient(
             2px 2px at 40% 40%,
-            rgba(180, 220, 255, 0.08),
+            var(--surface-hover),
             transparent
           );
         background-repeat: no-repeat;
@@ -204,7 +196,6 @@
         }
       }
 
-      
       /* Header */
 /* Header (Pinned, always visible) */
 header {
@@ -214,19 +205,19 @@ header {
   right: 0;
 
   width: 100%;
-  z-index: 99999;
+  z-index: var(--z-modal);
 
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
 
   background: linear-gradient(
     to bottom,
-    rgba(2, 3, 10, 0.92),
-    rgba(2, 3, 10, 0.62),
+    var(--overlay),
+    var(--overlay),
     rgba(2, 3, 10, 0.22)
   );
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-soft);
   transform: translateZ(0);
 }
 
@@ -235,7 +226,7 @@ header::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-image: radial-gradient(var(--surface-raised) 1px, transparent 1px);
   background-size: 24px 24px;
   opacity: 0.04;
   mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
@@ -270,7 +261,7 @@ header::after {
   right: 0;
   bottom: 0;
   height: 2px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-raised);
   overflow: hidden;
   pointer-events: none;
 }
@@ -293,14 +284,14 @@ header::after {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding: 14px 0;
+        gap: var(--space-4);
+        padding: var(--space-4) 0;
       }
 
       .brand {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--space-3);
         min-width: 220px;
       }
 
@@ -318,7 +309,7 @@ header::after {
       }
 
      .brand {
-  gap: 12px;
+  gap: var(--space-3);
   min-width: auto;
 }
 
@@ -328,15 +319,15 @@ header::after {
 }
 
 .brand .name {
-  font-size: 1.05rem;
-  font-weight: 950;
-  letter-spacing: 0.22em;
+  font-size: var(--fs-16);
+  font-weight: var(--fw-heavy);
+  letter-spacing: var(--ls-label);
   text-transform: uppercase;
-  line-height: 1;
-  color: rgba(245, 247, 255, 0.95);
+  line-height: var(--lh-none);
+  color: var(--text);
   text-shadow:
-    0 0 18px rgba(124, 92, 255, 0.18),
-    0 0 10px rgba(41, 200, 255, 0.14);
+    0 0 18px rgba(var(--primary-to-rgb), 0.18),
+    0 0 10px rgba(var(--primary-rgb), 0.14);
 }
 
 /* taglines no longer used */
@@ -347,34 +338,34 @@ header::after {
   nav {
   display: flex;
   align-items: center;
-  gap: 22px;               /* more breathing room */
+  gap: var(--space-6);               /* more breathing room */
   color: rgba(215, 220, 240, 0.8);
-  font-size: 0.9rem;
+  font-size: var(--fs-14);
 }
 
 nav a {
   position: relative;
-  padding: 10px 12px;
-  border-radius: 14px;
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-lg);
 
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-weight: 800;
-  font-size: 0.78rem;
+  letter-spacing: var(--ls-label);
+  font-weight: var(--fw-heavy);
+  font-size: var(--fs-12);
 
-  color: rgba(235, 238, 255, 0.78);
-  transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+  color: var(--text-secondary);
+  transition: color var(--dur) ease, background var(--dur) ease, border-color var(--dur) ease;
   border: 1px solid transparent;
 }
 
 @media (hover: hover) and (pointer: fine) {
   nav a:hover {
-    color: rgba(245, 247, 255, 0.95);
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border-soft);
   }
   nav a.active {
-  color: rgba(245, 247, 255, 0.95);
+  color: var(--text);
 }
 nav a.active::after {
   opacity: 0.9;
@@ -390,11 +381,11 @@ nav a::after {
   right: 12px;
   bottom: 6px;
   height: 2px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: linear-gradient(90deg, var(--a1), var(--a2));
   opacity: 0;
   transform: scaleX(0.6);
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition: opacity var(--dur) ease, transform var(--dur) ease;
 }
 
 nav a:hover::after {
@@ -409,7 +400,7 @@ nav a:hover::after {
         width: 0;
         height: 1px;
         background: linear-gradient(120deg, var(--a1), var(--a2));
-        transition: width 0.18s ease;
+        transition: width var(--dur) ease;
       }
       nav a:hover {
         color: var(--text);
@@ -421,55 +412,21 @@ nav a:hover::after {
       .actions {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--space-3);
         min-width: 220px;
         justify-content: flex-end;
       }
 
       .btn {
-        border-radius: var(--r-pill);
-        padding: 12px 20px;
-        font-size: 0.92rem;
-        font-weight: 700;
-        border: 1px solid transparent;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        cursor: pointer;
-        transition:
-          transform 0.18s ease,
-          background 0.18s ease,
-          border-color 0.18s ease,
-          box-shadow 0.18s ease,
-          opacity 0.18s ease;
-        white-space: nowrap;
+        gap: var(--space-2);
       }
 
       .btn-primary {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(90deg, var(--a1), var(--a2));
-  color: #050816;
-  box-shadow:
-    0 0 18px rgba(41, 200, 255, 0.32),
-    0 0 32px rgba(124, 92, 255, 0.22);
-}
-
-.btn-primary::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.22) 45%,
-    transparent 70%
-  );
-  transform: translateX(-140%);
-  animation: btnSheen 6s ease-in-out infinite;
-  opacity: 0.6;
-  pointer-events: none;
 }
 
 @keyframes btnSheen {
@@ -482,56 +439,31 @@ nav a:hover::after {
   }
 }
 
-      .btn-ghost {
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(255, 255, 255, 0.12);
-        color: var(--text);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.12);
-        color: var(--text);
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-      }
-      .btn-primary:hover {
-        box-shadow:
-          0 0 22px rgba(41, 200, 255, 0.5),
-          0 0 40px rgba(124, 92, 255, 0.35);
-      }
-      .btn:active {
-        transform: translateY(0);
-        opacity: 0.92;
-      }
-
       /* Mobile menu */
       .menu-btn {
         display: none;
-        border-radius: 12px;
-        padding: 10px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(255, 255, 255, 0.04);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-3);
+        border: 1px solid var(--border);
+        background: var(--surface);
         color: var(--text);
         cursor: pointer;
       }
 
       .mobile-nav {
         display: none;
-        padding: 10px 0 18px;
+        padding: var(--space-3) 0 var(--space-5);
         position: absolute;
         top: 100%;
         left: 0;
         right: 0;
         background: linear-gradient(
           to bottom,
-          rgba(2, 3, 10, 0.98),
-          rgba(2, 3, 10, 0.95)
+          var(--overlay),
+          var(--overlay)
         );
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        z-index: 9999;
+        border-top: 1px solid var(--border-soft);
+        z-index: var(--z-modal);
       }
 
       .mobile-nav.open {
@@ -546,42 +478,42 @@ nav a:hover::after {
 
       .mobile-nav a {
         display: block;
-        padding: 12px 10px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        background: rgba(255, 255, 255, 0.03);
-        margin-top: 10px;
-        color: rgba(215, 220, 240, 0.85);
+        padding: var(--space-3) var(--space-3);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-soft);
+        background: var(--surface);
+        margin-top: var(--space-3);
+        color: var(--text);
         text-decoration: none;
         cursor: pointer;
       }
       .mobile-nav a:hover {
         color: var(--text);
-        border-color: rgba(124, 92, 255, 0.35);
+        border-color: rgba(var(--primary-to-rgb), 0.35);
       }
       
       .mobile-nav .btn {
         display: block !important;
         width: 100%;
-        padding: 12px 16px !important;
+        padding: var(--space-3) var(--space-4) !important;
         text-align: center;
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         text-decoration: none;
         cursor: pointer;
         pointer-events: auto;
       }
       
       .mobile-nav .btn-ghost {
-        background: rgba(255, 255, 255, 0.06) !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background: var(--surface-raised) !important;
+        border: 1px solid var(--border) !important;
         color: var(--text) !important;
       }
       
       .mobile-nav .btn-primary {
         background: linear-gradient(90deg, var(--a1), var(--a2)) !important;
-        color: #050816 !important;
+        color: var(--text-on-primary) !important;
         border: none !important;
-        box-shadow: 0 0 18px rgba(41, 200, 255, 0.32) !important;
+        box-shadow: var(--glow) !important;
       }
 
       /* HERO */
@@ -592,7 +524,7 @@ nav a:hover::after {
         display: grid;
         align-items: center;
         overflow: hidden;
-        padding: 56px 0 28px;
+        padding: var(--space-10) 0 var(--space-7);
       }
 
       .hero-canvas {
@@ -616,17 +548,17 @@ nav a:hover::after {
           ),
           radial-gradient(
             1px 1px at 76% 30%,
-            rgba(255, 255, 255, 0.1),
+            var(--surface-hover),
             transparent
           ),
           radial-gradient(
             1px 1px at 22% 78%,
-            rgba(255, 255, 255, 0.1),
+            var(--surface-hover),
             transparent
           ),
           radial-gradient(
             1px 1px at 62% 74%,
-            rgba(255, 255, 255, 0.08),
+            var(--surface-hover),
             transparent
           );
         opacity: 0.35;
@@ -643,8 +575,8 @@ nav a:hover::after {
 
   background: radial-gradient(
     circle,
-    rgba(124, 92, 255, 0.55) 0%,
-    rgba(41, 200, 255, 0.35) 32%,
+    rgba(var(--primary-to-rgb), 0.55) 0%,
+    rgba(var(--primary-rgb), 0.35) 32%,
     transparent 65%
   );
 
@@ -677,18 +609,18 @@ nav a:hover::after {
 .orb.o1 {
   left: -140px;
   top: 40%;
-  background: radial-gradient(circle, rgba(41, 200, 255, 0.55), transparent 60%);
+  background: radial-gradient(circle, rgba(var(--primary-rgb), 0.55), transparent 60%);
 }
 .orb.o2 {
   right: -160px;
   top: 18%;
-  background: radial-gradient(circle, rgba(124, 92, 255, 0.55), transparent 60%);
+  background: radial-gradient(circle, rgba(var(--primary-to-rgb), 0.55), transparent 60%);
   animation-duration: 12s;
 }
 .orb.o3 {
   left: 38%;
   top: -180px;
-  background: radial-gradient(circle, rgba(35, 230, 168, 0.45), transparent 60%);
+  background: radial-gradient(circle, rgba(var(--success-rgb), 0.45), transparent 60%);
   animation-duration: 14s;
 }
 
@@ -719,57 +651,55 @@ nav a:hover::after {
   animation: logoPulse 9s ease-in-out infinite;
 }
 
-  
-
       .hero-inner {
         position: relative;
         z-index: 3;
         display: grid;
         grid-template-columns: 1.2fr 0.8fr;
-        gap: 34px;
+        gap: var(--space-7);
         align-items: center;
       }
 
       .kicker {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--space-3);
         border-radius: var(--r-pill);
-        border: 1px solid rgba(255, 255, 255, 0.14);
+        border: 1px solid var(--border);
         background: rgba(0, 0, 0, 0.34);
         backdrop-filter: blur(10px);
-        padding: 6px 12px;
-        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.3);
+        padding: var(--space-2) var(--space-3);
+        box-shadow: var(--shadow-lg);
         width: fit-content;
       }
 
       .kicker .label {
-        padding: 2px 10px;
+        padding: 2px var(--space-3);
         border-radius: var(--r-pill);
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.14em;
+        font-size: var(--fs-12);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
         text-transform: uppercase;
         background: linear-gradient(
           120deg,
-          rgba(41, 200, 255, 0.35),
-          rgba(124, 92, 255, 0.35)
+          rgba(var(--primary-rgb), 0.35),
+          rgba(var(--primary-to-rgb), 0.35)
         );
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        color: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--border);
+        color: var(--text);
       }
 
       .kicker .text {
-        color: rgba(215, 220, 240, 0.78);
-        font-size: 0.86rem;
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
       }
 
       .hero h1 {
-        margin-top: 16px;
+        margin-top: var(--space-4);
         font-size: clamp(2.6rem, 4.8vw, 4.1rem);
-        line-height: 1.06;
-        letter-spacing: -0.03em;
-        font-weight: 900;
+        line-height: var(--lh-none);
+        letter-spacing: var(--ls-label);
+        font-weight: var(--fw-heavy);
       }
 
       .hero h1 span {
@@ -779,33 +709,33 @@ nav a:hover::after {
       }
 
       .hero p {
-        margin-top: 12px;
-        font-size: 1.06rem;
-        color: rgba(215, 220, 240, 0.82);
+        margin-top: var(--space-3);
+        font-size: var(--fs-16);
+        color: var(--text);
         max-width: 54ch;
       }
 
       .hero-cta {
-        margin-top: 22px;
+        margin-top: var(--space-6);
         display: flex;
-        gap: 12px;
+        gap: var(--space-3);
         flex-wrap: wrap;
         align-items: center;
       }
 
       .trust {
-        margin-top: 14px;
+        margin-top: var(--space-4);
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        color: rgba(215, 220, 240, 0.65);
-        font-size: 0.86rem;
+        gap: var(--space-3);
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
       }
 
       .trust span {
-        padding: 7px 12px;
+        padding: var(--space-2) var(--space-3);
         border-radius: var(--r-pill);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-soft);
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
       }
@@ -813,14 +743,14 @@ nav a:hover::after {
       /* Hero side panel (Apple-ish “product glimpse” without a screenshot) */
       .preview {
         border-radius: var(--r-xl);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
         background: linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.06),
-          rgba(255, 255, 255, 0.03)
+          var(--surface-raised),
+          var(--surface)
         );
         box-shadow: var(--shadow);
-        padding: 16px;
+        padding: var(--space-4);
         position: relative;
         overflow: hidden;
       }
@@ -832,7 +762,7 @@ nav a:hover::after {
         height: 220px;
         background: radial-gradient(
           circle at 30% 30%,
-          rgba(41, 200, 255, 0.18),
+          rgba(var(--primary-rgb), 0.18),
           transparent 60%
         );
         pointer-events: none;
@@ -842,54 +772,44 @@ nav a:hover::after {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-
-      .pill {
-        font-size: 0.78rem;
-        color: rgba(215, 220, 240, 0.78);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0, 0, 0, 0.25);
-        padding: 6px 10px;
-        border-radius: var(--r-pill);
-        backdrop-filter: blur(10px);
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
       }
 
       .dots {
         display: flex;
-        gap: 6px;
+        gap: var(--space-2);
       }
       .dots i {
         width: 9px;
         height: 9px;
-        border-radius: 999px;
+        border-radius: var(--radius-pill);
         background: rgba(255, 255, 255, 0.16);
       }
 
       .metric-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: var(--space-3);
       }
 
       .metric {
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
         background: rgba(0, 0, 0, 0.22);
-        padding: 12px;
+        padding: var(--space-3);
       }
 
       .metric .m-label {
-        font-size: 0.8rem;
-        color: rgba(215, 220, 240, 0.65);
-        margin-bottom: 6px;
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+        margin-bottom: var(--space-2);
       }
 
       .metric .m-value {
-        font-size: 1.25rem;
-        font-weight: 850;
-        letter-spacing: -0.02em;
+        font-size: var(--fs-20);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
       }
       .metric .m-value {
   position: relative;
@@ -902,38 +822,38 @@ nav a:hover::after {
   top: 50%;
   width: 6px;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.18);
+  box-shadow: var(--glow);
   opacity: 0.7;
 }
 
 .metric:has(.spark.good) .m-value::after {
-  background: rgba(35, 230, 168, 0.7);
-  box-shadow: 0 0 18px rgba(35, 230, 168, 0.35);
+  background: rgba(var(--success-rgb), 0.7);
+  box-shadow: var(--glow);
 }
 .metric:has(.spark.warn) .m-value::after {
-  background: rgba(245, 194, 107, 0.75);
-  box-shadow: 0 0 18px rgba(245, 194, 107, 0.35);
+  background: rgba(var(--warning-rgb), 0.75);
+  box-shadow: var(--glow);
 }
 .metric:has(.spark.bad) .m-value::after {
-  background: rgba(255, 107, 107, 0.75);
-  box-shadow: 0 0 18px rgba(255, 107, 107, 0.35);
+  background: rgba(var(--danger-rgb), 0.75);
+  box-shadow: var(--glow);
 }
 
       .metric .m-sub {
-        font-size: 0.82rem;
-        color: rgba(215, 220, 240, 0.65);
-        margin-top: 4px;
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+        margin-top: var(--space-1);
       }
 
       /* ---------- Spark (chart well) + status colors ---------- */
 
       .spark {
         height: 38px;
-        margin-top: 10px;
-        border-radius: 12px;
+        margin-top: var(--space-3);
+        border-radius: var(--radius-md);
 
         /* chart-well, not button */
         background: linear-gradient(
@@ -962,8 +882,8 @@ nav a:hover::after {
         background:
     /* horizontal grid lines */ repeating-linear-gradient(
           to bottom,
-          rgba(255, 255, 255, 0.06) 0px,
-          rgba(255, 255, 255, 0.06) 1px,
+          var(--surface-raised) 0px,
+          var(--surface-raised) 1px,
           transparent 1px,
           transparent 10px
         );
@@ -976,7 +896,7 @@ nav a:hover::after {
         right: 10px;
         bottom: 11px;
         height: 1px;
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--surface-hover);
         opacity: 0.6;
       }
 
@@ -989,7 +909,7 @@ nav a:hover::after {
       /* Base sparkline defaults (NEUTRAL) */
       .spark .sparkline {
         fill: none;
-        stroke: var(--neutral, rgba(255, 255, 255, 0.3));
+        stroke: var(--neutral, var(--text-muted));
         stroke-width: 2.2;
         stroke-linecap: round;
         stroke-linejoin: round;
@@ -1002,7 +922,7 @@ nav a:hover::after {
 
       /* Optional filled area under line (if your SVG includes it) */
       .spark .sparkfill {
-        fill: rgba(124, 92, 255, 0.22); /* neutral fallback */
+        fill: rgba(var(--primary-to-rgb), 0.22); /* neutral fallback */
         opacity: 0.9;
       }
 
@@ -1017,38 +937,38 @@ nav a:hover::after {
 
       /* GOOD */
       .spark.good .sparkline {
-        stroke: var(--good, #23e6a8);
+        stroke: var(--good, var(--success));
         filter: drop-shadow(0 0 6px rgba(35, 230, 168, 0.35));
       }
       .spark.good .sparkfill {
-        fill: rgba(35, 230, 168, 0.26);
+        fill: rgba(var(--success-rgb), 0.26);
       }
 
       /* WARNING */
       .spark.warn .sparkline {
-        stroke: var(--warn, #f5c26b);
+        stroke: var(--warn, var(--warning));
         filter: drop-shadow(0 0 6px rgba(245, 194, 107, 0.35));
       }
       .spark.warn .sparkfill {
-        fill: rgba(245, 194, 107, 0.26);
+        fill: rgba(var(--warning-rgb), 0.26);
       }
 
       /* BAD */
       .spark.bad .sparkline {
-        stroke: var(--bad, #ff6b6b);
+        stroke: var(--bad, var(--danger));
         filter: drop-shadow(0 0 6px rgba(255, 107, 107, 0.35));
       }
       .spark.bad .sparkfill {
-        fill: rgba(255, 107, 107, 0.24);
+        fill: rgba(var(--danger-rgb), 0.24);
       }
 
       /* NEUTRAL */
       .spark.neutral .sparkline {
-        stroke: var(--neutral, #7c5cff);
+        stroke: var(--neutral, var(--primary-to));
         filter: drop-shadow(0 0 6px rgba(124, 92, 255, 0.3));
       }
       .spark.neutral .sparkfill {
-        fill: rgba(124, 92, 255, 0.22);
+        fill: rgba(var(--primary-to-rgb), 0.22);
       }
 
       /* Animations */
@@ -1123,7 +1043,6 @@ nav a:hover::after {
       drop-shadow(0 0 48px rgba(41, 200, 255, 0.35));
   }
 }
-      
 
       /* Section defaults */
       .section {
@@ -1183,30 +1102,30 @@ nav a:hover::after {
 
       .section-head {
         max-width: 58ch;
-        margin-bottom: 26px;
+        margin-bottom: var(--space-6);
       }
 
       .section-kicker {
-        font-size: 0.78rem;
-        letter-spacing: 0.16em;
+        font-size: var(--fs-12);
+        letter-spacing: var(--ls-label);
         text-transform: uppercase;
-        font-weight: 850;
-        color: rgba(170, 175, 205, 0.75);
-        margin-bottom: 10px;
+        font-weight: var(--fw-heavy);
+        color: var(--text-secondary);
+        margin-bottom: var(--space-3);
       }
 
       .section h2 {
-        font-size: 2.05rem;
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        line-height: 1.12;
+        font-size: var(--fs-32);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-tight);
       }
 
       .section .sub {
-        margin-top: 10px;
-        color: rgba(215, 220, 240, 0.78);
-        font-size: 1rem;
-        line-height: 1.75;
+        margin-top: var(--space-3);
+        color: var(--text-secondary);
+        font-size: var(--fs-16);
+        line-height: var(--lh-relaxed);
       }
 
       /* “Services” grid (like the template you linked) */
@@ -1218,44 +1137,17 @@ nav a:hover::after {
         gap: 10px 14px;
       }
 
-      .card {
-        border-radius: var(--r-xl);
-        border: 1px solid var(--borderSoft);
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.06),
-          rgba(255, 255, 255, 0.03)
-        );
-        padding: 18px;
-        transition:
-          transform 0.18s ease,
-          border-color 0.18s ease,
-          background 0.18s ease,
-          box-shadow 0.18s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-6px);
-        border-color: rgba(124, 92, 255, 0.45);
-        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.08),
-          rgba(255, 255, 255, 0.04)
-        );
-      }
-
       .card h3 {
-        font-size: 1.02rem;
-        font-weight: 900;
-        letter-spacing: -0.01em;
+        font-size: var(--fs-16);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
       }
 
       .card p {
-        margin-top: 8px;
-        color: rgba(215, 220, 240, 0.78);
-        font-size: 0.95rem;
-        line-height: 1.7;
+        margin-top: var(--space-2);
+        color: var(--text-secondary);
+        font-size: var(--fs-16);
+        line-height: var(--lh-relaxed);
       }
       /* Spotlight overlay (works for hover + touch press) */
 .card, .preview, .about-visual {
@@ -1268,11 +1160,11 @@ nav a:hover::after {
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: opacity var(--dur) ease;
   background: radial-gradient(
     420px 280px at var(--sx, 50%) var(--sy, 50%),
-    rgba(41, 200, 255, 0.16),
-    rgba(124, 92, 255, 0.10) 35%,
+    rgba(var(--primary-rgb), 0.16),
+    rgba(var(--primary-to-rgb), 0.1) 35%,
     transparent 70%
   );
 }
@@ -1297,39 +1189,16 @@ nav a:hover::after {
   overflow: hidden;
 }
 
-.btn::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 180ms ease;
-  background: radial-gradient(
-    260px 180px at var(--mx, 50%) var(--my, 50%),
-    rgba(255, 255, 255, 0.14),
-    transparent 60%
-  );
-}
-
 /* Hover on mouse */
-@media (hover: hover) and (pointer: fine) {
-  .btn:hover::before {
-    opacity: 1;
-  }
-}
-
 /* Press on touch */
-.btn:active::before {
-  opacity: 1;
-}
 
       .price {
-        margin-top: 12px;
+        margin-top: var(--space-3);
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        font-size: 0.92rem;
-        color: rgba(215, 220, 240, 0.78);
+        gap: var(--space-2);
+        font-size: var(--fs-14);
+        color: var(--text-secondary);
       }
 
       .price strong {
@@ -1340,30 +1209,30 @@ nav a:hover::after {
       .split {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 22px;
+        gap: var(--space-6);
         align-items: start; /* FIX: stops misalignment */
       }
 
       .about-box {
         border-radius: var(--r-xl);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
         background: rgba(0, 0, 0, 0.22);
-        padding: 18px;
+        padding: var(--space-5);
       }
 
       .about-box .mini {
-        font-size: 0.95rem;
-        color: rgba(215, 220, 240, 0.78);
-        line-height: 1.85;
+        font-size: var(--fs-16);
+        color: var(--text-secondary);
+        line-height: var(--lh-relaxed);
       }
 
       /* replaces the empty window with a real "product preview" */
       .about-visual {
         border-radius: var(--r-xl);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
         background: rgba(0, 0, 0, 0.22);
         box-shadow: var(--shadow);
-        padding: 16px;
+        padding: var(--space-4);
         min-height: 320px;
         overflow: hidden;
         position: relative;
@@ -1376,7 +1245,7 @@ nav a:hover::after {
         height: 220px;
         background: radial-gradient(
           circle at 30% 30%,
-          rgba(41, 200, 255, 0.16),
+          rgba(var(--primary-rgb), 0.16),
           transparent 60%
         );
         pointer-events: none;
@@ -1387,27 +1256,27 @@ nav a:hover::after {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
-        padding-bottom: 12px;
-        margin-bottom: 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        gap: var(--space-3);
+        padding-bottom: var(--space-3);
+        margin-bottom: var(--space-3);
+        border-bottom: 1px solid var(--border-soft);
         position: relative;
         z-index: 1;
       }
 
       .about-visual .viz-title {
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        font-size: 0.95rem;
-        color: rgba(235, 238, 255, 0.92);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
+        font-size: var(--fs-16);
+        color: var(--text);
       }
 
       .about-visual .viz-pill {
-        font-size: 0.78rem;
-        color: rgba(215, 220, 240, 0.78);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.04);
-        padding: 6px 10px;
+        font-size: var(--fs-12);
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: var(--space-2) var(--space-3);
         border-radius: var(--r-pill);
         backdrop-filter: blur(10px);
       }
@@ -1416,45 +1285,45 @@ nav a:hover::after {
       .about-visual .viz-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: var(--space-3);
         position: relative;
         z-index: 1;
       }
 
       .about-visual .viz-card {
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-        padding: 12px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        background: var(--surface);
+        padding: var(--space-3);
       }
 
       .about-visual .kpi-label {
-        font-size: 0.8rem;
-        color: rgba(215, 220, 240, 0.65);
-        margin-bottom: 6px;
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+        margin-bottom: var(--space-2);
       }
 
       .about-visual .kpi-value {
-        font-size: 1.25rem;
-        font-weight: 950;
-        letter-spacing: -0.02em;
+        font-size: var(--fs-20);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
       }
 
       .about-visual .kpi-sub {
-        margin-top: 4px;
-        font-size: 0.82rem;
-        color: rgba(215, 220, 240, 0.6);
+        margin-top: var(--space-1);
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
       }
 
       .about-visual .mini-chart {
         height: 44px;
-        margin-top: 10px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-top: var(--space-3);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-soft);
         background: linear-gradient(
           90deg,
-          rgba(41, 200, 255, 0.12),
-          rgba(124, 92, 255, 0.12)
+          rgba(var(--primary-rgb), 0.12),
+          rgba(var(--primary-to-rgb), 0.12)
         );
         position: relative;
         overflow: hidden;
@@ -1477,28 +1346,28 @@ nav a:hover::after {
 
       /* highlights list */
       .about-visual .alerts {
-        margin-top: 12px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.03);
-        padding: 12px;
+        margin-top: var(--space-3);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        background: var(--surface);
+        padding: var(--space-3);
         position: relative;
         z-index: 1;
       }
 
       .about-visual .alerts h4 {
-        font-size: 0.86rem;
-        font-weight: 900;
-        color: rgba(235, 238, 255, 0.92);
-        margin-bottom: 10px;
+        font-size: var(--fs-14);
+        font-weight: var(--fw-heavy);
+        color: var(--text);
+        margin-bottom: var(--space-3);
       }
 
       .about-visual .alert {
         display: flex;
-        gap: 10px;
+        gap: var(--space-3);
         align-items: flex-start;
-        padding: 10px 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding: var(--space-3) 0;
+        border-top: 1px solid var(--border-soft);
       }
 
       .about-visual .alert:first-of-type {
@@ -1509,22 +1378,22 @@ nav a:hover::after {
       .about-visual .dot {
         width: 10px;
         height: 10px;
-        border-radius: 999px;
-        margin-top: 4px;
-        background: rgba(41, 200, 255, 0.55);
-        box-shadow: 0 0 14px rgba(41, 200, 255, 0.25);
+        border-radius: var(--radius-pill);
+        margin-top: var(--space-1);
+        background: rgba(var(--primary-rgb), 0.55);
+        box-shadow: var(--glow);
       }
 
       .about-visual .alert p {
         margin: 0;
-        color: rgba(215, 220, 240, 0.78);
-        font-size: 0.92rem;
-        line-height: 1.55;
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+        line-height: var(--lh-normal);
       }
 
       .about-visual .alert b {
-        color: rgba(235, 238, 255, 0.92);
-        font-weight: 900;
+        color: var(--text);
+        font-weight: var(--fw-heavy);
       }
       /* About insight feed animation */
       .feed .alert {
@@ -1587,7 +1456,7 @@ nav a:hover::after {
       }
       /* --- Bottom CTA + Newsletter upgrade --- */
       .section-bottom {
-        padding-top: 70px;
+        padding-top: var(--space-10);
         padding-bottom: 90px;
       }
       /* =========================
@@ -1598,21 +1467,20 @@ nav a:hover::after {
   position: relative;
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
-  gap: 28px;
+  gap: var(--space-7);
 
-  padding: 34px;
-  border-radius: 32px;
+  padding: var(--space-7);
+  border-radius: var(--radius-xl);
 
-  border: 1px solid rgba(255,255,255,.12);
+  border: 1px solid var(--border);
   background: linear-gradient(
     180deg,
-    rgba(255,255,255,.07),
-    rgba(255,255,255,.035)
+    var(--surface-raised),
+    var(--surface)
   );
 
   box-shadow:
-    0 40px 140px rgba(0,0,0,.75),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+    var(--shadow-lg);
 
   overflow: hidden;
 }
@@ -1623,8 +1491,8 @@ nav a:hover::after {
   position:absolute;
   inset:-40%;
   background:
-    radial-gradient(circle at 25% 35%, rgba(41,200,255,.22), transparent 55%),
-    radial-gradient(circle at 75% 45%, rgba(124,92,255,.26), transparent 60%);
+    radial-gradient(circle at 25% 35%, rgba(var(--primary-rgb), 0.22), transparent 55%),
+    radial-gradient(circle at 75% 45%, rgba(var(--primary-to-rgb), 0.26), transparent 60%);
   filter: blur(32px);
   opacity:.85;
   animation: ctaFloat 10s ease-in-out infinite alternate;
@@ -1644,42 +1512,42 @@ nav a:hover::after {
 
 /* LEFT */
 .cta-kicker {
-  font-size: .75rem;
-  font-weight: 900;
-  letter-spacing: .18em;
+  font-size: var(--fs-12);
+  font-weight: var(--fw-heavy);
+  letter-spacing: var(--ls-label);
   text-transform: uppercase;
-  color: rgba(170,175,205,.75);
-  margin-bottom: 10px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
 }
 
 .cta-card h3 {
-  font-size: 1.9rem;
-  font-weight: 950;
-  letter-spacing: -.02em;
-  line-height: 1.15;
+  font-size: var(--fs-32);
+  font-weight: var(--fw-heavy);
+  letter-spacing: var(--ls-label);
+  line-height: var(--lh-tight);
 }
 
 .cta-card p {
-  margin-top: 10px;
-  color: rgba(215,220,240,.8);
+  margin-top: var(--space-3);
+  color: var(--text);
   max-width: 52ch;
 }
 
 /* trust pills */
 .cta-points {
-  margin-top: 16px;
+  margin-top: var(--space-4);
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
 .cta-points span {
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.08);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
   background: rgba(0,0,0,.28);
-  font-size: .85rem;
-  color: rgba(215,220,240,.75);
+  font-size: var(--fs-14);
+  color: var(--text-secondary);
 }
 
 /* RIGHT */
@@ -1688,7 +1556,7 @@ nav a:hover::after {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .cta-btn {
@@ -1698,15 +1566,15 @@ nav a:hover::after {
 }
 
 .cta-note {
-  font-size: .82rem;
-  color: rgba(215,220,240,.6);
+  font-size: var(--fs-13);
+  color: var(--text-secondary);
 }
 
 /* mobile */
 @media (max-width: 900px) {
   .cta-card {
     grid-template-columns: 1fr;
-    padding: 26px;
+    padding: var(--space-6);
   }
 
   .cta-right {
@@ -1717,22 +1585,22 @@ nav a:hover::after {
       .bottom-wrap {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 18px;
+        gap: var(--space-5);
       }
 
       /* Big premium cards */
       .luxe-card {
         position: relative;
-        border-radius: 28px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
         background: linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.06),
-          rgba(255, 255, 255, 0.03)
+          var(--surface-raised),
+          var(--surface)
         );
-        box-shadow: 0 30px 120px rgba(0, 0, 0, 0.72);
+        box-shadow: var(--shadow-lg);
         overflow: hidden;
-        padding: 22px;
+        padding: var(--space-6);
       }
 
       /* Subtle animated aurora behind the cards */
@@ -1743,17 +1611,17 @@ nav a:hover::after {
         background:
           radial-gradient(
             circle at 25% 35%,
-            rgba(41, 200, 255, 0.18),
+            rgba(var(--primary-rgb), 0.18),
             transparent 52%
           ),
           radial-gradient(
             circle at 70% 35%,
-            rgba(124, 92, 255, 0.2),
+            rgba(var(--primary-to-rgb), 0.2),
             transparent 55%
           ),
           radial-gradient(
             circle at 55% 80%,
-            rgba(35, 230, 168, 0.1),
+            rgba(var(--success-rgb), 0.1),
             transparent 58%
           );
         filter: blur(28px);
@@ -1771,7 +1639,7 @@ nav a:hover::after {
         background: linear-gradient(
           110deg,
           transparent 0%,
-          rgba(255, 255, 255, 0.07) 45%,
+          var(--surface-raised) 45%,
           transparent 70%
         );
         transform: translateX(-140%);
@@ -1812,49 +1680,34 @@ nav a:hover::after {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
+        gap: var(--space-4);
         flex-wrap: wrap;
       }
 
       .luxe-title {
-        font-size: 1.25rem;
-        font-weight: 900;
-        letter-spacing: -0.02em;
+        font-size: var(--fs-20);
+        font-weight: var(--fw-heavy);
+        letter-spacing: var(--ls-label);
       }
 
       .luxe-body {
-        margin-top: 8px;
-        color: rgba(215, 220, 240, 0.78);
+        margin-top: var(--space-2);
+        color: var(--text-secondary);
         max-width: 70ch;
       }
 
       .news-row {
         display: flex;
-        gap: 10px;
+        gap: var(--space-3);
         align-items: center;
         flex-wrap: wrap;
-        margin-top: 14px;
+        margin-top: var(--space-4);
       }
 
       /* Nicer input */
       .input {
         height: 46px;
         min-width: 260px;
-        padding: 0 14px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(0, 0, 0, 0.22);
-        color: var(--text);
-        outline: none;
-      }
-
-      .input::placeholder {
-        color: rgba(215, 220, 240, 0.55);
-      }
-
-      .input:focus {
-        border-color: rgba(41, 200, 255, 0.35);
-        box-shadow: 0 0 0 4px rgba(41, 200, 255, 0.12);
       }
 
       /* Respect reduced motion */
@@ -1870,14 +1723,14 @@ nav a:hover::after {
 ========================= */
 
 :root{
-  --glow1: rgba(41,200,255,.22);
-  --glow2: rgba(124,92,255,.22);
-  --glow3: rgba(35,230,168,.14);
+  --glow1: rgba(var(--primary-rgb), 0.22);
+  --glow2: rgba(var(--primary-to-rgb), 0.22);
+  --glow3: rgba(var(--success-rgb), 0.14);
 
-  --glass: rgba(255,255,255,.055);
-  --glass2: rgba(255,255,255,.035);
-  --stroke: rgba(255,255,255,.12);
-  --strokeSoft: rgba(255,255,255,.08);
+  --glass: var(--surface-raised);
+  --glass2: var(--surface);
+  --stroke: var(--border);
+  --strokeSoft: var(--border-soft);
 }
 
 /* Background: aurora + faint grid */
@@ -1888,10 +1741,10 @@ body::before{
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(900px 520px at 20% 20%, rgba(41,200,255,.16), transparent 60%),
-    radial-gradient(800px 520px at 75% 25%, rgba(124,92,255,.18), transparent 62%),
-    radial-gradient(820px 620px at 60% 85%, rgba(35,230,168,.12), transparent 60%),
-    radial-gradient(1100px 700px at 50% 50%, rgba(255,255,255,.03), transparent 60%);
+    radial-gradient(900px 520px at 20% 20%, rgba(var(--primary-rgb), 0.16), transparent 60%),
+    radial-gradient(800px 520px at 75% 25%, rgba(var(--primary-to-rgb), 0.18), transparent 62%),
+    radial-gradient(820px 620px at 60% 85%, rgba(var(--success-rgb), 0.12), transparent 60%),
+    radial-gradient(1100px 700px at 50% 50%, var(--surface), transparent 60%);
   filter: blur(8px);
   opacity: .9;
 }
@@ -1903,8 +1756,8 @@ body::after{
   z-index: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    linear-gradient(var(--surface) 1px, transparent 1px),
+    linear-gradient(90deg, var(--surface) 1px, transparent 1px);
   background-size: 54px 54px;
   opacity: .10;
   mask-image: radial-gradient(circle at 50% 30%, rgba(0,0,0,1), rgba(0,0,0,.2) 55%, rgba(0,0,0,0) 75%);
@@ -1912,14 +1765,14 @@ body::after{
 
 /* Header gets a sharper glass edge */
 header{
-  border-bottom: 1px solid rgba(255,255,255,.06);
+  border-bottom: 1px solid var(--border-soft);
 }
 header::after{
   content:"";
   position:absolute;
   left:0; right:0; bottom:-1px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(41,200,255,.35), rgba(124,92,255,.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), 0.35), rgba(var(--primary-to-rgb), 0.25), transparent);
   opacity:.7;
 }
 
@@ -1928,36 +1781,6 @@ header::after{
   position: relative;
   overflow: hidden;
   transform: translateZ(0);
-}
-.btn::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background: radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 60%);
-  opacity: 0;
-  transition: opacity .2s ease;
-  pointer-events:none;
-}
-.btn:hover::before{ opacity: .9; }
-
-.btn-primary{
-  border: 1px solid rgba(255,255,255,.10);
-}
-.btn-primary::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.12) 45%, transparent 70%);
-  transform: translateX(-140%);
-  transition: transform .6s ease;
-  opacity:.6;
-  pointer-events:none;
-}
-.btn-primary:hover::after{ transform: translateX(140%); }
-
-.btn-ghost,
-.btn-secondary{
-  backdrop-filter: blur(12px);
 }
 
 /* Cards: better depth + subtle border glow */
@@ -1974,9 +1797,9 @@ header::after{
   inset:-1px;
   border-radius: inherit;
   pointer-events:none;
-  background: linear-gradient(120deg, rgba(41,200,255,.10), rgba(124,92,255,.10), rgba(35,230,168,.06));
+  background: linear-gradient(120deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-to-rgb), 0.1), rgba(var(--success-rgb), 0.06));
   opacity: 0;
-  transition: opacity .2s ease;
+  transition: opacity var(--dur) ease;
   mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000);
   -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000,#000);
   padding: 1px;
@@ -1997,7 +1820,7 @@ header::after{
 }
 .preview .metric{
   background: rgba(0,0,0,.26);
-  border: 1px solid rgba(255,255,255,.08);
+  border: 1px solid var(--border-soft);
 }
 
 /* KPI spark: give the well a subtle neon rim */
@@ -2014,9 +1837,9 @@ header::after{
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: radial-gradient(240px 160px at var(--sx,50%) var(--sy,50%), rgba(255,255,255,.10), transparent 60%);
+  background: radial-gradient(240px 160px at var(--sx,50%) var(--sy,50%), var(--surface-hover), transparent 60%);
   opacity: 0;
-  transition: opacity .15s ease;
+  transition: opacity var(--dur-fast) ease;
 }
 .card:hover .spotlight,
 .preview:hover .spotlight,
@@ -2026,7 +1849,7 @@ header::after{
 
 /* Hero headline: add a tiny “scanline shimmer” feel */
 .hero h1{
-  text-shadow: 0 0 18px rgba(124,92,255,.16);
+  text-shadow: 0 0 18px rgba(var(--primary-to-rgb), 0.16);
 }
 .hero h1 span{
   filter: drop-shadow(0 0 16px rgba(41,200,255,.18));
@@ -2044,7 +1867,7 @@ header::after{
   transform: translateX(-50%);
   width: min(920px, 92vw);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+  background: linear-gradient(90deg, transparent, var(--surface-hover), transparent);
   opacity: .45;
 }
 
@@ -2054,7 +1877,7 @@ header::after{
   .menu-btn{ display:inline-flex; }
   .actions .btn { display: none; }
   .hero-inner{ grid-template-columns: 1fr; }
-  .preview{ max-width: 520px; margin: 26px auto 0; }
+  .preview{ max-width: 520px; margin: var(--space-6) auto 0; }
   .actions{ min-width: auto; }
 }
 
@@ -2074,8 +1897,8 @@ header::after{
   }
 
   header .header-inner {
-    padding: 10px 0;
-    gap: 10px;
+    padding: var(--space-3) 0;
+    gap: var(--space-3);
   }
 
   /* Brand: smaller + tighter */
@@ -2083,21 +1906,21 @@ header::after{
     height: 26px;
   }
   .brand .name {
-    font-size: 0.92rem;
-    letter-spacing: 0.18em;
+    font-size: var(--fs-14);
+    letter-spacing: var(--ls-label);
   }
 
   /* Actions: stop forcing width */
   .actions {
     min-width: auto;
-    gap: 8px;
+    gap: var(--space-2);
   }
 
   /* Buttons in header: slimmer so they fit */
   .actions .btn,
   .menu-btn {
-    padding: 10px 12px;
-    font-size: 0.86rem;
+    padding: var(--space-3) var(--space-3);
+    font-size: var(--fs-14);
   }
 
   /* HERO: more top padding so nothing is covered by header */
@@ -2109,7 +1932,7 @@ header::after{
   /* Stack hero content and tighten spacing */
   .hero-inner {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: var(--space-5);
   }
 
   .kicker {
@@ -2119,11 +1942,11 @@ header::after{
 
   /* Headline + paragraph scale down a touch */
   .hero h1 {
-    font-size: 2.25rem;
-    line-height: 1.05;
+    font-size: var(--fs-40);
+    line-height: var(--lh-none);
   }
   .hero p {
-    font-size: 0.98rem;
+    font-size: var(--fs-16);
     max-width: 60ch;
   }
 
@@ -2148,7 +1971,7 @@ header::after{
 
   /* CTA buttons: full width stack (more tappable) */
   .hero-cta {
-    gap: 10px;
+    gap: var(--space-3);
   }
   .hero-cta .btn {
     width: 100%;
@@ -2157,14 +1980,14 @@ header::after{
 
   /* Trust chips: make them wrap clean + smaller */
   .trust span {
-    padding: 8px 10px;
-    font-size: 0.82rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-13);
   }
 
   /* Preview card: keep it from feeling jammed */
   .preview {
-    padding: 14px;
-    margin-top: 10px;
+    padding: var(--space-4);
+    margin-top: var(--space-3);
   }
 }
 
@@ -2194,13 +2017,13 @@ header::after{
   /* The big fix: 1 column on phones */
   #services .grid {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    gap: var(--space-3) !important;
   }
 
   /* Make cards feel less like tall pills */
   #services .card {
-    border-radius: 18px;
-    padding: 16px;
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
   }
 }
 
@@ -2208,7 +2031,7 @@ header::after{
   /* 2 columns on larger phones/small tablets */
   #services .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
+    gap: var(--space-3) !important;
   }
 }
 /* Hero logo should be a real element, not an absolute layer */
@@ -2216,7 +2039,7 @@ header::after{
   display: inline-block;
   width: 120px;
   height: auto;
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
   filter:
     drop-shadow(0 0 18px rgba(124, 92, 255, 0.35))
     drop-shadow(0 0 10px rgba(41, 200, 255, 0.22));
@@ -2226,35 +2049,35 @@ header::after{
 @media (max-width: 520px){
   .hero-logo{
     width: 96px;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-3);
   }
 }
 /* Footer styling */
 footer {
-  margin-top: 60px;
-  padding-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: var(--space-10);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border-soft);
 }
 
 .footer-inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: var(--space-5);
   flex-wrap: wrap;
-  color: rgba(215, 220, 240, 0.65);
-  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-size: var(--fs-14);
 }
 
 .footer-links {
   display: flex;
-  gap: 24px;
+  gap: var(--space-6);
   flex-wrap: wrap;
 }
 
 .footer-links a {
-  color: rgba(215, 220, 240, 0.75);
-  transition: color 0.2s ease;
+  color: var(--text-secondary);
+  transition: color var(--dur) ease;
 }
 
 .footer-links a:hover {
@@ -2282,7 +2105,7 @@ footer {
 @media (max-width: 768px) {
   /* page padding for small tablets/large phones */
   body {
-    padding: 0 12px;
+    padding: 0 var(--space-3);
   }
 
   /* collapse any multi‑column grids */
@@ -2290,7 +2113,7 @@ footer {
   .home-pricing-grid,
   .bottom-wrap {
     grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    gap: var(--space-3) !important;
   }
 
   /* cards should span full width */
@@ -2303,15 +2126,15 @@ footer {
 
   /* hero text scaling for readability */
   .hero h1 {
-    font-size: 1.8rem !important;
+    font-size: var(--fs-28) !important;
   }
   .hero p {
-    font-size: 1rem !important;
+    font-size: var(--fs-16) !important;
   }
 
   /* sections need extra bottom space */
   .section {
-    padding-bottom: 40px;
+    padding-bottom: var(--space-8);
   }
 
   /* tables scroll horizontally on narrow viewports */
@@ -2340,11 +2163,11 @@ footer {
 @media (max-width: 480px) {
   /* tighter padding on phones */
   body {
-    padding: 0 8px;
+    padding: 0 var(--space-2);
   }
 
   .hero h1 {
-    font-size: 1.6rem !important;
+    font-size: var(--fs-24) !important;
   }
   .hero-inner {
     grid-template-columns: 1fr;
@@ -2359,7 +2182,7 @@ footer {
 
   /* compress header buttons further */
   .actions .btn {
-    font-size: 0.9rem;
+    font-size: var(--fs-14);
   }
 
   /* footer elements stack vertically */
@@ -2369,7 +2192,70 @@ footer {
   }
 }
 
+      /* restored: decorative pseudo-element rules for shared components */
+      .btn-primary::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 45%,
+    transparent 70%
+  );
+  transform: translateX(-140%);
+  animation: btnSheen 6s ease-in-out infinite;
+  opacity: 0.6;
+  pointer-events: none;
+}
+      .btn::before{
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur) ease;
+  background: radial-gradient(
+    260px 180px at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.14),
+    transparent 60%
+  );
+}
+      .input::placeholder{
+        color: var(--text-secondary);
+      }
+      .btn::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(120px 60px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--dur) ease;
+  pointer-events:none;
+}
+      .btn-primary::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.12) 45%, transparent 70%);
+  transform: translateX(-140%);
+  transition: transform var(--dur-slow) ease;
+  opacity:.6;
+  pointer-events:none;
+}
+          /* feature list rows (were repeated inline styles) */
+      .row-start {
+        display: flex;
+        gap: var(--space-2);
+        align-items: flex-start;
+      }
+      .check-icon {
+        color: var(--success);
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
     </style>
+      <script src="/assets/js/ui.js"></script>
   </head>
 
   <body>
@@ -2408,9 +2294,9 @@ footer {
             <a href="/pricing">Pricing</a>
 
             <a href="#contact">Contact</a>
-            <hr style="margin: 12px 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
-            <a href="https://aervoapp.com/login" class="btn btn-ghost" style="margin-top: 10px;">Log in</a>
-            <a href="https://aervoapp.com/onboarding" class="btn btn-primary" style="margin-top: 8px;">Sign up</a>
+            <hr style="margin: var(--space-3) 0; border: none; border-top: 1px solid var(--border);">
+            <a href="https://aervoapp.com/login" class="btn btn-ghost mt-3">Log in</a>
+            <a href="https://aervoapp.com/onboarding" class="btn btn-primary mt-2">Sign up</a>
           </div>
         </div>
       </div>
@@ -2671,9 +2557,9 @@ footer {
 
             <div
               style="
-                margin-top: 14px;
+                margin-top: var(--space-4);
                 display: flex;
-                gap: 10px;
+                gap: var(--space-3);
                 flex-wrap: wrap;
               "
             >
@@ -2770,206 +2656,206 @@ footer {
 
 <section class="section reveal" id="pricing">
   <div class="container">
-    <div class="section-head" style="text-align:center;max-width:100%;margin-bottom:8px;">
+    <div class="section-head" style="text-align:center;max-width:100%;margin-bottom:var(--space-2);">
       <div class="section-kicker">Pricing</div>
-      <h2>Plans that grow <span style="background:linear-gradient(120deg,#29c8ff,#7c5cff);-webkit-background-clip:text;color:transparent;">with you</span></h2>
+      <h2>Plans that grow <span style="background:var(--gradient-primary);-webkit-background-clip:text;color:transparent;">with you</span></h2>
       <p class="sub" style="margin:0 auto;max-width:52ch;">
         Start free. Upgrade when your business is ready. No hidden fees.
       </p>
     </div>
 
     <!-- Billing toggle -->
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:28px 0 20px;">
-      <span style="font-size:.92rem;color:rgba(215,220,240,.7);font-weight:600;" id="homeMoLabel" class="home-toggle-active">Monthly</span>
+    <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-4);margin:var(--space-7) 0 var(--space-5);">
+      <span style="font-size:var(--fs-14);color:var(--text-secondary);font-weight:var(--fw-semibold);" id="homeMoLabel" class="home-toggle-active">Monthly</span>
       <div id="homeBillingToggle" role="switch" aria-checked="false"
-        style="position:relative;width:52px;height:28px;border-radius:999px;
-               background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
-               cursor:pointer;transition:background .2s;">
+        style="position:relative;width:52px;height:28px;border-radius:var(--radius-pill);
+               background:var(--surface-hover);border:1px solid var(--border);
+               cursor:pointer;transition:background var(--dur);">
         <div id="homeToggleThumb"
           style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
-                 background:#f7f7ff;transition:transform .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.4);">
+                 background:#f7f7ff;transition:transform var(--dur) ease;box-shadow:var(--shadow-sm);">
         </div>
       </div>
-      <span style="font-size:.92rem;color:rgba(215,220,240,.7);font-weight:600;" id="homeAnLabel">Annual</span>
+      <span style="font-size:var(--fs-14);color:var(--text-secondary);font-weight:var(--fw-semibold);" id="homeAnLabel">Annual</span>
       <span style="display:inline-flex;align-items:center;
-                   background:rgba(35,230,168,.15);border:1px solid rgba(35,230,168,.3);
-                   color:#23e6a8;font-size:.72rem;font-weight:800;letter-spacing:.1em;
-                   text-transform:uppercase;padding:4px 10px;border-radius:999px;">
+                   background:rgba(var(--success-rgb), 0.15);border:1px solid rgba(var(--success-rgb), 0.3);
+                   color:var(--success);font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);
+                   text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);">
         ✦ 2 months free
       </span>
     </div>
 
     <!-- Annual savings callout -->
     <div id="homeAnnualCallout"
-      style="display:none;align-items:center;justify-content:center;gap:10px;
-             background:rgba(35,230,168,.08);border:1px solid rgba(35,230,168,.2);
-             border-radius:16px;padding:12px 24px;margin:0 auto 32px;max-width:480px;
-             font-size:.88rem;color:rgba(215,220,240,.85);">
-      🎉 You're saving up to <strong style="color:#23e6a8;">$198/year</strong> with annual billing!
+      style="display:none;align-items:center;justify-content:center;gap:var(--space-3);
+             background:rgba(var(--success-rgb), 0.08);border:1px solid rgba(var(--success-rgb), 0.2);
+             border-radius:var(--radius-lg);padding:var(--space-3) var(--space-6);margin:0 auto var(--space-7);max-width:480px;
+             font-size:var(--fs-14);color:var(--text);">
+      🎉 You're saving up to <strong class="text-success">$198/year</strong> with annual billing!
     </div>
 
     <!-- Cards grid -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;" class="home-pricing-grid">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4);margin-bottom:var(--space-6);" class="home-pricing-grid">
 
       <!-- Starter -->
-      <div style="border-radius:24px;border:1px solid rgba(255,255,255,.07);
-                  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-                  padding:26px 22px 28px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;"
+      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
+                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
+                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
            onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:1rem;font-weight:950;letter-spacing:-.01em;margin-bottom:5px;">Starter</div>
-        <div style="font-size:.85rem;color:rgba(215,220,240,.65);margin-bottom:18px;min-height:34px;">Try Aervo free. No credit card needed.</div>
-        <div style="margin-bottom:20px;">
-          <div style="font-size:2.4rem;font-weight:950;letter-spacing:-.04em;line-height:1;">Free</div>
-          <div style="font-size:.82rem;color:rgba(215,220,240,.6);margin-top:4px;">Forever free</div>
+        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Starter</div>
+        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">Try Aervo free. No credit card needed.</div>
+        <div class="mb-5">
+          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);">Free</div>
+          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);">Forever free</div>
           <div style="height:18px;"></div>
         </div>
         <a href="/onboarding"
-          style="display:block;width:100%;text-align:center;padding:12px;border-radius:12px;
-                 font-size:.9rem;font-weight:800;margin-bottom:22px;cursor:pointer;
-                 background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
-                 color:#f7f7ff;text-decoration:none;transition:background .2s;"
+          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
+                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
+                 background:var(--surface-raised);border:1px solid var(--border);
+                 color:var(--text);text-decoration:none;transition:background var(--dur);"
           onmouseover="this.style.background='rgba(255,255,255,.09)'"
           onmouseout="this.style.background='rgba(255,255,255,.05)'">
           Get started free
         </a>
-        <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:16px;"></div>
-        <div style="font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(215,220,240,.55);margin-bottom:10px;">Includes</div>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;color:rgba(215,220,240,.8);">
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>1 integration</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Basic dashboard</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>7 days data history</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>3 Ask Aervo messages/mo</div>
+        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
+        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Includes</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
+          <div class="row-start"><span class="check-icon">✓</span>1 integration</div>
+          <div class="row-start"><span class="check-icon">✓</span>Basic dashboard</div>
+          <div class="row-start"><span class="check-icon">✓</span>7 days data history</div>
+          <div class="row-start"><span class="check-icon">✓</span>3 Ask Aervo messages/mo</div>
         </div>
       </div>
 
       <!-- Essential -->
-      <div style="border-radius:24px;border:1px solid rgba(255,255,255,.07);
-                  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-                  padding:26px 22px 28px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;"
+      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
+                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
+                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
            onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:1rem;font-weight:950;letter-spacing:-.01em;margin-bottom:5px;">Essential</div>
-        <div style="font-size:.85rem;color:rgba(215,220,240,.65);margin-bottom:18px;min-height:34px;">For small businesses getting serious.</div>
-        <div style="margin-bottom:20px;">
-          <div style="font-size:2.4rem;font-weight:950;letter-spacing:-.04em;line-height:1;display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:1.2rem;margin-top:5px;color:rgba(215,220,240,.7);">$</span>
+        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Essential</div>
+        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">For small businesses getting serious.</div>
+        <div class="mb-5">
+          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
+            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
             <span id="hEssPrice">19</span>
           </div>
-          <div style="font-size:.82rem;color:rgba(215,220,240,.6);margin-top:4px;" id="hEssPeriod">per month</div>
-          <div style="font-size:.78rem;color:#23e6a8;margin-top:2px;min-height:18px;" id="hEssAnnual"></div>
+          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hEssPeriod">per month</div>
+          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hEssAnnual"></div>
         </div>
         <a href="/onboarding?plan=essential"
-          style="display:block;width:100%;text-align:center;padding:12px;border-radius:12px;
-                 font-size:.9rem;font-weight:800;margin-bottom:22px;cursor:pointer;
-                 background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
-                 color:#f7f7ff;text-decoration:none;transition:background .2s;"
+          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
+                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
+                 background:var(--surface-raised);border:1px solid var(--border);
+                 color:var(--text);text-decoration:none;transition:background var(--dur);"
           onmouseover="this.style.background='rgba(255,255,255,.09)'"
           onmouseout="this.style.background='rgba(255,255,255,.05)'">
           Start Essential
         </a>
-        <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:16px;"></div>
-        <div style="font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(215,220,240,.55);margin-bottom:10px;">Starter +</div>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;color:rgba(215,220,240,.8);">
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Full dashboard — all tabs</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>90 days data history</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Unlimited Ask Aervo</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Google Reviews (50)</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Customer segmentation</div>
+        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
+        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Starter +</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
+          <div class="row-start"><span class="check-icon">✓</span>Full dashboard — all tabs</div>
+          <div class="row-start"><span class="check-icon">✓</span>90 days data history</div>
+          <div class="row-start"><span class="check-icon">✓</span>Unlimited Ask Aervo</div>
+          <div class="row-start"><span class="check-icon">✓</span>Google Reviews (50)</div>
+          <div class="row-start"><span class="check-icon">✓</span>Customer segmentation</div>
         </div>
       </div>
 
       <!-- Pro — Featured -->
-      <div style="border-radius:24px;
-                  border:1px solid rgba(41,200,255,.35);
-                  background:linear-gradient(180deg,rgba(41,200,255,.08),rgba(124,92,255,.06),rgba(255,255,255,.03));
+      <div style="border-radius:var(--radius-xl);
+                  border:1px solid rgba(var(--primary-rgb), 0.35);
+                  background:linear-gradient(180deg,rgba(var(--primary-rgb), 0.08),rgba(var(--primary-to-rgb), 0.06),var(--surface));
                   box-shadow:0 0 0 1px rgba(41,200,255,.18),0 20px 60px rgba(41,200,255,.12);
-                  padding:26px 22px 28px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;"
+                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
            onmouseover="this.style.transform='translateY(-8px)';this.style.boxShadow='0 0 0 1px rgba(41,200,255,.3),0 36px 100px rgba(41,200,255,.2)'"
            onmouseout="this.style.transform='';this.style.boxShadow='0 0 0 1px rgba(41,200,255,.18),0 20px 60px rgba(41,200,255,.12)'">
-        <div style="display:inline-flex;align-items:center;gap:6px;
-                    background:linear-gradient(90deg,#29c8ff,#7c5cff);
-                    color:#050816;font-size:.7rem;font-weight:900;letter-spacing:.12em;
-                    text-transform:uppercase;padding:4px 12px;border-radius:999px;margin-bottom:14px;">
+        <div style="display:inline-flex;align-items:center;gap:var(--space-2);
+                    background:var(--gradient-primary);
+                    color:var(--text-on-primary);font-size:var(--fs-11);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);
+                    text-transform:uppercase;padding:var(--space-1) var(--space-3);border-radius:var(--radius-pill);margin-bottom:var(--space-4);">
           ⚡ Most Popular
         </div>
-        <div style="font-size:1rem;font-weight:950;letter-spacing:-.01em;margin-bottom:5px;">Pro</div>
-        <div style="font-size:.85rem;color:rgba(215,220,240,.65);margin-bottom:18px;min-height:34px;">The full Aervo experience.</div>
-        <div style="margin-bottom:20px;">
-          <div style="font-size:2.4rem;font-weight:950;letter-spacing:-.04em;line-height:1;display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:1.2rem;margin-top:5px;color:rgba(215,220,240,.7);">$</span>
+        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Pro</div>
+        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">The full Aervo experience.</div>
+        <div class="mb-5">
+          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
+            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
             <span id="hProPrice">49</span>
           </div>
-          <div style="font-size:.82rem;color:rgba(215,220,240,.6);margin-top:4px;" id="hProPeriod">per month</div>
-          <div style="font-size:.78rem;color:#23e6a8;margin-top:2px;min-height:18px;" id="hProAnnual"></div>
+          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hProPeriod">per month</div>
+          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hProAnnual"></div>
         </div>
         <a href="/onboarding?plan=pro&trial=true"
-          style="display:block;width:100%;text-align:center;padding:12px;border-radius:12px;
-                 font-size:.9rem;font-weight:800;margin-bottom:22px;cursor:pointer;
-                 background:linear-gradient(90deg,#29c8ff,#7c5cff);
-                 color:#050816;text-decoration:none;transition:opacity .2s;
-                 box-shadow:0 0 20px rgba(41,200,255,.25);"
+          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
+                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
+                 background:var(--gradient-primary);
+                 color:var(--text-on-primary);text-decoration:none;transition:opacity var(--dur);
+                 box-shadow:var(--glow);"
           onmouseover="this.style.opacity='.9'"
           onmouseout="this.style.opacity='1'">
           Start 14-day free trial
         </a>
-        <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:16px;"></div>
-        <div style="font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(215,220,240,.55);margin-bottom:10px;">Essential +</div>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;color:rgba(215,220,240,.8);">
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Both integrations</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Unified customer view</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>2 years data history</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>AI Revenue Forecasting</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Win-back campaigns</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>AI Marketing Copy</div>
+        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
+        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Essential +</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
+          <div class="row-start"><span class="check-icon">✓</span>Both integrations</div>
+          <div class="row-start"><span class="check-icon">✓</span>Unified customer view</div>
+          <div class="row-start"><span class="check-icon">✓</span>2 years data history</div>
+          <div class="row-start"><span class="check-icon">✓</span>AI Revenue Forecasting</div>
+          <div class="row-start"><span class="check-icon">✓</span>Win-back campaigns</div>
+          <div class="row-start"><span class="check-icon">✓</span>AI Marketing Copy</div>
         </div>
       </div>
 
       <!-- Business -->
-      <div style="border-radius:24px;border:1px solid rgba(255,255,255,.07);
-                  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
-                  padding:26px 22px 28px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;"
+      <div style="border-radius:var(--radius-xl);border:1px solid var(--border-soft);
+                  background:linear-gradient(180deg,var(--surface-raised),var(--surface));
+                  padding:var(--space-6) var(--space-6) var(--space-7);transition:transform var(--dur),box-shadow var(--dur);position:relative;overflow:hidden;"
            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 30px 80px rgba(0,0,0,.6)'"
            onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="font-size:1rem;font-weight:950;letter-spacing:-.01em;margin-bottom:5px;">Business</div>
-        <div style="font-size:.85rem;color:rgba(215,220,240,.65);margin-bottom:18px;min-height:34px;">For multi-location businesses.</div>
-        <div style="margin-bottom:20px;">
-          <div style="font-size:2.4rem;font-weight:950;letter-spacing:-.04em;line-height:1;display:flex;align-items:flex-start;gap:2px;">
-            <span style="font-size:1.2rem;margin-top:5px;color:rgba(215,220,240,.7);">$</span>
+        <div style="font-size:var(--fs-16);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);margin-bottom:var(--space-1);">Business</div>
+        <div style="font-size:var(--fs-14);color:var(--text-secondary);margin-bottom:var(--space-5);min-height:34px;">For multi-location businesses.</div>
+        <div class="mb-5">
+          <div style="font-size:var(--fs-40);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);line-height:var(--lh-none);display:flex;align-items:flex-start;gap:2px;">
+            <span style="font-size:var(--fs-20);margin-top:var(--space-1);color:var(--text-secondary);">$</span>
             <span id="hBizPrice">99</span>
           </div>
-          <div style="font-size:.82rem;color:rgba(215,220,240,.6);margin-top:4px;" id="hBizPeriod">per month</div>
-          <div style="font-size:.78rem;color:#23e6a8;margin-top:2px;min-height:18px;" id="hBizAnnual"></div>
+          <div style="font-size:var(--fs-13);color:var(--text-secondary);margin-top:var(--space-1);" id="hBizPeriod">per month</div>
+          <div style="font-size:var(--fs-12);color:var(--success);margin-top:2px;min-height:18px;" id="hBizAnnual"></div>
         </div>
         <a href="/onboarding?plan=business"
-          style="display:block;width:100%;text-align:center;padding:12px;border-radius:12px;
-                 font-size:.9rem;font-weight:800;margin-bottom:22px;cursor:pointer;
-                 background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
-                 color:#f7f7ff;text-decoration:none;transition:background .2s;"
+          style="display:block;width:100%;text-align:center;padding:var(--space-3);border-radius:var(--radius-md);
+                 font-size:var(--fs-14);font-weight:var(--fw-heavy);margin-bottom:var(--space-6);cursor:pointer;
+                 background:var(--surface-raised);border:1px solid var(--border);
+                 color:var(--text);text-decoration:none;transition:background var(--dur);"
           onmouseover="this.style.background='rgba(255,255,255,.09)'"
           onmouseout="this.style.background='rgba(255,255,255,.05)'">
           Start Business
         </a>
-        <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:16px;"></div>
-        <div style="font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(215,220,240,.55);margin-bottom:10px;">Pro +</div>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:.84rem;color:rgba(215,220,240,.8);">
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Up to 5 locations</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Unlimited data history</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>White-label reports</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Competitor benchmarking</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Priority support</div>
-          <div style="display:flex;gap:8px;align-items:flex-start;"><span style="color:#23e6a8;flex-shrink:0;margin-top:1px;">✓</span>Dedicated onboarding</div>
+        <div style="height:1px;background:var(--surface-hover);margin-bottom:var(--space-4);"></div>
+        <div style="font-size:var(--fs-12);font-weight:var(--fw-heavy);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-3);">Pro +</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-2);font-size:var(--fs-13);color:var(--text);">
+          <div class="row-start"><span class="check-icon">✓</span>Up to 5 locations</div>
+          <div class="row-start"><span class="check-icon">✓</span>Unlimited data history</div>
+          <div class="row-start"><span class="check-icon">✓</span>White-label reports</div>
+          <div class="row-start"><span class="check-icon">✓</span>Competitor benchmarking</div>
+          <div class="row-start"><span class="check-icon">✓</span>Priority support</div>
+          <div class="row-start"><span class="check-icon">✓</span>Dedicated onboarding</div>
         </div>
       </div>
 
     </div>
 
     <!-- See full pricing link -->
-    <div style="text-align:center;margin-top:20px;">
+    <div style="text-align:center;margin-top:var(--space-5);">
       <a href="/pricing"
-        style="font-size:.9rem;color:rgba(41,200,255,.8);
-               border-bottom:1px solid rgba(41,200,255,.3);
-               padding-bottom:2px;transition:color .2s;"
+        style="font-size:var(--fs-14);color:rgba(var(--primary-rgb), 0.8);
+               border-bottom:1px solid rgba(var(--primary-rgb), 0.3);
+               padding-bottom:2px;transition:color var(--dur);"
         onmouseover="this.style.color='#29c8ff'"
         onmouseout="this.style.color='rgba(41,200,255,.8)'">
         View full pricing details & FAQ →
@@ -3058,19 +2944,18 @@ footer {
       <div class="container">
         <div class="luxe-card">
           <div class="section-kicker">Stay in the loop</div>
-          <div class="luxe-title" style="margin-top: 6px">
+          <div class="luxe-title mt-2">
             Join the Aervo mailing list.
           </div>
           <div class="luxe-body">
             Product updates, insights, and early access invites. No spam.
           </div>
 
-          <form
+          <form class="mt-4"
             onsubmit="
               event.preventDefault();
-              alert('Thanks! You’re on the list.');
+              showToast('Thanks! You’re on the list.');
             "
-            style="margin-top: 14px"
           >
             <div class="news-row">
               <input

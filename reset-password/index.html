@@ -5,173 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset password – Aervo</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: radial-gradient(
-          circle at top,
-          #111827,
-          #020617 55%,
-          #000 100%
-        );
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        color: #e5ecff;
-      }
-
-      .card {
-        background: radial-gradient(circle at top left, #1e293b, #020617);
-        border-radius: 20px;
-        padding: 32px 28px 26px;
-        width: 100%;
-        max-width: 420px;
-        box-shadow:
-          0 24px 60px rgba(0, 0, 0, 0.8),
-          0 0 40px rgba(56, 189, 248, 0.15);
-        border: 1px solid rgba(148, 163, 184, 0.35);
-      }
-
-      h1 {
-        margin: 0 0 4px;
-        font-size: 24px;
-        font-weight: 600;
-        color: #f9fafb;
-      }
-
-      p.subtitle {
-        margin: 0 0 24px;
-        font-size: 14px;
-        color: #9ca7d6;
-        line-height: 1.6;
-      }
-
-      label {
-        display: block;
-        font-size: 13px;
-        margin-bottom: 6px;
-        color: #c7d2fe;
-      }
-
-      input {
-        width: 100%;
-        padding: 10px 11px;
-        margin-bottom: 14px;
-        border-radius: 8px;
-        border: 1px solid #334155;
-        background: #020617;
-        color: #e5ecff;
-        font-size: 14px;
-        box-sizing: border-box;
-      }
-
-      input:focus {
-        outline: none;
-        border-color: #60a5fa;
-        box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
-      }
-
-      button {
-        width: 100%;
-        margin-top: 4px;
-        padding: 11px 0;
-        border-radius: 10px;
-        border: none;
-        background: #1f2937;
-        color: #dbeafe;
-        font-size: 15px;
-        letter-spacing: 0.4px;
-        cursor: pointer;
-        box-shadow:
-          0 0 14px rgba(96, 165, 250, 0.55),
-          0 0 40px rgba(59, 130, 246, 0.35);
-        transition: all 0.18s ease;
-      }
-
-      button:hover {
-        background: #111827;
-        transform: translateY(-1px);
-        box-shadow:
-          0 0 18px rgba(129, 140, 248, 0.9),
-          0 0 50px rgba(56, 189, 248, 0.5);
-      }
-
-      .error {
-        min-height: 18px;
-        margin-top: 10px;
-        font-size: 13px;
-        color: #fecaca;
-      }
-
-      .success {
-        min-height: 18px;
-        margin-top: 10px;
-        font-size: 13px;
-        color: #bbf7d0;
-      }
-
-      .link-row {
-        margin-top: 18px;
-        font-size: 13px;
-      }
-
-      .link-row a {
-        color: #93c5fd;
-        text-decoration: none;
-      }
-
-      .link-row a:hover {
-        text-decoration: underline;
-      }
-
-      .disabled {
-        opacity: 0.6;
-        cursor: default;
-        box-shadow: none;
-      }
-    </style>
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
   </head>
   <body>
-    <main class="card">
-      <h1>Set a new password</h1>
-      <p class="subtitle">
-        Enter a new password for your Aervo account. This link will only work
-        once.
-      </p>
+    <header class="auth-header">
+      <a href="/" class="auth-brand" aria-label="Aervo home">
+        <img src="/assets/images/logo.png" alt="Aervo" />
+      </a>
+    </header>
 
-      <form id="reset-form">
-        <label for="password">New password</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="••••••••••"
-          required
-        />
+    <main class="auth-main">
+      <div class="card card-hero auth-card">
+        <h1>Set a new password</h1>
+        <p class="auth-lead">
+          Enter a new password for your Aervo account. This link will only work
+          once.
+        </p>
 
-        <label for="confirm">Confirm password</label>
-        <input
-          id="confirm"
-          type="password"
-          placeholder="Repeat password"
-          required
-        />
+        <form id="reset-form">
+          <div class="form-group">
+            <label class="field-label" for="password">New password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••••"
+              required
+            />
+          </div>
 
-        <button type="submit" id="submit-btn">Update password</button>
+          <div class="form-group">
+            <label class="field-label" for="confirm">Confirm password</label>
+            <input
+              id="confirm"
+              type="password"
+              placeholder="Repeat password"
+              required
+            />
+          </div>
 
-        <div class="error" id="error"></div>
-        <div class="success" id="success"></div>
+          <button
+            type="submit"
+            id="submit-btn"
+            class="btn btn-primary btn-block btn-form"
+          >
+            Update password
+          </button>
 
-        <div class="link-row">
-          <a href="/login">Back to login</a>
-        </div>
-      </form>
+          <div class="form-message error" id="error"></div>
+          <div class="form-message success" id="success"></div>
+
+          <div class="auth-helper">
+            <a href="/login" class="link">Back to login</a>
+          </div>
+        </form>
+      </div>
     </main>
 
     <script>
@@ -188,13 +77,12 @@
 
       // If there's no token in the URL, block the form
       if (!token) {
-        form.style.display = "none";
-        const msg = document.createElement("p");
+        form.hidden = true;
+        const msg = document.createElement("div");
+        msg.className = "alert alert-error";
         msg.textContent =
           "Invalid or expired reset link. Please request a new one.";
-        msg.style.color = "#fecaca";
-        msg.style.fontSize = "14px";
-        document.querySelector("main").appendChild(msg);
+        document.querySelector(".auth-card").appendChild(msg);
       }
 
       // ===== 2) Handle form submit =====
@@ -217,7 +105,6 @@
         }
 
         submitBtn.disabled = true;
-        submitBtn.classList.add("disabled");
         submitBtn.textContent = "Updating...";
 
         try {
@@ -248,7 +135,6 @@
           errorEl.textContent = "Network error. Please try again.";
         } finally {
           submitBtn.disabled = false;
-          submitBtn.classList.remove("disabled");
           submitBtn.textContent = "Update password";
         }
       });

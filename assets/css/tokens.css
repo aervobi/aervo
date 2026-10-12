@@ -1,0 +1,158 @@
+/*
+ * Aervo design tokens — the single source of truth for colour, type, spacing,
+ * radius, shadow, motion and layout. Load this first, before base.css,
+ * components.css and any page <style>.
+ *
+ * Rules of thumb
+ *  - Never hard-code a colour, font size, radius or shadow in a page; use a token.
+ *  - Per-platform accent: a page sets --accent / --accent-rgb on :root or body.
+ *    Only active tabs, shop badges and charts use it; buttons and links always
+ *    use the brand --primary-* pair.
+ *  - Breakpoints (CSS variables can't be used in media queries): 480 / 768 / 1024.
+ */
+:root {
+  color-scheme: dark;
+
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --bg: #02030a;
+  --bg-elevated: #070b17; /* sticky bars, sidebars, modals */
+  --surface: rgba(255, 255, 255, 0.04); /* cards */
+  --surface-raised: rgba(255, 255, 255, 0.06); /* hover, nested */
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --overlay: rgba(0, 0, 0, 0.7); /* modal backdrop */
+
+  /* ── Borders ──────────────────────────────────────────── */
+  --border-soft: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --text: #e5ecff; /* primary */
+  --text-secondary: #9ca7d6;
+  --text-muted: #6b7a99; /* 4.77:1 on --bg (WCAG AA) */
+  --text-on-primary: #050816; /* 10.3:1 on cyan, 4.6:1 on violet */
+
+  /* ── Brand ────────────────────────────────────────────── */
+  --primary-from: #29c8ff;
+  --primary-to: #7c5cff;
+  --primary-rgb: 41, 200, 255;
+  --primary-to-rgb: 124, 92, 255;
+  --gradient-primary: linear-gradient(
+    90deg,
+    var(--primary-from),
+    var(--primary-to)
+  );
+  --focus-border: rgba(var(--primary-rgb), 0.5);
+  --focus-ring: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+
+  /* Per-platform accent (override per page). Defaults to the brand cyan. */
+  --accent: var(--primary-from);
+  --accent-rgb: var(--primary-rgb);
+
+  /* ── Status ───────────────────────────────────────────── */
+  --success: #34d399;
+  --success-rgb: 52, 211, 153;
+  --success-text: #6ee7b7;
+  --warning: #fbbf24;
+  --warning-rgb: 251, 191, 36;
+  --warning-text: #fcd34d;
+  --danger: #ef4444;
+  --danger-rgb: 239, 68, 68;
+  --danger-text: #fca5a5;
+  --info: #60a5fa;
+  --info-rgb: 96, 165, 250;
+  --info-text: #93c5fd;
+  /* Tint recipe: background α .15, border α .30, light text */
+  --success-bg: rgba(var(--success-rgb), 0.15);
+  --success-border: rgba(var(--success-rgb), 0.3);
+  --warning-bg: rgba(var(--warning-rgb), 0.15);
+  --warning-border: rgba(var(--warning-rgb), 0.3);
+  --danger-bg: rgba(var(--danger-rgb), 0.15);
+  --danger-border: rgba(var(--danger-rgb), 0.3);
+  --info-bg: rgba(var(--info-rgb), 0.15);
+  --info-border: rgba(var(--info-rgb), 0.3);
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Size scale (rem so user font settings are respected; 1rem = 16px) */
+  --fs-11: 0.6875rem;
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-28: 1.75rem;
+  --fs-32: 2rem;
+  --fs-40: 2.5rem;
+  --fs-48: 3rem;
+  --fs-56: 3.5rem;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-heavy: 800;
+
+  --lh-none: 1;
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.7;
+
+  --ls-tight: -0.02em;
+  --ls-normal: 0;
+  --ls-label: 0.08em;
+
+  /* ── Spacing (4px grid) ───────────────────────────────── */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+
+  /* ── Radius ───────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px; /* tags, small controls */
+  --radius-md: 12px; /* inputs, form buttons, small cards */
+  --radius-lg: 16px; /* cards */
+  --radius-xl: 24px; /* hero cards, modals */
+  --radius-pill: 999px;
+
+  /* ── Shadow ───────────────────────────────────────────── */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 40px 80px rgba(0, 0, 0, 0.6);
+  --glow: 0 0 18px rgba(var(--primary-rgb), 0.3);
+
+  /* ── Motion ───────────────────────────────────────────── */
+  --dur-fast: 0.15s;
+  --dur: 0.2s;
+  --dur-slow: 0.3s;
+  --ease: ease;
+
+  /* ── Stacking ─────────────────────────────────────────── */
+  --z-raised: 1;
+  --z-sticky: 10;
+  --z-nav: 100;
+  --z-popover: 200;
+  --z-modal: 1000;
+  --z-toast: 1100;
+
+  /* ── Layout ───────────────────────────────────────────── */
+  --nav-h: 64px;
+  --container-marketing: 1120px;
+  --container-app: 1400px;
+  --container-narrow: 720px;
+  --container-legal: 900px;
+}
