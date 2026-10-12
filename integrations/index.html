@@ -429,17 +429,22 @@
           // Simple redirect with token in URL
           window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}&source=standalone`;
         } else if (name === "square") {
-          const aervoUser = JSON.parse(
-            localStorage.getItem("aervo_user") || "{}",
-          );
-          const userId = aervoUser.id;
-          if (!userId) {
+          // The server identifies the account from the login token, then
+          // returns the Square consent URL.
+          try {
+            const res = await fetch(`${BACKEND_URL}/integrations/square/connect`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (!res.ok || !data.url) throw new Error(data.message || "failed");
+            window.location.href = data.url;
+          } catch (err) {
             showToast(
-              "Could not find your account. Please log out and log back in.",
+              "Could not start the Square connection. Please log in again and retry.",
+              "error",
             );
-            return;
           }
-          window.location.href = `${BACKEND_URL}/integrations/square/connect?merchantId=${encodeURIComponent(userId)}`;
         } else if (name === "quickbooks") {
           connectQuickbooks();
         } else {
