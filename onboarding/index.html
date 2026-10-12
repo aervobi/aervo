@@ -1154,9 +1154,23 @@
       const urlParams = new URLSearchParams(window.location.search);
       const urlToken = urlParams.get("token");
       const urlName = urlParams.get("name");
+      // Only the Google callback sends people here with a token, and Google has
+      // already given us (and verified) their email, so they skip the account step.
+      const isGoogleSignup = Boolean(urlToken);
       if (urlToken) {
         aervoToken = urlToken;
         localStorage.setItem("aervo_token", urlToken);
+        // keep the token out of the address bar and browser history
+        history.replaceState(null, "", window.location.pathname);
+        try {
+          const payload = JSON.parse(
+            atob(urlToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
+          );
+          localStorage.setItem(
+            "aervo_user",
+            JSON.stringify({ id: payload.userId, email: payload.email }),
+          );
+        } catch (e) {}
       } else {
         aervoToken = localStorage.getItem("aervo_token");
       }
@@ -1242,6 +1256,16 @@
       }
       function hideErr(id) {
         document.getElementById(id).style.display = "none";
+      }
+
+      if (isGoogleSignup) {
+        goToStep(2);
+        const back = document.querySelector("#step2 .btn-back");
+        if (back) back.hidden = true; // nothing to go back to
+        if (urlName) {
+          document.querySelector("#step2 .step-sub").textContent =
+            "Welcome, " + urlName + "! Help us personalize your Aervo dashboard.";
+        }
       }
 
       // ── STEP 1: Create account ───────────────────────────────────
@@ -1463,6 +1487,15 @@
           // Redirect IMS users directly to IMS dashboard
           if (selectedPlatform === "csv") {
             window.location.href = "/dashboard/ims.html";
+            return;
+          }
+
+          // Google already verified their email, so there's no inbox step
+          if (isGoogleSignup) {
+            window.location.href =
+              selectedPlatform === "square"
+                ? "/dashboard/square/"
+                : "/dashboard/shopify/";
             return;
           }
 
