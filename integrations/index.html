@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/assets/js/session.js"></script>
     <title>Integrations – Aervo</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <link rel="stylesheet" href="/assets/css/tokens.css" />
@@ -427,7 +428,23 @@
           }
 
           // Simple redirect with token in URL
-          window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}&token=${encodeURIComponent(token)}&source=standalone`;
+          try {
+            // The server links the store to this logged-in account and returns
+            // the Shopify authorization URL (no token goes in the URL).
+            const res = await fetch(`${BACKEND_URL}/auth/shopify/connect`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ shop: normalized }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.url) throw new Error(data.message || "failed");
+            window.location.href = data.url;
+          } catch (err) {
+            showToast(err.message || "Could not start the Shopify connection.", "error");
+          }
         } else if (name === "square") {
           // The server identifies the account from the login token, then
           // returns the Square consent URL.

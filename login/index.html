@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/assets/js/session.js"></script>
     <title>Aervo - Login</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <link rel="stylesheet" href="/assets/css/tokens.css" />
@@ -204,16 +205,14 @@
               return;
             }
 
-            // Success — save token and route based on platform
-            localStorage.setItem("aervo_token", data.token);
+            // Success. The server set the session cookie; keep only a marker + profile
+            AervoSession.mark();
             localStorage.setItem("aervo_user", JSON.stringify(data.user));
             showAuthMsg("success", "Welcome back! Redirecting...");
 
             setTimeout(async () => {
               try {
-                const meRes = await fetch(BACKEND_URL + "/api/user/me", {
-                  headers: { Authorization: "Bearer " + data.token },
-                });
+                const meRes = await fetch(BACKEND_URL + "/api/user/me");
                 const meData = await meRes.json();
                 const platform = meData.user && meData.user.platform;
                 const onboarded = meData.user && meData.user.onboarded;

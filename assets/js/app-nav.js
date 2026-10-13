@@ -186,11 +186,19 @@
   }
 
   function logout() {
-    try {
-      localStorage.removeItem("aervo_token");
-      localStorage.removeItem("aervo_user");
-    } catch (e) {}
-    window.location.href = "/login";
+    // Ends the session on the server too (cookie + every other device's token)
+    var done = function () {
+      window.location.href = "/login";
+    };
+    if (window.AervoSession) {
+      window.AervoSession.logout().then(done, done);
+    } else {
+      try {
+        localStorage.removeItem("aervo_token");
+        localStorage.removeItem("aervo_user");
+      } catch (e) {}
+      done();
+    }
   }
   document.querySelectorAll("[data-logout]").forEach(function (el) {
     el.addEventListener("click", logout);

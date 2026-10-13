@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/assets/js/session.js"></script>
     <title>Aervo – Get Started</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <link rel="stylesheet" href="/assets/css/tokens.css" />
@@ -1150,29 +1151,29 @@
       let aervoToken = null;
       let currentStep = 1;
 
-      // Check if already logged in (returning from OAuth)
+      // The session itself is an httpOnly cookie (see session.js); the value kept
+      // here is only a marker used to check "is anyone logged in?".
       const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get("token");
       const urlName = urlParams.get("name");
-      // Only the Google callback sends people here with a token, and Google has
-      // already given us (and verified) their email, so they skip the account step.
-      const isGoogleSignup = Boolean(urlToken);
-      if (urlToken) {
-        aervoToken = urlToken;
-        localStorage.setItem("aervo_token", urlToken);
-        // keep the token out of the address bar and browser history
-        history.replaceState(null, "", window.location.pathname);
-        try {
-          const payload = JSON.parse(
-            atob(urlToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
-          );
-          localStorage.setItem(
-            "aervo_user",
-            JSON.stringify({ id: payload.userId, email: payload.email }),
-          );
-        } catch (e) {}
-      } else {
-        aervoToken = localStorage.getItem("aervo_token");
+      // Only the Google callback sends people here with ?session=1 (session.js has
+      // already recorded and removed it). Google has verified their email, so
+      // they skip the account step.
+      const isGoogleSignup = Boolean(
+        window.AervoSession && window.AervoSession.arrivedViaOAuth,
+      );
+      aervoToken = localStorage.getItem("aervo_token");
+      if (isGoogleSignup) {
+        // remember who this is for the rest of the app (the server knows from the cookie)
+        fetch(BACKEND_URL + "/api/user/me")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success && d.user)
+              localStorage.setItem(
+                "aervo_user",
+                JSON.stringify({ id: d.user.id, email: d.user.email }),
+              );
+          })
+          .catch(() => {});
       }
 
       // Password toggles
@@ -1311,8 +1312,8 @@
             );
           }
 
-          aervoToken = data.token;
-          localStorage.setItem("aervo_token", data.token);
+          AervoSession.mark();
+          aervoToken = localStorage.getItem("aervo_token");
           localStorage.setItem("aervo_user", JSON.stringify(data.user));
           goToStep(2);
         } catch (err) {
@@ -1405,17 +1406,37 @@
       }
 
       // ── OAuth connectors ─────────────────────────────────────────
-      function connectShopify() {
+      async function connectShopify() {
+        const shop = await uiPrompt(
+          "Enter your Shopify store domain (e.g., your-store.myshopify.com):",
+        );
+        if (!shop) return;
+        const normalized = shop.trim().toLowerCase();
+        if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(normalized)) {
+          showToast("Please enter a valid domain ending in .myshopify.com");
+          return;
+        }
         saveOnboardingState();
-        window.location.href =
-          BACKEND_URL + "/auth/shopify?token=" + aervoToken;
+        try {
+          // The server links the store to the logged-in account, then returns
+          // the Shopify authorization URL.
+          const res = await fetch(BACKEND_URL + "/auth/shopify/connect", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ shop: normalized }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.url) throw new Error(data.message || "failed");
+          window.location.href = data.url;
+        } catch (err) {
+          showToast(err.message || "Could not start the Shopify connection.");
+        }
       }
       async function connectSquare() {
         saveOnboardingState();
         try {
           const res = await fetch(BACKEND_URL + "/integrations/square/connect", {
             method: "POST",
-            headers: { Authorization: "Bearer " + aervoToken },
           });
           const data = await res.json();
           if (!res.ok || !data.url) throw new Error(data.message || "failed");

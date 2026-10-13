@@ -8,10 +8,11 @@
         const shop = urlParams.get("shop");
         const host = urlParams.get("host");
         if (shop) {
+          // Pass the whole query along: Shopify signs it (hmac + timestamp) and
+          // the server uses that signature to recognise a genuine app launch.
           window.location.href =
-            "https://api.aervoapp.com/auth/shopify?shop=" +
-            shop +
-            (host ? "&host=" + host : "");
+            "https://api.aervoapp.com/auth/shopify?" +
+            window.location.search.slice(1);
         }
       }
     </script>

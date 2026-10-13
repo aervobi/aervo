@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/assets/js/session.js"></script>
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
@@ -14,11 +15,12 @@
     <script>
       if (window.shopify) {
         window.shopify.idToken().catch(() => {
-          const shop =
-            new URLSearchParams(window.location.search).get("shop") ||
-            localStorage.getItem("shopify_shop");
+          const search = new URLSearchParams(window.location.search);
+          const shop = search.get("shop") || localStorage.getItem("shopify_shop");
           if (shop) {
-            window.top.location.href = `https://api.aervoapp.com/auth/shopify/?shop=${shop}`;
+            // keep Shopify's signed launch parameters so the server can verify them
+            if (!search.get("shop")) search.set("shop", shop);
+            window.top.location.href = `https://api.aervoapp.com/auth/shopify/?${search}`;
           }
         });
       }
@@ -512,20 +514,39 @@
         });
       }
       const urlParams = new URLSearchParams(window.location.search);
-      const urlToken = urlParams.get("token");
-      if (urlToken) {
-        localStorage.setItem("aervo_token", urlToken);
+      let token = localStorage.getItem("aervo_token");
+
+      // After installing / connecting from Shopify we arrive with a one-time
+      // code (valid ~2 minutes, usable once). Swap it for a session cookie.
+      // Nothing long-lived is ever placed in the URL.
+      const loginCode = urlParams.get("code");
+      const loginReady = (async () => {
+        if (!loginCode) return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/auth/shopify/exchange`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: loginCode }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            AervoSession.mark();
+            token = localStorage.getItem("aervo_token");
+            if (data.user)
+              localStorage.setItem("aervo_user", JSON.stringify(data.user));
+          }
+        } catch (e) {}
+        const shop = urlParams.get("shop");
         window.history.replaceState(
           {},
           "",
-          window.location.pathname + "?shop=" + urlParams.get("shop"),
+          window.location.pathname + (shop ? "?shop=" + encodeURIComponent(shop) : ""),
         );
-      }
-
-      let token = localStorage.getItem("aervo_token");
+      })();
 
       // If inside Shopify iframe, get session token via App Bridge
       async function initShopifyAuth() {
+        await loginReady;
         const isStandalone =
           urlParams.get("standalone") === "1" || !window.shopify;
 
@@ -569,7 +590,9 @@
         return null;
       }
 
-      if (!token) window.location.href = "/login";
+      loginReady.then(() => {
+        if (!token) window.location.href = "/login";
+      });
       // ─────────────────────────────────────────────────────────────────────────────
       // SHOPIFY DASHBOARD PATCH — /dashboard/shopify/index.html
       //
@@ -1797,7 +1820,21 @@
           return;
         }
 
-        window.location.href = `${BACKEND_URL}/auth/shopify?shop=${encodeURIComponent(normalized)}`;
+        try {
+          const res = await fetch(`${BACKEND_URL}/auth/shopify/connect`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ shop: normalized }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.url) throw new Error(data.message || "failed");
+          window.location.href = data.url;
+        } catch (err) {
+          showToast(err.message || "Could not start the Shopify connection.", "error");
+        }
       }
 
       // ============= CHAT =============
@@ -1888,7 +1925,7 @@
       }
 
       // ============= BOOT =============
-      loadUserData();
+      loginReady.then(loadUserData);
       // ── HEALTH SCORE ───────────────────────────────────────────────
       async function loadHealthScore() {
         try {
