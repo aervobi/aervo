@@ -2301,6 +2301,7 @@
       }
 
       let isAIThinking = false;
+      const chatHistory = []; // last turns, so follow-up questions have context
       async function sendMessage() {
         if (isAIThinking) return;
         const input = document.getElementById("chatInput");
@@ -2328,16 +2329,25 @@
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ message, merchantId, platform: "square" }),
+            body: JSON.stringify({
+              message,
+              merchantId,
+              platform: "square",
+              history: chatHistory.slice(-6),
+            }),
           });
           const data = await res.json();
           document.getElementById("typingIndicator")?.remove();
           const aiMsg = document.createElement("div");
           aiMsg.className = "chat-message ai";
-          aiMsg.innerHTML = (data.reply || "Sorry, I couldn't respond.")
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-            .replace(/\n/g, "<br>");
+          aiMsg.innerHTML = formatAiReply(
+            data.reply || "Sorry, I couldn't respond.",
+          );
           messages.appendChild(aiMsg);
+          if (data.reply) {
+            chatHistory.push({ role: "user", content: message });
+            chatHistory.push({ role: "assistant", content: data.reply });
+          }
         } catch {
           document.getElementById("typingIndicator")?.remove();
           const errMsg = document.createElement("div");

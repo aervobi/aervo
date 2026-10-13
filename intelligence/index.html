@@ -104,6 +104,11 @@
         border-color: rgba(var(--success-rgb), 0.35);
         color: var(--success);
       }
+      .source-pill.active-ims {
+        background: rgba(var(--primary-to-rgb), 0.1);
+        border-color: rgba(var(--primary-to-rgb), 0.35);
+        color: var(--primary-to);
+      }
       .source-pill.active-csv {
         background: rgba(var(--primary-to-rgb), 0.1);
         border-color: rgba(var(--primary-to-rgb), 0.35);
@@ -895,6 +900,14 @@
           </div>
           <div
             class="source-pill"
+            id="pillIms"
+            onclick="activateSource('ims'); loadImsMetrics().then(() => { renderBenchmarks(); renderGoalProgress(); })"
+            title="Use your Aervo Inventory Management data"
+          >
+            <span class="source-dot"></span> IMS
+          </div>
+          <div
+            class="source-pill"
             id="pillCsv"
             onclick="triggerCsvUpload()"
             title="Upload CSV"
@@ -1470,6 +1483,32 @@
       let csvData = null;
       let chatHistory = [];
 
+      // Everything shown that came from a user or the AI is escaped first
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+
+      // What the AI endpoints are given: the numbers currently on screen. The
+      // server validates them and adds the account's own data where it has any.
+      function aiPayload(extra = {}) {
+        const goals = {};
+        ["revenue", "orders", "aov", "conv", "retention"].forEach((k) => {
+          const v = parseFloat(document.getElementById("g-" + k)?.value);
+          if (Number.isFinite(v)) goals[k] = v;
+        });
+        return {
+          industry: currentIndustry,
+          source: currentSource,
+          metrics,
+          benchmarks: BENCHMARKS[currentIndustry],
+          goals,
+          ...extra,
+        };
+      }
+
       // ── INDUSTRY BENCHMARKS ──
       const BENCHMARKS = {
         retail: {
@@ -1591,6 +1630,13 @@
           if (shopData) {
             activateSource("shopify");
             await loadShopifyMetrics();
+          } else if (
+            userData.platform === "csv" ||
+            userData.platform === "ims"
+          ) {
+            // Inventory Management System account: use its own sales data
+            activateSource("ims");
+            await loadImsMetrics();
           } else {
             // Check square
             try {
@@ -1631,7 +1677,7 @@
       // ── DATA SOURCES ──
       function activateSource(src) {
         currentSource = src;
-        ["shopify", "square", "csv", "manual"].forEach((s) => {
+        ["shopify", "square", "ims", "csv", "manual"].forEach((s) => {
           const el = document.getElementById(
             "pill" + s.charAt(0).toUpperCase() + s.slice(1),
           );
@@ -1708,6 +1754,38 @@
           }
         } catch (e) {
           console.error("Square metrics error:", e);
+        }
+      }
+
+      // Last 30 days of the account's own Aervo IMS sales
+      async function loadImsMetrics() {
+        try {
+          const day = (d) => d.toISOString().slice(0, 10);
+          const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+          const [sRes, cRes] = await Promise.all([
+            fetch(
+              `${BACKEND_URL}/api/ims/analytics/summary?from=${day(from)}&to=${day(new Date())}`,
+            ),
+            fetch(`${BACKEND_URL}/api/ims/customers`),
+          ]);
+          const summary = await sRes.json();
+          const customers = await cRes.json();
+
+          metrics.revenue = parseFloat(summary.total_revenue) || 0;
+          metrics.orders = parseInt(summary.total_orders) || 0;
+          metrics.aov = metrics.orders
+            ? Math.round((metrics.revenue / metrics.orders) * 100) / 100
+            : 0;
+          if (Array.isArray(customers)) {
+            const buyers = customers.filter((c) => parseInt(c.total_orders) > 0);
+            const repeat = buyers.filter((c) => parseInt(c.total_orders) > 1);
+            metrics.retention = buyers.length
+              ? Math.round((repeat.length / buyers.length) * 1000) / 10
+              : 0;
+          }
+          updateMetricDisplays();
+        } catch (e) {
+          console.error("IMS metrics error:", e);
         }
       }
 
@@ -2148,71 +2226,32 @@
           .join("");
         document.getElementById("refreshInsightsBtn").textContent = "⏳";
 
-        const bench = BENCHMARKS[currentIndustry];
-        const goalInputs = ["revenue", "orders", "aov", "conv", "retention"]
-          .map((k) => {
-            const el = document.getElementById("g-" + k);
-            return el?.value ? `${k} goal: ${el.value}` : null;
-          })
-          .filter(Boolean)
-          .join(", ");
-
-        const context = `Industry: ${INDUSTRY_LABELS[currentIndustry]}.
-Metrics: revenue=$${Math.round(metrics.revenue || 0)}, orders=${metrics.orders || 0}, aov=$${(metrics.aov || 0).toFixed(2)}, conversion=${metrics.conv || 0}%, retention=${metrics.retention || 0}%, refund=${metrics.refund || 0}%.
-Industry averages: revenue=$${bench.revenue}, orders=${bench.orders}, aov=$${bench.aov}, conversion=${bench.conv}%, retention=${bench.retention}%.
-${goalInputs ? "Goals: " + goalInputs : "No goals set yet."}`;
-
+        let insights = [];
         try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch(`${BACKEND_URL}/api/intelligence/insights`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 600,
-              system:
-                'You are a business intelligence AI. Return ONLY a JSON array of 4 insight objects with no markdown or preamble: [{"type":"opportunity"|"warning"|"insight"|"action","title":"short title","body":"1-2 sentence explanation with specific numbers"}]',
-              messages: [
-                {
-                  role: "user",
-                  content: `Generate 4 business insights based on this data:\n${context}`,
-                },
-              ],
-            }),
+            body: JSON.stringify(aiPayload()),
           });
           const data = await res.json();
-          let insights = [];
-          try {
-            insights = JSON.parse(
-              data.content[0].text.replace(/```json|```/g, "").trim(),
-            );
-          } catch (e) {
-            insights = getFallbackInsights();
-          }
+          if (data.success && Array.isArray(data.insights) && data.insights.length)
+            insights = data.insights;
+        } catch (e) {}
+        // If the AI is unavailable, show the built-in benchmark insights instead
+        if (!insights.length) insights = getFallbackInsights();
 
-          document.getElementById("aiInsightsList").innerHTML = insights
-            .map(
-              (ins) => `
+        document.getElementById("aiInsightsList").innerHTML = insights
+          .map(
+            (ins) => `
       <div class="ai-insight-item">
         <div class="ai-insight-top">
-          <span class="ai-insight-badge badge-${ins.type}">${ins.type}</span>
-          <div class="ai-insight-title">${ins.title}</div>
+          <span class="ai-insight-badge badge-${esc(ins.type)}">${esc(ins.type)}</span>
+          <div class="ai-insight-title">${esc(ins.title)}</div>
         </div>
-        <div class="ai-insight-body">${ins.body}</div>
+        <div class="ai-insight-body">${esc(ins.body)}</div>
       </div>`,
-            )
-            .join("");
-        } catch (e) {
-          document.getElementById("aiInsightsList").innerHTML =
-            getFallbackInsights()
-              .map(
-                (ins) => `
-      <div class="ai-insight-item">
-        <div class="ai-insight-top"><span class="ai-insight-badge badge-${ins.type}">${ins.type}</span><div class="ai-insight-title">${ins.title}</div></div>
-        <div class="ai-insight-body">${ins.body}</div>
-      </div>`,
-              )
-              .join("");
-        }
+          )
+          .join("");
         document.getElementById("refreshInsightsBtn").textContent = "↻ Refresh";
       }
 
@@ -2334,50 +2373,38 @@ ${goalInputs ? "Goals: " + goalInputs : "No goals set yet."}`;
 
       async function askChat(msg) {
         const msgs = document.getElementById("intelChatMsgs");
-        msgs.innerHTML += `<div class="chat-msg chat-msg-user"><div class="chat-msg-bubble">${msg}</div></div>`;
-        msgs.scrollTop = msgs.scrollHeight;
-
+        msgs.insertAdjacentHTML(
+          "beforeend",
+          `<div class="chat-msg chat-msg-user"><div class="chat-msg-bubble">${esc(msg)}</div></div>`,
+        );
         const thinkingId = "think-" + Date.now();
-        msgs.innerHTML += `<div class="chat-msg chat-msg-ai" id="${thinkingId}"><div class="chat-msg-bubble" style="color:var(--text-3);font-style:italic">Thinking...</div></div>`;
+        msgs.insertAdjacentHTML(
+          "beforeend",
+          `<div class="chat-msg chat-msg-ai" id="${thinkingId}"><div class="chat-msg-bubble" style="color:var(--text-3);font-style:italic">Thinking...</div></div>`,
+        );
         msgs.scrollTop = msgs.scrollHeight;
 
-        const bench = BENCHMARKS[currentIndustry];
-        const systemCtx = `You are an intelligent business advisor inside Aervo, a business intelligence platform.
-Current business data: revenue=$${Math.round(metrics.revenue || 0)}, orders=${metrics.orders || 0}, aov=$${(metrics.aov || 0).toFixed(2)}, conversion=${metrics.conv || 0}%, retention=${metrics.retention || 0}%.
-Industry (${INDUSTRY_LABELS[currentIndustry]}) averages: revenue=$${bench.revenue}, orders=${bench.orders}, aov=$${bench.aov}, conversion=${bench.conv}%.
-Goals set: ${
-          ["revenue", "orders", "aov", "conv", "retention"]
-            .map((k) => {
-              const el = document.getElementById("g-" + k);
-              return el?.value ? k + "=" + el.value : null;
-            })
-            .filter(Boolean)
-            .join(", ") || "none"
-        }.
-Give concise, direct, data-driven advice in 2-4 sentences. Reference specific numbers.`;
-
+        const history = chatHistory.slice(-6);
         chatHistory.push({ role: "user", content: msg });
 
+        let html;
         try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch(`${BACKEND_URL}/api/intelligence/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 300,
-              system: systemCtx,
-              messages: chatHistory.slice(-6),
-            }),
+            body: JSON.stringify(aiPayload({ message: msg, history })),
           });
           const data = await res.json();
-          const reply = data.content[0].text;
-          chatHistory.push({ role: "assistant", content: reply });
-          document.getElementById(thinkingId).innerHTML =
-            `<div class="chat-msg-bubble">${reply.replace(/\n/g, "<br>")}</div>`;
+          if (!res.ok || !data.success)
+            throw new Error(data.message || "Couldn't get an answer.");
+          chatHistory.push({ role: "assistant", content: data.reply });
+          html = esc(data.reply).replace(/\n/g, "<br>");
         } catch (e) {
-          document.getElementById(thinkingId).innerHTML =
-            `<div class="chat-msg-bubble text-danger">Couldn't connect. Try again.</div>`;
+          chatHistory.pop(); // don't keep a question that got no answer
+          html = `<span class="text-danger">${esc(e.message || "Couldn't connect. Try again.")}</span>`;
         }
+        document.getElementById(thinkingId).innerHTML =
+          `<div class="chat-msg-bubble">${html}</div>`;
         msgs.scrollTop = msgs.scrollHeight;
       }
 

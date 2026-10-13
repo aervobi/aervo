@@ -123,6 +123,18 @@
     });
   }
 
+  // Turns an AI reply into safe HTML: everything is escaped, then **bold** and
+  // line breaks are re-added. Never put a reply into innerHTML any other way.
+  window.formatAiReply = function (text) {
+    var safe = String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+    return safe
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n\n/g, "<br><br>")
+      .replace(/\n/g, "<br>");
+  };
+
   window.uiConfirm = function (message, opts) {
     opts = opts || {};
     return dialog({

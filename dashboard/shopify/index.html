@@ -1839,6 +1839,7 @@
 
       // ============= CHAT =============
       let isAIThinking = false;
+      const chatHistory = []; // last turns, so follow-up questions have context
 
       async function sendMessage() {
         if (isAIThinking) return;
@@ -1874,6 +1875,7 @@
             },
             body: JSON.stringify({
               message,
+              history: chatHistory.slice(-6),
               shopOrigin: shopData ? shopData.shopOrigin : null,
             }),
           });
@@ -1882,11 +1884,10 @@
           if (data.success) {
             const aiMsg = document.createElement("div");
             aiMsg.className = "chat-message ai";
-            aiMsg.innerHTML = data.reply
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-              .replace(/\n\n/g, "<br><br>")
-              .replace(/\n/g, "<br>");
+            aiMsg.innerHTML = formatAiReply(data.reply);
             messages.appendChild(aiMsg);
+            chatHistory.push({ role: "user", content: message });
+            chatHistory.push({ role: "assistant", content: data.reply });
           } else {
             throw new Error(data.message || "Failed to get response");
           }
