@@ -518,6 +518,11 @@
             body: JSON.stringify({ code: loginCode }),
           });
           const data = await res.json();
+          if (data.twoFactorRequired) {
+            // this account uses two-step verification: finish on the login page
+            window.location.href = "/login?twofa=1";
+            return;
+          }
           if (data.success) {
             AervoSession.mark();
             token = localStorage.getItem("aervo_token");

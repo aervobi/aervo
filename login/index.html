@@ -38,6 +38,7 @@
           </div>
         </div>
 
+        <div id="login-methods">
         <button
           type="button"
           class="btn btn-secondary btn-block btn-form auth-provider"
@@ -118,6 +119,37 @@
             <a href="/onboarding" class="link">Sign up free</a>
           </div>
         </form>
+        </div>
+
+        <!-- Step two for accounts with two-step verification turned on -->
+        <div id="twofa-step" hidden>
+          <form id="twofa-form" autocomplete="off">
+            <div class="form-group">
+              <label class="field-label" for="twofa-code">Verification code</label>
+              <input
+                id="twofa-code"
+                type="text"
+                placeholder="123456"
+                maxlength="14"
+                autocomplete="one-time-code"
+                autocapitalize="off"
+                spellcheck="false"
+                required
+              />
+              <div class="field-help">
+                Open your authenticator app and enter the 6-digit code. Lost
+                your phone? Enter one of your backup codes instead.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-form">
+              Verify
+            </button>
+            <div class="form-error" id="twofa-error" role="alert"></div>
+            <div class="auth-helper">
+              <a href="#" class="link" id="twofa-cancel">Use a different account</a>
+            </div>
+          </form>
+        </div>
       </div>
     </main>
 
@@ -162,9 +194,121 @@
           );
         }
 
-        const loginError = new URLSearchParams(window.location.search).get(
-          "error",
-        );
+        const params = new URLSearchParams(window.location.search);
+        const reason = params.get("reason");
+        if (reason === "idle") {
+          showAuthMsg(
+            "info",
+            "You were signed out because of inactivity.",
+            "Sign in again to pick up where you left off.",
+          );
+        } else if (reason === "expired") {
+          showAuthMsg("info", "Your session ended. Please sign in again.");
+        }
+
+        // ── step two: two-step verification ──
+        const methodsEl = document.getElementById("login-methods");
+        const twofaEl = document.getElementById("twofa-step");
+        const twofaForm = document.getElementById("twofa-form");
+        const twofaCode = document.getElementById("twofa-code");
+        const twofaError = document.getElementById("twofa-error");
+        const leadEl = document.querySelector(".auth-lead");
+        const titleEl = document.querySelector(".auth-card h1");
+        const defaultLead = leadEl.textContent;
+
+        function showTwoFactor() {
+          methodsEl.hidden = true;
+          twofaEl.hidden = false;
+          titleEl.textContent = "Two-step verification";
+          leadEl.textContent = "Enter the code from your authenticator app.";
+          twofaError.textContent = "";
+          twofaCode.value = "";
+          twofaCode.focus();
+        }
+        function showPasswordStep() {
+          twofaEl.hidden = true;
+          methodsEl.hidden = false;
+          titleEl.textContent = "Sign in";
+          leadEl.textContent = defaultLead;
+        }
+
+        // The sign-in is complete: the server set the session cookie, we keep only
+        // a marker + profile, then go to the right dashboard.
+        function finishLogin(user) {
+          AervoSession.mark();
+          if (user) localStorage.setItem("aervo_user", JSON.stringify(user));
+          showAuthMsg("success", "Welcome back! Redirecting...");
+
+          setTimeout(async () => {
+            try {
+              const meRes = await fetch(BACKEND_URL + "/api/user/me");
+              const meData = await meRes.json();
+              const onboarded = meData.user && meData.user.onboarded;
+
+              if (!onboarded) {
+                window.location.href = "/onboarding";
+              } else {
+                // The dashboard they used last (Shopify / Square / IMS) if they
+                // still have it, otherwise the first one they have.
+                window.location.href = AervoSession.pickHome(meData);
+              }
+            } catch (err) {
+              window.location.href = "/dashboard";
+            }
+          }, 600);
+        }
+
+        twofaForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (isSubmitting) return;
+          isSubmitting = true;
+          twofaError.textContent = "";
+          try {
+            const res = await fetch(BACKEND_URL + "/api/login/2fa", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code: twofaCode.value }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.success) {
+              if (data.usedBackupCode)
+                showAuthMsg(
+                  "info",
+                  "Backup code used.",
+                  "Each backup code works once. You can make new ones in Settings → Security.",
+                );
+              finishLogin(data.user);
+              return;
+            }
+            if (data.code === "CHALLENGE_EXPIRED") {
+              showPasswordStep();
+              showAuthMsg("error", data.message || "That sign-in expired.");
+              return;
+            }
+            twofaError.textContent = data.message || "That code isn't right.";
+            twofaCode.select();
+          } catch (err) {
+            twofaError.textContent = "Network error. Please try again.";
+          } finally {
+            isSubmitting = false;
+          }
+        });
+
+        document.getElementById("twofa-cancel").addEventListener("click", (e) => {
+          e.preventDefault();
+          // drop the half-finished sign-in
+          fetch(BACKEND_URL + "/api/logout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scope: "device" }),
+          }).catch(() => {});
+          showPasswordStep();
+        });
+
+        // Google / Shopify sign-ins that need a code land here with ?twofa=1
+        if (params.get("twofa") === "1") showTwoFactor();
+
+        const loginError = params.get("error");
         if (loginError === "google_failed") {
           showAuthMsg(
             "error",
@@ -211,28 +355,14 @@
               return;
             }
 
-            // Success. The server set the session cookie; keep only a marker + profile
-            AervoSession.mark();
-            localStorage.setItem("aervo_user", JSON.stringify(data.user));
-            showAuthMsg("success", "Welcome back! Redirecting...");
+            // Password was right but the account has two-step verification on:
+            // no session yet, ask for the code first.
+            if (data.twoFactorRequired) {
+              showTwoFactor();
+              return;
+            }
 
-            setTimeout(async () => {
-              try {
-                const meRes = await fetch(BACKEND_URL + "/api/user/me");
-                const meData = await meRes.json();
-                const onboarded = meData.user && meData.user.onboarded;
-
-                if (!onboarded) {
-                  window.location.href = "/onboarding";
-                } else {
-                  // The dashboard they used last (Shopify / Square / IMS) if they
-                  // still have it, otherwise the first one they have.
-                  window.location.href = AervoSession.pickHome(meData);
-                }
-              } catch (err) {
-                window.location.href = "/dashboard"; // was /dashboard/shopify
-              }
-            }, 600);
+            finishLogin(data.user);
           } catch (err) {
             console.error(err);
             showAuthMsg("error", "Network error. Please try again.");

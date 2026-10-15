@@ -936,6 +936,84 @@
             </div>
           </div>
 
+          <div class="card" id="twofaCard">
+            <div class="card-title">
+              <span class="card-title-icon">🛡️</span> Two-step verification
+            </div>
+            <p class="text-secondary" style="margin: 0 0 var(--space-4)">
+              Add a second step to signing in: a 6-digit code from an
+              authenticator app such as Google Authenticator, Authy or
+              1Password. It's optional, and it also protects sign-in with
+              Google and Shopify.
+            </p>
+
+            <div id="twofaLoading" class="text-muted">Checking...</div>
+
+            <!-- off -->
+            <div id="twofaOff" hidden>
+              <div class="form-actions">
+                <button class="btn btn-primary btn-sm" onclick="startTwoFactor()">
+                  Turn on two-step verification
+                </button>
+              </div>
+            </div>
+
+            <!-- setup: scan, then confirm -->
+            <div id="twofaSetup" hidden>
+              <ol style="margin: 0 0 var(--space-4); padding-left: var(--space-5); line-height: 1.7">
+                <li>Open your authenticator app and add an account.</li>
+                <li>Scan this QR code (or type the key in by hand).</li>
+                <li>Enter the 6-digit code the app shows.</li>
+              </ol>
+              <div style="display: flex; gap: var(--space-6); flex-wrap: wrap; align-items: flex-start">
+                <div id="twofaQr" style="width: 220px; height: 220px; background: #fff; border-radius: var(--radius-md); padding: var(--space-2); flex-shrink: 0"></div>
+                <div style="flex: 1; min-width: 220px">
+                  <div class="text-muted" style="font-size: var(--fs-12)">Can't scan? Enter this key:</div>
+                  <code id="twofaSecret" style="display: block; margin: var(--space-2) 0 var(--space-4); font-size: var(--fs-16); letter-spacing: 0.08em; word-break: break-all"></code>
+                  <div class="form-group">
+                    <label for="twofaConfirmCode">6-digit code</label>
+                    <input type="text" id="twofaConfirmCode" inputmode="numeric" autocomplete="one-time-code" maxlength="7" placeholder="123456" />
+                  </div>
+                  <div class="form-actions">
+                    <button class="btn btn-primary btn-sm" onclick="confirmTwoFactor()">Verify and turn on</button>
+                    <button class="btn btn-ghost btn-sm" onclick="cancelTwoFactor()">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- backup codes, shown once -->
+            <div id="twofaCodes" hidden>
+              <div class="alert alert-warning" style="margin-bottom: var(--space-4)">
+                <strong>Save your backup codes now.</strong> Each works once if
+                you lose your phone. They won't be shown again.
+              </div>
+              <pre id="twofaCodeList" style="margin: 0 0 var(--space-4); padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface); line-height: 1.9; font-size: var(--fs-16); letter-spacing: 0.06em"></pre>
+              <div class="form-actions">
+                <button class="btn btn-secondary btn-sm" onclick="downloadBackupCodes()">Download</button>
+                <button class="btn btn-secondary btn-sm" onclick="copyBackupCodes()">Copy</button>
+                <button class="btn btn-primary btn-sm" onclick="finishBackupCodes()">I've saved them</button>
+              </div>
+            </div>
+
+            <!-- on -->
+            <div id="twofaOn" hidden>
+              <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4)">
+                <span class="badge badge-success">On</span>
+                <span class="text-secondary" id="twofaRemaining"></span>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-secondary btn-sm" onclick="regenerateBackupCodes()">New backup codes</button>
+                <button class="btn btn-ghost btn-sm" onclick="disableTwoFactor()">Turn off</button>
+              </div>
+            </div>
+
+            <p class="text-muted" style="margin: var(--space-5) 0 0; font-size: var(--fs-12)">
+              For your security you're also signed out automatically after 30
+              minutes of inactivity.
+            </p>
+          </div>
+
           <div class="card">
             <div class="card-title">
               <span class="card-title-icon">🔒</span> Login Methods
@@ -1536,6 +1614,125 @@ try {
           showToast("Network error. Please try again.", "error");
         }
       }
+
+      // ── TWO-STEP VERIFICATION ──
+      let pendingBackupCodes = [];
+
+      function twofaShow(which) {
+        ["Loading", "Off", "Setup", "Codes", "On"].forEach((n) => {
+          document.getElementById("twofa" + n).hidden = n !== which;
+        });
+      }
+
+      async function twofaApi(path, body) {
+        const res = await fetch(`${BACKEND_URL}${path}`, {
+          method: body === undefined ? "GET" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body === undefined ? undefined : JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        return { ok: res.ok && data.success !== false, status: res.status, data };
+      }
+
+      async function loadTwoFactor() {
+        try {
+          const { ok, data } = await twofaApi("/api/2fa/status");
+          if (!ok) throw new Error();
+          if (data.enabled) {
+            document.getElementById("twofaRemaining").textContent =
+              data.backupCodesRemaining + " backup code" +
+              (data.backupCodesRemaining === 1 ? "" : "s") + " left";
+            twofaShow("On");
+          } else {
+            twofaShow("Off");
+          }
+        } catch (e) {
+          document.getElementById("twofaLoading").textContent =
+            "Couldn't load this right now.";
+        }
+      }
+
+      async function startTwoFactor() {
+        const { ok, data } = await twofaApi("/api/2fa/setup", {});
+        if (!ok) return showToast(data.message || "Couldn't start setup.", "error");
+        document.getElementById("twofaQr").innerHTML = data.qr; // SVG made by our server
+        document.getElementById("twofaSecret").textContent = data.secret.match(/.{1,4}/g).join(" ");
+        document.getElementById("twofaConfirmCode").value = "";
+        twofaShow("Setup");
+        document.getElementById("twofaConfirmCode").focus();
+      }
+
+      function cancelTwoFactor() {
+        document.getElementById("twofaQr").innerHTML = "";
+        document.getElementById("twofaSecret").textContent = "";
+        twofaShow("Off");
+      }
+
+      async function confirmTwoFactor() {
+        const code = document.getElementById("twofaConfirmCode").value;
+        const { ok, data } = await twofaApi("/api/2fa/enable", { code });
+        if (!ok) return showToast(data.message || "That code isn't right.", "error");
+        document.getElementById("twofaQr").innerHTML = "";
+        showBackupCodes(data.backupCodes);
+        showToast("Two-step verification is on. Your other devices were signed out.");
+      }
+
+      function showBackupCodes(codes) {
+        pendingBackupCodes = codes;
+        document.getElementById("twofaCodeList").textContent = codes.join("\n");
+        twofaShow("Codes");
+      }
+
+      function finishBackupCodes() {
+        pendingBackupCodes = [];
+        document.getElementById("twofaCodeList").textContent = "";
+        loadTwoFactor();
+      }
+
+      function downloadBackupCodes() {
+        const text =
+          "Aervo backup codes\nEach code works once. Keep them somewhere safe.\n\n" +
+          pendingBackupCodes.join("\n") + "\n";
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+        a.download = "aervo-backup-codes.txt";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+
+      async function copyBackupCodes() {
+        try {
+          await navigator.clipboard.writeText(pendingBackupCodes.join("\n"));
+          showToast("Backup codes copied.");
+        } catch (e) {
+          showToast("Couldn't copy. Use Download instead.", "error");
+        }
+      }
+
+      async function regenerateBackupCodes() {
+        const code = await uiPrompt(
+          "Enter a code from your authenticator app to create new backup codes. The old ones will stop working.",
+          { confirmText: "Create new codes", placeholder: "123456" },
+        );
+        if (!code) return;
+        const { ok, data } = await twofaApi("/api/2fa/backup-codes", { code });
+        if (!ok) return showToast(data.message || "That code isn't right.", "error");
+        showBackupCodes(data.backupCodes);
+      }
+
+      async function disableTwoFactor() {
+        const code = await uiPrompt(
+          "Turn off two-step verification? Enter a code from your authenticator app to confirm.",
+          { confirmText: "Turn off", placeholder: "123456" },
+        );
+        if (!code) return;
+        const { ok, data } = await twofaApi("/api/2fa/disable", { code });
+        if (!ok) return showToast(data.message || "That code isn't right.", "error");
+        showToast("Two-step verification is off.");
+        loadTwoFactor();
+      }
+
+      loadTwoFactor();
 
       // ── PASSWORD STRENGTH ──
       function checkStrength(val) {
