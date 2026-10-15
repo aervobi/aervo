@@ -7,11 +7,18 @@
     <title>Aervo – Dashboard</title>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <meta name="shopify-api-key" content="42d18ab94654c48ad51d381269a89bcc" />
-    <script
-      src="https://cdn.shopify.com/shopifycloud/app-bridge.js"
-      data-api-key="42d18ab94654c48ad51d381269a89bcc"
-      data-api-key="42d18ab94654c48ad51d381269a89bcc"
-    ></script>
+    <script>
+      // Shopify's App Bridge belongs only in the Shopify admin iframe. Loaded on a
+      // normal top-level page it redirects the browser INTO the admin
+      // (admin.shopify.com/store/<shop>/apps/aervo/...), which is what we don't
+      // want when someone signs in to Aervo directly. document.write keeps the load
+      // synchronous so window.shopify exists for the code below.
+      if (window.self !== window.top) {
+        document.write(
+          '<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" data-api-key="42d18ab94654c48ad51d381269a89bcc"><\/script>',
+        );
+      }
+    </script>
     <script>
       if (window.shopify) {
         window.shopify.idToken().catch(() => {
@@ -319,8 +326,7 @@
       }
       @media (max-width: 768px) {
         /* keep nav clean */
-        .nav-right #shopBadge,
-        .nav-right #integrationSwitcher {
+        .nav-right #shopBadge {
           display: none !important;
         }
         .container {
@@ -448,23 +454,6 @@
       <div class="nav-tab" data-view="customers">Customers</div>
     </template>
     <template id="appNavRightExtra">
-      <a
-        href="/dashboard/square"
-        id="integrationSwitcher"
-        style="
-          display: none;
-          text-decoration: none;
-          padding: var(--space-2) var(--space-4);
-          border-radius: var(--radius-pill);
-          background: rgba(var(--success-rgb), 0.1);
-          border: 1px solid rgba(var(--success-rgb), 0.25);
-          color: var(--success);
-          font-size: var(--fs-12);
-          font-weight: var(--fw-semibold);
-        "
-      >
-        ⬛ Switch to Square
-      </a>
       <div class="shop-badge" id="shopBadge" style="display: none">
         <span>●</span>
         <span id="shopName">Loading...</span>
@@ -604,20 +593,18 @@
       // Add the block below IMMEDIATELY AFTER those two lines:
       // ─────────────────────────────────────────────────────────────────────────────
 
-      // Redirect users to their correct dashboard based on the platform
-      // chosen at onboarding. "csv" and "ims" both mean the manual
-      // Inventory Management System dashboard.
+      // This page is for Shopify. Only send people elsewhere when they have no
+      // Shopify store connected: someone with Shopify AND Square (or IMS) must be
+      // able to stay here, the nav switcher decides where they go.
       (async () => {
         try {
           const res = await fetch("https://api.aervoapp.com/api/user/me", {
             headers: { Authorization: "Bearer " + token },
           });
           const data = await res.json();
-          const platform = data.user && data.user.platform;
-          if (platform === "csv" || platform === "ims") {
-            window.location.href = "/dashboard/ims";
-          } else if (platform === "square") {
-            window.location.href = "/dashboard/square";
+          const avail = AervoSession.platformsFrom(data);
+          if (avail.length && avail.indexOf("shopify") === -1) {
+            window.location.href = AervoSession.HOMES[avail[0]];
           }
         } catch (e) {}
       })();
@@ -706,17 +693,6 @@
             document.getElementById("companyLogoName").textContent =
               userData.companyName || "";
           }
-          // Check if Square is also connected
-          const squareStatus = await fetch(
-            `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          const squareData = await squareStatus.json();
-          if (squareData.connected) {
-            document.getElementById("integrationSwitcher").style.display =
-              "inline-flex";
-          }
-
           if (shopData) {
             document.getElementById("shopBadge").style.display = "flex";
             document.getElementById("shopName").textContent =
@@ -1814,9 +1790,10 @@
         );
         if (!shop) return;
 
-        const normalized = shop.trim().toLowerCase();
-        if (!normalized.includes(".myshopify.com")) {
-          showToast("Please enter a valid Shopify domain ending in .myshopify.com");
+        // accepts a store name, your-store.myshopify.com, or any store link
+        const normalized = AervoSession.normalizeShop(shop);
+        if (!normalized) {
+          showToast("Enter your store name or link, like your-store.myshopify.com");
           return;
         }
 

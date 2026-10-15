@@ -63,19 +63,25 @@
 
         <!-- Shopify store input (hidden by default) -->
         <div id="shopify-input-area" class="form-group" hidden>
-          <label class="field-label" for="shopify-store">Your store URL</label>
-          <div style="display: flex; gap: var(--space-2); align-items: center">
-            <input id="shopify-store" type="text" placeholder="yourstore" />
-            <span class="field-help" style="white-space: nowrap; margin: 0"
-              >.myshopify.com</span
-            >
+          <label class="field-label" for="shopify-store">Your Shopify store</label>
+          <input
+            id="shopify-store"
+            type="text"
+            placeholder="your-store.myshopify.com"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <div class="field-help">
+            Paste your store link, or just the store name.
           </div>
+          <div class="form-error" id="shopify-error" role="alert"></div>
           <button
             type="button"
             class="btn btn-primary btn-block btn-form mt-3"
             onclick="goToShopify()"
           >
-            Connect Store
+            Continue to Shopify
           </button>
         </div>
 
@@ -214,16 +220,14 @@
               try {
                 const meRes = await fetch(BACKEND_URL + "/api/user/me");
                 const meData = await meRes.json();
-                const platform = meData.user && meData.user.platform;
                 const onboarded = meData.user && meData.user.onboarded;
 
                 if (!onboarded) {
                   window.location.href = "/onboarding";
-                } else if (platform === "csv" || platform === "ims") {
-                  // Manual Inventory Management System users
-                  window.location.href = "/dashboard/ims";
                 } else {
-                  window.location.href = "/dashboard";
+                  // The dashboard they used last (Shopify / Square / IMS) if they
+                  // still have it, otherwise the first one they have.
+                  window.location.href = AervoSession.pickHome(meData);
                 }
               } catch (err) {
                 window.location.href = "/dashboard"; // was /dashboard/shopify
@@ -252,21 +256,34 @@
       function signInWithShopify() {
         const area = document.getElementById("shopify-input-area");
         area.hidden = !area.hidden;
+        if (!area.hidden) document.getElementById("shopify-store").focus();
       }
 
+      document
+        .getElementById("shopify-store")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            goToShopify();
+          }
+        });
+
       function goToShopify() {
-        const store = document
-          .getElementById("shopify-store")
-          .value.trim()
-          .replace(".myshopify.com", "");
-        if (!store) {
-          showToast("Please enter your store name");
+        const errEl = document.getElementById("shopify-error");
+        const shop = AervoSession.normalizeShop(
+          document.getElementById("shopify-store").value,
+        );
+        if (!shop) {
+          errEl.textContent =
+            "Enter your store name or link, like your-store.myshopify.com.";
           return;
         }
+        errEl.textContent = "";
+        // source=standalone: sign in to Aervo itself, not inside the Shopify admin
         window.location.href =
           "https://api.aervoapp.com/auth/shopify?shop=" +
-          store +
-          ".myshopify.com";
+          encodeURIComponent(shop) +
+          "&source=standalone";
       }
     </script>
   </body>

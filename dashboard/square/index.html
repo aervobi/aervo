@@ -453,20 +453,6 @@
       </div>
     </template>
     <template id="appNavCenter">
-      <!-- Integration switcher — only shown when both are connected -->
-      <div
-        class="integration-switcher"
-        id="integrationSwitcher"
-        style="display: none"
-      >
-        <a
-          href="/dashboard/shopify"
-          class="switcher-tab shopify-tab"
-          id="shopifyTab"
-          >🛍️ Shopify</a
-        >
-        <span class="switcher-tab active" id="squareTab">⬛ Square</span>
-      </div>
       <div class="nav-tab active" data-view="overview">Overview</div>
       <div class="nav-tab" data-view="orders">Orders</div>
       <div class="nav-tab" data-view="customers">Customers</div>
@@ -479,30 +465,6 @@
       </div>
     </template>
     <template id="appNavMobile">
-      <div
-        style="
-          padding: var(--space-2) var(--space-4) var(--space-3);
-          border-bottom: 1px solid var(--border-soft);
-          margin-bottom: var(--space-2);
-        "
-      >
-        <div style="font-size: var(--fs-11); color: var(--text-muted); margin-bottom: var(--space-2)">
-          SWITCH DASHBOARD
-        </div>
-        <a
-          href="/dashboard/shopify"
-          id="mobileShopifySwitch"
-          style="
-            display: none;
-            color: var(--info);
-            font-size: var(--fs-13);
-            text-decoration: none;
-            padding: var(--space-1) 0;
-            display: block;
-          "
-          >🛍️ Switch to Shopify Dashboard</a
-        >
-      </div>
       <div class="mobile-nav-tab active" data-view="overview">📊 Overview</div>
       <div class="mobile-nav-tab" data-view="orders">🧾 Orders</div>
       <div class="mobile-nav-tab" data-view="customers">👥 Customers</div>
@@ -582,13 +544,6 @@
           merchantId = userData.squareMerchantId || String(userData.id);
           hasShopify = !!data.shop;
 
-          // Show switcher if both integrations connected
-          if (hasShopify) {
-            document.getElementById("integrationSwitcher").style.display =
-              "flex";
-            document.getElementById("mobileShopifySwitch").style.display =
-              "block";
-          }
 
           // Check Square connection
           const statusRes = await fetch(

@@ -49,7 +49,25 @@
     return "/dashboard/shopify";
   }
 
-  var home = script.getAttribute("data-home") || homeFor(readUser().platform);
+  var S = window.AervoSession || null;
+
+  // Visiting a dashboard makes it the "active" one (remembered per device), so
+  // sub-pages like Reports and Settings link back to the one you were using.
+  var DASH = [
+    ["/dashboard/shopify", "shopify"],
+    ["/dashboard/square", "square"],
+    ["/dashboard/ims", "ims"],
+  ];
+  var pathKey = null;
+  DASH.forEach(function (d) {
+    if (window.location.pathname.indexOf(d[0]) === 0) pathKey = d[1];
+  });
+  if (pathKey && S) S.setActivePlatform(pathKey);
+
+  var activeKey = (S && S.activePlatform()) || null;
+  var home =
+    script.getAttribute("data-home") ||
+    (activeKey ? S.HOMES[activeKey] : homeFor(readUser().platform));
 
   var links = [
     ["reports", "/reports", "📊", "Reports"],
@@ -204,30 +222,106 @@
     el.addEventListener("click", logout);
   });
 
-  // The cached user may not carry `platform` yet. Fetch it once, remember it,
-  // and point every "home" link at the right dashboard (skips the redirect hop
-  // through /dashboard/shopify).
+  // ── Account data: platform sync + the switcher ──────────────────────────────
+  // /api/user/me tells us which data sources the account has. We (1) remember
+  // `platform` so "home" links are right, and (2) show a Shopify / Square / IMS
+  // switcher when there are two or more. The last result is cached so the
+  // switcher appears instantly on the next page, then refreshed in the background.
+  var LABELS = {
+    shopify: ["🛍️", "Shopify"],
+    square: ["⬛", "Square"],
+    ims: ["📦", "IMS"],
+  };
+  var CACHE_KEY = "aervo_platforms";
+
+  function currentKey(avail) {
+    if (pathKey && avail.indexOf(pathKey) > -1) return pathKey;
+    var pref = S && S.activePlatform();
+    return pref && avail.indexOf(pref) > -1 ? pref : avail[0];
+  }
+
+  function optionHtml(key, current) {
+    var l = LABELS[key];
+    return (
+      '<button type="button" class="platform-opt' + (key === current ? " active" : "") +
+      '" data-platform="' + key + '" aria-pressed="' + (key === current) + '">' +
+      '<span class="nav-ico">' + l[0] + "</span>" + l[1] + "</button>"
+    );
+  }
+
+  function renderSwitcher(avail) {
+    var old = document.querySelector("#appNav .platform-switch");
+    if (old) old.remove();
+    var oldMobile = document.querySelector("#mobileMenu .mobile-platforms");
+    if (oldMobile) oldMobile.remove();
+    if (!S || !avail || avail.length < 2) return;
+
+    var cur = currentKey(avail);
+    var opts = avail.map(function (k) { return optionHtml(k, cur); }).join("");
+
+    var right = document.querySelector("#appNav .nav-right");
+    right.insertAdjacentHTML(
+      "afterbegin",
+      '<div class="platform-switch" role="group" aria-label="Switch dashboard">' + opts + "</div>"
+    );
+    menu.insertAdjacentHTML(
+      "afterbegin",
+      '<div class="mobile-platforms has-options"><div class="platform-label">SWITCH DASHBOARD</div>' + opts + "</div>"
+    );
+
+    // sub-pages (Reports, Settings...) follow the active platform
+    if (!script.getAttribute("data-home")) {
+      document.querySelectorAll("[data-home]").forEach(function (a) {
+        a.setAttribute("href", S.HOMES[cur]);
+      });
+    }
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-platform]");
+    if (!b || !S) return;
+    var key = b.getAttribute("data-platform");
+    S.setActivePlatform(key);
+    if (/^\/dashboard\//.test(window.location.pathname)) {
+      window.location.href = S.HOMES[key];
+    } else {
+      window.location.reload(); // Reports / Intelligence / ... re-read the active source
+    }
+  });
+
   var user = readUser();
   var token = null;
   try {
     token = localStorage.getItem("aervo_token");
   } catch (e) {}
-  if (!user.platform && token && window.fetch) {
+
+  // 1) instant render from the last known answer
+  try {
+    var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+    if (cached && cached.avail) renderSwitcher(cached.avail);
+  } catch (e) {}
+
+  // 2) refresh from the server
+  if (token && window.fetch) {
     fetch("https://api.aervoapp.com/api/user/me", {
       headers: { Authorization: "Bearer " + token },
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
-        var p = d && d.user && d.user.platform;
-        if (!p) return;
-        var u = readUser();
-        u.platform = p;
+        if (!d || !d.user) return;
+        var avail = S ? S.platformsFrom(d) : [];
         try {
-          localStorage.setItem("aervo_user", JSON.stringify(u));
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ avail: avail, t: Date.now() }));
+          var u = readUser();
+          if (d.user.platform && u.platform !== d.user.platform) {
+            u.platform = d.user.platform;
+            localStorage.setItem("aervo_user", JSON.stringify(u));
+          }
         } catch (e) {}
-        if (!script.getAttribute("data-home")) {
+        renderSwitcher(avail);
+        if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
           document.querySelectorAll("[data-home]").forEach(function (a) {
-            a.setAttribute("href", homeFor(p));
+            a.setAttribute("href", homeFor(d.user.platform));
           });
         }
       })

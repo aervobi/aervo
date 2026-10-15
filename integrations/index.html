@@ -412,10 +412,11 @@
           );
           if (!shop) return;
 
-          const normalized = shop.trim().toLowerCase();
-          if (!normalized.includes(".myshopify.com")) {
+          // accepts a store name, your-store.myshopify.com, or any store link
+          const normalized = AervoSession.normalizeShop(shop);
+          if (!normalized) {
             showToast(
-              "Please enter a valid Shopify domain ending in .myshopify.com",
+              "Enter your store name or link, like your-store.myshopify.com",
             );
             return;
           }

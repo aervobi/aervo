@@ -226,3 +226,72 @@
 #appNav.nav-measuring * {
   transition: none !important;
 }
+
+/* ── Platform switcher (Shopify / Square / IMS) ───────────────────────────────
+ * Rendered by app-nav.js only when the account has two or more data sources.
+ * Stays visible when the Reports/Settings links collapse; at <=768px it moves
+ * into the drawer.
+ */
+#appNav .platform-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+}
+#appNav .platform-opt,
+#mobileMenu .platform-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+}
+#appNav .platform-opt:hover,
+#mobileMenu .platform-opt:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+#appNav .platform-opt.active,
+#mobileMenu .platform-opt.active {
+  background: rgba(var(--nav-accent), 0.18);
+  border-color: rgba(var(--nav-accent), 0.4);
+  color: var(--text);
+}
+#mobileMenu .mobile-platforms {
+  display: none;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: 0 var(--space-4) var(--space-3);
+  margin-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-soft);
+}
+#mobileMenu .mobile-platforms .platform-opt {
+  padding: var(--space-2) var(--space-4);
+  border-color: var(--border);
+  font-size: var(--fs-13);
+}
+#mobileMenu .mobile-platforms .platform-label {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: var(--fs-11);
+  letter-spacing: var(--ls-label);
+}
+@media (max-width: 768px) {
+  #appNav .platform-switch {
+    display: none;
+  }
+  #mobileMenu .mobile-platforms.has-options {
+    display: flex;
+  }
+}

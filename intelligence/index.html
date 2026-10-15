@@ -1626,34 +1626,24 @@
             }
           } catch (e) {}
 
-          // Determine data source
-          if (shopData) {
+          // Determine data source: the dashboard they're using (chosen with the
+          // nav switcher), among the ones this account actually has
+          const avail = AervoSession.platformsFrom(data);
+          const pref = AervoSession.activePlatform();
+          const src = pref && avail.indexOf(pref) > -1 ? pref : avail[0];
+
+          if (src === "shopify" && shopData) {
             activateSource("shopify");
             await loadShopifyMetrics();
-          } else if (
-            userData.platform === "csv" ||
-            userData.platform === "ims"
-          ) {
+          } else if (src === "ims") {
             // Inventory Management System account: use its own sales data
             activateSource("ims");
             await loadImsMetrics();
+          } else if (src === "square") {
+            activateSource("square");
+            await loadSquareMetrics();
           } else {
-            // Check square
-            try {
-              const sqRes = await fetch(
-                `${BACKEND_URL}/integrations/square/status?merchantId=${String(userData.id)}`,
-                { headers: { Authorization: `Bearer ${token}` } },
-              );
-              const sqData = await sqRes.json();
-              if (sqData.connected) {
-                activateSource("square");
-                await loadSquareMetrics();
-              } else {
-                activateSource("manual");
-              }
-            } catch (e) {
-              activateSource("manual");
-            }
+            activateSource("manual");
           }
 
           // Load health score
