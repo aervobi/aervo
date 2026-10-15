@@ -1188,6 +1188,28 @@
 
             <div class="toggle-row">
               <div class="toggle-info">
+                <div class="toggle-label">Daily summary</div>
+                <div class="toggle-desc">
+                  Every morning around 7:00 AM your time: yesterday's sales,
+                  how it compares with the day before, and anything that needs
+                  attention, for each store you've connected.
+                  <span id="dailyTzNote" class="text-muted"></span>
+                </div>
+                <div style="margin-top: var(--space-2)">
+                  <button class="btn btn-ghost btn-sm" id="dailyTestBtn" type="button" onclick="sendDailyTest()">
+                    Send me a test email now
+                  </button>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="notifDaily" />
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
                 <div class="toggle-label">Weekly digest</div>
                 <div class="toggle-desc">
                   A summary of your business performance every Monday.
@@ -1440,6 +1462,9 @@ try {
     document.getElementById('notifRevenue').checked = notifData.preferences.revenue_alerts;
     document.getElementById('notifInventory').checked = notifData.preferences.inventory_alerts;
     document.getElementById('notifProduct').checked = notifData.preferences.product_updates;
+    document.getElementById('notifDaily').checked = !!notifData.preferences.daily_summary;
+    const tzNote = document.getElementById('dailyTzNote');
+    if (tzNote) tzNote.textContent = ' (time zone: ' + (notifData.preferences.timezone || browserTimeZone()) + ')';
   }
 } catch(e) { console.error('Notifications load error:', e); }
 
@@ -1759,6 +1784,40 @@ try {
         text.style.color = l.color;
       }
 
+      function browserTimeZone() {
+        try {
+          return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+        } catch (e) {
+          return 'America/New_York';
+        }
+      }
+
+      // ── DAILY SUMMARY: send a test to your own inbox ──
+      async function sendDailyTest() {
+        const btn = document.getElementById('dailyTestBtn');
+        btn.disabled = true;
+        const label = btn.textContent;
+        btn.textContent = 'Sending...';
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/user/daily-summary/test`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timezone: browserTimeZone() }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.success) {
+            showToast('Test email sent to ' + data.sentTo + '. It can take a minute to arrive.');
+          } else {
+            showToast(data.message || "Couldn't send the test email.", 'error');
+          }
+        } catch (e) {
+          showToast('Network error. Please try again.', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = label;
+        }
+      }
+
       // ── SAVE NOTIFICATIONS ──
       async function saveNotifications() {
   try {
@@ -1773,6 +1832,9 @@ try {
         revenue_alerts: document.getElementById('notifRevenue').checked,
         inventory_alerts: document.getElementById('notifInventory').checked,
         product_updates: document.getElementById('notifProduct').checked,
+        daily_summary: document.getElementById('notifDaily').checked,
+        // so the email arrives at 7 AM where you are, not where the server is
+        timezone: browserTimeZone(),
       })
     });
     const data = await res.json();
