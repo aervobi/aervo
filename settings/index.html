@@ -758,6 +758,12 @@
         }
       }
 
+      .founder-plans {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+
       /* ── TEAM ── */
       #teamRoot {
         display: contents; /* cards keep the panel's own spacing */
@@ -1450,6 +1456,18 @@
             </div>
           </div>
 
+          <!-- Founders only (server decides): switch plans without paying -->
+          <div class="card" id="founderPlanCard" hidden>
+            <div class="card-title">
+              <span class="card-title-icon">🛠️</span> Founder plan switcher
+            </div>
+            <p class="text-muted mb-6">
+              Only visible to founder accounts. Switches this account's plan
+              instantly with no charge, so you can try every tier.
+            </p>
+            <div class="founder-plans" id="founderPlans"></div>
+          </div>
+
           <div class="card">
             <div class="card-title">
               <span class="card-title-icon">📄</span> Billing History
@@ -1617,6 +1635,8 @@ try {
     if (tzNote) tzNote.textContent = ' (time zone: ' + (notifData.preferences.timezone || browserTimeZone()) + ')';
   }
 } catch(e) { console.error('Notifications load error:', e); }
+
+          renderPlan(user);
 
           // Sidebar
           const initials = (user.name || "?")[0].toUpperCase();
@@ -2103,6 +2123,50 @@ async function uploadCompanyLogo(input) {
     showToast('Upload failed.', 'error');
   }
 }
+      // ── PLAN ──
+      const PLAN_INFO = {
+        free: ["Starter", "Free forever · 1 integration · 7 days history"],
+        essential: ["Essential", "1 integration · 90 days history"],
+        pro: ["Pro", "2 integrations · 2 years history · 10 team seats"],
+        business: ["Business", "5 integrations · unlimited history · 50 team seats"],
+      };
+      function renderPlan(user) {
+        const plan = PLAN_INFO[user.plan] ? user.plan : "free";
+        document.getElementById("planName").textContent = PLAN_INFO[plan][0];
+        document.getElementById("planDetail").textContent = PLAN_INFO[plan][1];
+        const card = document.getElementById("founderPlanCard");
+        card.hidden = !user.isFounder;
+        if (!user.isFounder) return;
+        const box = document.getElementById("founderPlans");
+        box.innerHTML = "";
+        Object.keys(PLAN_INFO).forEach((key) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-sm " + (key === plan ? "btn-primary" : "btn-ghost");
+          btn.textContent = PLAN_INFO[key][0] + (key === plan ? " (current)" : "");
+          btn.disabled = key === plan;
+          btn.addEventListener("click", () => switchPlan(key));
+          box.appendChild(btn);
+        });
+      }
+      async function switchPlan(plan) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/founder/plan`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.success) throw new Error(data.message || "Couldn't switch plan.");
+          showToast("Switched to " + PLAN_INFO[plan][0], "success");
+          // reload so every section (Team included) sees the new plan
+          setTimeout(() => (window.location.href = "/settings?section=billing"), 700);
+        } catch (e) {
+          showToast(e.message, "error");
+        }
+      }
+
       // ── INIT ──
       loadProfile();
 
