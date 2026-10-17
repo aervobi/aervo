@@ -6,7 +6,7 @@
  *   <script src="/assets/js/app-nav.js" data-active="reports"></script>
  *
  * data-active  Optional. Which link is current: reports | intelligence |
- *              integrations | settings. Setting it also adds a "Dashboard"
+ *              integrations | settings | founder. Setting it also adds a "Dashboard"
  *              link (sub-pages need a way back; dashboards use their tabs).
  * data-accent  Optional "r,g,b" override. Normally omitted: the bar follows the
  *              page's --accent-rgb token (see tokens.css).
@@ -75,6 +75,15 @@
     ["integrations", "/integrations", "⚙️", "Integrations"],
     ["settings", "/settings", "👤", "Settings"],
   ];
+  // Founder accounts get a link to /founder (the page and its data are checked
+  // on the server; this only decides whether to show the link)
+  var FOUNDER_KEY = "aervo_founder";
+  var FOUNDER_LINK = ["founder", "/founder", "🛠️", "Founder"];
+  var founderCached = false;
+  try {
+    founderCached = localStorage.getItem(FOUNDER_KEY) === "1";
+  } catch (e) {}
+  if (founderCached || active === "founder") links.unshift(FOUNDER_LINK);
 
   function linkHtml(cls, l, withIcon) {
     var isActive = l[0] === active;
@@ -289,6 +298,22 @@
     }
   });
 
+  function setFounder(isFounder) {
+    try {
+      if (isFounder) localStorage.setItem(FOUNDER_KEY, "1");
+      else localStorage.removeItem(FOUNDER_KEY);
+    } catch (e) {}
+    var existing = document.querySelectorAll('#appNav a[href="/founder"], #mobileMenu a[href="/founder"]');
+    if (isFounder && !existing.length) {
+      var desk = document.querySelector('#appNav .nav-right a[href="/settings"]');
+      var mob = document.querySelector('#mobileMenu .mobile-links a[href="/settings"]');
+      if (desk) desk.insertAdjacentHTML("beforebegin", linkHtml("nav-link", FOUNDER_LINK, true));
+      if (mob) mob.insertAdjacentHTML("beforebegin", linkHtml("mobile-link", FOUNDER_LINK, false));
+    } else if (!isFounder && active !== "founder") {
+      existing.forEach(function (a) { a.remove(); });
+    }
+  }
+
   var user = readUser();
   var token = null;
   try {
@@ -319,6 +344,7 @@
           }
         } catch (e) {}
         renderSwitcher(avail);
+        setFounder(!!d.user.isFounder);
         if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
           document.querySelectorAll("[data-home]").forEach(function (a) {
             a.setAttribute("href", homeFor(d.user.platform));

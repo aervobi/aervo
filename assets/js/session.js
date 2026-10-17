@@ -62,6 +62,7 @@
       localStorage.removeItem("aervo_user");
       localStorage.removeItem("aervo_platforms");
       localStorage.removeItem("aervo_last_activity");
+      localStorage.removeItem("aervo_founder");
     } catch (e) {}
   }
 

@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <script src="/assets/js/session.js"></script>
+    <title>Founder view — Aervo</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <script src="/assets/js/ui.js"></script>
+    <style>
+      body {
+        padding-top: 64px;
+        min-height: 100vh;
+      }
+
+      .founder {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: var(--space-7) var(--space-6) var(--space-11);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-5);
+      }
+
+      .founder-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: var(--space-4);
+        flex-wrap: wrap;
+      }
+
+      .founder-title {
+        font-size: var(--fs-28);
+        font-weight: var(--fw-bold);
+      }
+
+      .founder-sub {
+        color: var(--text-secondary);
+        margin-top: var(--space-1);
+      }
+
+      #founderBody {
+        display: contents; /* sections keep the page's spacing */
+      }
+
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--space-4);
+      }
+
+      .kpi-label {
+        font-size: var(--fs-12);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: var(--ls-label);
+        font-weight: var(--fw-bold);
+      }
+
+      .kpi-value {
+        font-size: var(--fs-28);
+        font-weight: var(--fw-bold);
+        margin-top: var(--space-2);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .kpi-note {
+        font-size: var(--fs-12);
+        color: var(--text-muted);
+        margin-top: var(--space-1);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--space-4);
+        align-items: start;
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+
+      .card-h {
+        font-weight: var(--fw-bold);
+        font-size: var(--fs-16);
+      }
+
+      /* Signups chart: one series, brand hue, bars anchored to the baseline */
+      .chart {
+        position: relative;
+        height: 180px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .bar-hit {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        cursor: default;
+      }
+
+      .bar {
+        width: 100%;
+        min-height: 2px;
+        background: var(--primary-from);
+        border-radius: 4px 4px 0 0;
+        transition: opacity var(--dur);
+      }
+
+      .bar.zero {
+        background: var(--border);
+      }
+
+      .chart:hover .bar {
+        opacity: 0.45;
+      }
+
+      .chart .bar-hit:hover .bar {
+        opacity: 1;
+      }
+
+      .chart-axis {
+        display: flex;
+        justify-content: space-between;
+        font-size: var(--fs-12);
+        color: var(--text-muted);
+        margin-top: var(--space-2);
+      }
+
+      .chart-tip {
+        position: absolute;
+        pointer-events: none;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
+        padding: var(--space-1) var(--space-2);
+        font-size: var(--fs-12);
+        white-space: nowrap;
+        transform: translate(-50%, -100%);
+      }
+
+      .breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-3);
+        padding: var(--space-2) 0;
+        border-bottom: 1px solid var(--border-soft);
+        font-size: var(--fs-14);
+      }
+
+      .breakdown-row:last-child {
+        border-bottom: none;
+      }
+
+      .breakdown-row strong {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .breakdown-group + .breakdown-group {
+        margin-top: var(--space-5);
+      }
+
+      .breakdown-title {
+        font-size: var(--fs-12);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: var(--ls-label);
+        font-weight: var(--fw-bold);
+        margin-bottom: var(--space-1);
+      }
+
+      .filters {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--space-4);
+      }
+
+      .filters input {
+        flex: 1 1 220px;
+      }
+
+      .filters select {
+        flex: 0 0 auto;
+        width: auto;
+      }
+
+      .nowrap {
+        white-space: nowrap;
+      }
+
+      .data-table td {
+        vertical-align: top;
+      }
+
+      .data-table tbody tr.cust-row {
+        cursor: pointer;
+      }
+
+      .data-table tbody tr.cust-row:hover td {
+        background: var(--surface-raised);
+      }
+
+      .cust-name {
+        font-weight: var(--fw-bold);
+      }
+
+      .cust-sub {
+        font-size: var(--fs-12);
+        color: var(--text-muted);
+      }
+
+      .chips {
+        display: flex;
+        gap: var(--space-1);
+        flex-wrap: wrap;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--space-3) var(--space-5);
+        padding: var(--space-3) 0;
+        font-size: var(--fs-13);
+      }
+
+      .detail-grid dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .detail-grid dt {
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+      }
+
+      .pager {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-3);
+        margin-top: var(--space-4);
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+      }
+
+      .pager-btns {
+        display: flex;
+        gap: var(--space-2);
+      }
+
+      .you-plans {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 900px) {
+        .split {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .founder {
+          padding: var(--space-5) var(--space-4) var(--space-8);
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/assets/css/app-nav.css" />
+  </head>
+  <body>
+    <script src="/assets/js/app-nav.js" data-active="founder"></script>
+
+    <main class="founder" id="founder">
+      <div class="founder-head">
+        <div>
+          <h1 class="founder-title">Founder view</h1>
+          <p class="founder-sub" id="founderSub">All of Aervo, across every customer.</p>
+        </div>
+      </div>
+      <div id="founderBody"><div class="card text-muted">Loading…</div></div>
+    </main>
+
+    <script>
+      (function () {
+        var API = "https://api.aervoapp.com";
+        var body = document.getElementById("founderBody");
+        var PLAN = { free: "Starter", essential: "Essential", pro: "Pro", business: "Business" };
+        var PLAN_BADGE = { free: "", essential: "badge-info", pro: "badge-purple", business: "badge-success" };
+        var PLATFORM = { shopify: "Shopify", square: "Square", both: "Shopify + Square", csv: "IMS", ims: "IMS", "": "Not set", none: "Not set" };
+        var filters = { q: "", plan: "", platform: "", sort: "newest", offset: 0, limit: 50 };
+        var me = null;
+
+        function esc(v) {
+          return String(v == null ? "" : v)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
+        function fmt(n) {
+          return Number(n || 0).toLocaleString();
+        }
+        function date(iso) {
+          if (!iso) return "—";
+          return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+        }
+        function ago(iso) {
+          if (!iso) return "Never";
+          var d = (Date.now() - new Date(iso).getTime()) / 86400000;
+          if (d < 1) return "Today";
+          if (d < 2) return "Yesterday";
+          if (d < 30) return Math.floor(d) + " days ago";
+          return date(iso);
+        }
+        function get(path) {
+          return fetch(API + path, { credentials: "include" }).then(function (r) {
+            return r
+              .json()
+              .catch(function () {
+                return {};
+              })
+              .then(function (d) {
+                if (!r.ok || d.success === false) {
+                  var e = new Error(d.message || "Request failed");
+                  e.status = r.status;
+                  throw e;
+                }
+                return d;
+              });
+          });
+        }
+
+        // ── layout ──────────────────────────────────────────────────────
+        function shell() {
+          body.innerHTML =
+            '<section class="kpis" id="kpis" aria-label="Key numbers"></section>' +
+            '<section class="split">' +
+            '<div class="card"><div class="card-head"><div class="card-h">New sign-ups, last 30 days</div><div class="text-muted" id="signupTotal"></div></div>' +
+            '<div class="chart" id="chart" role="img"></div><div class="chart-axis" id="chartAxis"></div>' +
+            '<table class="sr-only" id="chartTable"><caption>New sign-ups per day</caption><thead><tr><th>Day</th><th>Sign-ups</th></tr></thead><tbody></tbody></table></div>' +
+            '<div class="card" id="breakdowns"></div>' +
+            "</section>" +
+            '<section class="card" id="youCard"></section>' +
+            '<section class="card"><div class="card-head"><div class="card-h">Customers</div><div class="text-muted" id="custCount"></div></div>' +
+            '<div class="filters">' +
+            '<input class="input" id="fQ" type="search" placeholder="Search email, name or company" aria-label="Search customers" />' +
+            '<select class="input" id="fPlan" aria-label="Plan"><option value="">All plans</option><option value="free">Starter</option><option value="essential">Essential</option><option value="pro">Pro</option><option value="business">Business</option></select>' +
+            '<select class="input" id="fPlatform" aria-label="Source"><option value="">All sources</option><option value="shopify">Shopify</option><option value="square">Square</option><option value="both">Shopify + Square</option><option value="csv">IMS</option><option value="none">Not set</option></select>' +
+            '<select class="input" id="fSort" aria-label="Sort"><option value="newest">Newest first</option><option value="active">Recently active</option><option value="oldest">Oldest first</option><option value="email">Email A–Z</option></select>' +
+            "</div>" +
+            '<div class="table-wrap"><table class="data-table"><thead><tr><th>Customer</th><th>Plan</th><th>Source &amp; connections</th><th>Signed up</th><th>Last active</th><th>Account</th></tr></thead><tbody id="custBody"></tbody></table></div>' +
+            '<div class="pager"><span id="pageInfo"></span><div class="pager-btns"><button class="btn btn-ghost btn-sm" id="prevBtn">Previous</button><button class="btn btn-ghost btn-sm" id="nextBtn">Next</button></div></div>' +
+            "</section>";
+
+          var t;
+          document.getElementById("fQ").addEventListener("input", function (e) {
+            clearTimeout(t);
+            t = setTimeout(function () {
+              filters.q = e.target.value.trim();
+              filters.offset = 0;
+              loadCustomers();
+            }, 250);
+          });
+          [["fPlan", "plan"], ["fPlatform", "platform"], ["fSort", "sort"]].forEach(function (p) {
+            document.getElementById(p[0]).addEventListener("change", function (e) {
+              filters[p[1]] = e.target.value;
+              filters.offset = 0;
+              loadCustomers();
+            });
+          });
+          document.getElementById("prevBtn").addEventListener("click", function () {
+            filters.offset = Math.max(0, filters.offset - filters.limit);
+            loadCustomers();
+          });
+          document.getElementById("nextBtn").addEventListener("click", function () {
+            filters.offset += filters.limit;
+            loadCustomers();
+          });
+          document.getElementById("custBody").addEventListener("click", function (e) {
+            var row = e.target.closest("tr.cust-row");
+            if (!row) return;
+            var detail = row.nextElementSibling;
+            var open = detail.hidden;
+            detail.hidden = !open;
+            row.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+          document.getElementById("custBody").addEventListener("keydown", function (e) {
+            if ((e.key === "Enter" || e.key === " ") && e.target.matches("tr.cust-row")) {
+              e.preventDefault();
+              e.target.click();
+            }
+          });
+        }
+
+        // ── overview ────────────────────────────────────────────────────
+        function kpi(label, value, note) {
+          return '<div class="card"><div class="kpi-label">' + esc(label) + '</div><div class="kpi-value">' + esc(value) + "</div>" +
+            (note ? '<div class="kpi-note">' + esc(note) + "</div>" : "") + "</div>";
+        }
+
+        function renderOverview(o) {
+          var u = o.users;
+          var paying = Object.keys(o.plans).reduce(function (s, k) {
+            return k === "free" ? s : s + o.plans[k];
+          }, 0);
+          var c = o.connections;
+          var connected = c.shopify + c.square + c.quickbooks;
+          document.getElementById("kpis").innerHTML =
+            kpi("Customers", fmt(u.total), "+" + fmt(u.new7) + " this week · +" + fmt(u.new30) + " in 30 days") +
+            kpi("Active this week", fmt(u.active7), fmt(u.active30) + " active in 30 days") +
+            kpi("On a paid plan", fmt(paying), u.total ? Math.round((paying / u.total) * 100) + "% of customers" : "") +
+            kpi("Store connections", fmt(connected), fmt(c.shopify) + " Shopify · " + fmt(c.square) + " Square · " + fmt(c.quickbooks) + " QuickBooks");
+
+          // signups chart
+          var days = o.signupsByDay;
+          var max = Math.max.apply(null, days.map(function (d) { return d.count; }).concat([1]));
+          var total = days.reduce(function (s, d) { return s + d.count; }, 0);
+          var chart = document.getElementById("chart");
+          chart.setAttribute("aria-label", total + " sign-ups in the last 30 days");
+          document.getElementById("signupTotal").textContent = fmt(total) + " total";
+          chart.innerHTML = days
+            .map(function (d) {
+              var h = d.count ? Math.max(4, Math.round((d.count / max) * 100)) : 0;
+              var label = new Date(d.day + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ": " + d.count + " sign-up" + (d.count === 1 ? "" : "s");
+              return '<div class="bar-hit" data-tip="' + esc(label) + '"><div class="bar' + (d.count ? "" : " zero") + '" style="height:' + (h || 1) + '%"></div></div>';
+            })
+            .join("");
+          var tip = document.createElement("div");
+          tip.className = "chart-tip";
+          tip.hidden = true;
+          chart.appendChild(tip);
+          chart.addEventListener("mousemove", function (e) {
+            var hit = e.target.closest(".bar-hit");
+            if (!hit) return (tip.hidden = true);
+            var box = chart.getBoundingClientRect();
+            var hb = hit.getBoundingClientRect();
+            tip.textContent = hit.getAttribute("data-tip");
+            tip.hidden = false;
+            tip.style.left = Math.min(Math.max(hb.left - box.left + hb.width / 2, 60), box.width - 60) + "px";
+            tip.style.top = Math.max(hit.firstChild.getBoundingClientRect().top - box.top - 6, 16) + "px";
+          });
+          chart.addEventListener("mouseleave", function () {
+            tip.hidden = true;
+          });
+          var first = days[0], last = days[days.length - 1];
+          document.getElementById("chartAxis").innerHTML =
+            "<span>" + esc(first ? date(first.day + "T12:00:00") : "") + "</span><span>Today</span>";
+          document.querySelector("#chartTable tbody").innerHTML = days
+            .map(function (d) { return "<tr><td>" + esc(d.day) + "</td><td>" + d.count + "</td></tr>"; })
+            .join("");
+
+          // breakdowns
+          function group(title, map, labels) {
+            var keys = Object.keys(map).sort(function (a, b) { return map[b] - map[a]; });
+            return '<div class="breakdown-group"><div class="breakdown-title">' + esc(title) + "</div>" +
+              (keys.length
+                ? keys.map(function (k) {
+                    return '<div class="breakdown-row"><span>' + esc(labels[k] || k) + "</span><strong>" + fmt(map[k]) + "</strong></div>";
+                  }).join("")
+                : '<div class="text-muted">None yet</div>') +
+              "</div>";
+          }
+          document.getElementById("breakdowns").innerHTML =
+            group("Plans", o.plans, PLAN) +
+            group("Sources", o.platforms, PLATFORM) +
+            group("Accounts", {
+              "Finished onboarding": u.onboarded,
+              "Verified email": u.verified,
+              "Two-step verification on": u.twoFactor,
+            }, {}) +
+            group("Other", {
+              "Square sync errors": c.squareSyncErrors,
+              "Google Reviews linked": c.googleReviews,
+              Teams: o.teams.teams,
+              "Team members": o.teams.members,
+            }, {});
+        }
+
+        // ── your account (plan switcher for testing) ────────────────────
+        function renderYou() {
+          var card = document.getElementById("youCard");
+          if (!me) {
+            card.hidden = true;
+            return;
+          }
+          var plan = PLAN[me.plan] ? me.plan : "free";
+          card.innerHTML =
+            '<div class="card-head"><div class="card-h">Your account for testing</div><div class="text-muted">' + esc(me.email) + "</div></div>" +
+            '<p class="text-muted mb-6">You\'re on <strong>' + esc(PLAN[plan]) + "</strong>. Switch plans for free to try each tier, then open your dashboard to see it the way that customer would.</p>" +
+            '<div class="you-plans">' +
+            Object.keys(PLAN).map(function (k) {
+              return '<button class="btn btn-sm ' + (k === plan ? "btn-primary" : "btn-ghost") + '" data-plan="' + k + '"' + (k === plan ? " disabled" : "") + ">" +
+                esc(PLAN[k]) + (k === plan ? " (current)" : "") + "</button>";
+            }).join("") +
+            '<a class="btn btn-secondary btn-sm" href="' + esc(window.AervoSession ? AervoSession.pickHome({ user: me, shop: meShop }) : "/dashboard") + '">Open my dashboard</a>' +
+            "</div>";
+          card.querySelectorAll("[data-plan]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              b.disabled = true;
+              fetch(API + "/api/founder/plan", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ plan: b.getAttribute("data-plan") }),
+              })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                  if (!d.success) throw new Error(d.message || "Couldn't switch plan.");
+                  me.plan = d.plan;
+                  showToast("Your account is now on " + PLAN[d.plan], "success");
+                  renderYou();
+                  loadOverview();
+                  loadCustomers();
+                })
+                .catch(function (e) {
+                  showToast(e.message, "error");
+                  b.disabled = false;
+                });
+            });
+          });
+        }
+
+        // ── customers ───────────────────────────────────────────────────
+        function chip(text, cls) {
+          return '<span class="badge ' + (cls || "") + '">' + esc(text) + "</span>";
+        }
+
+        function customerRows(list) {
+          if (!list.length) return '<tr><td colspan="6" class="text-muted">No customers match.</td></tr>';
+          return list
+            .map(function (c) {
+              var conn = c.connections;
+              var chips = [];
+              if (conn.shopify) chips.push(chip("Shopify", "badge-info"));
+              if (conn.square) chips.push(chip(conn.square.error ? "Square · sync error" : "Square", conn.square.error ? "badge-danger" : "badge-success"));
+              if (conn.quickbooks) chips.push(chip("QuickBooks"));
+              if (conn.googleReviews) chips.push(chip("Reviews"));
+              if (c.team) chips.push(chip("Team · " + c.team.role));
+              var account = [];
+              if (!c.emailVerified) account.push(chip("Unverified", "badge-warning"));
+              if (!c.onboarded) account.push(chip("Onboarding", "badge-warning"));
+              if (c.twoFactor) account.push(chip("2FA"));
+              if (c.isFounder) account.push(chip("Founder", "badge-purple"));
+              if (!account.length) account.push('<span class="text-muted">OK</span>');
+
+              var details = [
+                ["Account ID", c.id],
+                ["Email", c.email],
+                ["Name", c.name || "—"],
+                ["Company", c.company || "—"],
+                ["Business type", c.businessType || "—"],
+                ["Location", c.location || "—"],
+                ["Signed up", date(c.createdAt)],
+                ["Last sign-in", c.lastLogin ? date(c.lastLogin) : "Never"],
+                ["Sign-in method", c.google ? "Google" : "Email & password"],
+                ["Shopify store", conn.shopify ? conn.shopify.store : "Not connected"],
+                ["Square", conn.square ? (conn.square.error ? "Sync error: " + conn.square.error : "Connected" + (conn.square.status ? " (" + conn.square.status + ")" : "")) : "Not connected"],
+                ["Google Reviews", conn.googleReviews ? conn.googleReviews.place || "Linked" : "Not linked"],
+                ["Team", c.team ? c.team.name + " (" + c.team.role + ")" : "None"],
+              ];
+
+              return (
+                '<tr class="cust-row" tabindex="0" aria-expanded="false">' +
+                '<td><div class="cust-name">' + esc(c.company || c.name || c.email) + '</div><div class="cust-sub">' + esc(c.email) + "</div></td>" +
+                "<td>" + chip(PLAN[c.plan] || c.plan, PLAN_BADGE[c.plan]) + "</td>" +
+                '<td><div class="cust-sub">' + esc(PLATFORM[c.platform] || c.platform) + '</div><div class="chips">' + chips.join("") + "</div></td>" +
+                '<td class="nowrap">' + esc(date(c.createdAt)) + "</td>" +
+                '<td class="nowrap">' + esc(ago(c.lastLogin)) + "</td>" +
+                '<td><div class="chips">' + account.join("") + "</div></td>" +
+                "</tr>" +
+                '<tr class="cust-detail" hidden><td colspan="6"><dl class="detail-grid">' +
+                details.map(function (d) { return "<div><dt>" + esc(d[0]) + "</dt><dd>" + esc(d[1]) + "</dd></div>"; }).join("") +
+                "</dl></td></tr>"
+              );
+            })
+            .join("");
+        }
+
+        function loadCustomers() {
+          var qs = new URLSearchParams({
+            q: filters.q, plan: filters.plan, platform: filters.platform, sort: filters.sort,
+            limit: String(filters.limit), offset: String(filters.offset),
+          });
+          return get("/api/founder/customers?" + qs)
+            .then(function (d) {
+              document.getElementById("custBody").innerHTML = customerRows(d.customers);
+              document.getElementById("custCount").textContent = fmt(d.total) + (d.total === 1 ? " account" : " accounts");
+              var from = d.total ? d.offset + 1 : 0;
+              var to = Math.min(d.offset + d.customers.length, d.total);
+              document.getElementById("pageInfo").textContent = "Showing " + fmt(from) + "–" + fmt(to) + " of " + fmt(d.total);
+              document.getElementById("prevBtn").disabled = d.offset === 0;
+              document.getElementById("nextBtn").disabled = to >= d.total;
+            })
+            .catch(function (e) {
+              showToast(e.message, "error");
+            });
+        }
+
+        function loadOverview() {
+          return get("/api/founder/overview").then(renderOverview);
+        }
+
+        // ── start ───────────────────────────────────────────────────────
+        var meShop = null;
+        fetch(API + "/api/user/me", { credentials: "include" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (!d || !d.user) {
+              window.location.href = "/login";
+              return;
+            }
+            me = d.user;
+            meShop = d.shop;
+            if (!me.isFounder) {
+              document.getElementById("founderSub").textContent = "";
+              body.innerHTML = '<div class="card"><p>This page is only for the Aervo team.</p><p class="mt-4"><a class="link" href="' + esc(window.AervoSession ? AervoSession.pickHome(d) : "/dashboard") + '">Go to your dashboard</a></p></div>';
+              return;
+            }
+            shell();
+            renderYou();
+            loadCustomers();
+            return loadOverview();
+          })
+          .catch(function (e) {
+            body.innerHTML = '<div class="card text-muted">Couldn\'t load the founder view. ' + esc(e.message) + "</div>";
+          });
+
+      })();
+    </script>
+  </body>
+</html>
