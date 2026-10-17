@@ -572,9 +572,12 @@
           );
           const status = await statusRes.json();
 
-          if (!status.connected) {
-            renderNotConnected();
+          if (!status.connected || status.needsReconnect) {
+            renderNotConnected(!!status.needsReconnect);
             return;
+          }
+          if (status.sync && status.sync.status === "syncing") {
+            showToast("Square is still importing your history. Numbers will fill in over the next few minutes.");
           }
 
           document.getElementById("shopBadge").style.display = "flex";
@@ -2232,13 +2235,17 @@
       }
 
       // ── Not connected ────────────────────────────────────────────────────────
-      function renderNotConnected() {
+      function renderNotConnected(reconnect) {
+        const title = reconnect ? "Reconnect Your Square Account" : "Connect Your Square Account";
+        const text = reconnect
+          ? "Aervo's access to Square expired or was removed, so your data stopped updating. Reconnect to pick up where you left off."
+          : "Connect Square to unlock AI-powered insights for your brick-and-mortar business.";
         document.getElementById("content").innerHTML = `
           <div class="card" style="text-align:center;padding:var(--space-10) var(--space-6);max-width:600px;margin:var(--space-8) auto">
             <div style="font-size:var(--fs-56);margin-bottom:var(--space-5)">⬛</div>
-            <h2 style="color:var(--text);margin-bottom:var(--space-3)">Connect Your Square Account</h2>
-            <p style="color:var(--text-secondary);font-size:var(--fs-16);margin-bottom:var(--space-7);line-height:var(--lh-relaxed)">Connect Square to unlock AI-powered insights for your brick-and-mortar business.</p>
-            <button class="btn-primary" onclick="connectSquare()">Connect Square Account</button>
+            <h2 style="color:var(--text);margin-bottom:var(--space-3)">${title}</h2>
+            <p style="color:var(--text-secondary);font-size:var(--fs-16);margin-bottom:var(--space-7);line-height:var(--lh-relaxed)">${text}</p>
+            <button class="btn-primary" onclick="connectSquare()">${reconnect ? "Reconnect Square" : "Connect Square Account"}</button>
           </div>`;
       }
 
