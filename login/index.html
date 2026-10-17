@@ -240,6 +240,13 @@
           showAuthMsg("success", "Welcome back! Redirecting...");
 
           setTimeout(async () => {
+            // Signing in to accept a team invite: go back to finish joining
+            try {
+              if (sessionStorage.getItem("aervo_pending_invite")) {
+                window.location.href = "/team/join";
+                return;
+              }
+            } catch (e) {}
             try {
               const meRes = await fetch(BACKEND_URL + "/api/user/me");
               const meData = await meRes.json();

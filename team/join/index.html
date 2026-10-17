@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <script src="/assets/js/session.js"></script>
+    <title>Aervo - Join your team</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <script src="/assets/js/ui.js"></script>
+  </head>
+  <body>
+    <header class="auth-header">
+      <a href="/" class="auth-brand" aria-label="Aervo home">
+        <img src="/assets/images/logo.png" alt="Aervo" />
+      </a>
+      <div></div>
+      <div></div>
+    </header>
+
+    <main class="auth-main">
+      <div class="card card-hero auth-card">
+        <h1 id="joinTitle">Join your team</h1>
+        <p class="auth-lead" id="joinLead">Checking your invite…</p>
+
+        <!-- Signed in with the invited email -->
+        <div id="stepAccept" hidden>
+          <button type="button" class="btn btn-primary btn-block btn-form" id="acceptBtn">Join team</button>
+        </div>
+
+        <!-- Signed in, but as someone else -->
+        <div id="stepWrongAccount" hidden>
+          <div class="alert alert-info" id="wrongAccountText"></div>
+          <button type="button" class="btn btn-secondary btn-block btn-form" id="switchBtn">Sign out and use the invited email</button>
+        </div>
+
+        <!-- Not signed in, the invited email already has an account -->
+        <div id="stepSignIn" hidden>
+          <a href="/login" class="btn btn-primary btn-block btn-form" id="signInLink">Sign in to accept</a>
+          <div class="auth-helper">You'll come back here after signing in.</div>
+        </div>
+
+        <!-- Not signed in, no account yet -->
+        <form id="stepSignup" hidden>
+          <div class="form-group">
+            <label class="field-label" for="joinEmail">Email</label>
+            <input id="joinEmail" type="email" readonly />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="joinName">Your name</label>
+            <input id="joinName" type="text" maxlength="80" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="joinPassword">Create a password</label>
+            <input id="joinPassword" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="At least 8 characters" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-form">Create account and join</button>
+          <div class="auth-helper">
+            Already have an Aervo account with this email?
+            <a href="/login" class="link" id="signInInstead">Sign in</a>
+          </div>
+        </form>
+
+        <div class="form-error" id="joinError" role="alert"></div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var API = "https://api.aervoapp.com";
+        var KEY = "aervo_pending_invite";
+        var ROLE = { supervisor: "a supervisor", member: "a member" };
+
+        // The token arrives in the URL hash (#t=...). Keep it for this tab only and
+        // take it out of the address bar so it isn't left in history or shared.
+        var token = null;
+        try {
+          var m = location.hash.match(/[#&]t=([A-Za-z0-9_-]{20,100})/);
+          if (m) {
+            token = m[1];
+            sessionStorage.setItem(KEY, token);
+            history.replaceState(null, "", location.pathname);
+          } else {
+            token = sessionStorage.getItem(KEY);
+          }
+        } catch (e) {}
+
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var invite = null;
+
+        function show(id) {
+          ["stepAccept", "stepWrongAccount", "stepSignIn", "stepSignup"].forEach(function (s) {
+            $(s).hidden = s !== id;
+          });
+        }
+        function setError(msg) {
+          $("joinError").textContent = msg || "";
+        }
+        function stop(title, lead) {
+          try {
+            sessionStorage.removeItem(KEY);
+          } catch (e) {}
+          $("joinTitle").textContent = title;
+          $("joinLead").textContent = lead;
+          show(null);
+        }
+        function post(path, body) {
+          return fetch(API + path, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }).then(function (res) {
+            return res
+              .json()
+              .catch(function () {
+                return {};
+              })
+              .then(function (d) {
+                if (!res.ok || d.success === false) {
+                  var e = new Error(d.message || "Something went wrong. Please try again.");
+                  e.data = d;
+                  throw e;
+                }
+                return d;
+              });
+          });
+        }
+        function done() {
+          try {
+            sessionStorage.removeItem(KEY);
+          } catch (e) {}
+          window.location.href = "/settings?section=team";
+        }
+
+        function signedInUser() {
+          if (localStorage.getItem("aervo_token") !== "session") return Promise.resolve(null);
+          return fetch(API + "/api/user/me", { credentials: "include" })
+            .then(function (r) {
+              return r.ok ? r.json() : null;
+            })
+            .then(function (d) {
+              return d && d.user ? d.user : null;
+            })
+            .catch(function () {
+              return null;
+            });
+        }
+
+        if (!token) {
+          stop("Invite link missing", "Open the link from your invite email again. If it still doesn't work, ask your team to resend the invite.");
+          return;
+        }
+
+        post("/api/team/invites/lookup", { token: token })
+          .then(function (r) {
+            invite = r.invite;
+            if (invite.status !== "pending") {
+              var why = {
+                used: "This invite has already been used. Sign in to see your team.",
+                revoked: "This invite was cancelled. Ask your team for a new one.",
+                expired: "This invite has expired. Ask your team to send a new one.",
+              };
+              stop("Invite unavailable", why[invite.status] || "This invite can't be used.");
+              return;
+            }
+            $("joinTitle").textContent = "Join " + invite.teamName;
+            $("joinLead").textContent = invite.inviterName + " invited " + invite.email + " to join as " + (ROLE[invite.role] || "a member") + ".";
+            return signedInUser().then(function (user) {
+              if (user && String(user.email).toLowerCase() === invite.email.toLowerCase()) {
+                show("stepAccept");
+              } else if (user) {
+                $("wrongAccountText").textContent = "You're signed in as " + user.email + ", but this invite is for " + invite.email + ".";
+                show("stepWrongAccount");
+              } else if (invite.hasAccount) {
+                show("stepSignIn");
+              } else {
+                $("joinEmail").value = invite.email;
+                show("stepSignup");
+                $("joinName").focus();
+              }
+            });
+          })
+          .catch(function (err) {
+            // No answer from the server: keep the invite so a reload can retry
+            if (!err.data) {
+              $("joinTitle").textContent = "Couldn't reach Aervo";
+              $("joinLead").textContent = "Check your connection, then reload this page.";
+              return;
+            }
+            stop("Invite unavailable", err.message);
+          });
+
+        $("acceptBtn").addEventListener("click", function () {
+          var btn = this;
+          btn.disabled = true;
+          setError("");
+          post("/api/team/invites/accept", { token: token })
+            .then(function () {
+              showToast("Welcome to " + invite.teamName, "success");
+              setTimeout(done, 600);
+            })
+            .catch(function (err) {
+              setError(err.message);
+              btn.disabled = false;
+            });
+        });
+
+        $("switchBtn").addEventListener("click", function () {
+          // token stays in sessionStorage, so this page picks it back up after login
+          AervoSession.logout().then(function () {
+            window.location.href = invite.hasAccount ? "/login" : "/team/join";
+          });
+        });
+
+        $("stepSignup").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var btn = e.target.querySelector("button[type=submit]");
+          btn.disabled = true;
+          setError("");
+          post("/api/team/invites/signup", {
+            token: token,
+            name: $("joinName").value,
+            password: $("joinPassword").value,
+          })
+            .then(function (r) {
+              AervoSession.mark();
+              if (r.user) localStorage.setItem("aervo_user", JSON.stringify(r.user));
+              done();
+            })
+            .catch(function (err) {
+              if (err.data && err.data.code === "HAS_ACCOUNT") {
+                invite.hasAccount = true;
+                show("stepSignIn");
+              }
+              setError(err.message);
+              btn.disabled = false;
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

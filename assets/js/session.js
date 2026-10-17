@@ -95,7 +95,7 @@
       return false;
     }
   }
-  var onAuthPage = /^\/(login|onboarding|forgot-password|reset-password|welcome)(\/|$)/.test(
+  var onAuthPage = /^\/(login|onboarding|forgot-password|reset-password|welcome|team\/join)(\/|$)/.test(
     window.location.pathname,
   );
 
@@ -302,7 +302,10 @@
     var avail = platformsFrom(me);
     var pref = activePlatform();
     var key = pref && avail.indexOf(pref) > -1 ? pref : avail[0];
-    return key ? HOMES[key] : "/dashboard";
+    if (key) return HOMES[key];
+    // Staff who joined someone's team have no store of their own
+    if (me && me.team) return "/settings?section=team";
+    return "/dashboard";
   }
 
   // "your-store", "your-store.myshopify.com", "https://your-store.myshopify.com/"
