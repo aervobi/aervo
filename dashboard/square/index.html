@@ -530,7 +530,27 @@
         });
       });
 
+      // Square's OAuth callback sends people back with ?connected=1 or ?square=<reason>
+      function showSquareReturn() {
+        const q = new URLSearchParams(window.location.search);
+        const messages = {
+          denied: ["Square connection cancelled.", "error"],
+          expired: ["That Square connection link expired. Please click Connect again.", "error"],
+          error: ["Square couldn't be connected. Please try again.", "error"],
+        };
+        let shown = null;
+        if (q.get("connected") === "1") shown = ["Square connected! Your data is syncing now.", "success"];
+        else if (messages[q.get("square")]) shown = messages[q.get("square")];
+        if (!shown) return;
+        showToast(shown[0], shown[1]);
+        q.delete("connected");
+        q.delete("square");
+        const rest = q.toString();
+        history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
+      }
+
       async function init() {
+        showSquareReturn();
         try {
           const res = await fetch(`${BACKEND_URL}/api/user/me`, {
             headers: { Authorization: `Bearer ${token}` },
