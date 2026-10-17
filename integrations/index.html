@@ -10,10 +10,12 @@
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
     <script src="/assets/js/ui.js"></script>
-    <style>/* Platform accent for this page */
+    <style>
+      /* Platform accent for this page */
       :root {
         --accent: #60a5fa;
         --accent-rgb: 96, 165, 250;
+        --logo-tile: #ffffff; /* brand marks sit on white, as their guidelines prefer */
       }
 
       * {
@@ -26,22 +28,58 @@
       }
 
       .container {
-        padding: calc(var(--nav-h) + var(--space-6)) var(--space-7) var(--space-9);
-        max-width: var(--container-app);
+        padding: calc(var(--nav-h) + var(--space-7)) var(--space-7) var(--space-9);
+        max-width: 1200px;
         margin: 0 auto;
       }
 
-      .header {
-        margin-bottom: var(--space-9);
+      .page-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: var(--space-5);
+        flex-wrap: wrap;
+        margin-bottom: var(--space-8);
       }
-      .header h1 {
+      .page-head h1 {
         font-size: var(--fs-32);
-        margin-bottom: var(--space-2);
-        color: var(--text);
+        line-height: var(--lh-tight);
       }
-      .header p {
+      .page-head p {
+        margin-top: var(--space-2);
         font-size: var(--fs-16);
         color: var(--text-secondary);
+        max-width: 620px;
+      }
+      .head-summary {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+      .head-summary strong {
+        color: var(--text);
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-muted);
+        flex: none;
+      }
+      .dot.on {
+        background: var(--success);
+        box-shadow: 0 0 0 3px rgba(var(--success-rgb), 0.18);
+      }
+      .dot.warn {
+        background: var(--warning);
+        box-shadow: 0 0 0 3px rgba(var(--warning-rgb), 0.18);
       }
 
       .section {
@@ -53,116 +91,180 @@
         text-transform: uppercase;
         letter-spacing: var(--ls-label);
         color: var(--text-secondary);
-        margin-bottom: var(--space-5);
+        margin-bottom: var(--space-4);
       }
 
       .integrations-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-        gap: var(--space-6);
-      }
-
-      .integration-card {
-        position: relative;
-      }
-      .integration-card.connected {
-        border-color: rgba(var(--success-rgb), 0.4);
-      }
-
-      .integration-header {
-        display: flex;
-        align-items: flex-start;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
         gap: var(--space-5);
-        margin-bottom: var(--space-5);
       }
-      .integration-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(var(--info-rgb), 0.1);
+
+      /* ── Card ── */
+      .int-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        padding: var(--space-6);
         border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        transition: border-color var(--dur), transform var(--dur), background var(--dur);
+      }
+      .int-card:hover {
+        border-color: var(--border-strong);
+        background: var(--surface-raised);
+      }
+      .int-card.connected {
+        border-color: rgba(var(--success-rgb), 0.35);
+      }
+      .int-card.attention {
+        border-color: rgba(var(--warning-rgb), 0.45);
+      }
+
+      .int-top {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+      }
+      .int-logo {
+        width: 52px;
+        height: 52px;
+        flex: none;
+        border-radius: var(--radius-md);
+        background: var(--logo-tile);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: var(--fs-28);
-        flex-shrink: 0;
-        border: 1px solid rgba(var(--info-rgb), 0.2);
+        box-shadow: var(--shadow-sm);
       }
-      .integration-icon img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        padding: var(--space-3);
+      .int-logo img {
+        width: 30px;
+        height: 30px;
+        display: block;
+      }
+      .int-logo.fallback {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        box-shadow: none;
+        font-size: var(--fs-20);
+        font-weight: var(--fw-bold);
+        color: var(--text);
+      }
+      .int-title {
+        flex: 1;
+        min-width: 0;
+      }
+      .int-name {
+        font-size: var(--fs-18);
+        font-weight: var(--fw-semibold);
+        line-height: var(--lh-tight);
+      }
+      .int-cat {
+        font-size: var(--fs-12);
+        color: var(--text-muted);
+        margin-top: var(--space-1);
+      }
+      .int-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--fs-12);
+        font-weight: var(--fw-semibold);
+        white-space: nowrap;
+        color: var(--success-text);
+      }
+      .int-pill.warn {
+        color: var(--warning-text);
       }
 
-      .integration-info {
-        flex: 1;
-      }
-      .integration-name {
-        font-size: var(--fs-20);
-        font-weight: var(--fw-semibold);
-        color: var(--text);
-        margin-bottom: var(--space-2);
-      }
-      .integration-desc {
+      .int-desc {
         font-size: var(--fs-14);
         color: var(--text-secondary);
         line-height: var(--lh-normal);
       }
 
-      .integration-status {
-        display: inline-flex;
-        align-items: center;
+      .int-features {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
         gap: var(--space-2);
-        margin-bottom: var(--space-4);
+      }
+      .int-features li {
+        font-size: var(--fs-12);
+        color: var(--text-secondary);
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-pill);
+        background: var(--surface-raised);
+        border: 1px solid var(--border-soft);
       }
 
-      .connected-stores {
-        border-top: 1px solid var(--border);
-        padding-top: var(--space-5);
-        margin-top: var(--space-2);
+      .int-body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
       }
-      .store-item {
-        background: var(--surface);
-        padding: var(--space-4) var(--space-4);
-        border-radius: var(--radius-md);
-        margin-bottom: var(--space-3);
+      .int-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border: 1px solid var(--border);
-        transition: all var(--dur);
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-md);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-soft);
       }
-      .store-item:hover {
-        background: rgba(var(--info-rgb), 0.08);
-        border-color: rgba(var(--info-rgb), 0.3);
+      .int-row-main {
+        min-width: 0;
       }
-      .store-info {
-        flex: 1;
-      }
-      .store-name {
+      .int-row-title {
         font-size: var(--fs-14);
         font-weight: var(--fw-semibold);
-        color: var(--text);
-        margin-bottom: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      .store-origin {
+      .int-row-sub {
         font-size: var(--fs-12);
         color: var(--text-muted);
+        margin-top: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
-      .store-actions {
+      .int-row-sub.error {
+        color: var(--warning-text);
+        white-space: normal;
+      }
+      .int-row-actions {
         display: flex;
         gap: var(--space-2);
+        flex: none;
       }
 
-      .btn-connect {
-        width: 100%;
-        margin-top: var(--space-3);
+      .int-actions {
+        display: flex;
+        gap: var(--space-2);
+        margin-top: auto;
+        padding-top: var(--space-2);
+      }
+      .int-actions .btn {
+        flex: 1;
       }
 
-      .btn-add-store {
-        width: 100%;
-        margin-top: var(--space-3);
+      .trust-note {
+        display: flex;
+        gap: var(--space-3);
+        align-items: flex-start;
+        padding: var(--space-4) var(--space-5);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        background: var(--surface);
+        color: var(--text-secondary);
+        font-size: var(--fs-13);
+        line-height: var(--lh-normal);
       }
+
       .empty-state p {
         color: var(--text-muted);
         font-size: var(--fs-16);
@@ -170,31 +272,23 @@
 
       @media (max-width: 768px) {
         .container {
-          padding: calc(var(--nav-h) + var(--space-4)) var(--space-4) var(--space-7);
+          padding: calc(var(--nav-h) + var(--space-5)) var(--space-4) var(--space-7);
         }
-        .header h1 {
+        .page-head h1 {
           font-size: var(--fs-24);
         }
         .integrations-grid {
           grid-template-columns: 1fr;
-          gap: var(--space-5);
-        }
-        .integration-header {
           gap: var(--space-4);
         }
-        .integration-icon {
-          width: 52px;
-          height: 52px;
+        .int-card {
+          padding: var(--space-5);
         }
-        .store-item {
+        .int-row {
           flex-direction: column;
-          align-items: flex-start;
-          gap: var(--space-3);
+          align-items: stretch;
         }
-        .store-actions {
-          width: 100%;
-        }
-        .btn-small {
+        .int-row-actions .btn {
           flex: 1;
         }
       }
@@ -204,12 +298,16 @@
   <body>
     <script src="/assets/js/app-nav.js" data-active="integrations"></script>
 
-    <div class="container">
-      <div class="header">
-        <h1>Integrations</h1>
-        <p>
-          Connect your business platforms to unlock powerful insights with Aervo
-        </p>
+    <main class="container">
+      <div class="page-head">
+        <div>
+          <h1>Integrations</h1>
+          <p>
+            Connect the tools you run your business on. Aervo only reads your
+            data to build insights; it never changes anything in them.
+          </p>
+        </div>
+        <div class="head-summary" id="headSummary" hidden></div>
       </div>
 
       <div id="content">
@@ -218,7 +316,7 @@
           <div class="loading-text">Loading integrations...</div>
         </div>
       </div>
-    </div>
+    </main>
 
     <script>
       const BACKEND_URL = "https://api.aervoapp.com";
@@ -229,29 +327,102 @@
       let availableIntegrations = [];
       let connectedStores = [];
       let quickbooksStatus = { connected: false };
+      let squareStatus = { connected: false };
+
+      // Logos, categories and highlights live here (the server only lists
+      // which integrations exist), so every card looks consistent.
+      const CATALOG = {
+        shopify: {
+          name: "Shopify",
+          logo: "/assets/images/integrations/shopify.svg",
+          category: "E-commerce",
+          desc: "Sync your online store's orders, products and customers.",
+          features: ["Orders & revenue", "Products & inventory", "Customers"],
+          order: 1,
+        },
+        square: {
+          name: "Square",
+          logo: "/assets/images/integrations/square.svg",
+          category: "Point of sale",
+          desc: "Bring in-store sales, items, customers and appointments into Aervo.",
+          features: ["Sales by hour & location", "Items & inventory", "Customers & bookings"],
+          order: 0,
+        },
+        quickbooks: {
+          name: "QuickBooks",
+          logo: "/assets/images/integrations/quickbooks.svg",
+          category: "Accounting",
+          desc: "See real profit by pairing your sales with your books.",
+          features: ["Profit & loss", "Expenses", "Cost of goods"],
+          order: 2,
+        },
+        stripe: {
+          name: "Stripe",
+          logo: "/assets/images/integrations/stripe.svg",
+          category: "Payments",
+          desc: "Track online payments, refunds and payouts.",
+          features: ["Payments", "Refunds", "Payouts"],
+          order: 3,
+        },
+        google: {
+          name: "Google",
+          logo: "/assets/images/integrations/google.svg",
+          category: "Reviews",
+          desc: "Follow your Google reviews and rating.",
+          features: ["Reviews", "Rating trend"],
+          order: 4,
+        },
+      };
+
+      // Integrations with a working connect flow; others show "Coming soon"
+      const CONNECTABLE = ["shopify", "square", "quickbooks"];
+
+      function esc(v) {
+        return String(v == null ? "" : v)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      function meta(integration) {
+        const m = CATALOG[integration.name] || {};
+        return {
+          name: m.name || integration.display_name || integration.name,
+          logo: m.logo || null,
+          category: m.category || "Integration",
+          desc: m.desc || integration.description || "",
+          features: m.features || [],
+          order: m.order != null ? m.order : 99,
+        };
+      }
+      function shortDate(iso) {
+        return iso ? new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
+      }
+
+      async function getJson(path) {
+        try {
+          const res = await fetch(BACKEND_URL + path, { headers: { Authorization: `Bearer ${token}` } });
+          return await res.json();
+        } catch (e) {
+          return {};
+        }
+      }
 
       async function loadIntegrations() {
         try {
-          const [integrationsRes, storesRes, quickbooksRes] = await Promise.all([
-            fetch(`${BACKEND_URL}/api/integrations`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${BACKEND_URL}/api/integrations/connected`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${BACKEND_URL}/api/quickbooks/status`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
+          const [integrationsData, storesData, quickbooksData, squareData] = await Promise.all([
+            getJson("/api/integrations"),
+            getJson("/api/integrations/connected"),
+            getJson("/api/quickbooks/status"),
+            getJson("/integrations/square/status"),
           ]);
+          if (!integrationsData.success) throw new Error("integrations");
 
-          const integrationsData = await integrationsRes.json();
-          const storesData = await storesRes.json();
-          const quickbooksData = await quickbooksRes.json();
-
-          if (integrationsData.success)
-            availableIntegrations = integrationsData.integrations;
+          availableIntegrations = integrationsData.integrations;
           if (storesData.success) connectedStores = storesData.stores;
           if (quickbooksData.success) quickbooksStatus = quickbooksData;
+          squareStatus = squareData && squareData.connected ? squareData : { connected: false };
 
           renderIntegrations();
         } catch (err) {
@@ -265,144 +436,175 @@
       }
 
       function isIntegrationConnected(integration) {
-        if (integration.name === "quickbooks") return quickbooksStatus.connected;
+        if (integration.name === "quickbooks") return !!quickbooksStatus.connected;
+        if (integration.name === "square") return !!squareStatus.connected;
         return connectedStores.some((s) => s.integration_name === integration.name);
       }
 
       function renderIntegrations() {
-        const connected = availableIntegrations.filter((i) =>
-          isIntegrationConnected(i),
-        );
-        const available = availableIntegrations.filter(
-          (i) => !isIntegrationConnected(i),
-        );
+        const sorted = availableIntegrations.slice().sort((a, b) => meta(a).order - meta(b).order);
+        const connected = sorted.filter(isIntegrationConnected);
+        const available = sorted.filter((i) => !isIntegrationConnected(i));
+
+        const summary = document.getElementById("headSummary");
+        summary.hidden = false;
+        summary.innerHTML =
+          `<span class="dot ${connected.length ? "on" : ""}"></span>` +
+          `<span><strong>${connected.length}</strong> of ${sorted.length} connected</span>`;
 
         let html = "";
-
-        if (connected.length > 0) {
+        if (connected.length) {
           html += `
-            <div class="section">
-              <div class="section-title">Connected (${connected.length})</div>
-              <div class="integrations-grid">
-                ${connected.map((i) => renderIntegrationCard(i, true)).join("")}
-              </div>
-            </div>`;
+            <section class="section">
+              <h2 class="section-title">Connected</h2>
+              <div class="integrations-grid">${connected.map((i) => renderCard(i, true)).join("")}</div>
+            </section>`;
         }
-
-        if (available.length > 0) {
+        if (available.length) {
           html += `
-            <div class="section">
-              <div class="section-title">Available Integrations</div>
-              <div class="integrations-grid">
-                ${available.map((i) => renderIntegrationCard(i, false)).join("")}
-              </div>
-            </div>`;
+            <section class="section">
+              <h2 class="section-title">${connected.length ? "Add more" : "Available"}</h2>
+              <div class="integrations-grid">${available.map((i) => renderCard(i, false)).join("")}</div>
+            </section>`;
         }
+        html += `
+          <div class="trust-note">
+            <span aria-hidden="true">🔒</span>
+            <span>Connections use each platform's official sign-in. Aervo stores access keys encrypted, never sees your passwords, and you can disconnect at any time here or from the platform itself.</span>
+          </div>`;
 
         document.getElementById("content").innerHTML = html;
       }
 
-      function renderIntegrationCard(integration, isConnected) {
-        const stores = connectedStores.filter(
-          (s) => s.integration_name === integration.name,
-        );
+      function renderCard(integration, isConnected) {
+        const m = meta(integration);
+        const needsAttention = integration.name === "square" && squareStatus.needsReconnect;
+        const syncing = integration.name === "square" && isConnected && squareStatus.sync && squareStatus.sync.status === "syncing";
+
+        let pill = "";
+        if (needsAttention) pill = `<span class="int-pill warn"><span class="dot warn"></span>Needs attention</span>`;
+        else if (syncing) pill = `<span class="int-pill"><span class="dot on"></span>Importing</span>`;
+        else if (isConnected) pill = `<span class="int-pill"><span class="dot on"></span>Connected</span>`;
+
+        const logo = m.logo
+          ? `<div class="int-logo"><img src="${esc(m.logo)}" alt="" /></div>`
+          : `<div class="int-logo fallback" aria-hidden="true">${esc(m.name.charAt(0))}</div>`;
+
+        let body = "";
+        let actions = "";
+        if (!isConnected && !CONNECTABLE.includes(integration.name)) {
+          actions = `<button class="btn btn-ghost btn-sm" disabled>Coming soon</button>`;
+        } else if (!isConnected) {
+          actions = `<button class="btn btn-primary btn-sm" data-connect="${esc(integration.name)}">Connect ${esc(m.name)}</button>`;
+        } else if (integration.name === "square") {
+          ({ body, actions } = renderSquareConnected());
+        } else if (integration.name === "quickbooks") {
+          ({ body, actions } = renderQuickbooksConnected());
+        } else {
+          ({ body, actions } = renderConnectedStores(integration.name));
+        }
 
         return `
-          <div class="integration-card ${isConnected ? "connected" : ""}">
-            <div class="integration-header">
-              <div class="integration-icon">
-                ${
-                  integration.icon_url
-                    ? `<img src="${integration.icon_url}" alt="${integration.display_name}">`
-                    : getIntegrationEmoji(integration.name)
-                }
+          <article class="int-card ${needsAttention ? "attention" : isConnected ? "connected" : ""}">
+            <div class="int-top">
+              ${logo}
+              <div class="int-title">
+                <h3 class="int-name">${esc(m.name)}</h3>
+                <div class="int-cat">${esc(m.category)}</div>
               </div>
-              <div class="integration-info">
-                <div class="integration-name">${integration.display_name}</div>
-                <div class="integration-desc">${integration.description}</div>
-              </div>
+              ${pill}
             </div>
-            
-            <div class="integration-status ${isConnected ? "status-connected" : "status-available"}">
-              ${isConnected ? "● Connected" : "Available"}
+            <p class="int-desc">${esc(m.desc)}</p>
+            ${!isConnected && m.features.length ? `<ul class="int-features">${m.features.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+            ${body ? `<div class="int-body">${body}</div>` : ""}
+            <div class="int-actions">${actions}</div>
+          </article>`;
+      }
+
+      function renderSquareConnected() {
+        const s = squareStatus;
+        const locations = s.locationCount ? `${s.locationCount} location${s.locationCount === 1 ? "" : "s"}` : "Locations loading";
+        let sub = `Connected ${esc(shortDate(s.connectedAt))}`;
+        if (s.needsReconnect) sub = `<span class="int-row-sub error">Access expired or was removed. Reconnect to resume syncing.</span>`;
+        else if (s.sync && s.sync.status === "syncing") sub = "Importing your sales history…";
+        else if (s.sync && s.sync.error) sub = `<span class="int-row-sub error">Last sync had a problem: ${esc(s.sync.error)}</span>`;
+        else if (s.sync && s.sync.completedAt) sub = `Last full sync ${esc(shortDate(s.sync.completedAt))}`;
+        const body = `
+          <div class="int-row">
+            <div class="int-row-main">
+              <div class="int-row-title">${esc(locations)}</div>
+              ${sub.startsWith("<span") ? sub : `<div class="int-row-sub">${sub}</div>`}
             </div>
-            
-            ${
-              integration.name === "quickbooks"
-                ? isConnected
-                  ? renderQuickbooksConnected()
-                  : renderConnectButton(integration.name)
-                : isConnected
-                  ? renderConnectedStores(stores, integration.name)
-                  : renderConnectButton(integration.name)
-            }
           </div>`;
+        const actions = s.needsReconnect
+          ? `<button class="btn btn-primary btn-sm" data-connect="square">Reconnect Square</button>
+             <button class="btn btn-ghost btn-sm" data-disconnect-square>Disconnect</button>`
+          : `<a class="btn btn-secondary btn-sm" href="/dashboard/square">Open dashboard</a>
+             <button class="btn btn-ghost btn-sm" data-disconnect-square>Disconnect</button>`;
+        return { body, actions };
       }
 
       function renderQuickbooksConnected() {
-        const connectedDate = quickbooksStatus.connectedAt
-          ? new Date(quickbooksStatus.connectedAt).toLocaleDateString()
-          : "";
-        return `
-          <div class="connected-stores">
-            <div class="store-item">
-              <div class="store-info">
-                <div class="store-name">${quickbooksStatus.environment === "production" ? "Production" : "Sandbox"} company</div>
-                <div class="store-origin">Connected ${connectedDate}</div>
-              </div>
-              <div class="store-actions">
-                <button class="btn-small btn-danger" onclick="disconnectQuickbooks()">
-                  Disconnect
-                </button>
-              </div>
+        const body = `
+          <div class="int-row">
+            <div class="int-row-main">
+              <div class="int-row-title">${quickbooksStatus.environment === "production" ? "Company file" : "Sandbox company"}</div>
+              <div class="int-row-sub">Connected ${esc(shortDate(quickbooksStatus.connectedAt))}</div>
             </div>
           </div>`;
+        const actions = `<button class="btn btn-ghost btn-sm" data-disconnect-qb>Disconnect</button>`;
+        return { body, actions };
       }
 
-      function renderConnectedStores(stores, integrationName) {
-        return `
-          <div class="connected-stores">
-            ${stores
-              .map(
-                (store) => `
-              <div class="store-item">
-                <div class="store-info">
-                  <div class="store-name">${store.store_name}</div>
-                  <div class="store-origin">${store.store_origin || ""}</div>
-                </div>
-                <div class="store-actions">
-                  <button class="btn-small ${store.is_active ? "btn-active" : "btn-use"}" onclick="setActiveStore(${store.id})" ${store.is_active ? "disabled" : ""}>
-                    ${store.is_active ? "✓ Active" : "Use This"}
-                  </button>
-                  <button class="btn-small btn-danger" onclick="disconnectStore(${store.id}, '${store.store_name}')">
-                    Remove
-                  </button>
-                </div>
+      function renderConnectedStores(integrationName) {
+        const stores = connectedStores.filter((s) => s.integration_name === integrationName);
+        const body = stores
+          .map(
+            (store) => `
+            <div class="int-row">
+              <div class="int-row-main">
+                <div class="int-row-title">${esc(store.store_name)}</div>
+                <div class="int-row-sub">${esc(store.store_origin || "")}</div>
               </div>
-            `,
-              )
-              .join("")}
-            <button class="btn-add-store" onclick="connectIntegration('${integrationName}')">
-              + Add Another ${integrationName === "shopify" ? "Store" : "Location"}
-            </button>
-          </div>`;
+              <div class="int-row-actions">
+                ${
+                  store.is_active
+                    ? `<span class="badge badge-success">Active</span>`
+                    : `<button class="btn btn-ghost btn-sm" data-use-store="${Number(store.id)}">Use this</button>`
+                }
+                <button class="btn btn-ghost btn-sm" data-remove-store="${Number(store.id)}" data-store-name="${esc(store.store_name)}">Remove</button>
+              </div>
+            </div>`,
+          )
+          .join("");
+        const actions = `<button class="btn btn-secondary btn-sm" data-connect="${esc(integrationName)}">+ Add another ${integrationName === "shopify" ? "store" : "location"}</button>`;
+        return { body, actions };
       }
 
-      function renderConnectButton(integrationName) {
-        return `
-          <button class="btn-connect" onclick="connectIntegration('${integrationName}')">
-            Connect ${integrationName === "shopify" ? "Shopify" : integrationName === "square" ? "Square" : integrationName === "quickbooks" ? "QuickBooks" : "Account"}
-          </button>`;
-      }
+      // One click handler for every card button (no inline onclick with data in it)
+      document.getElementById("content").addEventListener("click", (e) => {
+        const el = e.target.closest("button[data-connect], button[data-use-store], button[data-remove-store], button[data-disconnect-qb], button[data-disconnect-square]");
+        if (!el) return;
+        if (el.dataset.connect) connectIntegration(el.dataset.connect);
+        else if (el.dataset.useStore) setActiveStore(Number(el.dataset.useStore));
+        else if (el.dataset.removeStore) disconnectStore(Number(el.dataset.removeStore), el.dataset.storeName);
+        else if (el.hasAttribute("data-disconnect-qb")) disconnectQuickbooks();
+        else if (el.hasAttribute("data-disconnect-square")) disconnectSquare();
+      });
 
-      function getIntegrationEmoji(name) {
-        const emojis = {
-          shopify: "🛍️",
-          square: "💳",
-          stripe: "💰",
-          quickbooks: "📊",
-        };
-        return emojis[name] || "🔌";
+      async function disconnectSquare() {
+        if (!(await uiConfirm("Disconnect Square?\n\nAervo will stop receiving new sales and your Square dashboard will stop updating. You can reconnect any time.", { confirmText: "Disconnect", danger: true }))) return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/integrations/square/disconnect`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) throw new Error();
+          showToast("Square disconnected", "success");
+          loadIntegrations();
+        } catch (e) {
+          showToast("Couldn't disconnect Square. Please try again.", "error");
+        }
       }
 
       async function connectIntegration(name) {
