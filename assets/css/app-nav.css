@@ -295,3 +295,9 @@
     display: flex;
   }
 }
+
+/* Trial countdown / Lite reminder (app-nav.js renderPlanChip) */
+#appNav .nav-link.plan-chip {
+  border-color: rgba(var(--primary-to-rgb), 0.5);
+  background: rgba(var(--primary-to-rgb), 0.12);
+}

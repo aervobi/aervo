@@ -1134,7 +1134,7 @@
         }
       }
 
-      // What each locked tab offers, for the upgrade card (Starter sees Overview only)
+      // What each locked tab offers, for the upgrade card (Lite sees Overview only)
       const LOCKED_VIEWS = {
         orders: { title: "Orders & sales trends", bullets: ["Every order", "Sales by hour", "Service filters"] },
         customers: { title: "Customer insights", bullets: ["Loyal & at-risk segments", "Lifetime spend", "Visit history"] },
@@ -1147,7 +1147,7 @@
           const info = LOCKED_VIEWS[view] || {};
           content.innerHTML = AervoPlan.upgradeCard({
             title: info.title,
-            text: "Your Starter plan includes the Overview. Upgrade to Essential to open every tab.",
+            text: "Your free trial has ended, so you can see the Overview. Choose a plan to open every tab.",
             bullets: info.bullets,
           });
           return;

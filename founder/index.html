@@ -300,8 +300,13 @@
       (function () {
         var API = "https://api.aervoapp.com";
         var body = document.getElementById("founderBody");
-        var PLAN = { free: "Starter", essential: "Essential", pro: "Pro", business: "Business" };
-        var PLAN_BADGE = { free: "", essential: "badge-info", pro: "badge-purple", business: "badge-success" };
+        var PLAN = { free: "Lite", essential: "Essential", pro: "Pro", business: "Business" };
+        var PLAN_ALL = { trial: "Trial", free: "Lite", essential: "Essential", pro: "Pro", business: "Business" };
+        var PLAN_BADGE = { trial: "badge-warning", free: "", essential: "badge-info", pro: "badge-purple", business: "badge-success" };
+        var usd = function (n) {
+          var x = Number(n || 0);
+          return x > 0 && x < 0.01 ? "<$0.01" : "$" + x.toFixed(2);
+        };
         var PLATFORM = { shopify: "Shopify", square: "Square", both: "Shopify + Square", csv: "IMS", ims: "IMS", "": "Not set", none: "Not set" };
         var filters = { q: "", plan: "", platform: "", sort: "newest", offset: 0, limit: 50 };
         var me = null;
@@ -361,7 +366,7 @@
             '<section class="card"><div class="card-head"><div class="card-h">Customers</div><div class="text-muted" id="custCount"></div></div>' +
             '<div class="filters">' +
             '<input class="input" id="fQ" type="search" placeholder="Search email, name or company" aria-label="Search customers" />' +
-            '<select class="input" id="fPlan" aria-label="Plan"><option value="">All plans</option><option value="free">Starter</option><option value="essential">Essential</option><option value="pro">Pro</option><option value="business">Business</option></select>' +
+            '<select class="input" id="fPlan" aria-label="Plan"><option value="">All plans</option><option value="trial">Trial</option><option value="free">Lite</option><option value="essential">Essential</option><option value="pro">Pro</option><option value="business">Business</option></select>' +
             '<select class="input" id="fPlatform" aria-label="Source"><option value="">All sources</option><option value="shopify">Shopify</option><option value="square">Square</option><option value="both">Shopify + Square</option><option value="csv">IMS</option><option value="none">Not set</option></select>' +
             '<select class="input" id="fSort" aria-label="Sort"><option value="newest">Newest first</option><option value="active">Recently active</option><option value="oldest">Oldest first</option><option value="email">Email A–Z</option></select>' +
             "</div>" +
@@ -418,15 +423,17 @@
         function renderOverview(o) {
           var u = o.users;
           var paying = Object.keys(o.plans).reduce(function (s, k) {
-            return k === "free" ? s : s + o.plans[k];
+            return k === "free" || k === "trial" ? s : s + o.plans[k];
           }, 0);
+          var ai = o.aiSpend || { month: 0, calls: 0, shared: 0, accounts: 0, byFeature: [], topAccounts: [] };
           var c = o.connections;
           var connected = c.shopify + c.square + c.quickbooks;
           document.getElementById("kpis").innerHTML =
             kpi("Customers", fmt(u.total), "+" + fmt(u.new7) + " this week · +" + fmt(u.new30) + " in 30 days") +
             kpi("Active this week", fmt(u.active7), fmt(u.active30) + " active in 30 days") +
             kpi("On a paid plan", fmt(paying), u.total ? Math.round((paying / u.total) * 100) + "% of customers" : "") +
-            kpi("Store connections", fmt(connected), fmt(c.shopify) + " Shopify · " + fmt(c.square) + " Square · " + fmt(c.quickbooks) + " QuickBooks");
+            kpi("Store connections", fmt(connected), fmt(c.shopify) + " Shopify · " + fmt(c.square) + " Square · " + fmt(c.quickbooks) + " QuickBooks") +
+            kpi("AI cost this month", usd(ai.month), fmt(ai.calls) + " calls · " + usd(ai.shared) + " shared · " + (paying ? usd((ai.month) / paying) + " per paying account" : "no paying accounts yet"));
 
           // signups chart
           var days = o.signupsByDay;
@@ -477,14 +484,25 @@
                 : '<div class="text-muted">None yet</div>') +
               "</div>";
           }
+          function moneyGroup(title, rows) {
+            return '<div class="breakdown-group"><div class="breakdown-title">' + esc(title) + "</div>" +
+              (rows.length
+                ? rows.map(function (r) {
+                    return '<div class="breakdown-row" title="' + esc(r[2]) + '"><span>' + esc(r[0]) + "</span><strong>" + usd(r[1]) + "</strong></div>";
+                  }).join("")
+                : '<div class="text-muted">No AI calls yet this month</div>') +
+              "</div>";
+          }
           document.getElementById("breakdowns").innerHTML =
-            group("Plans", o.plans, PLAN) +
+            group("Plans", o.plans, PLAN_ALL) +
             group("Sources", o.platforms, PLATFORM) +
             group("Accounts", {
               "Finished onboarding": u.onboarded,
               "Verified email": u.verified,
               "Two-step verification on": u.twoFactor,
             }, {}) +
+            moneyGroup("AI cost by feature (this month)", ai.byFeature.map(function (f) { return [f.feature, f.cost, f.calls + " calls"]; })) +
+            moneyGroup("Top AI spend by account", ai.topAccounts.map(function (a) { return [a.name, a.cost, a.email]; })) +
             group("Other", {
               "Square sync errors": c.squareSyncErrors,
               "Google Reviews linked": c.googleReviews,
@@ -570,6 +588,7 @@
                 ["Signed up", date(c.createdAt)],
                 ["Last sign-in", c.lastLogin ? date(c.lastLogin) : "Never"],
                 ["Sign-in method", c.google ? "Google" : "Email & password"],
+                ["AI cost this month", usd(c.aiCostMonth)],
                 ["Shopify store", conn.shopify ? conn.shopify.store : "Not connected"],
                 ["Square", conn.square ? (conn.square.error ? "Sync error: " + conn.square.error : "Connected" + (conn.square.status ? " (" + conn.square.status + ")" : "")) : "Not connected"],
                 ["Google Reviews", conn.googleReviews ? conn.googleReviews.place || "Linked" : "Not linked"],
@@ -579,7 +598,8 @@
               return (
                 '<tr class="cust-row" tabindex="0" aria-expanded="false">' +
                 '<td><div class="cust-name">' + esc(c.company || c.name || c.email) + '</div><div class="cust-sub">' + esc(c.email) + "</div></td>" +
-                "<td>" + chip(PLAN[c.plan] || c.plan, PLAN_BADGE[c.plan]) + "</td>" +
+                "<td>" + chip((PLAN_ALL[c.plan] || c.plan) + (c.trialDaysLeft ? " · " + c.trialDaysLeft + "d left" : ""), PLAN_BADGE[c.plan]) +
+                (c.aiCostMonth ? '<div class="cust-sub">AI ' + usd(c.aiCostMonth) + " this month</div>" : "") + "</td>" +
                 '<td><div class="cust-sub">' + esc(PLATFORM[c.platform] || c.platform) + '</div><div class="chips">' + chips.join("") + "</div></td>" +
                 '<td class="nowrap">' + esc(date(c.createdAt)) + "</td>" +
                 '<td class="nowrap">' + esc(ago(c.lastLogin)) + "</td>" +

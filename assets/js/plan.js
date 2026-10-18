@@ -12,7 +12,7 @@
  *   AervoPlan.chatError(data)              -> text for a failed chat reply
  */
 (function () {
-  var PLAN_NAMES = { free: "Starter", essential: "Essential", pro: "Pro", business: "Business" };
+  var PLAN_NAMES = { free: "Lite", essential: "Essential", pro: "Pro", business: "Business" };
 
   function esc(v) {
     return String(v == null ? "" : v)
@@ -27,7 +27,7 @@
     return (user && user.planFeatures) || null;
   }
 
-  // Starter ("Basic dashboard") gets the Overview tab; the rest need Essential+
+  // Lite (trial over, no plan) gets the Overview tab; the rest need Essential+
   function dashboardLocked(user, view) {
     var f = features(user);
     if (!f || view === "overview") return false;

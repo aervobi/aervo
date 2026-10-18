@@ -1447,7 +1447,7 @@
             <div class="plan-card">
               <div>
                 <div class="plan-badge">⚡ Active</div>
-                <div class="plan-name" id="planName">Starter</div>
+                <div class="plan-name" id="planName">…</div>
                 <div class="plan-detail" id="planDetail">
                   Free forever · 1 integration · 7 days history
                 </div>
@@ -2125,15 +2125,18 @@ async function uploadCompanyLogo(input) {
 }
       // ── PLAN ──
       const PLAN_INFO = {
-        free: ["Starter", "Free forever · 1 integration · 7 days history"],
-        essential: ["Essential", "1 integration · 90 days history"],
-        pro: ["Pro", "2 integrations · 2 years history · 10 team seats"],
-        business: ["Business", "5 integrations · unlimited history · 50 team seats"],
+        free: ["Lite", "Read-only Overview · last 7 days · choose a plan to switch everything on"],
+        essential: ["Essential", "$29/mo · 1 sales source · 90 days history · Ask Aervo · weekly local briefing"],
+        pro: ["Pro", "$69/mo · Shopify + Square · 2 years history · 7-day forecast · team of 10"],
+        business: ["Business", "$149/mo · up to 5 locations · unlimited history · team of 50"],
       };
       function renderPlan(user) {
         const plan = PLAN_INFO[user.plan] ? user.plan : "free";
-        document.getElementById("planName").textContent = PLAN_INFO[plan][0];
-        document.getElementById("planDetail").textContent = PLAN_INFO[plan][1];
+        const t = user.trial;
+        document.getElementById("planName").textContent = t ? "Pro trial" : PLAN_INFO[plan][0];
+        document.getElementById("planDetail").textContent = t
+          ? `${t.daysLeft} day${t.daysLeft === 1 ? "" : "s"} left of your free Pro trial · choose a plan to keep everything`
+          : PLAN_INFO[plan][1];
         const card = document.getElementById("founderPlanCard");
         card.hidden = !user.isFounder;
         if (!user.isFounder) return;

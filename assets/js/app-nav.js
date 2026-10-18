@@ -298,6 +298,20 @@
     }
   });
 
+  // Trial countdown / Lite reminder (nothing for paying accounts)
+  function renderPlanChip(u) {
+    var old = document.querySelectorAll("[data-plan-chip]");
+    old.forEach(function (el) { el.remove(); });
+    var text = null;
+    if (u.trial) text = "Pro trial · " + u.trial.daysLeft + " day" + (u.trial.daysLeft === 1 ? "" : "s") + " left";
+    else if (u.billingPlan === "free" && u.plan === "free") text = "Lite · choose a plan";
+    if (!text) return;
+    var desk = document.querySelector("#appNav .nav-right");
+    var mob = document.querySelector("#mobileMenu .mobile-links");
+    if (desk) desk.insertAdjacentHTML("afterbegin", '<a class="nav-link plan-chip" data-plan-chip href="/pricing">' + text + "</a>");
+    if (mob) mob.insertAdjacentHTML("afterbegin", '<a class="mobile-link" data-plan-chip href="/pricing">' + text + "</a>");
+  }
+
   function setFounder(isFounder) {
     try {
       if (isFounder) localStorage.setItem(FOUNDER_KEY, "1");
@@ -345,6 +359,7 @@
         } catch (e) {}
         renderSwitcher(avail);
         setFounder(!!d.user.isFounder);
+        renderPlanChip(d.user);
         if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
           document.querySelectorAll("[data-home]").forEach(function (a) {
             a.setAttribute("href", homeFor(d.user.platform));
