@@ -1,6 +1,7 @@
 /*
  * Intelligence Center → Local Market tab.
- * Data: aervo-backend/routes/market.js (/api/market/area, /briefing, /snapshot, /forecast).
+ * Data: aervo-backend/routes/market.js (/api/market/area, /briefing, /forecast, /trending,
+ * /competitors, /snapshot).
  * Plan limits are enforced by the server; a 403 PLAN_LIMIT shows an upgrade card
  * in that panel. Everything from the server goes through esc() before innerHTML.
  */
@@ -91,13 +92,8 @@
       '<div class="mk-grid">' +
       '<section class="mk-panel mk-brief mk-span-12" id="mkBriefing" aria-label="This week"></section>' +
       '<section class="mk-panel mk-span-8" id="mkForecast" aria-label="Next 7 days"></section>' +
-      '<section class="mk-panel mk-span-4" aria-label="Coming next">' +
-      '<div class="mk-panel-head"><div><div class="mk-title">Coming next</div><div class="mk-sub">More of your local market, rolling out soon</div></div></div>' +
-      '<ul class="mk-soon">' +
-      '<li><span aria-hidden="true">🎯</span><div><b>Competitor radar</b>Nearby businesses like yours and what their customers say.</div></li>' +
-      '<li><span aria-hidden="true">🔥</span><div><b>Trending near you</b>New openings and the fastest-growing spots around you.</div></li>' +
-      '<li><span aria-hidden="true">💡</span><div><b>Opportunities</b>Gaps in your market that fit what you do well.</div></li>' +
-      "</ul></section>" +
+      '<section class="mk-panel mk-span-4" id="mkTrending" aria-label="Trending near you"></section>' +
+      '<section class="mk-panel mk-span-12" id="mkRadar" aria-label="Competitor radar"></section>' +
       '<section class="mk-panel mk-span-12" id="mkSnapshot" aria-label="Your area at a glance"></section>' +
       "</div>";
 
@@ -302,6 +298,112 @@
     }
   }
 
+  // ── trending near you ───────────────────────────────────────────────────
+  var TYPE_ICON = [
+    [/coffee|cafe/i, "☕"], [/bakery|dessert|ice cream/i, "🥐"], [/bar|pub|brew/i, "🍺"], [/restaurant|food|grill|taco|pizza|takeaway/i, "🍽️"],
+    [/gym|fitness|yoga/i, "🏋️"], [/salon|barber|beauty|nail/i, "💇"], [/clothing|shoe|gift|book|store|shop/i, "🛍️"],
+  ];
+  function typeIcon(t) {
+    for (var i = 0; i < TYPE_ICON.length; i++) if (TYPE_ICON[i][0].test(t || "")) return TYPE_ICON[i][1];
+    return "📍";
+  }
+  function placeLink(p, label) {
+    var href = p.mapsUrl && safeUrl(p.mapsUrl);
+    return href ? '<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + "</a>" : esc(label);
+  }
+
+  function renderTrending(d) {
+    var el = document.getElementById("mkTrending");
+    if (!el) return;
+    var head = panelHead("Trending near you", "Fastest-growing spots within " + ((d && d.radiusMiles) || 3) + " miles", "Pro");
+    if (d.__status === 403) return (el.innerHTML = head + lockedHtml("Trending near you", d, "New openings and the fastest-growing spots around your store."));
+    if (!d.success) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.message || "Not available right now.") + "</p>");
+    if (d.needsSetup) return (el.innerHTML = head + '<p class="mk-empty">Set your store\'s ZIP code above to see what\'s trending.</p>');
+    if (d.unavailable) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.unavailable) + "</p>");
+    var places = d.places || [];
+    if (d.mode === "popular") head = panelHead("Popular near you", "Most-loved spots within " + d.radiusMiles + " miles", "Pro");
+    var rows = places
+      .map(function (p) {
+        var badge = p.isNew ? "New nearby" : d.mode === "trending" && p.growth > 0 ? "+" + fmt(p.growth) + " reviews" : p.rating != null ? "★ " + p.rating : "";
+        return (
+          '<div class="mk-trend">' +
+          '<div class="mk-trend-ico" aria-hidden="true">' + typeIcon(p.type) + "</div>" +
+          '<div class="mk-trend-main"><div class="mk-trend-name">' + placeLink(p, p.name) + "</div>" +
+          '<div class="mk-trend-sub">' + (p.sameCategory ? '<span class="mk-pill">Like you</span> ' : "") +
+          esc([p.type, p.miles != null ? p.miles + " mi" : null, d.mode === "popular" ? fmt(p.reviews) + " reviews" : null].filter(Boolean).join(" · ")) + "</div></div>" +
+          '<div class="mk-trend-badge">' + esc(badge) + "</div></div>"
+        );
+      })
+      .join("");
+    var note =
+      d.mode === "popular"
+        ? "We started watching review growth here on " + new Date(d.trackingSince + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ". Fast risers and new openings show up after a week."
+        : "Growth = new Google reviews over the last few weeks.";
+    el.innerHTML = head + (rows ? '<div class="mk-trend-list">' + rows + "</div>" : '<p class="mk-empty">Nothing stands out nearby yet.</p>') + '<div class="mk-note">' + esc(note) + " Source: Google Maps.</div>";
+  }
+
+  // ── competitor radar ────────────────────────────────────────────────────
+  function radarSvg(d) {
+    var R = 96, C = 110, max = d.radiusMiles || 2;
+    var dots = (d.competitors || [])
+      .map(function (c, i) {
+        var r = Math.min(c.miles / max, 1) * R;
+        var rad = (c.bearing * Math.PI) / 180;
+        var x = C + r * Math.sin(rad), y = C - r * Math.cos(rad);
+        var letter = String.fromCharCode(65 + i);
+        return (
+          '<g><title>' + esc(letter + " · " + c.name + " · " + c.miles + " mi") + "</title>" +
+          '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="7" fill="var(--primary-from)" stroke="var(--bg)" stroke-width="2"/>' +
+          '<text x="' + x.toFixed(1) + '" y="' + (y - 11).toFixed(1) + '" fill="var(--text-secondary)" font-size="9" text-anchor="middle">' + letter + "</text></g>"
+        );
+      })
+      .join("");
+    return (
+      '<svg viewBox="0 0 220 220" role="img" aria-label="Map of nearby competitors around your store">' +
+      '<circle cx="110" cy="110" r="96" fill="none" stroke="var(--border)"/>' +
+      '<circle cx="110" cy="110" r="48" fill="none" stroke="var(--border)"/>' +
+      '<text x="110" y="10" fill="var(--text-muted)" font-size="9" text-anchor="middle">' + max + " mi</text>" +
+      '<text x="110" y="58" fill="var(--text-muted)" font-size="9" text-anchor="middle">' + max / 2 + " mi</text>" +
+      '<circle cx="110" cy="110" r="9" fill="var(--primary-to)"/>' +
+      '<text x="110" y="134" fill="var(--text)" font-size="10" text-anchor="middle" font-weight="700">You</text>' +
+      dots + "</svg>"
+    );
+  }
+
+  function renderRadar(d) {
+    var el = document.getElementById("mkRadar");
+    if (!el) return;
+    var head = panelHead("Competitor radar", "Businesses like yours within " + ((d && d.radiusMiles) || 2) + " miles, and what their customers say", "Pro");
+    if (d.__status === 403) return (el.innerHTML = head + lockedHtml("Competitor radar", d, "See nearby competitors and what their customers praise and complain about."));
+    if (!d.success) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.message || "Not available right now.") + "</p>");
+    if (d.needsSetup) return (el.innerHTML = head + '<p class="mk-empty">Set your store\'s ZIP code above to see competitors.</p>');
+    if (d.unavailable) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.unavailable) + "</p>");
+    var list = (d.competitors || [])
+      .map(function (c, i) {
+        var chips = (c.praised || []).map(function (t) { return '<span class="mk-theme pos">' + esc(t) + "</span>"; })
+          .concat((c.complaints || []).map(function (t) { return '<span class="mk-theme neg">' + esc(t) + "</span>"; }))
+          .join("");
+        return (
+          '<div class="mk-comp">' +
+          '<div><div class="mk-comp-name">' + String.fromCharCode(65 + i) + " · " + placeLink(c, c.name) + "</div>" +
+          '<div class="mk-comp-meta">' + esc([c.miles + " mi", c.price, c.type].filter(Boolean).join(" · ")) + "</div></div>" +
+          '<div class="mk-comp-rating">' + (c.rating != null ? "★ " + esc(c.rating) : "—") + '<div class="mk-comp-meta">' + fmt(c.reviews) + " reviews</div></div>" +
+          (chips ? '<div class="mk-themes">' + chips + "</div>" : "") +
+          "</div>"
+        );
+      })
+      .join("");
+    if (!list) return (el.innerHTML = head + '<p class="mk-empty">We didn\'t find businesses like yours within ' + d.radiusMiles + " miles.</p>");
+    var own = d.own && d.own.rating ? "You: ★ " + d.own.rating + " from " + fmt(d.own.reviews) + " reviews. " : "";
+    el.innerHTML =
+      head +
+      '<div class="mk-radar">' + radarSvg(d) + '<div class="mk-comp-list">' + list + "</div></div>" +
+      (d.edge ? '<div class="mk-edge"><strong>Your opening:</strong> ' + esc(d.edge) + "</div>" : "") +
+      '<div class="mk-note">' + esc(own) +
+      (d.exactLocation ? "" : "Distances are from the middle of your ZIP code; link your Google listing (Google Reviews) for exact distances. ") +
+      "Ratings and reviews from Google Maps; themes summarized by Aervo AI from recent public reviews. Updated weekly.</div>";
+  }
+
   // ── snapshot ────────────────────────────────────────────────────────────
   function renderSnapshot(d) {
     var el = document.getElementById("mkSnapshot");
@@ -350,6 +452,8 @@
       polls = 0;
       call("GET", "/api/market/briefing").then(renderBriefing);
       call("GET", "/api/market/forecast").then(renderForecast);
+      call("GET", "/api/market/trending").then(renderTrending);
+      call("GET", "/api/market/competitors").then(renderRadar);
       call("GET", "/api/market/snapshot").then(renderSnapshot);
     });
   }
