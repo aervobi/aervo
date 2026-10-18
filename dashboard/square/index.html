@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
     <script src="/assets/js/ui.js"></script>
+    <script src="/assets/js/plan.js"></script>
     <style>/* Platform accent: Square is green. Tabs, shop badge and charts use it. */
       :root {
         --accent: #34d399;
@@ -562,6 +563,7 @@
           const data = await res.json();
           userData = data.user;
           merchantId = userData.squareMerchantId || String(userData.id);
+          if (window.AervoPlan) AervoPlan.markTabs(userData);
           hasShopify = !!data.shop;
 
 
@@ -1132,8 +1134,24 @@
         }
       }
 
+      // What each locked tab offers, for the upgrade card (Starter sees Overview only)
+      const LOCKED_VIEWS = {
+        orders: { title: "Orders & sales trends", bullets: ["Every order", "Sales by hour", "Service filters"] },
+        customers: { title: "Customer insights", bullets: ["Loyal & at-risk segments", "Lifetime spend", "Visit history"] },
+        appointments: { title: "Appointments", bullets: ["Bookings calendar", "No-shows", "Busiest times"] },
+        reviews: { title: "Google Reviews", bullets: ["Latest reviews", "Rating trend"] },
+      };
       function renderView(view) {
         const content = document.getElementById("content");
+        if (window.AervoPlan && AervoPlan.dashboardLocked(userData, view)) {
+          const info = LOCKED_VIEWS[view] || {};
+          content.innerHTML = AervoPlan.upgradeCard({
+            title: info.title,
+            text: "Your Starter plan includes the Overview. Upgrade to Essential to open every tab.",
+            bullets: info.bullets,
+          });
+          return;
+        }
         switch (view) {
           case "overview":
             content.innerHTML = renderOverview();
@@ -2261,7 +2279,10 @@
           if (!res.ok || !data.url) throw new Error(data.message || "failed");
           window.location.href = data.url;
         } catch (err) {
-          showToast("Could not start the Square connection. Please try again.", "error");
+          showToast(
+            err.message && err.message !== "failed" ? err.message : "Could not start the Square connection. Please try again.",
+            "error",
+          );
         }
       }
 
@@ -2323,7 +2344,7 @@
           const aiMsg = document.createElement("div");
           aiMsg.className = "chat-message ai";
           aiMsg.innerHTML = formatAiReply(
-            data.reply || "Sorry, I couldn't respond.",
+            data.reply || (window.AervoPlan && AervoPlan.chatError(data)) || "Sorry, I couldn't respond.",
           );
           messages.appendChild(aiMsg);
           if (data.reply) {

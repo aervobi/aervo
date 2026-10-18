@@ -661,7 +661,9 @@
             window.location.href = data.url;
           } catch (err) {
             showToast(
-              "Could not start the Square connection. Please log in again and retry.",
+              err.message && err.message !== "failed"
+                ? err.message
+                : "Could not start the Square connection. Please log in again and retry.",
               "error",
             );
           }

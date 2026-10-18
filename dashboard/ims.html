@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
     <script src="/assets/js/ui.js"></script>
+    <script src="/assets/js/plan.js"></script>
     <style>/* Platform accent: IMS is purple. Tabs, shop badge and charts use it. */
       :root {
         --accent: #a855f7;
@@ -2484,7 +2485,7 @@
           const aiMsg = document.createElement("div");
           aiMsg.className = "chat-message ai";
           aiMsg.innerHTML = formatAiReply(
-            data.reply || "Sorry, I couldn't respond.",
+            data.reply || (window.AervoPlan && AervoPlan.chatError(data)) || "Sorry, I couldn't respond.",
           );
           messages.appendChild(aiMsg);
           if (data.reply) {

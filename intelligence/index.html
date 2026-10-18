@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/assets/css/tokens.css" />
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
+    <link rel="stylesheet" href="/assets/css/market.css" />
     <script src="/assets/js/ui.js"></script>
     <style>
       /* Page-local names mapped onto the shared tokens */
@@ -194,6 +195,12 @@
         gap: var(--space-2);
       }
       .intel-stab:hover { color: var(--text); }
+      .intel-new {
+        font-size: var(--fs-11);
+        font-weight: var(--fw-bold);
+        color: var(--primary-to);
+        margin-left: var(--space-1);
+      }
       .intel-stab.active {
         color: var(--text);
         border-bottom-color: var(--blue);
@@ -971,7 +978,8 @@
 
       <!-- SECTION TABS -->
       <div class="intel-section-tabs">
-        <button class="intel-stab active" data-section="dashboard" onclick="switchSection('dashboard', this)">Dashboard</button>
+        <button class="intel-stab active" data-section="market" onclick="switchSection('market', this)">Local Market <span class="intel-new">NEW</span></button>
+        <button class="intel-stab" data-section="dashboard" onclick="switchSection('dashboard', this)">My Business</button>
         <button class="intel-stab" data-section="playbooks" onclick="switchSection('playbooks', this)">
           Playbooks
           <span class="pb-new-dot" id="pb-new-dot" style="display:none"></span>
@@ -979,6 +987,9 @@
       </div>
 
       <!-- PLAYBOOKS PANEL -->
+      <!-- LOCAL MARKET PANEL (assets/js/market.js) -->
+      <div id="section-market"></div>
+
       <div id="section-playbooks" style="display:none;">
         <div class="pb-header">
           <div>
@@ -1052,7 +1063,7 @@
       </div>
 
       <!-- MAIN INTEL GRID -->
-      <div class="intel-grid" id="section-dashboard">
+      <div class="intel-grid" id="section-dashboard" style="display:none;">
         <!-- 1. HEALTH SCORE (col 1) -->
         <div class="card">
           <div class="card-label text-info">
@@ -2400,6 +2411,8 @@
 
       // ── BOOT ──
       init();
+      // Local Market is the first tab
+      switchSection('market', document.querySelector('.intel-stab[data-section="market"]'));
 
       // ── SECTION TABS ──
       function switchSection(name, btn) {
@@ -2407,8 +2420,15 @@
         document.querySelectorAll('.intel-stab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         // Show/hide sections
+        document.getElementById('section-market').style.display = name === 'market' ? 'flex' : 'none';
         document.getElementById('section-dashboard').style.display = name === 'dashboard' ? 'grid' : 'none';
         document.getElementById('section-playbooks').style.display = name === 'playbooks' ? 'block' : 'none';
+        // Data-source pills and industry chips belong to "My Business"
+        const heroRight = document.querySelector('.hero-right');
+        const industryBar = document.querySelector('.industry-bar');
+        if (heroRight) heroRight.style.display = name === 'dashboard' ? '' : 'none';
+        if (industryBar) industryBar.style.display = name === 'dashboard' ? '' : 'none';
+        if (name === 'market' && window.AervoMarket) AervoMarket.show();
         // Load playbooks on first visit
         if (name === 'playbooks' && !pbLoaded) loadPlaybooks();
       }
@@ -2671,5 +2691,6 @@
         }
       }
     </script>
+    <script src="/assets/js/market.js"></script>
   </body>
 </html>

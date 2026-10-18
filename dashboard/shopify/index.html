@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="/assets/css/base.css" />
     <link rel="stylesheet" href="/assets/css/components.css" />
     <script src="/assets/js/ui.js"></script>
+    <script src="/assets/js/plan.js"></script>
     <style>/* Platform accent: Shopify is blue. Tabs, shop badge and charts use it. */
       :root {
         --accent: #60a5fa;
@@ -680,6 +681,7 @@
             throw new Error(data.message || "Failed to load user data");
 
           userData = data.user;
+          if (window.AervoPlan) AervoPlan.markTabs(userData);
           shopData = data.shop;
 
           shopData = data.shop;
@@ -754,8 +756,23 @@
       }
 
       // ============= RENDER ROUTER =============
+      // What each locked tab offers, for the upgrade card (Starter sees Overview only)
+      const LOCKED_VIEWS = {
+        analytics: { title: "Sales analytics", bullets: ["Revenue trends", "Best sellers", "Order patterns"] },
+        inventory: { title: "Inventory", bullets: ["Stock levels", "Low-stock alerts", "Product performance"] },
+        customers: { title: "Customer insights", bullets: ["Segments", "Lifetime value", "Win-back targets"] },
+      };
       function renderView(view) {
         const content = document.getElementById("content");
+        if (window.AervoPlan && AervoPlan.dashboardLocked(userData, view)) {
+          const info = LOCKED_VIEWS[view] || {};
+          content.innerHTML = AervoPlan.upgradeCard({
+            title: info.title,
+            text: "Your Starter plan includes the Overview. Upgrade to Essential to open every tab.",
+            bullets: info.bullets,
+          });
+          return;
+        }
         if (!shopData && view !== "overview") {
           content.innerHTML = renderConnectShopify();
           return;
@@ -1871,7 +1888,15 @@
             chatHistory.push({ role: "user", content: message });
             chatHistory.push({ role: "assistant", content: data.reply });
           } else {
-            throw new Error(data.message || "Failed to get response");
+            const limitMsg = window.AervoPlan && AervoPlan.chatError(data);
+            if (limitMsg) {
+              const aiMsg = document.createElement("div");
+              aiMsg.className = "chat-message ai";
+              aiMsg.textContent = limitMsg;
+              messages.appendChild(aiMsg);
+            } else {
+              throw new Error(data.message || "Failed to get response");
+            }
           }
         } catch (err) {
           document.getElementById("typingIndicator")?.remove();
