@@ -312,3 +312,93 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* weekly briefing */
+.mk-brief {
+  background: linear-gradient(135deg, rgba(var(--primary-to-rgb), 0.14), rgba(var(--primary-rgb), 0.06));
+  border-color: rgba(var(--primary-to-rgb), 0.35);
+}
+.mk-brief-title {
+  font-size: var(--fs-20);
+  font-weight: var(--fw-bold);
+}
+.mk-headline {
+  font-size: var(--fs-16);
+  color: var(--text);
+  line-height: var(--lh-normal);
+}
+.mk-brief-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.mk-brief-item {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.mk-brief-item.yours {
+  border-color: rgba(var(--primary-to-rgb), 0.45);
+}
+.mk-brief-ico {
+  font-size: var(--fs-20);
+  line-height: 1;
+}
+.mk-brief-item b {
+  display: block;
+  font-size: var(--fs-14);
+  margin-bottom: var(--space-1);
+}
+.mk-brief-item p {
+  font-size: var(--fs-13);
+  color: var(--text-secondary);
+  line-height: var(--lh-normal);
+}
+.mk-brief-action {
+  margin-top: var(--space-2);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+}
+.mk-srcs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+.mk-src {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-11);
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  padding: 1px var(--space-2);
+  text-decoration: none;
+}
+a.mk-src:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.mk-preparing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--fs-14);
+}
+@media (max-width: 800px) {
+  .mk-brief-list {
+    grid-template-columns: 1fr;
+  }
+}

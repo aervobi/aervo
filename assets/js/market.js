@@ -1,6 +1,6 @@
 /*
  * Intelligence Center → Local Market tab.
- * Data: aervo-backend/routes/market.js (/api/market/area, /snapshot, /forecast).
+ * Data: aervo-backend/routes/market.js (/api/market/area, /briefing, /snapshot, /forecast).
  * Plan limits are enforced by the server; a 403 PLAN_LIMIT shows an upgrade card
  * in that panel. Everything from the server goes through esc() before innerHTML.
  */
@@ -89,11 +89,11 @@
       '<div class="mk-note">We use your area for local data and weather. It isn\'t shown to anyone else.</div>' +
       "</form>" +
       '<div class="mk-grid">' +
+      '<section class="mk-panel mk-brief mk-span-12" id="mkBriefing" aria-label="This week"></section>' +
       '<section class="mk-panel mk-span-8" id="mkForecast" aria-label="Next 7 days"></section>' +
       '<section class="mk-panel mk-span-4" aria-label="Coming next">' +
       '<div class="mk-panel-head"><div><div class="mk-title">Coming next</div><div class="mk-sub">More of your local market, rolling out soon</div></div></div>' +
       '<ul class="mk-soon">' +
-      '<li><span aria-hidden="true">📰</span><div><b>Weekly AI briefing</b>Local news, trends and events that affect your store, with sources.</div></li>' +
       '<li><span aria-hidden="true">🎯</span><div><b>Competitor radar</b>Nearby businesses like yours and what their customers say.</div></li>' +
       '<li><span aria-hidden="true">🔥</span><div><b>Trending near you</b>New openings and the fastest-growing spots around you.</div></li>' +
       '<li><span aria-hidden="true">💡</span><div><b>Opportunities</b>Gaps in your market that fit what you do well.</div></li>' +
@@ -215,6 +215,93 @@
       (x.action ? '<span class="mk-action">' + esc(x.action) + "</span>" : "");
   }
 
+  // ── weekly briefing ─────────────────────────────────────────────────────
+  var KIND_ICON = { event: "🎟️", trend: "📈", news: "📰", economy: "💵", competition: "🏪", weather: "🌦️", yours: "📊", other: "📌" };
+  var pollTimer = null;
+  var polls = 0;
+
+  function safeUrl(u) {
+    try {
+      var x = new URL(u);
+      return x.protocol === "https:" || x.protocol === "http:" ? x.href : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function sourceChips(sources) {
+    return (sources || [])
+      .map(function (s) {
+        var href = s.url && safeUrl(s.url);
+        var label = s.title || (href ? new URL(href).host : "");
+        return href
+          ? '<a class="mk-src" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer" title="' + esc(label) + '">' + esc(label) + "</a>"
+          : '<span class="mk-src">' + esc(label) + "</span>";
+      })
+      .join("");
+  }
+  function itemHtml(it) {
+    return (
+      '<li class="mk-brief-item' + (it.kind === "yours" ? " yours" : "") + '">' +
+      '<span class="mk-brief-ico" aria-hidden="true">' + (KIND_ICON[it.kind] || KIND_ICON.other) + "</span>" +
+      '<div style="min-width:0"><b>' + esc(it.title) + "</b><p>" + esc(it.body) + "</p>" +
+      (it.action ? '<div class="mk-brief-action">→ ' + esc(it.action) + "</div>" : "") +
+      '<div class="mk-srcs">' + sourceChips(it.sources) + "</div></div></li>"
+    );
+  }
+
+  function renderBriefing(d) {
+    var el = document.getElementById("mkBriefing");
+    if (!el) return;
+    var a = state.area;
+    var city = a ? a.city : "your area";
+    var weekTxt = "";
+    if (d.week) {
+      var f = function (x) {
+        return new Date(x + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      };
+      weekTxt = f(d.week.start) + " – " + f(d.week.end);
+    }
+    var head =
+      '<div class="mk-panel-head"><div><div class="mk-brief-title">This week in ' + esc(city) + "</div>" +
+      '<div class="mk-sub">AI briefing from live web research' + (weekTxt ? " · " + esc(weekTxt) : "") + "</div></div>" +
+      '<span class="mk-tier">Essential+</span></div>';
+
+    if (d.__status === 403) return (el.innerHTML = head + lockedHtml("The weekly briefing", d, "Local events, news and trends that affect your store, every Monday, with sources."));
+    if (!d.success) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.message || "This week's briefing isn't available right now.") + "</p>");
+    if (d.needsSetup) return (el.innerHTML = head + '<p class="mk-empty">Set your store\'s ZIP code above to get a weekly briefing.</p>');
+    if (d.unavailable) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.unavailable) + "</p>");
+
+    var items = [];
+    if (d.yourWeek) items.push(d.yourWeek);
+    if (d.status === "ready" && d.briefing) items = items.concat(d.briefing.items || []);
+
+    var body = "";
+    if (d.status === "ready" && d.briefing) {
+      body += '<p class="mk-headline">' + esc(d.briefing.headline) + "</p>";
+    } else if (d.status === "failed") {
+      body += '<p class="mk-empty">We couldn\'t put together this week\'s research. We\'ll try again shortly.</p>';
+    } else {
+      body += '<div class="mk-preparing"><span class="spinner-sm" aria-hidden="true"></span>Researching what\'s happening around ' + esc(city) + " this week. This takes a minute or two…</div>";
+    }
+    if (items.length) body += '<ul class="mk-brief-list">' + items.map(itemHtml).join("") + "</ul>";
+    if (d.status === "ready" && d.briefing) {
+      body +=
+        '<div class="mk-note">Every point links to where we found it. Written by Aervo AI from public sources' +
+        (d.briefing.generatedAt ? ", " + esc(new Date(d.briefing.generatedAt).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })) : "") +
+        ". Double-check dates before you act.</div>";
+    }
+    el.innerHTML = head + body;
+
+    // Still being prepared: check back for a few minutes
+    clearTimeout(pollTimer);
+    if (d.status === "preparing" && polls < 12) {
+      polls++;
+      pollTimer = setTimeout(function () {
+        call("GET", "/api/market/briefing").then(renderBriefing);
+      }, 15000);
+    }
+  }
+
   // ── snapshot ────────────────────────────────────────────────────────────
   function renderSnapshot(d) {
     var el = document.getElementById("mkSnapshot");
@@ -260,6 +347,8 @@
       state.categories = a.categories || {};
       shell();
       if (!state.area) document.getElementById("mkAreaForm").hidden = false;
+      polls = 0;
+      call("GET", "/api/market/briefing").then(renderBriefing);
       call("GET", "/api/market/forecast").then(renderForecast);
       call("GET", "/api/market/snapshot").then(renderSnapshot);
     });
