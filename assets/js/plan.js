@@ -64,6 +64,7 @@
   }
 
   function chatError(data) {
+    if (data && data.code === "AI_PAUSED" && data.message) return data.message;
     if (data && (data.code === "AI_LIMIT" || data.code === "PLAN_LIMIT") && data.message) {
       return data.message + " See plans at aervoapp.com/pricing.";
     }

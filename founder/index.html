@@ -293,6 +293,7 @@
           <p class="founder-sub" id="founderSub">All of Aervo, across every customer.</p>
         </div>
       </div>
+      <div class="alert alert-error" id="aiBudgetBanner" role="status" hidden></div>
       <div id="founderBody"><div class="card text-muted">Loading…</div></div>
     </main>
 
@@ -433,7 +434,19 @@
             kpi("Active this week", fmt(u.active7), fmt(u.active30) + " active in 30 days") +
             kpi("On a paid plan", fmt(paying), u.total ? Math.round((paying / u.total) * 100) + "% of customers" : "") +
             kpi("Store connections", fmt(connected), fmt(c.shopify) + " Shopify · " + fmt(c.square) + " Square · " + fmt(c.quickbooks) + " QuickBooks") +
-            kpi("AI cost this month", usd(ai.month), fmt(ai.calls) + " calls · " + usd(ai.shared) + " shared · " + (paying ? usd((ai.month) / paying) + " per paying account" : "no paying accounts yet"));
+            kpi("AI cost this month", usd(ai.month), (ai.budget ? "of " + usd(ai.budget.limits.month) + " budget · " : "") + fmt(ai.calls) + " calls · " + (paying ? usd(ai.month / paying) + " per paying account" : "no paying accounts yet"));
+          var bud = ai.budget;
+          var banner = document.getElementById("aiBudgetBanner");
+          if (bud && banner) {
+            var off = Object.keys(bud.running).filter(function (k) { return !bud.running[k]; });
+            var names = { background: "Weekly Marketing Briefs and competitor themes", standard: "AI insights", chat: "Ask Aervo" };
+            banner.hidden = !bud.paused && !off.length;
+            banner.textContent = bud.paused
+              ? "AI is paused: " + bud.pauseReason + ". Customers see built-in insights; it retries automatically."
+              : off.length
+              ? "Budget guardrail active: " + off.map(function (k) { return names[k]; }).join(", ") + " paused to stay within $" + bud.limits.month + "/month ($" + bud.limits.day + "/day). Raise AI_MONTHLY_BUDGET_USD / AI_DAILY_BUDGET_USD in Render to resume."
+              : "";
+          }
 
           // signups chart
           var days = o.signupsByDay;

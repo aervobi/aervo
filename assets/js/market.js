@@ -250,40 +250,43 @@
     if (!el) return;
     var a = state.area;
     var city = a ? a.city : "your area";
-    var weekTxt = "";
-    if (d.week) {
-      var f = function (x) {
-        return new Date(x + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
-      };
-      weekTxt = f(d.week.start) + " – " + f(d.week.end);
-    }
+    var day = function (x, opts) {
+      return new Date(x + "T12:00:00").toLocaleDateString(undefined, opts || { month: "short", day: "numeric" });
+    };
+    var next = d.nextBriefing ? day(d.nextBriefing, { weekday: "long", month: "short", day: "numeric" }) : "Monday";
+    var sub = [city + (a && a.categoryLabel ? " · " + a.categoryLabel : "")];
+    if (d.briefWeek) sub.push("week of " + day(d.briefWeek));
+    sub.push("next brief " + next);
     var head =
-      '<div class="mk-panel-head"><div><div class="mk-brief-title">This week in ' + esc(city) + "</div>" +
-      '<div class="mk-sub">AI briefing from live web research' + (weekTxt ? " · " + esc(weekTxt) : "") + "</div></div>" +
+      '<div class="mk-panel-head"><div><div class="mk-brief-title">Weekly Marketing Brief</div>' +
+      '<div class="mk-sub">' + esc(sub.join(" · ")) + "</div></div>" +
       '<span class="mk-tier">Essential+</span></div>';
 
-    if (d.__status === 403) return (el.innerHTML = head + lockedHtml("The weekly briefing", d, "Local events, news and trends that affect your store, every Monday, with sources."));
-    if (!d.success) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.message || "This week's briefing isn't available right now.") + "</p>");
-    if (d.needsSetup) return (el.innerHTML = head + '<p class="mk-empty">Set your store\'s ZIP code above to get a weekly briefing.</p>');
+    if (d.__status === 403) return (el.innerHTML = head + lockedHtml("The Weekly Marketing Brief", d, "Every Monday: local events, news and trends that affect your store, with the marketing move to make and a source for every point."));
+    if (!d.success) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.message || "Your Weekly Marketing Brief isn't available right now.") + "</p>");
+    if (d.needsSetup) return (el.innerHTML = head + '<p class="mk-empty">Set your store\'s ZIP code above to get your Weekly Marketing Brief.</p>');
     if (d.unavailable) return (el.innerHTML = head + '<p class="mk-empty">' + esc(d.unavailable) + "</p>");
 
     var items = [];
     if (d.yourWeek) items.push(d.yourWeek);
-    if (d.status === "ready" && d.briefing) items = items.concat(d.briefing.items || []);
+    if (d.briefing) items = items.concat(d.briefing.items || []);
 
     var body = "";
-    if (d.status === "ready" && d.briefing) {
-      body += '<p class="mk-headline">' + esc(d.briefing.headline) + "</p>";
+    if (d.status === "scheduled") {
+      body += '<p class="mk-empty">Your brief for ' + esc(city) + " arrives " + esc(next) + ". Briefs are researched once a week" + (d.briefing ? "; here's the latest one meanwhile." : ".") + "</p>";
+    } else if (d.status === "paused") {
+      body += '<p class="mk-empty">Your next brief is on its way' + (d.briefing ? "; here's the latest one meanwhile." : ". Check back soon.") + "</p>";
     } else if (d.status === "failed") {
-      body += '<p class="mk-empty">We couldn\'t put together this week\'s research. We\'ll try again shortly.</p>';
-    } else {
-      body += '<div class="mk-preparing"><span class="spinner-sm" aria-hidden="true"></span>Researching what\'s happening around ' + esc(city) + " this week. This takes a minute or two…</div>";
+      body += '<p class="mk-empty">We couldn\'t finish this week\'s research yet. We\'ll try again shortly.</p>';
+    } else if (d.status !== "ready") {
+      body += '<div class="mk-preparing"><span class="spinner-sm" aria-hidden="true"></span>Preparing your Weekly Marketing Brief for ' + esc(city) + ". This takes a minute or two…</div>";
     }
+    if (d.briefing && d.briefing.headline) body += '<p class="mk-headline">' + esc(d.briefing.headline) + "</p>";
     if (items.length) body += '<ul class="mk-brief-list">' + items.map(itemHtml).join("") + "</ul>";
-    if (d.status === "ready" && d.briefing) {
+    if (d.briefing) {
       body +=
-        '<div class="mk-note">Every point links to where we found it. Written by Aervo AI from public sources' +
-        (d.briefing.generatedAt ? ", " + esc(new Date(d.briefing.generatedAt).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })) : "") +
+        '<div class="mk-note">A new brief every Monday. Every point links to where we found it; written by Aervo AI from public sources' +
+        (d.briefing.generatedAt ? " on " + esc(new Date(d.briefing.generatedAt).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })) : "") +
         ". Double-check dates before you act.</div>";
     }
     el.innerHTML = head + body;
