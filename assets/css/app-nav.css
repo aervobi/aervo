@@ -301,3 +301,39 @@
   border-color: rgba(var(--primary-to-rgb), 0.5);
   background: rgba(var(--primary-to-rgb), 0.12);
 }
+
+/* Unread messages: count on the Messages link, dot on the drawer button */
+#appNav .nav-badge,
+#mobileMenu .nav-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  color: var(--text-on-primary);
+  font-size: var(--fs-11);
+  font-weight: var(--fw-bold);
+  line-height: 18px;
+  text-align: center;
+}
+#mobileMenu .nav-badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+}
+#appNav .nav-badge[hidden],
+#mobileMenu .nav-badge[hidden] {
+  display: none;
+}
+#appNav .nav-menu-btn {
+  position: relative;
+}
+#appNav .nav-menu-btn.has-unread::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-from);
+}

@@ -135,7 +135,10 @@
           try {
             sessionStorage.removeItem(KEY);
           } catch (e) {}
-          window.location.href = "/settings?section=team";
+          try {
+            localStorage.setItem("aervo_team", "1"); // show Messages in the nav right away
+          } catch (e) {}
+          window.location.href = "/messages";
         }
 
         function signedInUser() {

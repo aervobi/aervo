@@ -6,7 +6,7 @@
  *   <script src="/assets/js/app-nav.js" data-active="reports"></script>
  *
  * data-active  Optional. Which link is current: reports | intelligence |
- *              integrations | settings | founder. Setting it also adds a "Dashboard"
+ *              integrations | messages | settings | founder. Setting it also adds a "Dashboard"
  *              link (sub-pages need a way back; dashboards use their tabs).
  * data-accent  Optional "r,g,b" override. Normally omitted: the bar follows the
  *              page's --accent-rgb token (see tokens.css).
@@ -19,7 +19,8 @@
  *   #appNavRightExtra  extras before the shared links (e.g. shop badge)
  *   #appNavMobile      first section of the mobile drawer (view tabs)
  *
- * This file owns: logout, the mobile-drawer toggle, and the home URL.
+ * This file owns: logout, the mobile-drawer toggle, the home URL, and the
+ * Messages link + unread badge (shown to people on a team; window.AervoNav.setUnread).
  */
 (function () {
   var script = document.currentScript;
@@ -85,13 +86,22 @@
   } catch (e) {}
   if (founderCached || active === "founder") links.unshift(FOUNDER_LINK);
 
+  // People on a team get Messages (cached so it appears without waiting for /me)
+  var TEAM_KEY = "aervo_team";
+  var MESSAGES_LINK = ["messages", "/messages", "💬", "Messages"];
+  var teamCached = false;
+  try {
+    teamCached = localStorage.getItem(TEAM_KEY) === "1";
+  } catch (e) {}
+  if (teamCached || active === "messages") links.splice(links.length - 1, 0, MESSAGES_LINK);
+
   function linkHtml(cls, l, withIcon) {
     var isActive = l[0] === active;
     return (
       '<a class="' + cls + (isActive ? " active" : "") + '" href="' + l[1] + '"' +
       (isActive ? ' aria-current="page"' : "") + ">" +
       (withIcon ? '<span class="nav-ico">' + l[2] + "</span>" : l[2] + " ") +
-      l[3] + "</a>"
+      l[3] + (l[0] === "messages" ? '<span class="nav-badge" data-msg-badge hidden></span>' : "") + "</a>"
     );
   }
 
@@ -328,6 +338,57 @@
     }
   }
 
+  // ── Messages link + unread badge ───────────────────────────────────────────
+  var unreadTimer = null;
+  function setUnread(n) {
+    n = Math.max(0, Number(n) || 0);
+    document.querySelectorAll("[data-msg-badge]").forEach(function (b) {
+      b.hidden = !n;
+      b.textContent = n > 99 ? "99+" : String(n);
+      b.setAttribute("aria-label", n + " unread");
+    });
+    btn.classList.toggle("has-unread", n > 0);
+  }
+
+  function pollUnread() {
+    if (document.hidden) return;
+    fetch("https://api.aervoapp.com/api/messages/unread", { headers: { Authorization: "Bearer " + token } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d && typeof d.unread === "number") setUnread(d.unread);
+      })
+      .catch(function () {});
+  }
+
+  function setTeam(onTeam) {
+    try {
+      if (onTeam) localStorage.setItem(TEAM_KEY, "1");
+      else localStorage.removeItem(TEAM_KEY);
+    } catch (e) {}
+    var existing = document.querySelectorAll('#appNav a[href="/messages"], #mobileMenu a[href="/messages"]');
+    if (onTeam && !existing.length) {
+      var desk = document.querySelector('#appNav .nav-right a[href="/settings"]');
+      var mob = document.querySelector('#mobileMenu .mobile-links a[href="/settings"]');
+      if (desk) desk.insertAdjacentHTML("beforebegin", linkHtml("nav-link", MESSAGES_LINK, true));
+      if (mob) mob.insertAdjacentHTML("beforebegin", linkHtml("mobile-link", MESSAGES_LINK, false));
+    } else if (!onTeam && active !== "messages") {
+      existing.forEach(function (a) { a.remove(); });
+      setUnread(0);
+    }
+    // The Messages page keeps its own live count; other pages check now and then
+    if (onTeam && active !== "messages" && !unreadTimer) {
+      pollUnread();
+      unreadTimer = setInterval(pollUnread, 60000);
+      document.addEventListener("visibilitychange", pollUnread);
+    } else if (!onTeam && unreadTimer) {
+      clearInterval(unreadTimer);
+      unreadTimer = null;
+      document.removeEventListener("visibilitychange", pollUnread);
+    }
+  }
+
+  window.AervoNav = { setUnread: setUnread };
+
   var user = readUser();
   var token = null;
   try {
@@ -359,6 +420,7 @@
         } catch (e) {}
         renderSwitcher(avail);
         setFounder(!!d.user.isFounder);
+        setTeam(!!d.team);
         renderPlanChip(d.user);
         if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
           document.querySelectorAll("[data-home]").forEach(function (a) {

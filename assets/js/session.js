@@ -63,6 +63,7 @@
       localStorage.removeItem("aervo_platforms");
       localStorage.removeItem("aervo_last_activity");
       localStorage.removeItem("aervo_founder");
+      localStorage.removeItem("aervo_team");
     } catch (e) {}
   }
 
@@ -305,7 +306,7 @@
     var key = pref && avail.indexOf(pref) > -1 ? pref : avail[0];
     if (key) return HOMES[key];
     // Staff who joined someone's team have no store of their own
-    if (me && me.team) return "/settings?section=team";
+    if (me && me.team) return "/messages";
     return "/dashboard";
   }
 

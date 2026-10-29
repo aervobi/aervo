@@ -71,7 +71,7 @@
     root.innerHTML =
       '<div class="card">' +
       '<div class="card-title"><span class="card-title-icon">👥</span> Teams are on Pro and Business</div>' +
-      '<p class="text-muted mb-6">Invite your staff, give supervisors the power to manage them, and get ready for team messaging. ' +
+      '<p class="text-muted mb-6">Invite your staff, give supervisors the power to manage them, and message each other in Aervo. ' +
       "Pro includes 10 seats and Business includes 50.</p>" +
       '<a href="/pricing" class="btn btn-primary btn-sm">See plans</a>' +
       "</div>";
