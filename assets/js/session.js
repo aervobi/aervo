@@ -64,6 +64,7 @@
       localStorage.removeItem("aervo_last_activity");
       localStorage.removeItem("aervo_founder");
       localStorage.removeItem("aervo_team");
+      localStorage.removeItem("aervo_staff");
     } catch (e) {}
   }
 
@@ -282,6 +283,42 @@
     return out;
   }
 
+  // ── employees ──────────────────────────────────────────────────────────────
+  // Someone invited onto a business's team (supervisor or member) who has no
+  // store of their own. They get the employee experience: the store's home page,
+  // Messages and Settings, branded with the store they work for. Owners, and staff
+  // who also run their own store, keep the normal app.
+  var STAFF_KEY = "aervo_staff";
+
+  function isStaff(me) {
+    return !!(me && me.team && me.team.role !== "owner" && !platformsFrom(me).length);
+  }
+
+  // Cache the answer (with the store's name/logo) so the next page can switch
+  // to the employee layout before /api/user/me comes back
+  function rememberStaff(me) {
+    try {
+      if (isStaff(me)) {
+        var st = me.team.store || {};
+        localStorage.setItem(
+          STAFF_KEY,
+          JSON.stringify({ role: me.team.role, team: me.team.name, store: st.name || me.team.name, logoUrl: st.logoUrl || null }),
+        );
+      } else {
+        localStorage.removeItem(STAFF_KEY);
+      }
+    } catch (e) {}
+  }
+
+  // { role, team, store, logoUrl } or null
+  function cachedStaff() {
+    try {
+      return JSON.parse(localStorage.getItem(STAFF_KEY) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+
   function activePlatform() {
     try {
       var v = localStorage.getItem(PREF_KEY);
@@ -301,12 +338,12 @@
   // Where to send someone after login: the dashboard they used last if they
   // still have it, otherwise the first one available.
   function pickHome(me) {
+    rememberStaff(me);
+    if (isStaff(me)) return "/team";
     var avail = platformsFrom(me);
     var pref = activePlatform();
     var key = pref && avail.indexOf(pref) > -1 ? pref : avail[0];
     if (key) return HOMES[key];
-    // Staff who joined someone's team have no store of their own
-    if (me && me.team) return "/messages";
     return "/dashboard";
   }
 
@@ -331,6 +368,9 @@
     activePlatform: activePlatform,
     setActivePlatform: setActivePlatform,
     pickHome: pickHome,
+    isStaff: isStaff,
+    rememberStaff: rememberStaff,
+    cachedStaff: cachedStaff,
     normalizeShop: normalizeShop,
     arrivedViaOAuth: arrivedViaOAuth,
     // a fresh sign-in counts as activity (and starts the inactivity clock)

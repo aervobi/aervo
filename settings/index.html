@@ -917,6 +917,7 @@
           <button
             class="sidebar-item"
             data-section="business"
+            data-owner-only
             onclick="showSection('business', this)"
           >
             <span class="sidebar-icon">🏢</span> Business Info
@@ -933,6 +934,7 @@
           <button
             class="sidebar-item"
             data-section="integrations"
+            data-owner-only
             onclick="showSection('integrations', this)"
           >
             <span class="sidebar-icon">🔗</span> Integrations
@@ -940,6 +942,7 @@
           <button
             class="sidebar-item"
             data-section="notifications"
+            data-owner-only
             onclick="showSection('notifications', this)"
           >
             <span class="sidebar-icon">🔔</span> Notifications
@@ -947,6 +950,7 @@
           <button
             class="sidebar-item"
             data-section="billing"
+            data-owner-only
             onclick="showSection('billing', this)"
           >
             <span class="sidebar-icon">💳</span> Plan & Billing
@@ -1177,7 +1181,7 @@
         </section>
 
         <!-- ── BUSINESS INFO ── -->
-        <section class="section-panel" id="section-business">
+        <section class="section-panel" id="section-business" data-owner-only>
           <div class="panel-header">
             <div class="panel-title">Business Info</div>
             <div class="panel-sub">
@@ -1272,7 +1276,7 @@
         </section>
 
         <!-- ── INTEGRATIONS ── -->
-        <section class="section-panel" id="section-integrations">
+        <section class="section-panel" id="section-integrations" data-owner-only>
           <div class="panel-header">
             <div class="panel-title">Integrations</div>
             <div class="panel-sub">
@@ -1330,7 +1334,7 @@
         </section>
 
         <!-- ── NOTIFICATIONS ── -->
-        <section class="section-panel" id="section-notifications">
+        <section class="section-panel" id="section-notifications" data-owner-only>
           <div class="panel-header">
             <div class="panel-title">Notifications</div>
             <div class="panel-sub">
@@ -1433,7 +1437,7 @@
         </section>
 
         <!-- ── BILLING ── -->
-        <section class="section-panel" id="section-billing">
+        <section class="section-panel" id="section-billing" data-owner-only>
           <div class="panel-header">
             <div class="panel-title">Plan & Billing</div>
             <div class="panel-sub">

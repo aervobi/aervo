@@ -6,7 +6,7 @@
  *   <script src="/assets/js/app-nav.js" data-active="reports"></script>
  *
  * data-active  Optional. Which link is current: reports | intelligence |
- *              integrations | messages | settings | founder. Setting it also adds a "Dashboard"
+ *              integrations | messages | settings | founder | team. Setting it also adds a "Dashboard"
  *              link (sub-pages need a way back; dashboards use their tabs).
  * data-accent  Optional "r,g,b" override. Normally omitted: the bar follows the
  *              page's --accent-rgb token (see tokens.css).
@@ -21,6 +21,11 @@
  *
  * This file owns: logout, the mobile-drawer toggle, the home URL, and the
  * Messages link + unread badge (shown to people on a team; window.AervoNav.setUnread).
+ *
+ * Employee mode: people invited onto a business's team with no store of their
+ * own (AervoSession.isStaff) get a different bar: the store's logo and name,
+ * and only Home (/team), Messages and Settings. Store-owner pages (dashboards,
+ * reports, intelligence, integrations) send them to /team.
  */
 (function () {
   var script = document.currentScript;
@@ -52,6 +57,21 @@
 
   var S = window.AervoSession || null;
 
+  function escHtml(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var staff = S && S.cachedStaff ? S.cachedStaff() : null;
+  // Pages hide store-owner-only parts with [data-owner-only] (see app-nav.css)
+  document.documentElement.classList.toggle("staff-mode", !!staff);
+  var OWNER_ONLY = /^\/(dashboard|reports|intelligence|integrations|founder)(\/|$)/;
+  if (staff && OWNER_ONLY.test(window.location.pathname)) {
+    window.location.replace("/team");
+    return;
+  }
+
   // Visiting a dashboard makes it the "active" one (remembered per device), so
   // sub-pages like Reports and Settings link back to the one you were using.
   var DASH = [
@@ -63,12 +83,13 @@
   DASH.forEach(function (d) {
     if (window.location.pathname.indexOf(d[0]) === 0) pathKey = d[1];
   });
-  if (pathKey && S) S.setActivePlatform(pathKey);
+  if (pathKey && S && !staff) S.setActivePlatform(pathKey);
 
   var activeKey = (S && S.activePlatform()) || null;
-  var home =
-    script.getAttribute("data-home") ||
-    (activeKey ? S.HOMES[activeKey] : homeFor(readUser().platform));
+  var home = staff
+    ? "/team"
+    : script.getAttribute("data-home") ||
+      (activeKey ? S.HOMES[activeKey] : homeFor(readUser().platform));
 
   var links = [
     ["reports", "/reports", "📊", "Reports"],
@@ -95,6 +116,14 @@
   } catch (e) {}
   if (teamCached || active === "messages") links.splice(links.length - 1, 0, MESSAGES_LINK);
 
+  if (staff) {
+    links = [
+      ["team", "/team", "🏠", "Home"],
+      MESSAGES_LINK,
+      ["settings", "/settings", "👤", "Settings"],
+    ];
+  }
+
   function linkHtml(cls, l, withIcon) {
     var isActive = l[0] === active;
     return (
@@ -105,35 +134,48 @@
     );
   }
 
+  var showDashboardLink = active && !staff;
   var desktopLinks =
-    (active
+    (showDashboardLink
       ? '<a class="nav-link" data-home href="' + home + '"><span class="nav-ico">🏠</span>Dashboard</a>'
       : "") +
     links.map(function (l) { return linkHtml("nav-link", l, true); }).join("");
 
   var mobileLinks =
-    (active
+    (showDashboardLink
       ? '<a class="mobile-link" data-home href="' + home + '">🏠 Dashboard</a>'
       : "") +
     links.map(function (l) { return linkHtml("mobile-link", l, false); }).join("");
 
-  var center = slot("appNavCenter");
+  var center = staff ? "" : slot("appNavCenter");
+
+  // The store an employee works for, next to the Aervo logo
+  function storeBadge(st) {
+    var mark = st.logoUrl && /^https:\/\//.test(st.logoUrl)
+      ? '<img src="' + escHtml(st.logoUrl) + '" alt="" />'
+      : escHtml(String(st.store || "?").trim().charAt(0).toUpperCase());
+    return (
+      '<span class="nav-store" title="You\'re on the ' + escHtml(st.store) + ' team">' +
+      '<span class="nav-store-mark">' + mark + "</span>" +
+      '<span class="nav-store-name">' + escHtml(st.store) + "</span></span>"
+    );
+  }
 
   var navHtml =
     '<nav class="nav" id="appNav"' + accentStyle + ">" +
-    '<a class="nav-brand" data-home href="' + home + '" aria-label="Aervo dashboard">' +
+    '<a class="nav-brand" data-home href="' + home + '" aria-label="' + (staff ? "Aervo home" : "Aervo dashboard") + '">' +
     '<img class="nav-logo" src="/assets/images/logo.png" alt="Aervo">' +
-    slot("appNavBrandExtra") +
+    (staff ? storeBadge(staff) : slot("appNavBrandExtra")) +
     "</a>" +
     '<div class="nav-center">' + center + "</div>" +
     '<div class="nav-right">' +
-    slot("appNavRightExtra") +
+    (staff ? "" : slot("appNavRightExtra")) +
     desktopLinks +
     '<button type="button" class="nav-menu-btn" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileMenu">☰</button>' +
     '<button type="button" class="nav-link" id="logoutBtn" data-logout>Log out</button>' +
     "</div></nav>" +
     '<div class="mobile-menu" id="mobileMenu"' + accentStyle + ">" +
-    slot("appNavMobile") +
+    (staff ? "" : slot("appNavMobile")) +
     '<div class="mobile-links">' + mobileLinks +
     '<button type="button" class="mobile-link" data-logout>Log out</button></div></div>';
 
@@ -273,7 +315,7 @@
     if (old) old.remove();
     var oldMobile = document.querySelector("#mobileMenu .mobile-platforms");
     if (oldMobile) oldMobile.remove();
-    if (!S || !avail || avail.length < 2) return;
+    if (!S || staff || !avail || avail.length < 2) return;
 
     var cur = currentKey(avail);
     var opts = avail.map(function (k) { return optionHtml(k, cur); }).join("");
@@ -315,7 +357,7 @@
     var text = null;
     if (u.trial) text = "Pro trial · " + u.trial.daysLeft + " day" + (u.trial.daysLeft === 1 ? "" : "s") + " left";
     else if (u.billingPlan === "free" && u.plan === "free") text = "Lite · choose a plan";
-    if (!text) return;
+    if (!text || staff) return;
     var desk = document.querySelector("#appNav .nav-right");
     var mob = document.querySelector("#mobileMenu .mobile-links");
     if (desk) desk.insertAdjacentHTML("afterbegin", '<a class="nav-link plan-chip" data-plan-chip href="/pricing">' + text + "</a>");
@@ -409,6 +451,28 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (!d || !d.user) return;
+        // Became (or stopped being) an employee since the cached answer: store the
+        // new answer and redraw this page once in the right layout
+        if (S && S.isStaff) {
+          var nowStaff = S.isStaff(d);
+          S.rememberStaff(d);
+          if (nowStaff !== !!staff) {
+            var flag = "aervo_staff_reload";
+            var again = false;
+            try {
+              again = sessionStorage.getItem(flag) === "1";
+              sessionStorage.setItem(flag, "1");
+            } catch (e) {}
+            if (!again) {
+              window.location.reload();
+              return;
+            }
+          } else {
+            try {
+              sessionStorage.removeItem("aervo_staff_reload");
+            } catch (e) {}
+          }
+        }
         var avail = S ? S.platformsFrom(d) : [];
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ avail: avail, t: Date.now() }));
@@ -419,7 +483,7 @@
           }
         } catch (e) {}
         renderSwitcher(avail);
-        setFounder(!!d.user.isFounder);
+        if (!staff) setFounder(!!d.user.isFounder);
         setTeam(!!d.team);
         renderPlanChip(d.user);
         if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
