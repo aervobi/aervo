@@ -144,7 +144,7 @@
     return (
       '<section class="card">' +
       '<div class="home-card-head"><h2>Your team <span class="text-muted">(' + people.length + ")</span></h2>" +
-      (manage ? '<a class="btn btn-ghost btn-sm" href="/settings?section=team">Manage team</a>' : "") +
+      (manage ? '<a class="btn btn-ghost btn-sm" href="/team/manage">Manage team</a>' : "") +
       "</div>" +
       people
         .map(function (p) {
@@ -176,8 +176,12 @@
       messagesHtml(msgData.conversations || [], me.userId) +
       teamHtml(teamData, canSend) +
       "</div>" +
-      '<p class="home-note">Your Aervo account is part of ' + esc(st.name) + "'s team. " +
-      'To leave the team, go to <a class="link" href="/settings?section=team">Settings → Team</a>.</p>';
+      '<p class="home-note">' +
+      (me.managed
+        ? "Your Aervo account is managed by " + esc(st.name) + ". For account changes, talk to the owner or a supervisor."
+        : "You're on " + esc(st.name) + "'s team with your own Aervo account. You can leave the team from " +
+          '<a class="link" href="/settings?section=team">Settings → Team</a>.') +
+      "</p>";
   }
 
   root.addEventListener("click", function (e) {

@@ -6,7 +6,7 @@
  *   <script src="/assets/js/app-nav.js" data-active="reports"></script>
  *
  * data-active  Optional. Which link is current: reports | intelligence |
- *              integrations | messages | settings | founder | team. Setting it also adds a "Dashboard"
+ *              integrations | messages | settings | founder | team | team-manage. Setting it also adds a "Dashboard"
  *              link (sub-pages need a way back; dashboards use their tabs).
  * data-accent  Optional "r,g,b" override. Normally omitted: the bar follows the
  *              page's --accent-rgb token (see tokens.css).
@@ -107,21 +107,23 @@
   } catch (e) {}
   if (founderCached || active === "founder") links.unshift(FOUNDER_LINK);
 
-  // People on a team get Messages (cached so it appears without waiting for /me)
+  // People on a team get Messages; the owner and supervisors also get Team
+  // (team management). The role is cached so links appear without waiting for /me.
   var TEAM_KEY = "aervo_team";
   var MESSAGES_LINK = ["messages", "/messages", "💬", "Messages"];
-  var teamCached = false;
+  var MANAGE_LINK = ["team-manage", "/team/manage", "👥", "Team"];
+  var teamRole = null;
   try {
-    teamCached = localStorage.getItem(TEAM_KEY) === "1";
+    teamRole = localStorage.getItem(TEAM_KEY);
   } catch (e) {}
-  if (teamCached || active === "messages") links.splice(links.length - 1, 0, MESSAGES_LINK);
+  var isManager = function (role) { return role === "owner" || role === "supervisor"; };
+  if (teamRole || active === "messages" || active === "team-manage") links.splice(links.length - 1, 0, MESSAGES_LINK);
+  if (isManager(teamRole) || active === "team-manage") links.splice(links.length - 2, 0, MANAGE_LINK);
 
   if (staff) {
-    links = [
-      ["team", "/team", "🏠", "Home"],
-      MESSAGES_LINK,
-      ["settings", "/settings", "👤", "Settings"],
-    ];
+    links = [["team", "/team", "🏠", "Home"]];
+    if (staff.role === "supervisor") links.push(MANAGE_LINK);
+    links.push(MESSAGES_LINK, ["settings", "/settings", "👤", "Settings"]);
   }
 
   function linkHtml(cls, l, withIcon) {
@@ -402,11 +404,22 @@
       .catch(function () {});
   }
 
-  function setTeam(onTeam) {
+  function setTeam(team) {
+    var onTeam = !!team;
     try {
-      if (onTeam) localStorage.setItem(TEAM_KEY, "1");
+      if (onTeam) localStorage.setItem(TEAM_KEY, team.role);
       else localStorage.removeItem(TEAM_KEY);
     } catch (e) {}
+    // Team (management) link follows the role
+    var manageLinks = document.querySelectorAll('#appNav a[href="/team/manage"], #mobileMenu a[href="/team/manage"]');
+    if (onTeam && isManager(team.role) && !manageLinks.length) {
+      var anchorD = document.querySelector('#appNav .nav-right a[href="/messages"]') || document.querySelector('#appNav .nav-right a[href="/settings"]');
+      var anchorM = document.querySelector('#mobileMenu .mobile-links a[href="/messages"]') || document.querySelector('#mobileMenu .mobile-links a[href="/settings"]');
+      if (anchorD) anchorD.insertAdjacentHTML("beforebegin", linkHtml("nav-link", MANAGE_LINK, true));
+      if (anchorM) anchorM.insertAdjacentHTML("beforebegin", linkHtml("mobile-link", MANAGE_LINK, false));
+    } else if (!(onTeam && isManager(team.role)) && active !== "team-manage") {
+      manageLinks.forEach(function (a) { a.remove(); });
+    }
     var existing = document.querySelectorAll('#appNav a[href="/messages"], #mobileMenu a[href="/messages"]');
     if (onTeam && !existing.length) {
       var desk = document.querySelector('#appNav .nav-right a[href="/settings"]');
@@ -484,7 +497,7 @@
         } catch (e) {}
         renderSwitcher(avail);
         if (!staff) setFounder(!!d.user.isFounder);
-        setTeam(!!d.team);
+        setTeam(d.team || null);
         renderPlanChip(d.user);
         if (!script.getAttribute("data-home") && !activeKey && d.user.platform) {
           document.querySelectorAll("[data-home]").forEach(function (a) {

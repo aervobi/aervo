@@ -960,6 +960,7 @@
           <button
             class="sidebar-item danger"
             data-section="danger"
+            data-owner-only
             onclick="showSection('danger', this)"
           >
             <span class="sidebar-icon">⚠️</span> Danger Zone
@@ -1266,8 +1267,8 @@
             <div class="panel-title">Team</div>
             <div class="panel-sub">
               Bring your staff into Aervo. Supervisors can invite and manage
-              members, and everyone on the team can chat in
-              <a class="link" href="/messages">Messages</a>.
+              members in <a class="link" href="/team/manage">Team management</a>,
+              and everyone on the team can chat in <a class="link" href="/messages">Messages</a>.
             </div>
           </div>
           <div id="teamRoot">
@@ -1491,7 +1492,7 @@
         </section>
 
         <!-- ── DANGER ZONE ── -->
-        <section class="section-panel" id="section-danger">
+        <section class="section-panel" id="section-danger" data-owner-only>
           <div class="panel-header">
             <div class="panel-title text-danger">
               ⚠️ Danger Zone
