@@ -229,7 +229,195 @@
         color: var(--danger-text);
       }
 
+      /* Section tabs */
+      .tm-tabs {
+        display: flex;
+        gap: var(--space-1);
+        border-bottom: 1px solid var(--border-soft);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tm-tab {
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 2px solid transparent;
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+        font-weight: var(--fw-medium);
+        white-space: nowrap;
+        text-decoration: none;
+      }
+      .tm-tab:hover {
+        color: var(--text);
+      }
+      .tm-tab.active {
+        color: var(--text);
+        border-bottom-color: var(--primary-from);
+      }
+      .tm-panel {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-6);
+      }
+
+      /* Team work tabs (team-work-admin.js) */
+      .tw-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: var(--space-3);
+      }
+      .tw-ann {
+        padding: var(--space-4) 0;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .tw-ann:first-child {
+        padding-top: 0;
+      }
+      .tw-ann:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .tw-ann-body {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        line-height: var(--lh-normal);
+      }
+      .tw-ann-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        flex-wrap: wrap;
+        margin-top: var(--space-2);
+        font-size: var(--fs-13);
+        color: var(--text-secondary);
+      }
+      .tw-ann-meta .btn {
+        margin-left: auto;
+      }
+      .tw-readers summary {
+        cursor: pointer;
+        color: var(--info-text);
+      }
+      .tw-readers ul {
+        list-style: none;
+        margin: var(--space-2) 0 0;
+        padding: 0;
+        display: grid;
+        gap: var(--space-1);
+      }
+      .tw-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-3) 0;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .tw-row:last-child {
+        border-bottom: 0;
+      }
+      .tw-row-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .tw-row-stat {
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+      .tw-done .tm-name {
+        color: var(--text-muted);
+        text-decoration: line-through;
+      }
+      .tw-notes {
+        margin-top: var(--space-1);
+        overflow-wrap: anywhere;
+      }
+      .tw-check {
+        width: 18px;
+        height: 18px;
+        flex: none;
+        accent-color: var(--primary-from);
+      }
+      .tw-meter {
+        height: 6px;
+        border-radius: var(--radius-pill);
+        background: var(--surface-raised);
+        overflow: hidden;
+        flex: 1;
+      }
+      .tw-meter > div {
+        height: 100%;
+        background: var(--gradient-primary);
+      }
+      .tw-score {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        min-width: 120px;
+      }
+      .tw-seg {
+        display: flex;
+        gap: var(--space-1);
+      }
+      .tw-task-form {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 170px auto;
+        gap: var(--space-3);
+        align-items: end;
+      }
+      .tw-task-notes {
+        grid-column: 1 / -1;
+      }
+      .tw-days {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+      .tw-day input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .tw-day span {
+        display: inline-block;
+        padding: var(--space-2) var(--space-3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-pill);
+        font-size: var(--fs-13);
+        cursor: pointer;
+      }
+      .tw-day input:checked + span {
+        background: rgba(var(--primary-rgb), 0.16);
+        border-color: rgba(var(--primary-rgb), 0.5);
+        color: var(--text);
+      }
+      .tw-day input:focus-visible + span {
+        box-shadow: var(--focus-ring);
+      }
+      .tw-items {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+      .tw-item {
+        display: flex;
+        gap: var(--space-2);
+      }
+      .tw-item input {
+        flex: 1;
+        min-width: 0;
+      }
+
       @media (max-width: 860px) {
+        .tw-task-form {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .tw-row {
+          flex-wrap: wrap;
+        }
+        .tw-row-stat {
+          width: 100%;
+        }
         .tm-stats {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -284,6 +472,7 @@
       <div class="empty-state">Loading…</div>
     </main>
 
+    <script src="/assets/js/team-work-admin.js"></script>
     <script src="/assets/js/team-manage.js"></script>
   </body>
 </html>

@@ -189,6 +189,13 @@
     var canManage = !m.isYou && p.removeRoles.indexOf(m.role) > -1;
     var items = [];
     if (!m.isYou) items.push('<button type="button" data-act="message" data-id="' + m.userId + '">💬 Send a message</button>');
+    if (p.changeRoles && m.role === "supervisor") {
+      items.push(
+        m.canViewStore
+          ? '<button type="button" data-act="view-store" data-on="0" data-id="' + m.userId + '">🙈 Stop sharing the store dashboard</button>'
+          : '<button type="button" data-act="view-store" data-on="1" data-id="' + m.userId + '">👁 Let them view the store dashboard</button>'
+      );
+    }
     if (canManage && m.managed) {
       items.push('<button type="button" data-act="reset" data-id="' + m.userId + '">🔑 Send password reset</button>');
       items.push('<button type="button" data-act="signout" data-id="' + m.userId + '">🚪 Sign out of all devices</button>');
@@ -222,7 +229,8 @@
                 .join("") +
               "</select>"
             : roleBadge(m.role);
-        var account = m.role === "owner" ? "Owner account" : m.managed ? "Company account" : "Own account";
+        var account = (m.role === "owner" ? "Owner account" : m.managed ? "Company account" : "Own account") +
+          (m.canViewStore ? " · views dashboard" : "");
         return (
           "<tr>" +
           '<td><div class="tm-person">' + avatar(m) + '<div><div class="tm-name">' + esc(m.name) +
@@ -300,12 +308,47 @@
     );
   }
 
+  // Tabs: People lives here; the others come from team-work-admin.js
+  var TABS = [
+    ["people", "👥 People"],
+    ["announcements", "📣 Announcements"],
+    ["checklists", "✅ Checklists"],
+    ["tasks", "📝 Tasks"],
+    ["performance", "📈 Performance"],
+  ];
+  function currentTab() {
+    var want = window.location.hash.slice(1);
+    return TABS.some(function (t) { return t[0] === want; }) && window.AervoTeamWork ? want : "people";
+  }
+  function tabsHtml(tab) {
+    return (
+      '<nav class="tm-tabs" aria-label="Team management sections">' +
+      TABS.map(function (t) {
+        return '<a class="tm-tab' + (t[0] === tab ? " active" : "") + '" href="#' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : "") + ">" + t[1] + "</a>";
+      }).join("") +
+      "</nav>"
+    );
+  }
+  window.addEventListener("hashchange", function () {
+    if (state && state.permissions.viewInvites) render();
+  });
+
   function render() {
     var d = state;
+    var tab = currentTab();
     var typed = document.getElementById("tmEmails");
     var keep = typed ? typed.value : ""; // a reload after one action keeps half-typed invites
-    root.innerHTML =
-      headHtml(d) + statsHtml(d) + inviteHtml(d) +
+    root.innerHTML = headHtml(d) + tabsHtml(tab) + '<div id="tmPanel" class="tm-panel"></div>';
+    // On narrow screens the tab row scrolls; keep the current tab visible
+    var activeTab = root.querySelector(".tm-tab.active");
+    if (activeTab) activeTab.parentNode.scrollLeft = activeTab.offsetLeft - activeTab.parentNode.offsetLeft - 16;
+    var panelEl = document.getElementById("tmPanel");
+    if (tab !== "people") {
+      window.AervoTeamWork.show(tab, panelEl, d);
+      return;
+    }
+    panelEl.innerHTML =
+      statsHtml(d) + inviteHtml(d) +
       '<div id="tmMembers">' + membersHtml(d) + "</div>" +
       invitesHtml(d) + dangerHtml(d);
     var form = document.getElementById("tmInvite");
@@ -448,6 +491,21 @@
         function () {
           return api("DELETE", "/api/team/members/" + id).then(function (r) {
             return r.accountDeleted ? m.name + " was removed and their account deleted" : m.name + " was removed from the team";
+          });
+        },
+      ];
+    } else if (act === "view-store" && m) {
+      var on = el.getAttribute("data-on") === "1";
+      c = [
+        on
+          ? "Let " + m.name + " view your store's dashboard? They'll see sales, inventory and customers, read-only. They can't change anything, use AI or see billing, settings or integrations."
+          : "Stop sharing the store dashboard with " + m.name + "?",
+        on ? "Share store dashboard" : "Stop sharing",
+        on ? "Share" : "Stop sharing",
+        !on,
+        function () {
+          return api("PATCH", "/api/team/members/" + id, { canViewStore: on }).then(function () {
+            return on ? m.name + " can now view the store dashboard" : m.name + " can no longer view the store dashboard";
           });
         },
       ];

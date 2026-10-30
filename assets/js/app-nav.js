@@ -32,7 +32,9 @@
  * Employee mode: people invited onto a business's team with no store of their
  * own (AervoSession.isStaff) get the store's logo and name, and only Home
  * (/team), Messages, Team (supervisors) and Settings. Store-owner pages
- * (dashboards, reports, intelligence, integrations) send them to /team.
+ * (dashboards, reports, intelligence, integrations) send them to /team, except
+ * the owner's dashboards for a supervisor the owner lets view them (read-only;
+ * session.js marks those requests and the server enforces it).
  */
 (function () {
   var script = document.currentScript;
@@ -90,7 +92,8 @@
   // Pages hide store-owner-only parts with [data-owner-only] (see app-nav.css)
   document.documentElement.classList.toggle("staff-mode", !!staff);
   var OWNER_ONLY = /^\/(dashboard|reports|intelligence|integrations|founder)(\/|$)/;
-  if (staff && OWNER_ONLY.test(window.location.pathname)) {
+  var viewing = !!(staff && S.storeView && S.storeView()); // supervisor on the owner's dashboard
+  if (staff && !viewing && OWNER_ONLY.test(window.location.pathname)) {
     window.location.replace("/team");
     return;
   }
@@ -154,7 +157,12 @@
 
   // Pages in the bar itself
   function primaryPages() {
-    if (staff) return [PAGES.home];
+    if (staff) {
+      var dashes = staff.dashboards || [];
+      if (!dashes.length) return [PAGES.home];
+      var dash = viewing && pathKey ? pathKey : dashes[0];
+      return [PAGES.home, ["store", S.HOMES[dash], "📊", "Store dashboard"]];
+    }
     var out = [];
     if (active) out.push(PAGES.dashboard); // dashboards have their own tabs
     out.push(PAGES.reports, PAGES.intelligence);
@@ -164,6 +172,7 @@
   // Groups in the account menu (and the drawer)
   function menuGroups() {
     var workspace = [];
+    if (nav$.teamRole && !staff) workspace.push(PAGES.home.slice(0, 3).concat("Team home"));
     if (isManager(nav$.teamRole)) workspace.push(PAGES.team);
     if (!staff) workspace.push(PAGES.integrations);
     var account = [PAGES.settings];
@@ -178,7 +187,7 @@
 
   function pageLink(cls, p, opts) {
     opts = opts || {};
-    var isActive = p[0] === active;
+    var isActive = p[0] === active || (p[0] === "store" && viewing);
     return (
       '<a class="' + cls + (isActive ? " active" : "") + '" href="' + escHtml(p[1]) + '"' +
       (p[0] === "dashboard" ? " data-home" : "") +
@@ -221,7 +230,7 @@
     '<img class="nav-logo" src="/assets/images/logo.png" alt="Aervo">' +
     (staff ? storeBadge(staff) : slot("appNavBrandExtra")) +
     "</a>" +
-    '<div class="nav-center">' + (staff ? "" : slot("appNavCenter")) + "</div>" +
+    '<div class="nav-center">' + (staff && !viewing ? "" : slot("appNavCenter")) + "</div>" +
     '<div class="nav-right">' +
     '<div class="nav-switch-slot"></div>' +
     (staff ? "" : slot("appNavRightExtra")) +
@@ -234,10 +243,16 @@
     "</div></nav>" +
     '<div class="mobile-menu" id="mobileMenu"' + accentStyle + ">" +
     '<div class="mobile-switch-slot"></div>' +
-    (staff ? "" : slot("appNavMobile")) +
+    (staff && !viewing ? "" : slot("appNavMobile")) +
     '<div class="mobile-links" id="mobileLinks"></div></div>';
 
   script.insertAdjacentHTML("beforebegin", navHtml);
+  if (viewing) {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      '<div class="nav-view-banner" role="status">👁 Viewing ' + escHtml(staff.store) + "'s dashboard · read-only</div>"
+    );
+  }
 
   var nav = document.getElementById("appNav");
   var menu = document.getElementById("mobileMenu");
@@ -374,7 +389,7 @@
   var unreadTimer = null;
   function pollUnread() {
     if (document.hidden) return;
-    fetch(API + "/api/messages/unread", { headers: { Authorization: "Bearer " + token } })
+    fetch(API + "/api/messages/unread", { headers: { Authorization: "Bearer " + token, "X-Aervo-Self": "1" } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (d && typeof d.unread === "number") setUnread(d.unread);
@@ -499,7 +514,8 @@
     var mobSlot = menu.querySelector(".mobile-switch-slot");
     deskSlot.innerHTML = "";
     mobSlot.innerHTML = "";
-    if (!S || staff || !avail || avail.length < 2) return;
+    if (staff) avail = viewing ? staff.dashboards : [];
+    if (!S || !avail || avail.length < 2) return;
 
     var cur = currentKey(avail);
     var l = LABELS[cur];
@@ -516,7 +532,7 @@
       "</div></div>";
 
     // sub-pages (Reports, Settings...) follow the active platform
-    if (!script.getAttribute("data-home")) setHome(S.HOMES[cur]);
+    if (!script.getAttribute("data-home") && !staff) setHome(S.HOMES[cur]);
   }
 
   document.addEventListener("click", function (e) {
@@ -540,7 +556,7 @@
   // 2) refresh from the server
   if (token && window.fetch) {
     fetch(API + "/api/user/me", {
-      headers: { Authorization: "Bearer " + token },
+      headers: { Authorization: "Bearer " + token, "X-Aervo-Self": "1" }, // this person, even on a store view
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {

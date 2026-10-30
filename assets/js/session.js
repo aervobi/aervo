@@ -24,6 +24,13 @@
       if (url.indexOf(API) === 0) {
         isApi = true;
         init = Object.assign({}, init || {}, { credentials: "include" });
+        // A supervisor viewing the owner's dashboard reads the owner's store
+        // (read-only; the server checks the owner allowed it). Calls about the
+        // person themself (the nav's /me) send X-Aervo-Self, which is dropped here.
+        var headers = new Headers(init.headers || (typeof input !== "string" && input.headers) || {});
+        if (headers.has("X-Aervo-Self")) headers.delete("X-Aervo-Self");
+        else if (storeView()) headers.set("X-Aervo-View-Store", "1");
+        init.headers = headers;
       }
     } catch (e) {}
     var p = nativeFetch.call(this, input, init);
@@ -302,7 +309,13 @@
         var st = me.team.store || {};
         localStorage.setItem(
           STAFF_KEY,
-          JSON.stringify({ role: me.team.role, team: me.team.name, store: st.name || me.team.name, logoUrl: st.logoUrl || null }),
+          JSON.stringify({
+            role: me.team.role,
+            team: me.team.name,
+            store: st.name || me.team.name,
+            logoUrl: st.logoUrl || null,
+            dashboards: me.team.storeDashboards || [], // the owner's, when they let this supervisor view them
+          }),
         );
       } else {
         localStorage.removeItem(STAFF_KEY);
@@ -317,6 +330,13 @@
     } catch (e) {
       return null;
     }
+  }
+
+  // On one of the owner's dashboards as a supervisor allowed to view it
+  function storeView() {
+    var st = cachedStaff();
+    var m = window.location.pathname.match(/^\/dashboard\/(shopify|square|ims)/);
+    return !!(st && st.dashboards && m && st.dashboards.indexOf(m[1]) > -1);
   }
 
   function activePlatform() {
@@ -371,6 +391,7 @@
     isStaff: isStaff,
     rememberStaff: rememberStaff,
     cachedStaff: cachedStaff,
+    storeView: storeView,
     normalizeShop: normalizeShop,
     arrivedViaOAuth: arrivedViaOAuth,
     // a fresh sign-in counts as activity (and starts the inactivity clock)

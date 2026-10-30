@@ -603,3 +603,23 @@
 .staff-mode [data-owner-only] {
   display: none !important;
 }
+
+/* Supervisor viewing the owner's dashboard (read-only) */
+.nav-view-banner {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-5);
+  transform: translateX(-50%);
+  z-index: var(--z-popover);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid rgba(var(--primary-rgb), 0.4);
+  border-radius: var(--radius-pill);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-md);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  pointer-events: none;
+}
