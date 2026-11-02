@@ -110,12 +110,14 @@
     if (window.location.pathname.indexOf(d[0]) === 0) pathKey = d[1];
   });
   if (pathKey && S && !staff) S.setActivePlatform(pathKey);
+  var onAll = window.location.pathname.indexOf("/dashboard/all") === 0;
+  if (onAll && S && !staff) S.setViewAll();
 
   var activeKey = (S && S.activePlatform()) || null;
   var home = staff
     ? "/team"
     : script.getAttribute("data-home") ||
-      (activeKey ? S.HOMES[activeKey] : homeFor(readUser().platform));
+      (S && S.viewAll() ? S.ALL_HOME : activeKey ? S.HOMES[activeKey] : homeFor(readUser().platform));
 
   // Every "home" link (logo, Dashboard) goes through here, so redrawn menus keep it
   function setHome(url) {
@@ -482,10 +484,13 @@
     });
   }
 
-  // ── store switcher (Shopify / Square / IMS) ────────────────────────────────
+  // ── store switcher (All sources / Shopify / Square / IMS) ───────────────────
   // Shown when the account has two or more data sources. The last answer is
-  // cached so it appears instantly on the next page, then refreshed.
+  // cached so it appears instantly on the next page, then refreshed. "All
+  // sources" opens the combined dashboard; on other pages the current entry is
+  // the single source they read.
   var LABELS = {
+    all: ["🧩", "All sources"],
     shopify: ["🛍️", "Shopify"],
     square: ["⬛", "Square"],
     ims: ["📦", "IMS"],
@@ -493,6 +498,7 @@
   var CACHE_KEY = "aervo_platforms";
 
   function currentKey(avail) {
+    if (onAll) return "all";
     if (pathKey && avail.indexOf(pathKey) > -1) return pathKey;
     var pref = S && S.activePlatform();
     return pref && avail.indexOf(pref) > -1 ? pref : avail[0];
@@ -519,26 +525,32 @@
 
     var cur = currentKey(avail);
     var l = LABELS[cur];
+    var opts = staff ? avail : ["all"].concat(avail);
     deskSlot.innerHTML =
       '<div class="nav-dd nav-switch">' +
       '<button type="button" class="nav-dd-btn nav-switch-btn" aria-haspopup="true" aria-expanded="false" aria-label="Store: ' + l[1] + '. Switch store">' +
       '<span class="nav-ico" aria-hidden="true">' + l[0] + '</span><span class="nav-switch-name">' + l[1] + '</span><span class="nav-caret" aria-hidden="true"></span></button>' +
       '<div class="nav-dd-panel nav-dd-panel-left"><div class="nav-dd-label">Switch store</div>' +
-      avail.map(function (k) { return optionHtml(k, cur, "nav-dd-item"); }).join("") +
+      opts.map(function (k) { return optionHtml(k, cur, "nav-dd-item"); }).join("") +
       "</div></div>";
     mobSlot.innerHTML =
       '<div class="mobile-group mobile-platforms"><div class="mobile-label">Store</div><div class="mobile-platform-row">' +
-      avail.map(function (k) { return optionHtml(k, cur, "platform-opt"); }).join("") +
+      opts.map(function (k) { return optionHtml(k, cur, "platform-opt"); }).join("") +
       "</div></div>";
 
     // sub-pages (Reports, Settings...) follow the active platform
-    if (!script.getAttribute("data-home") && !staff) setHome(S.HOMES[cur]);
+    if (!script.getAttribute("data-home") && !staff) setHome(S.viewAll() ? S.ALL_HOME : S.HOMES[cur]);
   }
 
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("[data-platform]");
     if (!b || !S) return;
     var key = b.getAttribute("data-platform");
+    if (key === "all") {
+      S.setViewAll();
+      window.location.href = S.ALL_HOME;
+      return;
+    }
     S.setActivePlatform(key);
     if (/^\/dashboard\//.test(window.location.pathname)) {
       window.location.href = S.HOMES[key];

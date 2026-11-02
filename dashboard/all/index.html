@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/assets/js/session.js"></script>
+    <title>Aervo – All Sources</title>
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/components.css" />
+    <script src="/assets/js/ui.js"></script>
+    <script src="/assets/js/plan.js"></script>
+    <style>
+      /* The combined view uses the brand cyan; each source keeps its own hue
+         (Square green, Shopify blue, IMS purple) on chips, dots and the chart. */
+      :root {
+        --accent: #29c8ff;
+        --accent-rgb: 41, 200, 255;
+        --src-square: #34d399;
+        --src-shopify: #60a5fa;
+        --src-ims: #a855f7;
+      }
+      body {
+        min-height: 100vh;
+      }
+      .container {
+        padding: calc(var(--nav-h) + var(--space-6)) var(--space-7) var(--space-9);
+        max-width: var(--container-app);
+        margin: 0 auto;
+      }
+      .page-header {
+        margin-bottom: var(--space-6);
+      }
+      .page-header h1 {
+        font-size: var(--fs-28);
+        margin: 0 0 var(--space-2);
+      }
+      .page-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: var(--fs-14);
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-4);
+        margin-bottom: var(--space-3);
+      }
+      .chips,
+      .periods {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        min-height: 36px;
+        padding: 0 var(--space-4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-pill);
+        background: var(--surface);
+        color: var(--text-secondary);
+        font: inherit;
+        font-size: var(--fs-13);
+        font-weight: var(--fw-semibold);
+        cursor: pointer;
+        transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+      }
+      .chip:hover {
+        background: var(--surface-hover);
+        border-color: var(--border-strong);
+      }
+      .chip[aria-pressed="true"] {
+        color: var(--text);
+        border-color: rgba(var(--chip-rgb, var(--accent-rgb)), 0.6);
+        background: rgba(var(--chip-rgb, var(--accent-rgb)), 0.15);
+      }
+      .chip[data-src="square"] { --chip-rgb: 52, 211, 153; }
+      .chip[data-src="shopify"] { --chip-rgb: 96, 165, 250; }
+      .chip[data-src="ims"] { --chip-rgb: 168, 85, 247; }
+      .chip:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--dot, var(--accent));
+        flex: none;
+      }
+      .dot-square { --dot: var(--src-square); }
+      .dot-shopify { --dot: var(--src-shopify); }
+      .dot-ims { --dot: var(--src-ims); }
+      .hint {
+        margin-bottom: var(--space-6);
+        color: var(--text-muted);
+        font-size: var(--fs-12);
+      }
+      .notes {
+        display: grid;
+        gap: var(--space-2);
+        margin-bottom: var(--space-5);
+      }
+      .kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: var(--space-4);
+        margin-bottom: var(--space-5);
+      }
+      .kpi-value {
+        font-size: var(--fs-28);
+        font-weight: var(--fw-bold);
+        color: var(--text);
+        line-height: var(--lh-tight);
+      }
+      .kpi-sub {
+        margin-top: var(--space-2);
+        font-size: var(--fs-12);
+        color: var(--text-muted);
+      }
+      .up { color: var(--success-text); }
+      .down { color: var(--danger-text); }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        gap: var(--space-5);
+        margin-bottom: var(--space-5);
+      }
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+      .section-head h2 {
+        margin: 0;
+        font-size: var(--fs-16);
+      }
+      .chart-box {
+        position: relative;
+        height: 300px;
+      }
+      .share-bar {
+        display: flex;
+        height: 10px;
+        border-radius: var(--radius-pill);
+        overflow: hidden;
+        background: var(--surface-hover);
+        margin-bottom: var(--space-5);
+      }
+      .share-bar span {
+        background: var(--dot);
+      }
+      .src-name {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-weight: var(--fw-semibold);
+        color: var(--text);
+      }
+      .num {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .data-table th.num {
+        text-align: right;
+      }
+      .total-row td {
+        font-weight: var(--fw-bold);
+        color: var(--text);
+        border-top: 1px solid var(--border-strong);
+      }
+      .prod-srcs {
+        display: inline-flex;
+        gap: var(--space-1);
+        margin-left: var(--space-2);
+        vertical-align: middle;
+      }
+      @media (max-width: 960px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .container {
+          padding: calc(var(--nav-h) + var(--space-5)) var(--space-4) var(--space-8);
+        }
+        .chart-box {
+          height: 240px;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="/assets/css/app-nav.css" />
+  </head>
+  <body>
+    <script src="/assets/js/app-nav.js" data-home="/dashboard/all"></script>
+
+    <div class="container">
+      <div class="page-header">
+        <h1>All sources</h1>
+        <p>Your sales from every place you sell, together or one at a time.</p>
+      </div>
+      <div id="content">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading your sales…</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const BACKEND_URL = "https://api.aervoapp.com";
+        const token = localStorage.getItem("aervo_token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
+
+        const COLORS = { square: "#34d399", shopify: "#60a5fa", ims: "#a855f7" };
+        const DASHBOARDS = { square: "/dashboard/square", shopify: "/dashboard/shopify", ims: "/dashboard/ims" };
+        const PREF_KEY = "aervo_all_view"; // { days, sources } remembered on this device
+
+        const content = document.getElementById("content");
+        let data = null;
+        let chart = null;
+        let state = { days: 30, selected: null }; // selected: source keys, null = all
+
+        try {
+          const saved = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
+          if (saved && [7, 30, 90].includes(saved.days)) state.days = saved.days;
+          if (saved && Array.isArray(saved.selected)) state.selected = saved.selected;
+        } catch (e) {}
+
+        function savePrefs() {
+          try {
+            localStorage.setItem(PREF_KEY, JSON.stringify(state));
+          } catch (e) {}
+        }
+
+        const esc = (v) =>
+          String(v == null ? "" : v).replace(/[&<>"']/g, (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+          );
+        const money = (n) =>
+          "$" + (Number(n) || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const count = (n) => (Number(n) || 0).toLocaleString("en-US");
+
+        function change(cur, prev) {
+          if (prev == null) return "No earlier period on your plan";
+          if (!prev) return cur ? '<span class="up">New this period</span>' : "No change";
+          const pct = ((cur - prev) / prev) * 100;
+          const cls = pct >= 0 ? "up" : "down";
+          return `<span class="${cls}">${pct >= 0 ? "▲" : "▼"} ${Math.abs(pct).toFixed(1)}%</span> vs previous ${data.range.days} days`;
+        }
+
+        // Sources that loaded and are switched on
+        function active() {
+          const ok = data.sources.filter((s) => s.ok);
+          if (!state.selected) return ok;
+          const picked = ok.filter((s) => state.selected.includes(s.key));
+          return picked.length ? picked : ok;
+        }
+
+        // null when a source has no previous period to compare with
+        function sum(list, part, field) {
+          if (list.some((s) => !s[part])) return null;
+          return list.reduce((t, s) => t + (s[part][field] || 0), 0);
+        }
+
+        async function load() {
+          content.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading your sales…</div></div>';
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+          try {
+            const res = await fetch(
+              `${BACKEND_URL}/api/unified/overview?days=${state.days}&tz=${encodeURIComponent(tz)}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const body = await res.json().catch(() => ({}));
+            if (res.status === 403 && body.code === "PLAN_LIMIT") {
+              content.innerHTML = AervoPlan.upgradeCard({
+                plan: body.requiredPlanName || "Pro",
+                title: "See all your sales in one place",
+                text: `Combine Square, Shopify and your IMS sales in one view with ${body.requiredPlanName || "Pro"} and above.`,
+                bullets: ["Revenue and orders across every source", "Compare sources side by side", "Best sellers everywhere you sell"],
+              });
+              return;
+            }
+            if (!res.ok || !body.success) throw new Error(body.message || "Request failed");
+            data = body;
+            render();
+          } catch (err) {
+            content.innerHTML =
+              '<div class="card empty-state"><div class="empty-state-title">Couldn\'t load your sales</div>' +
+              '<p class="mb-6">Please try again in a moment.</p><button class="btn btn-secondary" id="retryBtn">Try again</button></div>';
+            document.getElementById("retryBtn").onclick = load;
+          }
+        }
+
+        function render() {
+          if (!data.sources.length) {
+            content.innerHTML =
+              '<div class="card empty-state"><div class="empty-state-icon">🔌</div>' +
+              '<div class="empty-state-title">No sales sources yet</div>' +
+              '<p class="mb-6">Connect Square or Shopify, or record sales in the IMS, to see them here.</p>' +
+              '<a class="btn btn-primary" href="/integrations">Connect a source</a></div>';
+            return;
+          }
+
+          const list = active();
+          const keys = list.map((s) => s.key);
+          const allOn = !state.selected || list.length === data.sources.filter((s) => s.ok).length;
+          const rev = sum(list, "summary", "revenue");
+          const prevRev = sum(list, "previous", "revenue");
+          const orders = sum(list, "summary", "orders");
+          const prevOrders = sum(list, "previous", "orders");
+          const customers = sum(list, "summary", "customers");
+          const prevCustomers = sum(list, "previous", "customers");
+          const aov = orders ? rev / orders : 0;
+          const prevAov = prevOrders == null ? null : prevOrders ? prevRev / prevOrders : 0;
+
+          const chips =
+            `<button class="chip" data-src="all" aria-pressed="${allOn}">All sources</button>` +
+            data.sources
+              .map(
+                (s) =>
+                  `<button class="chip" data-src="${s.key}" aria-pressed="${!allOn && keys.includes(s.key)}"${s.ok ? "" : " disabled"}>` +
+                  `<span class="dot dot-${s.key}"></span>${esc(s.name)}</button>`
+              )
+              .join("");
+          const periods = [7, 30, 90]
+            .map(
+              (d) =>
+                `<button class="chip" data-days="${d}" aria-pressed="${state.days === d}">${d} days</button>`
+            )
+            .join("");
+
+          const notes = data.sources
+            .flatMap((s) => (s.ok ? s.notes || [] : [s.error]))
+            .concat(data.range.clamped ? [`Your plan shows the last ${data.range.days} days of history.`] : [])
+            .map((n) => `<div class="alert alert-info">${esc(n)}</div>`)
+            .join("");
+
+          const label = list.length === 1 ? list[0].name : allOn ? "all sources" : list.map((s) => s.name).join(" + ");
+
+          content.innerHTML = `
+            <div class="toolbar">
+              <div class="chips" role="group" aria-label="Sources">${chips}</div>
+              <div class="periods" role="group" aria-label="Period">${periods}</div>
+            </div>
+            <p class="hint">Pick one source to see it on its own, or several to add them up.${
+              data.sources.length < 2 ? ' <a class="link" href="/integrations">Connect another source</a> to compare.' : ""
+            }</p>
+            ${notes ? `<div class="notes">${notes}</div>` : ""}
+
+            <div class="kpis">
+              <div class="metric-card"><div class="card-title">Revenue · ${esc(label)}</div>
+                <div class="kpi-value">${money(rev)}</div><div class="kpi-sub">${change(rev, prevRev)}</div></div>
+              <div class="metric-card"><div class="card-title">Orders</div>
+                <div class="kpi-value">${count(orders)}</div><div class="kpi-sub">${change(orders, prevOrders)}</div></div>
+              <div class="metric-card"><div class="card-title">Average order</div>
+                <div class="kpi-value">${money(aov)}</div><div class="kpi-sub">${change(aov, prevAov)}</div></div>
+              <div class="metric-card"><div class="card-title">Customers</div>
+                <div class="kpi-value">${count(customers)}</div><div class="kpi-sub">${
+                  list.length > 1 ? "Counted in each source; someone who buys in two is counted twice" : change(customers, prevCustomers)
+                }</div></div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <div class="section-head"><h2>Daily revenue</h2><span class="text-muted">${esc(data.range.from)} – ${esc(data.range.to)}</span></div>
+                <div class="chart-box"><canvas id="revChart" aria-label="Daily revenue by source" role="img"></canvas></div>
+              </div>
+              <div class="card">
+                <div class="section-head"><h2>By source</h2></div>
+                ${sourceBreakdown(list, rev)}
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="section-head"><h2>Best sellers</h2><span class="text-muted">by revenue</span></div>
+              ${topProducts(list)}
+            </div>`;
+
+          drawChart(list);
+        }
+
+        function sourceBreakdown(list, total) {
+          const share = (s) => (total ? (s.summary.revenue / total) * 100 : 0);
+          const bar = total
+            ? '<div class="share-bar" aria-hidden="true">' +
+              list.map((s) => `<span class="dot-${s.key}" style="width:${share(s)}%"></span>`).join("") +
+              "</div>"
+            : "";
+          const rows = list
+            .map((s) => {
+              const o = s.summary.orders;
+              return `<tr>
+                <td><a class="src-name" href="${DASHBOARDS[s.key]}" title="Open the ${esc(s.name)} dashboard"><span class="dot dot-${s.key}"></span>${esc(s.name)}</a></td>
+                <td class="num">${money(s.summary.revenue)}<div class="text-muted">${share(s).toFixed(0)}% of revenue</div></td>
+                <td class="num">${count(o)}<div class="text-muted">${money(o ? s.summary.revenue / o : 0)} avg</div></td>
+              </tr>`;
+            })
+            .join("");
+          const orders = sum(list, "summary", "orders");
+          const totalRow =
+            list.length > 1
+              ? `<tr class="total-row"><td>Total</td><td class="num">${money(total)}</td><td class="num">${count(orders)}<div class="text-muted">${money(orders ? total / orders : 0)} avg</div></td></tr>`
+              : "";
+          return `${bar}<div class="table-wrap"><table class="data-table">
+            <thead><tr><th>Source</th><th class="num">Revenue</th><th class="num">Orders</th></tr></thead>
+            <tbody>${rows}${totalRow}</tbody></table></div>`;
+        }
+
+        // Same-named products sold through different sources are added together
+        function topProducts(list) {
+          const merged = {};
+          list.forEach((s) =>
+            (s.topProducts || []).forEach((p) => {
+              const k = String(p.name).trim().toLowerCase();
+              merged[k] = merged[k] || { name: p.name, units: 0, revenue: 0, sources: [] };
+              merged[k].units += p.units || 0;
+              merged[k].revenue += p.revenue || 0;
+              if (!merged[k].sources.includes(s.key)) merged[k].sources.push(s.key);
+            })
+          );
+          const rows = Object.values(merged)
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 10);
+          if (!rows.length) return '<div class="empty-state">No sales in this period yet.</div>';
+          return `<div class="table-wrap"><table class="data-table">
+            <thead><tr><th>Product</th><th class="num">Units</th><th class="num">Revenue</th></tr></thead>
+            <tbody>${rows
+              .map(
+                (p) => `<tr><td>${esc(p.name)}<span class="prod-srcs">${p.sources
+                  .map((k) => `<span class="dot dot-${k}" title="${esc(k === "ims" ? "IMS" : k[0].toUpperCase() + k.slice(1))}"></span>`)
+                  .join("")}</span></td><td class="num">${count(Math.round(p.units * 100) / 100)}</td><td class="num">${money(p.revenue)}</td></tr>`
+              )
+              .join("")}</tbody></table></div>`;
+        }
+
+        function drawChart(list) {
+          if (chart) chart.destroy();
+          const canvas = document.getElementById("revChart");
+          if (!canvas || !window.Chart) return;
+
+          const dates = [];
+          for (let d = new Date(data.range.from + "T00:00:00Z"); ; d.setUTCDate(d.getUTCDate() + 1)) {
+            const k = d.toISOString().slice(0, 10);
+            dates.push(k);
+            if (k >= data.range.to) break;
+          }
+          const datasets = list.map((s) => {
+            const byDay = Object.fromEntries((s.daily || []).map((d) => [d.date, d.revenue]));
+            return {
+              label: s.name,
+              data: dates.map((k) => byDay[k] || 0),
+              backgroundColor: COLORS[s.key],
+              borderRadius: 3,
+              stack: "revenue",
+            };
+          });
+
+          chart = new Chart(canvas, {
+            type: "bar",
+            data: {
+              labels: dates.map((k) =>
+                new Date(k + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" })
+              ),
+              datasets,
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { display: list.length > 1, labels: { color: "#a5b4cf", boxWidth: 10, boxHeight: 10 } },
+                tooltip: {
+                  callbacks: {
+                    label: (c) => `${c.dataset.label}: ${money(c.parsed.y)}`,
+                    footer: (items) =>
+                      items.length > 1 ? "Total: " + money(items.reduce((t, i) => t + i.parsed.y, 0)) : "",
+                  },
+                },
+              },
+              scales: {
+                x: { stacked: true, ticks: { color: "#6b7a99", maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { display: false } },
+                y: {
+                  stacked: true,
+                  beginAtZero: true,
+                  ticks: { color: "#6b7a99", callback: (v) => "$" + Number(v).toLocaleString("en-US") },
+                  grid: { color: "rgba(255,255,255,0.06)" },
+                },
+              },
+            },
+          });
+        }
+
+        content.addEventListener("click", (e) => {
+          const chip = e.target.closest(".chip");
+          if (!chip || chip.disabled) return;
+          if (chip.dataset.days) {
+            const days = Number(chip.dataset.days);
+            if (days === state.days) return;
+            state.days = days;
+            savePrefs();
+            load();
+            return;
+          }
+          const key = chip.dataset.src;
+          const okKeys = data.sources.filter((s) => s.ok).map((s) => s.key);
+          if (key === "all") {
+            state.selected = null;
+          } else if (!state.selected || state.selected.length === okKeys.length) {
+            state.selected = [key]; // from "all", a source on its own
+          } else if (state.selected.includes(key)) {
+            state.selected = state.selected.filter((k) => k !== key);
+            if (!state.selected.length) state.selected = null;
+          } else {
+            state.selected = state.selected.concat(key);
+            if (state.selected.length === okKeys.length) state.selected = null;
+          }
+          savePrefs();
+          render();
+        });
+
+        load();
+      })();
+    </script>
+  </body>
+</html>

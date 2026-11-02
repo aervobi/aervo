@@ -275,6 +275,10 @@
     ims: "/dashboard/ims",
   };
   var PREF_KEY = "aervo_active_platform";
+  // The combined view of every source. Kept apart from PREF_KEY because pages
+  // like Intelligence read one source at a time from activePlatform().
+  var ALL_HOME = "/dashboard/all";
+  var ALL_KEY = "aervo_view_all";
 
   // Which sources this account has, from a /api/user/me response
   function platformsFrom(me) {
@@ -282,7 +286,7 @@
     var u = (me && me.user) || {};
     if (me && me.shop) out.push("shopify");
     if (u.squareMerchantId) out.push("square");
-    if (u.platform === "csv" || u.platform === "ims") out.push("ims");
+    if (u.platform === "csv" || u.platform === "ims" || u.usesIms) out.push("ims");
     if (!out.length) {
       if (u.platform === "square") out.push("square");
       else if (u.platform === "shopify") out.push("shopify");
@@ -352,6 +356,22 @@
     if (!HOMES[p]) return;
     try {
       localStorage.setItem(PREF_KEY, p);
+      localStorage.removeItem(ALL_KEY); // a single dashboard is now the last one used
+    } catch (e) {}
+  }
+
+  // Whether the combined view was the last dashboard used
+  function viewAll() {
+    try {
+      return localStorage.getItem(ALL_KEY) === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setViewAll() {
+    try {
+      localStorage.setItem(ALL_KEY, "1");
     } catch (e) {}
   }
 
@@ -361,6 +381,7 @@
     rememberStaff(me);
     if (isStaff(me)) return "/team";
     var avail = platformsFrom(me);
+    if (viewAll() && avail.length > 1) return ALL_HOME;
     var pref = activePlatform();
     var key = pref && avail.indexOf(pref) > -1 ? pref : avail[0];
     if (key) return HOMES[key];
@@ -384,6 +405,9 @@
 
   window.AervoSession = {
     HOMES: HOMES,
+    ALL_HOME: ALL_HOME,
+    viewAll: viewAll,
+    setViewAll: setViewAll,
     platformsFrom: platformsFrom,
     activePlatform: activePlatform,
     setActivePlatform: setActivePlatform,

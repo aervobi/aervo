@@ -1,5 +1,6 @@
 /dashboard/csv      /dashboard/ims                  302
 /dashboard/csv/     /dashboard/ims                  302
+/dashboard/all      /dashboard/all/index.html       200
 /dashboard/square   /dashboard/square/index.html    200
 /dashboard/shopify  /dashboard/shopify/index.html   200
 /dashboard          /dashboard/shopify/index.html   200
